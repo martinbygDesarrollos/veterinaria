@@ -1,0 +1,69 @@
+<?php
+
+class fechas{
+
+	public function parceFechaInt($fecha){
+		$response = null;
+		$soloFecha = explode(" ", $fecha);
+
+		if(strpos($soloFecha[0], "/")){
+			$arrayFecha = explode("/",$soloFecha[0]);
+
+			$mes = $arrayFecha[1];
+			if(strlen($mes) == 1)
+				$mes = "0" . $mes;
+
+			if(strlen($arrayFecha[0]) <= 2){
+
+				$dia = $arrayFecha[0];
+				if(strlen($dia)  == 1)
+					$dia = "0" . $dia;
+
+				$response = $arrayFecha[2] . $mes . $dia;
+			}else if (strlen($arrayFecha[0]) == 4) {
+
+				$dia = $arrayFecha[2];
+				if(strlen($dia)  == 1)
+					$dia = "0" . $dia;
+
+				$response = $arrayFecha[0] . $mes . $dia;
+			}
+		}else if(strpos($soloFecha[0], "-")){
+			$arrayFecha = explode("-",$soloFecha[0]);
+
+			$mes = $arrayFecha[1];
+			if(strlen($mes) == 1)
+				$mes = "0" . $mes;
+
+			if(strlen($arrayFecha[0]) <= 2){
+				$dia = $arrayFecha[0];
+				if(strlen($dia)  == 1)
+					$dia = "0" . $dia;
+
+				$response = $arrayFecha[2] . $mes . $dia;
+			}else if (strlen($arrayFecha[0]) == 4) {
+				$dia = $arrayFecha[2];
+				if(strlen($dia)  == 1)
+					$dia = "0" . $dia;
+				$response = $arrayFecha[0] . $mes . $dia;
+			}
+		}
+
+		return $response;
+	}
+
+	public function parceFechaFormatDMA($fecha, $separador){
+		return substr($fecha, 6,2). $separador .substr($fecha, 4,2). $separador .substr($fecha, 0,4);
+	}
+
+	public function parceFechaFormatAMD($fecha, $separador){  // 20191231 =>  2019-12-31
+		return substr($fecha, 0,4). $separador .substr($fecha, 4,2). $separador .substr($fecha, 6,2);
+	}
+
+	function obtenerDiferenciaDias($fechaVencimiento, $fechaLimite){
+		$fechaV = fechas::StringToIntFechaGuion($fechaVencimiento);
+		$dias = (strtotime($fechaV)- strtotime($fechaLimite))/86400;
+		$dias = abs($dias); $dias = floor($dias);
+		return $dias;
+	}
+}

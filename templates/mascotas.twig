@@ -1,0 +1,64 @@
+{% extends "base.twig" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center">
+	<div class="row">
+		<div class="col">
+			<div id="containerNuevoSocio" class="card">
+				<h5 class="card-header">Mascotas</h5>
+				<div class="card-body">
+					<table id="tableStandar" class="table table-striped table-bordered">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center" scope="col">Nombre</th>
+								<th class="text-center" scope="col">Especie</th>
+								<th class="text-center" scope="col">Raza</th>
+								<th class="text-center" scope="col">Sexo</th>
+								<th class="text-center" scope="col">Fecha nacimiento</th>
+								<th class="text-center" scope='col'>Estado</th>
+								<th class="text-center" scope='col'>Historia clinica</th>
+								<th class="text-center" scope="col">Ver</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for mascota in mascotas %}
+							<tr>
+								<td class="text-center">{{ mascota.nombre }}</td>
+								<td class="text-center">{{ mascota.especie }}</td>
+								<td class="text-center">{{ mascota.raza }}</td>
+								{% if mascota.sexo == 1 %}
+								<td class="text-center">Macho</td>
+								{% else %}
+								<td class="text-center">Hembra</td>
+								{% endif %}
+								<td class="text-center">{{ mascota.fechaNacimiento }}</td>
+								{% if mascota.estado == 1 %}
+								<td class="text-center">Activa</td>
+								{% elseif mascota.estado == 0 %}
+								<td class="text-center">Inactiva</td>
+								{% elseif mascota.estado == 2 %}
+								<td class="text-center">Pendiente</td>
+								{% endif %}
+								<td class="text-center">
+									<button class="btn btn-info btn-sm">
+										<a style="color: white;" href="{{path_for('Inicio')}}historiasClinica/{{ mascota.idMascota }}">Ver</a>
+									</button>
+								</td>
+								<td class="text-center">
+									<button class="btn btn-info btn-sm">
+										<a style="color: white;" href="{{path_for('Inicio')}}verMascota/{{ mascota.idMascota }}">Ver</a>
+									</button>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.twig" %}
+{% block head %}
+
+{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+	<div class="col-5">
+		<div id="containerNuevoSocio" class="card">
+			<h5 class="card-header">Mascota {{ info.mascota.nombre}}</h5>
+			<div class="card-body">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">
+						<h6 class="card-subtitle mb-2 text-muted">Información de la mascota</h6>
+						<div class="row">
+							<div class="col-sm">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Especie</span>
+									<p class="form-control text-center">{{ info.mascota.especie }}</p>
+								</div>
+							</div>
+							<div class="col-sm">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Raza</span>
+									<p class="form-control text-center">{{ info.mascota.raza }}</p>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Sexo</span>
+									{% if info.mascota.sexo == 0 %}
+									<p class="form-control  text-center">Hembra</p>
+									{% else %}
+									<p class="form-control  text-center">Macho</p>
+									{% endif %}
+								</div>
+							</div>
+							<div class="col-sm">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Nacimiento</span>
+									<p class="form-control text-center">{{ info.mascota.fechaNacimiento }}</p>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Pelo</span>
+									<p class="form-control text-center">{{ info.mascota.pelo }}</p>
+								</div>
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Pedigree</span>
+									{% if info.mascota.pedigree == 1 %}
+									<p class="form-control text-center">Si</p>
+									{% else %}
+									<p class="form-control text-center">Si</p>
+									{% endif %}
+								</div>
+							</div>
+							<div class="col-sm">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Color</span>
+									<p class="form-control text-center">{{ info.mascota.color }}</p>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="list-group-item">
+						<h6 class="card-subtitle mb-2 text-muted">Observaciones</h6>
+						<div class="row">
+							<div class="col-sm">
+								<div class="input-group mb-3">
+									<textarea id="inpObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3" disabled>{{ info.mascota.observaciones }}</textarea>
+								</div>
+							</div>
+						</div>
+					</li>
+
+					<li class="list-group-item">
+						<div class="row">
+							<div class="col-sm  text-center">
+								<button class="btn btn-danger">Guardar como inactiva</button>
+							</div>
+							{% if info.hayHistorial == true %}
+							<div class="col-sm  text-center">
+								<a class="btn btn-info" href="{{path_for('Inicio')}}historiasClinica/{{ info.mascota.idMascota }}">Ver historia clinica </a>
+							</div>
+							{% endif %}
+							<div class="col-sm  text-center">
+								<button class="btn btn-success">Agregar historia clinica</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm">
+		<div id="containerNuevoSocio" class="card">
+			<h5 class="card-header">Vacunas de {{ info.mascota.nombre}}</h5>
+			<div class="card-body">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">
+						<table id="tableStandar" class="table table-striped table-bordered">
+							<thead class="thead-dark">
+								<tr>
+									<th scope="col">Nombre</th>
+									<th scope="col">Intervalo</th>
+									<th scope="col">Número dosis totales</th>
+									<th scope="col">Primer dosis</th>
+									<th scope="col">Ultima dosis</th>
+									<th scope="col">Vencimiento</th>
+									<th scope="col">Vacunar</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for vacuna in info.vacunas%}
+								<tr>
+									<td><button class="btn btn-sm btn-info">{{ vacuna.nombre }}</button></td>
+									<td>{{ vacuna.intervaloDosis }}</td>
+									<td>{{ vacuna.numDosisActuales}} de {{ vacuna.numDosisTot }}</td>
+									<td>{{ vacuna.fechaPrimerDosis }}</td>
+									<td>{{ vacuna.fechaUltimaDosis }}</td>
+									<td>{{ vacuna.vencimiento }}</td>
+									<td>
+										<a class="btn btn-success btn-sm" href="{{path_for('Inicio')}}verSocio/{{socio.idSocio}}">Aplicar dosis</a>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</li>
+					<li class="list-group-item">
+						<div class="row">
+							<div class="col-sm text-center">
+								<button class="btn btn-success">Aplicar nueva vacuna</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+{% endblock %}
+{% endblock %}

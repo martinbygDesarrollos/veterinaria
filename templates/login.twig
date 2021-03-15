@@ -1,0 +1,34 @@
+{% extends "base.twig" %}
+{% block head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block content %}
+
+<form id="formLogin" method="POST" >
+    <br>
+    <br>
+    <div class="card card-body border-secondary" style="width: 30%; margin: 0 auto;">
+        <center>
+            <h1 style="font-weight: bold; font-size: 30px;"> Inicio de sesión</h1>
+        </center>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">Correo</span>
+            </div>
+            <input  name="correo" id="correo" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" required autofocus>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">Contraseña</span>
+            </div>
+            <input id="contrasena" name="contrasena" type="password" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" required autofocus>
+        </div>
+        <input class="btn btn-secondary btn-lg btn-block" type="submit" name="aceptar" value="Confirmar">
+    </div>
+</form>
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/Loggin.js"></script>
+{% endblock %}
+{% endblock %}
