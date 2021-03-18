@@ -1,13 +1,14 @@
 {% extends "base.twig" %}
 {% block head %}
-
 {% endblock %}
 {% block content %}
-
 <div class="row justify-content-center">
 	<div class="col-5">
 		<div id="containerNuevoSocio" class="card">
-			<h5 class="card-header">Mascota {{ info.mascota.nombre}}</h5>
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<h5>Mascota {{ info.mascota.nombre}}</h5>
+				<a style="color: white;" class="btn btn-info btn-sm" href="{{path_for('Inicio')}}editMascota/{{ info.mascota.idMascota }}"><i class="fas fa-edit"> editar</i></a>
+			</div>
 			<div class="card-body">
 				<ul class="list-group list-group-flush">
 					<li class="list-group-item">
@@ -64,6 +65,10 @@
 									<span class="input-group-text" id="inputGroup-sizing-default">Color</span>
 									<p class="form-control text-center">{{ info.mascota.color }}</p>
 								</div>
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Chip</span>
+									<p class="form-control text-center">{{ info.mascota.chip }}</p>
+								</div>
 							</div>
 						</div>
 					</li>
@@ -77,7 +82,6 @@
 							</div>
 						</div>
 					</li>
-
 					<li class="list-group-item">
 						<div class="row">
 							<div class="col-sm  text-center">
@@ -85,11 +89,11 @@
 							</div>
 							{% if info.hayHistorial == true %}
 							<div class="col-sm  text-center">
-								<a class="btn btn-info" href="{{path_for('Inicio')}}historiasClinica/{{ info.mascota.idMascota }}">Ver historia clinica </a>
+								<a class="btn btn-info" href="{{path_for('Inicio')}}historiaClinica/{{ info.mascota.idMascota }}">Ver historia clinica </a>
 							</div>
 							{% endif %}
 							<div class="col-sm  text-center">
-								<button class="btn btn-success">Agregar historia clinica</button>
+								<button class="btn btn-success" data-toggle="modal" data-target="#modalNuevaHistoria">Agregar historia clinica</button>
 							</div>
 						</div>
 					</li>
@@ -106,26 +110,38 @@
 						<table id="tableStandar" class="table table-striped table-bordered">
 							<thead class="thead-dark">
 								<tr>
-									<th scope="col">Nombre</th>
-									<th scope="col">Intervalo</th>
-									<th scope="col">Número dosis totales</th>
-									<th scope="col">Primer dosis</th>
-									<th scope="col">Ultima dosis</th>
-									<th scope="col">Vencimiento</th>
-									<th scope="col">Vacunar</th>
+									<th class="text-center" scope="col">Prox. dosis</th>
+									<th class="text-center" scope="col">Ultima dosis</th>
+									<th class="text-center" scope="col">Primer dosis</th>
+									<th class="text-center" scope="col">Nombre</th>
+									<th class="text-center" scope="col">Intervalo(Dias)</th>
+									<th class="text-center" scope="col">Nº dosis totales</th>
+									<th class="text-center" scope="col">Vacunar</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% for vacuna in info.vacunas%}
 								<tr>
-									<td><button class="btn btn-sm btn-info">{{ vacuna.nombre }}</button></td>
-									<td>{{ vacuna.intervaloDosis }}</td>
-									<td>{{ vacuna.numDosisActuales}} de {{ vacuna.numDosisTot }}</td>
-									<td>{{ vacuna.fechaPrimerDosis }}</td>
-									<td>{{ vacuna.fechaUltimaDosis }}</td>
-									<td>{{ vacuna.vencimiento }}</td>
-									<td>
-										<a class="btn btn-success btn-sm" href="{{path_for('Inicio')}}verSocio/{{socio.idSocio}}">Aplicar dosis</a>
+									{% if vacuna.fechaProximaDosis == 0 %}
+									<td class="text-center">Dosis única</td>
+									{% else %}
+									{% if vacuna.vencida == 1 %}
+									<td class="text-center alert-danger">{{ vacuna.fechaProximaDosis }}</td>
+									{% else %}
+									<td class="text-center">{{ vacuna.fechaProximaDosis }}</td>
+									{% endif %}
+									{% endif %}
+									<td class="text-center">{{ vacuna.fechaUltimaDosis }}</td>
+									<td class="text-center">{{ vacuna.fechaPrimerDosis }}</td>
+									<td class="text-center">{{ vacuna.nombreVacuna }}</td>
+									{% if vacuna.intervaloDosis == 1 %}
+									<td class="text-center">dosis única</td>
+									{% else %}
+									<td class="text-center">{{ vacuna.intervaloDosis }}</td>
+									{% endif %}
+									<td class="text-center">{{ vacuna.numDosis }}</td>
+									<td class="text-center">
+										<button id="{{ vacuna.idVacunaMascota }}" name="{{ vacuna.nombreVacuna }}" class="btn btn-success btn-sm"  onclick="abrirModalAplicarDosis(this)"><i class="fas fa-syringe"></i></button>
 									</td>
 								</tr>
 								{% endfor %}
@@ -135,7 +151,7 @@
 					<li class="list-group-item">
 						<div class="row">
 							<div class="col-sm text-center">
-								<button class="btn btn-success">Aplicar nueva vacuna</button>
+								<button class="btn btn-success"  data-toggle="modal" data-target="#vacunasModal">Aplicar nueva vacuna</button>
 							</div>
 						</div>
 					</li>
@@ -144,6 +160,127 @@
 		</div>
 	</div>
 </div>
+<div class="modal fade" id="modalAplicarDosis" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header alert-info" >
+				<h5 class="modal-title" id="exampleModalLongTitle">Aplicar dosis</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p id="mensajeAplicarDosis"></p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+				<button class="btn btn-success" id="btnAplicarDosis" onclick="aplicarDosisVacuna(this)">Aplicar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalNuevaHistoria" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header alert-success" >
+				<h5 class="modal-title" id="exampleModalLongTitle">Nueva hisotira clinica de {{ info.mascota.nombre }}</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<h6 class="card-subtitle mb-2 text-muted">Motivo de la consulta</h6>
+				<div class="col-sm">
+					<div class="input-group mb-3">
+						<textarea id="inpHistoriaMotivoConsulta" onfocus="ocultarAlert()" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
+					</div>
+				</div>
+				<h6 class="card-subtitle mb-2 text-muted">Diagnostico</h6>
+				<div class="col-sm">
+					<div class="input-group mb-3">
+						<textarea id="inpHistoriaDiagnostico" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
+					</div>
+				</div>
+				<h6 class="card-subtitle mb-2 text-muted">Observaciones</h6>
+				<div class="col-sm">
+					<div class="input-group mb-3">
+						<textarea id="inpHistoriaObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
+					</div>
+				</div>
+				<div style="display: none;" class="alert alert-danger" id="mensajeErrorHistoriaAlert"></div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+				<button id="{{ info.mascota.idMascota }}" class="btn btn-success" onclick="insertarHistoriaClinica(this)">Insertar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="vacunasModal" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header alert-info" >
+				<h5 class="modal-title" id="exampleModalLongTitle">Aplicar nueva vacuna</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="inputGroup-sizing-default">Nombre vacuna</span>
+					<input id="inpNombreVacuna" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<label class="input-group-text" for="inputGroupSelect01">Intervalo</label>
+					</div>
+					<select class="custom-select" id="inpIntervaloVacuna">
+						<option value="1" selected>Unica dosis</option>
+						<option value="30">Mensual</option>
+						<option value="60">Bimestral</option>
+						<option value="180">Semestral</option>
+						<option value="360">Anual</option>
+					</select>
+				</div>
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="inputGroup-sizing-default">Fecha Dosis</span>
+					<input id="inpPrimerDosisVacuna" type="date" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<h6 class="card-subtitle mb-2 text-muted">Observaciones</h6>
+				<div class="row">
+					<div class="col-sm">
+						<div class="input-group mb-3">
+							<textarea id="inpObservacionesVacuna" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3">{{ info.mascota.observaciones }}</textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+				<button class="btn btn-success" id="{{info.mascota.idMascota}}" onclick="aplicarNuevaVacunaMascota(this)">Aplicar</button>
+			</div>
+		</div>
+	</div>
+</div>
 {%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/verMascota.js"></script>
+<script type="text/javascript">
+	let date = new Date()
+	let day = date.getDate()
+	let month = date.getMonth() + 1
+	let year = date.getFullYear()
+
+	if(month < 10){
+		month = "0" + month ;
+	}
+
+	if(day < 10){
+		day = "0" + day;
+	}
+
+	document.getElementById('inpPrimerDosisVacuna').value = `${year}-${month}-${day}`;
+</script>
 {% endblock %}
 {% endblock %}

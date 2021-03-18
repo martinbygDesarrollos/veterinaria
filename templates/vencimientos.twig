@@ -1,0 +1,73 @@
+{% extends "base.twig" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center">
+	<div class="row">
+		<div class="col">
+			<div id="containerNuevoSocio" class="card">
+				<h5 class="card-header">Vencimietnos del {{ fechaVencimiento }}</h5>
+				<div class="card-body">
+					<table id="tableStandar" class="table table-striped table-bordered">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center" scope="col">Fecha vencimiento</th>
+								<th class="text-center" scope="col">Mascota</th>
+								<th class="text-center" scope="col">Dueño</th>
+								<th class="text-center" scope="col">Teléfono</th>
+								<th class="text-center" scope="col">Email</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for vencimiento in infoVencimientos %}
+							<tr>
+								<td class="text-center">{{ vencimiento.fechaProximaDosis }}</td>
+								<td class="text-center"><a class="btn btn-info btn-sm" href="{{path_for('Inicio')}}verMascota/{{ vencimiento.idMascota }}">{{ vencimiento.nombreMascota }}</a></td>
+								{% if vencimiento.socio != null %}
+								<td class="text-center"><a class="btn btn-info btn-sm" href="{{path_for('Inicio')}}verSocio/{{ vencimiento.socio.idSocio }}">{{ vencimiento.socio.nombre }}</a></td>
+								<td class="text-center">{{ vencimiento.socio.telefono }}</td>
+								{% if vencimiento.socio.email %}
+								<td class="text-center" ><button class="btn btn-info btn-sm" id="{{ vencimiento.socio.idSocio }}" name="{{ vencimiento.idMascota }}" onclick="openModalVencimiento(this)" >Enviar correo</button></td>
+								{% else %}
+								<td class="text-center">Sin email</td>
+								{% endif %}
+								{% else %}
+								<td class="text-center">Socio no vinculado</td>
+								<td class="text-center">No corresponde</td>
+								<td class="text-center">No corresponde</td>
+								{% endif %}
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalNotificacion" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<input type="text" id="idSocioVencimiento" style="display: none;">
+			<input type="text" id="idMascotaVencimiento" style="display: none;">
+			<div class="modal-header alert-success" >
+				<h5 class="modal-title" id="exampleModalLongTitle">Notificar vencimientos</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p>¿Desea enviar una notificación con las vacunas pendientes de la mascota de este socio?</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-dismiss="modal" >Cancelar</button>
+				<button class="btn btn-success" id="btnNuevaMascota" onclick="notificarVencimientos()">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vencimientos.js"></script>
+{% endblock %}
+{% endblock %}

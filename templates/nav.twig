@@ -1,50 +1,36 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Veterinaria Nan</a>
+  <a class="navbar-brand" href="{{path_for('Inicio')}}">Veterinaria Nan</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-     <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Socio
-      </a>
-      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="{{path_for('Inicio')}}verSocios">Socios</a>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}newSocio">Nuevo socio</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}">Something else here</a>
-      </div>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Mascotas & Vacunas
-      </a>
-      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="{{path_for('Inicio')}}mascotas">Mascotas</a>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}newMascota">Nueva Mascota</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}">Vacunas</a>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}">Agregar vacuna</a>
-      </div>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Usuarios & Grupos
-      </a>
-      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="{{path_for('Inicio')}}">Usuarios</a>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}">Nuevo usuario</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}">Grupos</a>
-        <a class="dropdown-item" href="{{path_for('Inicio')}}">Administrar grupos</a>
-      </div>
-    </li>
-  </ul>
-  <form class="form-inline my-2 my-lg-0">
-    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-  </form>
-</div>
+      {% if administrador %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Socio
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{{path_for('Inicio')}}verSocios">Socios</a>
+          <a class="dropdown-item" href="{{path_for('Inicio')}}newSocio">Nuevo socio</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Mascotas
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{{path_for('Inicio')}}mascotas">Mascotas</a>
+          <a class="dropdown-item" href="{{path_for('Inicio')}}newMascota">Nueva Mascota</a>
+        </div>
+      </li>
+      {% endif %}
+    </ul>
+    {% if administrador %}
+    <a class="btn btn-info" style="margin-right: 1%" href="{{path_for('Inicio')}}settings" type="submit"><i class="fas fa-cogs"></i></a>
+    <a class="btn btn-outline-danger my-2 my-sm-0" href="{{path_for('Inicio')}}login" type="submit">Cerrar sesión</a>
+    {% else %}
+    <a class="btn btn-outline-success my-2 my-sm-0" href="{{path_for('Inicio')}}login" type="submit">Iniciar sesion</a>
+    {% endif %}
+  </div>
 </nav>

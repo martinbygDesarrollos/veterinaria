@@ -15,7 +15,7 @@ function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut,
 	}else if(cedula.length !== 8){
 		conError = true;
 		mensajeError = "La longitud de la cédula ingresada no corresponde a un documento valido.";
-	}else if(!validarCedula(cedula)){
+	}else if(validarCedula(cedula)){
 		conError = true;
 		mensajeError = "La cédula ingresada no es valida.";
 	}else if(telefono.length > 9 || telefono.length < 5){
@@ -33,7 +33,7 @@ function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut,
 	}else if(fechaPago < 1 || fechaPago > 31){
 		conError = true;
 		mensajeError = "La campo fecha de Pago debe estar comprendido entre 1-31 ya que corresponde a un día del mes.";
-	}else if(lugarPago == 0){
+	}else if(lugarPago == 2){
 		conError = true;
 		mensajeError = "Debe seleccionar el lugar de pago.";
 	}
@@ -53,12 +53,13 @@ function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut,
 	}
 
 	if(conError){
-		$('#colorRetorno').removeClass('alert-success');
-		$('#colorRetorno').addClass('alert-danger');
-		document.getElementById('tituloRetorno').innerHTML = "Información no valida";
-		document.getElementById('mensajeRetorno').innerHTML = mensajeError;
+		$('#modalColorRetorno').removeClass('alert-success');
+		$('#modalColorRetorno').removeClass('alert-danger');
+		$('#modalColorRetorno').addClass('alert-warning');
+		document.getElementById('modalTituloRetorno').innerHTML = "Información no valida";
+		document.getElementById('modalMensajeRetorno').innerHTML = mensajeError;
 		$("#modalRetorno").modal();
-		$("#buttonRetorno").click(function(){
+		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
 	}
@@ -75,14 +76,14 @@ function insertarNuevoSocio(){
 	var rut = document.getElementById('inpRutSocio').value || null;
 	var telefax = document.getElementById('inpTelefaxSocio').value || null;
 	var fechaPago = document.getElementById('inpFechaPagoSocio').value;
-	var lugarPago = document.getElementById('slcLugarPagoSocio').value;
+	var lugarPago = document.getElementById('inpLugarPagoSocio').value;
 
 
 	var conError = validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut, telefax, fechaPago, lugarPago);
 
 	if(!conError){
 
-		document.getElementById('tituloRetorno').innerHTML = "Nuevo socio";
+		document.getElementById('modalTituloRetorno').innerHTML = "Nuevo socio";
 		$.ajax({
 			async: false,
 			url: urlBase + "/insertNewSocio",
@@ -104,12 +105,11 @@ function insertarNuevoSocio(){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
-
-					$('#colorRetorno').removeClass('alert-danger');
-					$('#colorRetorno').addClass('alert-success');
-					document.getElementById('mensajeRetorno').innerHTML = response.mensaje;
+					$('#modalColorRetorno').removeClass('alert-danger');
+					$('#modalColorRetorno').addClass('alert-success');
+					document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
 					$("#modalRetorno").modal();
-					$("#buttonRetorno").click(function(){
+					$("#modalButtonRetorno").click(function(){
 						document.getElementById('containerNuevaMascota').style.display = "block";
 						document.getElementById('containerNuevoSocio').style.display = "none";
 						document.getElementById('pInformacionMascota').innerHTML = "Usted esta ingresando la informaciòn para la mascota de " + nombre;
@@ -117,11 +117,11 @@ function insertarNuevoSocio(){
 						document.getElementById('idSocioAgregado').value = response.idSocio;
 					});
 				}else{
-					$('#colorRetorno').removeClass('alert-success');
-					$('#colorRetorno').addClass('alert-danger');
+					$('#modalColorRetorno').removeClass('alert-success');
+					$('#modalColorRetorno').addClass('alert-danger');
 					document.getElementById('mensajeRetorno').innerHTML = response.mensajeError;
 					$("#modalRetorno").modal();
-					$("#buttonRetorno").click(function(){
+					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
 				}
@@ -130,10 +130,10 @@ function insertarNuevoSocio(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				$('#colorRetorno').removeClass('alert-success');
-				$('#colorRetorno').addClass('alert-danger');
+				$('#modalColorRetorno').removeClass('alert-success');
+				$('#modalColorRetorno').addClass('alert-danger');
 				$("#modalRetorno").modal();
-				$("#buttonRetorno").click(function(){
+				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			},

@@ -60,10 +60,20 @@ class fechas{
 		return substr($fecha, 0,4). $separador .substr($fecha, 4,2). $separador .substr($fecha, 6,2);
 	}
 
-	function obtenerDiferenciaDias($fechaVencimiento, $fechaLimite){
-		$fechaV = fechas::StringToIntFechaGuion($fechaVencimiento);
-		$dias = (strtotime($fechaV)- strtotime($fechaLimite))/86400;
+	public function obtenerDiferenciaDias($fechaProxDosis, $fechaLimite){
+		$fechaP = fechas::parceFechaFormatAMD($fechaProxDosis, "-");
+		$dias = (strtotime($fechaP)- strtotime($fechaLimite))/86400;
 		$dias = abs($dias); $dias = floor($dias);
 		return $dias;
+	}
+
+	public function parceFechaMesFormatDMA($fecha){
+		return substr($fecha, 4,2). "/" .substr($fecha, 0,4);
+	}
+
+	public function calcularFechaProximaDosis($fechaUltimaDosis, $intervalo){
+		$nuevafecha = date("Y-m-d", strtotime("$fechaUltimaDosis + ". $intervalo ." day"));
+		$nuevafecha = fechas::parceFechaInt($nuevafecha);
+		return fechas::parceFechaFormatDMA($nuevafecha, "/");
 	}
 }

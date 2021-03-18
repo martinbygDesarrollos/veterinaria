@@ -6,7 +6,7 @@
 	<div class="row">
 		<div class="col">
 			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header">Nueva Mascota</h5>
+				<h5 class="card-header">Editar información de {{ mascota.nombre }}</h5>
 				<div class="card-body">
 					<h6 class="card-subtitle mb-2 text-muted">Información obligatoria</h6>
 					<ul class="list-group list-group-flush">
@@ -15,34 +15,42 @@
 								<div class="col-sm">
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-										<input id="inpNombre" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpEditNombre" type="text" class="form-control text-center" aria-label="Sizing example input" value="{{ mascota.nombre }}">
 									</div>
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Especie</span>
-										<input id="inpEspecie" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Nacimiento</span>
-										<input id="inpFechaNacimiento" type="date" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpEditEspecie" type="text" class="form-control text-center" aria-label="Sizing example input" value="{{ mascota.especie }}" >
 									</div>
 								</div>
 								<div class="col-sm">
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Raza</span>
-										<input id="inpRaza" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpEditRaza" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ mascota.raza }}">
 									</div>
 									<div class="input-group mb-3">
 										<div class="input-group-prepend">
 											<label class="input-group-text" for="inputGroupSelect01">Sexo</label>
 										</div>
-										<select class="custom-select" id="inpSexo">
-											<option value="2" selected>Seleccione</option>
+										<select class="custom-select" id="inpEditSexo">
+											<option selected>Seleccione</option>
 											<option value="0">Hembra</option>
 											<option value="1">Macho</option>
 										</select>
+										{% if mascota.sexo == 0 %}
+										<input id="inpSexoActual" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="Hembra" readonly>
+										{% else %}
+										<input id="inpSexoActual" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="Macho" readonly>
+										{% endif %}
 									</div>
 								</div>
 							</div>
+							<dir class="row">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Nacimiento</span>
+									<input id="inpEditFechaNacimiento" type="date" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+									<input id="inpFechaNacimientoActual" readonly type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ mascota.fechaNacimiento }}">
+								</div>
+							</dir>
 						</li>
 						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Información opcional</h6>
 						<li class="list-group-item">
@@ -50,26 +58,31 @@
 								<div class="col-sm">
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Color</span>
-										<input id="inpColor" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpEditColor" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ mascota.color }}">
 									</div>
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Pelo</span>
-										<input id="inpPelo" type="text" onKeyPress="if(this.value.length==16)" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpEditPelo" type="text" onKeyPress="if(this.value.length==16)" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ mascota.pelo }}">
 									</div>
 								</div>
 								<div class="col-sm">
 									<div class="input-group mb-3">
 										<div class="input-group-prepend">
-											<label class="input-group-text" for="inputGroupSelect01">Pedegree</label>
+											<label class="input-group-text" for="inputGroupSelect01">Pedigree</label>
 										</div>
-										<select class="custom-select" id="inpPedegree">
+										<select class="custom-select" id="inpEditPedigree">
 											<option value="0" selected>No</option>
 											<option value="1">Si</option>
 										</select>
+										{% if mascota.pedigree == 1 %}
+										<input type="text" class="form-control text-center" aria-label="Sizing example input" value="Si" readonly>
+										{% else %}
+										<input type="text" class="form-control text-center" aria-label="Sizing example input" value="No" readonly>
+										{% endif %}
 									</div>
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Chip</span>
-										<input id="inpChip" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==16) return false;" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpEditChip" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==16) return false;" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ mascota.chip }}">
 									</div>
 								</div>
 							</div>
@@ -79,7 +92,7 @@
 							<div class="row">
 								<div class="col-sm">
 									<div class="input-group mb-3">
-										<textarea id="inpObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
+										<textarea id="inpEditObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3" >{{ mascota.observaciones }}</textarea>
 									</div>
 								</div>
 							</div>
@@ -90,18 +103,18 @@
 								<div class="col">
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Dueño</span>
-										<input id="inpDuenio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" disabled>
+										<input id="inpDuenio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ duenio.nombre }}" disabled>
 									</div>
 								</div>
 								<div class="col-sm-3">
-									<button class="btn btn-primary" onclick="showSocios()">Seleccionar</button>
+									<button class="btn btn-primary" onclick="showSocios()">Nuevo dueño</button>
 								</div>
 							</div>
 						</li>
 						<li class="list-group-item">
 							<div class="d-flex justify-content-center">
-								<input type="text" id="idSocioAsignado" style="display: none;">
-								<button class="btn btn-success" data-toggle="modal" data-target="#modalNuevaMascota" >Confirmar</button>
+								<input type="text" id="idSocioAsignado" style="display: none;" value="{{ duenio.idSocio }}">
+								<button class="btn btn-success" data-toggle="modal" data-target="#modalEditarMascota" >Modificar</button>
 							</div>
 						</li>
 					</ul>
@@ -136,21 +149,21 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="modalNuevaMascota" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+<div class="modal fade" id="modalEditarMascota" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header alert-success" >
-				<h5 class="modal-title" id="exampleModalLongTitle">Agregar Mascota</h5>
+				<h5 class="modal-title" id="exampleModalLongTitle">Modificar mascota</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
-				<p>¿Desea agregar una nueva mascota con la información ingresada?</p>
+				<p class="text-center">¿Desea actualizar la información de {{ info.mascota.nombre }} ?</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-danger" data-dismiss="modal" >Cancelar</button>
-				<button class="btn btn-success" id="btnNuevaMascota" onclick="insertNewMascota()">Confirmar</button>
+				<button class="btn btn-success" id="{{ info.mascota.idMascota }}" onclick="editarMascota(this)">Guardar</button>
 
 			</div>
 		</div>
@@ -158,5 +171,6 @@
 </div>
 {%block script%}
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/newMascota.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/editMascota.js"></script>
 {% endblock %}
 {% endblock %}

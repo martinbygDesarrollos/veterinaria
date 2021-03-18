@@ -20,15 +20,13 @@ class ctr_usuarios{
 
 		if($usuario){
 			if($pass == $usuario->pass){
-				if($usuario->grupo){
-					$usu = new \stdClass();
-					$usu->usuario = $usuario->nombre;
-					$usu->permisos = "nivel de permisos";
-					return $usu;
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "El usuario ingresado no fue asignado a un grupo de funciones, por lo que no puede iniciar sesión con él.";
-				}
+				$usu = new \stdClass();
+				$usu->usuario = $usuario->nombre;
+				session_destroy();
+				session_start();
+				$_SESSION['administrador'] = $usu;
+				$response->retorno = true;
+				$response->mensaje = "Sesión iniciada.";
 			}else{
 				$response->retorno = false;
 				$response->mensajeError = "El usuario y la contraseña no coinciden.";
@@ -61,72 +59,6 @@ class ctr_usuarios{
 			$response->retorno = false;
 			$response->mensajeError = "Ya existe un usuario con este nombre, modifique el nombre ingresado para dar de alta un nuevo usuario";
 		}
-		return $response;
-	}
-
-	public function vincularUsuarioGrupo($idUsuario, $nombreGrupo){
-
-		$response = new \stdClass();
-		$grupo = usuarios::getGrupoNombre($nombreGrupo);
-		if($grupo){
-			$usuario = usaurios::getUsuario($idUsuario);
-			if($usuario){
-				$observacion = ".";
-				if($usuario->grupo){
-					$observacion = ", el mismo ya pertenecia a un grupo, pero fue reasignado al grupo elegido.";
-				}
-				$result = usuarios::setGrupoUsuario($idUsuario, $grupo->idGrupo);
-				if($result){
-					$response->retorno = true;
-					$response->mensaje = "El usuario fue asignado al grupo" . $observacion;
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "El usuario no pudo ser vinculado al grupo por error, interno intentelo otra vez.";
-				}
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "El usuario que selecciono no se encuentra en el sistema, porfavor verifique su seleccion.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El grupo que selecciono para el usuario no fue encontrado en el sistema.";
-		}
-
-		return $response;
-	}
-
-	public function createNewGroup($nombre, $idsFunciones){
-
-		$response = new \stdClass();
-		$existeGrupo = usuarios::getGrupoNombre($nombre);
-		if(!$existeGrupo){
-			$grupoId = usuarios::insertGrupo($nombre);
-			if($grupoId != null){
-				$funciones = explode(",", $idsFunciones);
-				$todosIngresados = true;
-				for ($i=0; $i < count($funciones); $i++) {
-
-					$todosIngresados = usuarios::asignarFuncionGrupo($grupoId, $funciones[$i]);
-					if(!$todosIngresados)
-						break;
-				}
-
-				if($todosIngresados){
-					$response->retorno = true;
-					$response->mensajeError = "El grupo fue creado correctamente y todas sus funciones asignadas.";
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "Algunas funciones no fueron asignadas al grupo verifiquelo e intente nuevamente.";
-				}
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "No pudo ser creado el grupo bajo el nombre " . $nombre .  ", porfavor vuelva a intentarlo.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "Ya existe un grupo creado bajo el nombre " . $nombre . " este dato debe ser de valor unico en el sistema.";
-		}
-
 		return $response;
 	}
 
@@ -174,22 +106,123 @@ class ctr_usuarios{
 		return $response;
 	}
 
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $fechaIngreso, $email, $rut, $telefax){
+		$response = new \stdClass();
+
+		$socio = socios::getSocio($idSocio);
+		if($socio != null){
+			$fechaIngresoFormat = fechas::parceFechaInt($fechaIngreso);
+			$cuotaActualizada = ctr_usuarios::calcularCostoCuota($idSocio);
+			$mensajeCuota = ".";
+			if($cuotaActualizada)
+				$mensajeCuota = ", el sistema actualizo la cuota con el costo ingresado en el sistema.";
+			else
+				$mensajeCuota = ", pero el sistema no puedo actualizar la cuota para este socio.";
+
+			$result = socios::updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngresoFormat, $fechaPago, $lugarPago, $email, $rut);
+
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "La información del socio fue actualizada" . $mensajeCuota;
+			}else{
+				$response->retorno = true;
+				$response->mensaje = "La informacion del socio no pudo ser actualizada, porfavor vuelva a intentarlo.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "El socio que se quiere modificar no fue encontrado en el sistema porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
 	public function getSocios(){
 		return socios::getSocios();
 	}
 
+	public function sociosNoVinculados($idMascota){
+		return socios::getSociosNoVinculados($idMascota);
+	}
+
 	public function getSocio($idSocio){
 		$socio = socios::getSocio($idSocio);
-		$socio->mascotas = ctr_mascotas::getMasctoasSocio($idSocio);
+		if($socio ){
+			$socio->fechaIngreso = fechas::parceFechaFormatDMA($socio->fechaIngreso, "/");
+			if(strlen($socio->fechaUltimoPago) == 8)
+				$socio->fechaUltimoPago = fechas::parceFechaFormatDMA($socio->fechaUltimoPago, "/");
+			else
+				$socio->fechaUltimoPago = "No especificado";
+			if(strlen($socio->fechaUltimaCuota) == 6)
+				$socio->fechaUltimaCuota = fechas::parceFechaMesFormatDMA($socio->fechaUltimaCuota);
+			else $socio->fechaUltimaCuota = "No especificado";
+
+			$socio->mascotas = ctr_mascotas::getMasctoasSocio($idSocio);
+		}
 		return $socio;
 	}
+
+	public function getSocioMascota($idMascota){
+		$socio = socios::getSocioMascota($idMascota);
+		if($socio){
+			$socio->fechaIngreso = fechas::parceFechaFormatDMA($socio->fechaIngreso, "/");
+			$socio->fechaUltimoPago = fechas::parceFechaFormatDMA($socio->fechaUltimoPago, "/");
+			$socio->fechaUltimaCuota = fechas::parceFechaMesFormatDMA($socio->fechaUltimaCuota);
+		}
+		return $socio;
+	}
+
+	public function notificarSocio($idSocio, $idMascota){
+		$response = new \stdClass();
+
+		$socio = ctr_usuarios::getSocio($idSocio);
+		if($socio){
+			$mascota = ctr_mascotas::getMascota($idMascota);
+			if($mascota){
+				if(ctr_usuarios::esMiMascota($idSocio, $idMascota)){
+					$vacunasVencidas = ctr_mascotas::getVacunasVencidasMascota($idMascota);
+					if($vacunasVencidas){
+						$mensaje = $socio->nombre . " se le informa: <br> Las siguientes vacunas de " . $mascota->nombre . " vencieron o venceran pronto.";
+						$result = usuarios::enviarNotificacionVacunas($mensaje, $socio->email, $vacunasVencidas);
+						if($result){
+							$response->retorno = true;
+							$response->mensaje = "Se le envió un email a " . $socio->nombre . " con la información de las vacunas vencidas de " . $mascota->nombre;
+						}else{
+							$response->retorno = false;
+							$response->mensajeError = "El email a " . $socio->nombre . " no fue enviado por un error interno, porfavor vuelva a intentarlo.";
+						}
+					}else{
+						$response->retorno = false;
+						$response->mensajeError = "La mascota de " . $socio->nombre . " no tiene vacunas vencidas.";
+					}
+				}else{
+					$response->retorno = false;
+					$response->mensajeError = "La mascota y socio proporcionados no estan vinculados en el sistema, vinculelos para realizar la notificación.";
+				}
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "La mascota sobre la que desea notificar no fue encontrada en el sistema.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "El socio al que desea notificar no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
+	public function esMiMascota($idSocio, $idMascota){
+		$result = socios::esMiMascota($idSocio, $idMascota);
+		if($result != null) return true;
+		else return false;
+	}
+
     //---------------------------------------------------------------------------------------------------
 
 	//----------------------------------- FUNCIONES COMUNES --------------------------------------------
 	public function calcularCostoCuota($idSocio){
 		$cantMascotas = socios::getCantMascotasSocio($idSocio);
 		if($cantMascotas == 0)
-			return 0;
+			return socios::actualizarCuotaSocio($idSocio, $cantMascotas);
 
 		$costoCuota = configuracionSistema::getCostoCuota($cantMascotas);
 		return socios::actualizarCuotaSocio($idSocio, $costoCuota);

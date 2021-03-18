@@ -2,9 +2,14 @@
 
 class configuracionSistema{
 
+	public function setNuevaCuota($cuotaUna, $cuotaDos, $cuotaExtra){
+		$query = DB::conexion()->prepare("UPDATE cuota SET cuotaUno = ?, cuotaDos = ?, cuotaExtra = ? WHERE id = 1");
+		$query->bind_param('iii', $cuotaUna, $cuotaDos, $cuotaExtra);
+		return $query->execute();
+	}
 
-	public function getTarifa(){
-		$query = DB::conexion()->prepare("SELECT * FROM `cuota` WHERE id = 1");
+	public function getCuota(){
+		$query = DB::conexion()->prepare("SELECT * FROM cuota WHERE id = 1");
 		if($query->execute()){
 			$response = $query->get_result();
 			return $response->fetch_object();
@@ -12,7 +17,7 @@ class configuracionSistema{
 	}
 
 	public function getCostoCuota($cantMascotas){
-		$tarifa = configuracionSistema::getTarifa();
+		$tarifa = configuracionSistema::getCuota();
 		if($cantMascotas == 0){
 			return 0;
 		}else if($cantMascotas == 1){

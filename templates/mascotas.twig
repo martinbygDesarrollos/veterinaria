@@ -17,7 +17,6 @@
 								<th class="text-center" scope="col">Sexo</th>
 								<th class="text-center" scope="col">Fecha nacimiento</th>
 								<th class="text-center" scope='col'>Estado</th>
-								<th class="text-center" scope='col'>Historia clinica</th>
 								<th class="text-center" scope="col">Ver</th>
 							</tr>
 						</thead>
@@ -42,12 +41,7 @@
 								{% endif %}
 								<td class="text-center">
 									<button class="btn btn-info btn-sm">
-										<a style="color: white;" href="{{path_for('Inicio')}}historiasClinica/{{ mascota.idMascota }}">Ver</a>
-									</button>
-								</td>
-								<td class="text-center">
-									<button class="btn btn-info btn-sm">
-										<a style="color: white;" href="{{path_for('Inicio')}}verMascota/{{ mascota.idMascota }}">Ver</a>
+										<a style="color: white;" href="{{path_for('Inicio')}}verMascota/{{ mascota.idMascota }}"><i class="fas fa-eye"></i></a>
 									</button>
 								</td>
 							</tr>

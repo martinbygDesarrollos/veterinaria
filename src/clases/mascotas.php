@@ -50,7 +50,9 @@ class mascotas{
 
 		if($query->execute()){
 			$response = $query->get_result();
-			return $response->fetch_object();
+			$retorno = $response->fetch_object();
+			$retorno->fechaNacimiento = fechas::parceFechaFormatDMA($retorno->fechaNacimiento, "/");
+			return $retorno;
 		}else return null;
 	}
 
@@ -64,13 +66,10 @@ class mascotas{
 			return false;
 	}
 
-	public function updateMascota(){
-		$query = DB::conexion()->prepare("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, estado = ?, pelo = ?, chip = , observaciones = WHERE idMascota = ?");
-		$query->bind_param('sssisiiissi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones);
-		if($query->execute())
-			return true;
-		else
-			return false;
+	public function updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
+		$query = DB::conexion()->prepare("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, pelo = ?, chip = ? , observaciones = ? WHERE idMascota = ?");
+		$query->bind_param('sssisiisssi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones, $idMascota);
+		return $query->execute();
 	}
 
 	public function vincularMascotaSocio($idSocio, $idMascota, $fechaCambio){
@@ -79,6 +78,8 @@ class mascotas{
 		if($query->execute()) return true;
 		else return false;
 	}
+
+
 
 	public function getMascotasSocios($idSocio){
 		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio = ? )");

@@ -4,12 +4,17 @@ require_once '../src/controladores/ctr_usuarios.php';
 require_once '../src/controladores/ctr_historiales.php';
 require_once '../src/clases/mascotas.php';
 require_once '../src/clases/fechas.php';
-require_once '../src/clases/vacunas.php';
+require_once '../src/clases/vacunasMascota.php';
 
 class ctr_mascotas {
 
+	public function getFechaActual(){
+		$fecha = date('Y-m-d');
+		return fechas::parceFechaFormatDMA(fechas::parceFechaInt($fecha),"/");
+	}
+
     //----------------------------------- FUNCIONES DE MASCOTA ------------------------------------------
-	public function  insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
+	public function  insertNewMascota($idSocio, $idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
 		$response = new \stdClass();
 
 		$fechaNacimientoFormat = fechas::parceFechaInt($fechaNacimiento);
@@ -39,17 +44,53 @@ class ctr_mascotas {
 		return $response;
 	}
 
+	public function updateMascota($idSocio, $idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
+		$response = new \stdClass();
+
+		$socio = ctr_usuarios::getSocio($idSocio);
+		if($socio != null){
+			$mascota = mascotas::getMascota($idMascota);
+			if($mascota != null){
+
+				$fechaNacimientoFormat = fechas::parceFechaInt($fechaNacimiento);
+				$result = mascotas::updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimientoFormat, $pelo, $chip, $observaciones);
+
+				if($result){
+					$response->retorno = true;
+					$response->mensaje = "La información de " . $nombre . " fue modificada correctamente.";
+				}else{
+					$response->retorno = false;
+					$response->mensajeError = "La información de la mascota no pudo ser modificada, porfavor vuelva a intentarlo.";
+				}
+			}else{
+				$response->retorno = true;
+				$response->mensajeError = "La mascota que desea modificar no fue encontrada en el sistema, porfavor vuelva a intentarlo.";
+			}
+		}else{
+			$response->retorno = true;
+			$response->mensajeError = "El socio al que desea vincular la mascota no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
 	public function getMasctoasSocio($idSocio){
 		return mascotas::getMascotasSocios($idSocio);
 	}
 
 	public function getMascota($idMascota){
+		return mascotas::getMascota($idMascota);
+	}
+
+	public function getMascotaCompleto($idMascota){
 		$mascota = mascotas::getMascota($idMascota);
-		$vacunasMascota = vacunas::getVacunasMascota($idMascota);
+		$vacunasMascota = vacunasMascota::getVacunaMascotaID($idMascota);
+		$duenio = ctr_usuarios::getSocioMascota($idMascota);
 		return array(
 			"mascota" => $mascota,
 			"vacunas" => $vacunasMascota,
-			"hayHistorial" => ctr_historiales::checkHayHistorial($idMascota));
+			"hayHistorial" => ctr_historiales::checkHayHistorial($idMascota),
+			"duenio" => $duenio);
 	}
 
 	public function getMascotas(){
@@ -60,93 +101,77 @@ class ctr_mascotas {
 
 	//-------------------------------------FUNCIONES VACUNAS---------------------------------------------
 
-	public function insertNewVacuna($nombre, $codigo, $laboratorio){
-		$response = new \stdClass();
-
-		$resultNombre = vacunas::getVacunaNombre($nombre);
-		$resultCodigo = vacunas::getVacunaCodigo($codigo);
-
-		if(!$resultNombre){
-			if(!$resultCodigo){
-				$result = vacunas::insertVacuna($nombre, $codigo, $laboratorio);
-				if($result){
-					$response->retorno = true;
-					$response->mensaje = "La vacuna fue ingresada correctamente en el sistema.";
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "Ocurrio un error interno y la vacuna no pudo ser ingresada correctamente.";
-				}
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Usted esta intentando ingresar una vacuna con un codigo que ya se encuentra en el sistema.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "Usted esta intentando ingresar una vacuna con un nombre que ya se encuentra en el sistema.";
-		}
-		return $response;
-	}
-
-	public function asignarVacunaMascota($idVacuna, $idMascota, $intervaloDosis, $numDosisTot, $vencimiento){
-
+	public function aplicarNuevaVacunaMascota($idMascota, $nombreVacuna, $intervalo, $fechaDosis, $observaciones){
 		$response = new \stdClass();
 
 		$mascota = mascotas::getMascota($idMascota);
 		if($mascota){
-			$vacuna = vacunas::getVacuna($idVacuna);
-			if($vacuna){
-				if(!vacunas::getVacunaMascotaID($idMascota, $idVacuna)){
-					$fechaVencimientoFormat = fechas::parceFechaInt($vencimiento);
-					$result = vacunas::asignarVacunaMascota($idVacuna, $idMascota, $intervaloDosis, $numDosisTot, $fechaVencimientoFormat);
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "La vacuna ya fue asignada a esta mascota por lo que no se duplicara la información.";
-				}
+			$fechaDosisFormat = fechas::parceFechaInt($fechaDosis);
+			$fechaProximaDosis = 0;
+			if($intervalo != 1)
+				$fechaProximaDosis = fechas::parceFechaInt(fechas::calcularFechaProximaDosis($fechaDosis, $intervalo));
+
+			$result = vacunasMascota::insertVacunaMascota($nombreVacuna, $idMascota, $intervalo, 1, $fechaDosisFormat, $fechaDosisFormat,$fechaProximaDosis, $observaciones);
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "La vacuna fue vinculada correctamente a la mascota.";
 			}else{
 				$response->retorno = false;
-				$response->mensajeError = "La vacuna que desea asigar a la mascota no fue encontrada en el sistema";
+				$response->mensajeError = "La vacuna no pudo ser ingresada correctamente, verifique la información y vuelva a intentarlo.";
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "La mascota a la que se le asigno la vacuna no fue encontrada en el sistema.";
+			$response->mensajeError = "La mascota a la que se le quiere aplicar la vacuna no fue encontrada por un error interno, porfavor vuelva a intentarlo.";
 		}
 		return $response;
 	}
 
-	public function vacunarMascota($idMascota, $idVacuna){
+	public function aplicarDosisVacuna($idVacunaMascota){
 		$response = new \stdClass();
 
-		$mascota = mascotas::getMascota($idMascota);
-		if($mascota){
-			$vacuna = vacunas::getVacuna($idVacuna);
-			if($vacuna){
-				$result = vacunas::getVacunaMascotaID($idMascota, $idVacuna);
-				if($result){
-					$fechaFormat = fechas::parceFechaInt(date('Y-m-d'));
-					$result = vacunas::vacunarMascota($result->idVacunaMascota, $fechaFormat);
-					if($result){
-						$response->retorno = true;
-						$response->mensaje = "Se guardo correctamente la dosis aplicada a la mascota.";
-					}else{
-						$response->retorno = false;
-						$response->mensajeError = "La dosis que se intento aplicar no pudo ser almacenada en el sistema por un error interno.";
-					}
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "Debe vincular la vacuna a la mascota previo a aplicar una dosis de esta.";
-				}
+		$vacunaMascota = vacunasMascota::getVacunaMascota($idVacunaMascota);
+		if($vacunaMascota){
+			$fechaUltimaDosis = fechas::parceFechaInt(date('Y-m-d'));
+			$fechaProximaDosis = 0;
+			if($vacunaMascota->intervaloDosis != 1)
+				$fechaProximaDosis = fechas::parceFechaInt(fechas::calcularFechaProximaDosis(date('Y-m-d'), $vacunaMascota->intervaloDosis));
+
+			$result = vacunasMascota::aplicarDosisVacunaMascota($idVacunaMascota, $fechaUltimaDosis, ($vacunaMascota->numDosis + 1), $fechaProximaDosis);
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "La dosis de la vacuna aplicada fue almacenada correctamente.";
 			}else{
 				$response->retorno = false;
-				$response->mensajeError = "No se puede aplicar una dosis de una vacuna que no se encuentra registrada en el sistema.";
+				$response->mensajeError = "La dosis de la vacuna aplicada no pudo ser registrada porfavor vuelva a intentarlo.";
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "No se puede aplicar una vacuna a una mascota que no fue previamente registrada en el sistema.";
+			$response->mensajeError = "No se pudo encontrar la vacuna para registrar la dosis, porfavor intentelo nuevamente.";
 		}
 
 		return $response;
 	}
 
+	public function getVacunasMascotas(){
+		return vacunasMascota::getVacunasMascotas();
+	}
+
+	public function getVacunasVencidasMascota($idMascota){
+		$fechaActual = fechas::parceFechaInt(date('Y-m-d'));
+		return vacunasMascota::getVacunasVencidasMascota($idMascota, $fechaActual);
+	}
+
+	public function getVacunasNoAplicadas($idMascota){
+		return vacunas::getVacunasNoAplicadas($idMascota);
+	}
+
+
+	public function getInfoVencimientos(){
+		$fechaActual = date('Y-m-d');
+		$fecha = date("Y-m-d", strtotime("$fechaActual + 3 day"));
+		$fecha = fechas::parceFechaInt($fecha);
+		$vacunasMascotas = vacunasMascota::getVacunasVencidas($fecha);
+		return $vacunasMascotas;
+	}
 	//---------------------------------------------------------------------------------------------------
-
 }

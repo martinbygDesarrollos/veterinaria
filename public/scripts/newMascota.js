@@ -56,13 +56,15 @@ function insertNewMascota(){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
-					$('#colorRetorno').removeClass('alert-success');
+					$('#colorRetorno').removeClass('alert-danger');
+					$('#colorRetorno').addClass('alert-success');
 					document.getElementById('modalTituloRetorno').innerHTML = "Nueva mascota";
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#colorRetorno').removeClass('alert-danger');
+					$('#colorRetorno').removeClass('alert-success');
+					$('#colorRetorno').addClass('alert-danger');
 					document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva mascota";
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal('hide');

@@ -2,10 +2,31 @@
 {% block head %}
 {% endblock %}
 {% block content %}
+{% if session %}
+{% endif %}
+<div class="d-flex justify-content-between align-items-center">
+	<div></div>
 
-<center>
-	<h1 style="font-weight: bold; font-size: 30px; margin-top: 30px;">pagina principal.</h1>
-	<img src="{{path_for('Inicio')}}img/logoEjemplo.png" class="rounded-circle" alt="...">
-</center>
+	<a id="hayVencimietnosHoy" class="btn btn-warning" href="{{path_for('Inicio')}}vencimientos">Vencimientos del día de hoy</a>
+</div>
 
+{%block script%}
+<script>
+	let date = new Date()
+
+	let day = date.getDate()
+	let month = date.getMonth() + 1
+	let year = date.getFullYear()
+
+	if(month < 10){
+		month = "0" + month ;
+	}
+
+	if(day < 10){
+		day = "0" + day;
+	}
+	if(document.getElementById('hayVencimietnosHoy'))
+		document.getElementById('hayVencimietnosHoy').innerHTML = "Vencimietos del " + day + "/" + month + "/" + year;
+</script>
+{% endblock %}
 {% endblock %}

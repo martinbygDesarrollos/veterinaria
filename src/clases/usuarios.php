@@ -142,5 +142,61 @@ class usuarios{
 		return null;
 	}
 
+	public function enviarNotificacionVacunas($mensaje, $email, $vacunas){
+		$header  = 'MIME-Version: 1.0' . "\r\n";
+		$header .= 'Content-type:text/html; charset=UTF-8' . "\r\n";
+		$header .= "From: Veterinaria Nan <veterinariaNan@byg.uy>" . "\r\n";
+
+
+		$tableBody = '';
+
+		foreach ($vacunas as $key => $value) {
+			$tableBody .= '<tr style="background-color: "><th>'. $value['nombreVacuna'] .'</th><th>'. $value['fechaProximaDosis'] .'</th></tr>';
+		}
+
+		$subtitulo = "Veterinaria Nan";
+		$mensaje = '<html>' .
+		'<head>' .
+		'<title>Veterinaria Nan</title>' .
+		'<head>' .
+		'<style>
+		.fondo{
+			border: 2px solid  #06692C;
+			border-radius: 25px;
+			background-color: #06692C;
+			padding: 15px;
+		}
+		.message{
+			text-align: center;
+			color:white;
+			font-size:25px;
+		}
+		table, th, td {
+			border: 1px solid white;
+			border-collapse: collapse;
+			color: white
+		}
+
+
+
+		</style>' .
+		'</head>' .
+		'<body class="fondo"><h1 style="color: white; font-size:35px; text-align: center;">' . $subtitulo . '</h1>' .
+		'<p class="message">' . $mensaje . '</p>' .
+		'<div align="center">
+		<table style="width:70%">
+		<tr>
+		<th>Nombre vacuna</th>
+		<th>Fecha Dosis</th>
+		</tr>
+		'. $tableBody . '
+		</table>
+		</div>' .
+		'</body>' .
+		'</html>';
+
+		return mail($email, $subtitulo, $mensaje, $header);
+	}
+
 	//----------------------------------------------------------------------------------------------------------
 }

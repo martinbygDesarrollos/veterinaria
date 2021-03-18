@@ -17,9 +17,8 @@ return function (App $app) {
     $routesM($app);
 
     $app->get('/', function ($request, $response, $args) use ($container) {
-    	if(isset($_SESSION['session'])){
-    		$args['session'] = $_SESSION['session'];
-
+        if (isset($_SESSION['administrador'])) {
+            $args['administrador'] = $_SESSION['administrador'];
         }
         return $this->view->render($response, "index.twig", $args);
     })->setName("Inicio");

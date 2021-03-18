@@ -16,7 +16,6 @@
 								<th class="text-center" scope="col">Teléfono</th>
 								<th class="text-center" scope="col">Pagar</th>
 								<th class="text-center" scope="col">Ver</th>
-								<th class="text-center" scope="col">Nueva mascota</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -28,12 +27,7 @@
 								<td class="text-center">{{ socio.cuota }}</td>
 								<td class="text-center">
 									<button class="btn btn-info btn-sm">
-										<a style="color: white;" href="{{path_for('Inicio')}}verSocio/{{socio.idSocio}}">Ver</a>
-									</button>
-								</td>
-								<td class="text-center">
-									<button class="btn btn-info btn-sm">
-										<a style="color: white;" href="{{path_for('Inicio')}}nuevaMascota/{{ socio.idSocio }}">Nueva</a>
+										<a style="color: white;" href="{{path_for('Inicio')}}verSocio/{{socio.idSocio}}"><i class="fas fa-eye"></i></a>
 									</button>
 								</td>
 							</tr>

@@ -11,9 +11,9 @@ class copiarDB{
         return $conexion;
     }
 
-    function getSociosOriginal(){
+    public function getSociosOriginal(){
         $conexion = copiarDB::getConexion();
-        $sql = $conexion->prepare("SELECT * FROM socio LIMIT 25");
+        $sql = $conexion->prepare("SELECT * FROM socio LIMIT 10");
         if($sql->execute()){
             $response = $sql->get_result();
 
@@ -123,6 +123,7 @@ function ingresarMascotasSocio($numSocio, $idSocio){
 
             $idMascota = copiarDB::insertarSocioMascota($nombreSolo, $row['especie'], $row['raza'], $sexo, $row['color'], $row['pedigree'], $fecha, $estado, $row['pelo'], $row['chip']);
             copiarDB::insertarHistorialRelacion($idMascota, $idSocio, $nombreSolo, $row['duenio']);
+            copiarDB::insertarVacunaMascota($idMascota, $row['nombre'], $row['duenio']);
         }
     }
 }
@@ -135,6 +136,35 @@ function getEstadoMascota($estado){
     else if($estado == "Pendiente")
         return 2;
     else return 0;
+}
+
+function insertarVacunaMascota($idMascota, $nombre, $duenio){
+    $conexion = copiarDB::getConexion();
+    $sql = $conexion->prepare("SELECT * FROM `vacuna_asignada` WHERE mascota = ? AND socio = ?");
+    $sql->bind_param('si',$nombre, $duenio);
+    if($sql->execute()){
+        $result = $sql->get_result();
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+            $fechaPParce = fechas::parceFechaInt($row['fecha']);
+            $fechaUParce = fechas::parceFechaInt($row['proximavacuna']);
+            return copiarDB::nuevaVacuna($row['nombre'],$idMascota,"1","1",$fechaPParce, $fechaUParce, $row['docis']);
+        }
+
+    }
+    return false;
+}
+
+function nuevaVacuna($nombreVacuna, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis, $observacion){
+    $conn = DB::conexion();
+    $sql = $conn->prepare("INSERT INTO vacunasmascota(nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, observacion) VALUES(?,?,?,?,?,?,?)");
+    $sql->bind_param('siiiiis',$nombreVacuna, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis, $observacion);
+    if($sql->execute()){
+        return $conn->insert_id;
+    }return null;
+}
+
+function asignarVacuna($idVacuna, $idMascota){
+
 }
 
 function insertarSocioMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fecha, $estado, $pelo, $chip){
