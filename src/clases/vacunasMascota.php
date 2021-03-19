@@ -51,7 +51,6 @@ class vacunasMascota {
             $fechaActual = date('Y-m-d');
             while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
                 if($row['fechaProximaDosis'] != 0){
-                    $fechaUltimaDosis = fechas::parceFechaFormatAMD($row['fechaProximaDosis'], "-");
                     if($fechaActual > $row['fechaProximaDosis']){
                         $row['vencida'] = 1;
                     }else if(fechas::obtenerDiferenciaDias($row['fechaProximaDosis'], date('Y-m-d')) == 0){
@@ -112,7 +111,7 @@ class vacunasMascota {
                 $row['fechaUltimaDosis'] = fechas::parceFechaFormatDMA($row['fechaUltimaDosis'], "/");
 
                 if($row['fechaProximaDosis'] != 0){
-                    if($fechaActual > fechas::parceFechaInt($row['fechaProximaDosis'])){
+                    if($fechaActual > $row['fechaProximaDosis']){
                         $row['vencida'] = 1;
                     }else if(fechas::obtenerDiferenciaDias($row['fechaProximaDosis'], date('Y-m-d')) < 5){
                         $row['vencida'] = 1;
@@ -134,4 +133,45 @@ class vacunasMascota {
         return $query->execute();
     }
 
+
+    //-----------------------------------------------------------------------------------------------------
+    //------------------------------------- ENFERMEDADES --------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------
+
+    public function insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones){
+        $query = DB::conexion()->prepare("INSERT INTO mascotaenfermedades (idMascota, fechaDiagnostico, nombreEnfermedad, observaciones) VALUES (?,?,?,?)");
+        $query->bind_param('iiss', $idMascota, $fechaDiagnostico, $nombre, $observaciones);
+        return $query->execute();
+    }
+
+    public function updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones){
+        $query = DB::conexion()->prepare("UPDATE mascotaenfermedades SET fechaDiagnostico = ?, nombreEnfermedad = ?, observaciones = ? WHERE idEnfermedad = ?");
+        $query->bind_param('issi', $fechaDiagnostico, $nombre, $observaciones, $idEnfermedad);
+        return $query->execute();
+    }
+
+    public function getEnfermedades($idMascota){
+        $query = DB::conexion()->prepare("SELECT * FROM mascotaenfermedades WHERE idMascota = ?");
+        $query->bind_param('i', $idMascota);
+        if($query->execute()){
+            $response = $query->get_result();
+            $arrayResponse = array();
+            while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
+                $row['fechaDiagnostico'] = fechas::parceFechaFormatDMA($row['fechaDiagnostico'],"/");
+                $arrayResponse[] = $row;
+            }
+            return $arrayResponse;
+        }else return null;
+    }
+
+    public function getEnfermedadMascota($idEnfermedad){
+        $query = DB::conexion()->prepare("SELECT * FROM mascotaenfermedades WHERE idEnfermedad  = ?");
+        $query->bind_param('i', $idEnfermedad);
+        if($query->execute()){
+            $response = $query->get_result();
+            $response = $response->fetch_object();
+            $response->fechaDiagnostico = fechas::parceFechaFormatDMA($response->fechaDiagnostico, "/");
+            return $response;
+        }else return null;
+    }
 }

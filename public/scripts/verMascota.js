@@ -226,3 +226,282 @@ function ocultarAlert(){
 	if(alert.style.display == "block")
 		alert.style.display = "none";
 }
+
+
+function operacionEnfermedad(buttonOp){
+	if(buttonOp.name == "ModificarEnfermedad"){
+		document.getElementById("modalTituloEnfermedad").innerHTML = "Modificar enfermedad";
+		document.getElementById("modalButtonEnfermedad").innerHTML = "Modificar";
+		precargarInformacionEnfermedad(buttonOp.id);
+		document.getElementById("fechaDiagnosticoEnfermedadActual").style.display = "block";
+		$("#modalButtonEnfermedad").click(function(){
+			modificarEnfermedad(buttonOp.id);
+		});
+	}else if(buttonOp.name == "AgregarEnfermedad"){
+		document.getElementById("fechaDiagnosticoEnfermedadActual").style.display = "none";
+		document.getElementById("modalTituloEnfermedad").innerHTML = "Agregar enfermedad";
+		document.getElementById("modalButtonEnfermedad").innerHTML = "Agregar";
+		$("#modalButtonEnfermedad").click(function(){
+			agregarEnfermedad(buttonOp.id);
+		});
+	}
+	$("#modalNuevaEnfermedad").modal();
+}
+
+function precargarInformacionEnfermedad(idEnfermedad){
+	$.ajax({
+		async: false,
+		url: urlBase + "/getEnfermedadMascota",
+		type: "POST",
+		data: {
+			idEnfermedad: idEnfermedad,
+		},
+		success: function (response) {
+			response = response.trim();
+			response = jQuery.parseJSON(response);
+			console.log("response SUCCESS: ",response);
+			if(response){
+				document.getElementById("inpNombreEnfermedad").value = response.nombreEnfermedad;
+				document.getElementById("inpFechaDiagnosticoEnfermedad").value = response.fechaDiagnostico;
+				document.getElementById("inpObservacionesEnfermedad").value = response.observaciones;
+				document.getElementById("fechaDiagnosticoEnfermedadActual").innerHTML = response.fechaDiagnostico;
+			}else{
+				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+				$('#modalColorRetorno').removeClass('alert-success');
+				$('#modalColorRetorno').removeClass('alert-warning');
+				$('#modalColorRetorno').addClass('alert-danger');
+				document.getElementById('modalTituloRetorno').innerHTML = "Error: Enfermedad";
+				$("#modalButtonRetorno").click(function(){
+					$("#modalRetorno").modal('hide');
+				});
+				$("#modalRetorno").modal();
+			}
+		},
+		error: function (response) {
+			console.log("response ERROR:" + eval(response));
+			document.getElementById('modalTituloRetorno').innerHTML = "Error: Enfermedad";
+			$('#colorRetorno').removeClass('alert-warning');
+			$('#colorRetorno').removeClass('alert-success');
+			$('#colorRetorno').addClass('alert-danger');
+			$("#modalRetorno").modal();
+			$("#buttonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
+			$("#modalRetorno").modal();
+		},
+	});
+}
+
+function modificarEnfermedad(idEnfermedad){
+	$("#modalNuevaEnfermedad").modal('hide');
+
+	var nombreEnfermedad = document.getElementById("inpNombreEnfermedad").value || null;
+	var fechaEnfermedad = document.getElementById("inpFechaDiagnosticoEnfermedad").value || document.getElementById("fechaDiagnosticoEnfermedadActual").innerHTML;
+	var observacionesEnfermedad = document.getElementById("inpObservacionesEnfermedad").value || null;
+	if(!validarDatosEnfermedada(nombreEnfermedad, fechaEnfermedad, observacionesEnfermedad)){
+
+		$.ajax({
+			async: false,
+			url: urlBase + "/updateEnfermedadMascota",
+			type: "POST",
+			data: {
+				idEnfermedad: idEnfermedad,
+				nombreEnfermedad: nombreEnfermedad,
+				fechaDiagnosticoEnfermedad: fechaEnfermedad,
+				observacionesEnfermedad: observacionesEnfermedad
+			},
+			success: function (response) {
+				response = response.trim();
+				response = jQuery.parseJSON(response);
+				console.log("response SUCCESS: ",response);
+				if(response.retorno){
+					$('#modalColorRetorno').removeClass('alert-danger');
+					$('#modalColorRetorno').removeClass('alert-warning');
+					$('#modalColorRetorno').addClass('alert-success');
+					document.getElementById('modalTituloRetorno').innerHTML = "Nueva enfermedad";
+					$("#modalButtonRetorno").click(function(){
+						window.location.reload();
+					});
+				}else{
+					$('#modalColorRetorno').removeClass('alert-success');
+					$('#modalColorRetorno').removeClass('alert-warning');
+					$('#modalColorRetorno').addClass('alert-danger');
+					document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva enfermedad";
+					$("#modalButtonRetorno").click(function(){
+						$("#modalRetorno").modal('hide');
+					});
+				}
+				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+
+			},
+			error: function (response) {
+				console.log("response ERROR:" + eval(response));
+				document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva enfermedad";
+				$('#colorRetorno').removeClass('alert-warning');
+				$('#colorRetorno').removeClass('alert-success');
+				$('#colorRetorno').addClass('alert-danger');
+				$("#modalRetorno").modal();
+				$("#buttonRetorno").click(function(){
+					$("#modalRetorno").modal("hide");
+				});
+			},
+		});
+		$("#modalRetorno").modal();
+	}
+}
+
+function agregarEnfermedad(idMascota){
+
+	$("#modalNuevaEnfermedad").modal('hide');
+
+	var nombreEnfermedad = document.getElementById("inpNombreEnfermedad").value || null;
+	var fechaEnfermedad = document.getElementById("inpFechaDiagnosticoEnfermedad").value || null;
+	var observacionesEnfermedad = document.getElementById("inpObservacionesEnfermedad").value || null;
+
+	if(!validarDatosEnfermedada(nombreEnfermedad, fechaEnfermedad, observacionesEnfermedad)){
+		$.ajax({
+			async: false,
+			url: urlBase + "/insertEnfermedadMascota",
+			type: "POST",
+			data: {
+				idMascota: idMascota,
+				nombreEnfermedad: nombreEnfermedad,
+				fechaDiagnosticoEnfermedad: fechaEnfermedad,
+				observacionesEnfermedad: observacionesEnfermedad
+			},
+			success: function (response) {
+				response = response.trim();
+				response = jQuery.parseJSON(response);
+				console.log("response SUCCESS: ",response);
+				if(response.retorno){
+					$('#modalColorRetorno').removeClass('alert-danger');
+					$('#modalColorRetorno').removeClass('alert-warning');
+					$('#modalColorRetorno').addClass('alert-success');
+					document.getElementById('modalTituloRetorno').innerHTML = "Nueva enfermedad";
+					$("#modalButtonRetorno").click(function(){
+						window.location.reload();
+					});
+				}else{
+					$('#modalColorRetorno').removeClass('alert-success');
+					$('#modalColorRetorno').removeClass('alert-warning');
+					$('#modalColorRetorno').addClass('alert-danger');
+					document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva enfermedad";
+					$("#modalButtonRetorno").click(function(){
+						$("#modalRetorno").modal('hide');
+					});
+				}
+				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+
+			},
+			error: function (response) {
+				console.log("response ERROR:" + eval(response));
+				document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva enfermedad";
+				$('#colorRetorno').removeClass('alert-warning');
+				$('#colorRetorno').removeClass('alert-success');
+				$('#colorRetorno').addClass('alert-danger');
+				$("#modalRetorno").modal();
+				$("#buttonRetorno").click(function(){
+					$("#modalRetorno").modal("hide");
+				});
+			},
+		});
+		$("#modalRetorno").modal();
+	}
+}
+
+function validarDatosEnfermedada(nombre, fecha, observaciones){
+	var conError = false;
+	var mensajeError = "";
+
+	if(nombre == null){
+		conError = true;
+		mensajeError = "No puede ingresar una enfermedad sin un nombre.";
+	}else if(nombre.length < 5){
+		conError = true;
+		mensajeError = "El campo nombre en una nueva enfermedad debe contener al menos 5 caracteres para ser considerado valido.";
+	}else if(fecha == null){
+		conError = true;
+		mensajeError = "No puede ingresar una enfermedad sin una fecha de diagnositico, por defecto el sistema proporciona la fecha de hoy.";
+	}
+
+	if(conError){
+		$("#modalColorRetorno").addClass('alert-warning');
+		document.getElementById('modalTituloRetorno').innerHTML = "Error: Información enfermedad";
+		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		$("#modalButtonRetorno").click(function(){
+			$("#modalRetorno").modal("hide");
+		});
+		$("#modalRetorno").modal();
+	}
+
+	return conError;
+}
+
+function setEstadoMascota(btn){
+
+	if(btn.name == "inactivar"){
+		$("#modalColorActDescMascota").removeClass('alert-success');
+		$("#modalColorActDescMascota").addClass('alert-danger');
+		document.getElementById('modalTituloActDescMascota').innerHTML = "Desactivar mascota";
+		document.getElementById('modalMensajeActDescMascota').innerHTML = "¿Desea desactivar esta mascota?";
+		document.getElementById('modalButtonActDescMascota').innerHTML = "Desactivar"
+	}else if (btn.name == "activar"){
+		$("#modalColorActDescMascota").removeClass('alert-danger');
+		$("#modalColorActDescMascota").addClass('alert-success');
+		document.getElementById('modalTituloActDescMascota').innerHTML = "Activar mascota";
+		document.getElementById('modalMensajeActDescMascota').innerHTML = "¿Desea activar esta mascota?";
+		document.getElementById('modalButtonActDescMascota').innerHTML = "Activar";
+	}
+	$("#modalActDescMascota").modal();
+}
+
+function activarDesactivarMascota(btn){
+	var idMascota = btn.name;
+	$("#modalActDescMascota").modal('hide');
+
+	console.log(idMascota)
+	$.ajax({
+		async: false,
+		url: urlBase + "/activarDesactivarMascota",
+		type: "POST",
+		data: {
+			idMascota: idMascota,
+		},
+		success: function (response) {
+			response = response.trim();
+			response = jQuery.parseJSON(response);
+			console.log("response SUCCESS: ",response);
+			if(response.retorno){
+				$('#modalColorRetorno').removeClass('alert-danger');
+				$('#modalColorRetorno').removeClass('alert-warning');
+				$('#modalColorRetorno').addClass('alert-success');
+				document.getElementById('modalTituloRetorno').innerHTML = response.titulo;
+				$("#modalButtonRetorno").click(function(){
+					window.location.reload();
+				});
+			}else{
+				$('#modalColorRetorno').removeClass('alert-success');
+				$('#modalColorRetorno').removeClass('alert-warning');
+				$('#modalColorRetorno').addClass('alert-danger');
+				document.getElementById('modalTituloRetorno').innerHTML = response.titulo;
+				$("#modalButtonRetorno").click(function(){
+					$("#modalRetorno").modal('hide');
+				});
+			}
+			document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+
+		},
+		error: function (response) {
+			console.log("response ERROR:" + eval(response));
+			document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva enfermedad";
+			$('#modalColorRetorno').removeClass('alert-warning');
+			$('#modalColorRetorno').removeClass('alert-success');
+			$('#modalColorRetorno').addClass('alert-danger');
+			$("#modalRetorno").modal();
+			$("#modalButtonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
+		},
+	});
+	$("#modalRetorno").modal();
+}

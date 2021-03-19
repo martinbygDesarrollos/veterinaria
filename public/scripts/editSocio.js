@@ -18,9 +18,10 @@ function modificarSocio(btn){
 	if(lugar == 2){
 		var lugarString  = document.getElementById("inpLugarPagoActual").innerHTML;
 		if(lugarString == "Veterinaria")
-			lugar = 1;
-		else lugar = 2;
+			lugar = 0;
+		else lugar = 1;
 	}
+
 	if(!validarInformacionSocio(nombre, cedula, direccion, telefono, fechaPago, lugar, email, fechaIngreso, rut, telefax)){
 		$.ajax({
 			async: false,

@@ -13,11 +13,9 @@ return function (App $app) {
 
 	$app->post('/prueba', function(Request $request, Response $response){
 		$data = $request->getParams();
-		$cuotaUna = $data['cuotaUna'];
-		$cuotaDos = $data['cuotaDos'];
-		$cuotaExtra = $data['cuotaExtra'];
 
-		return json_encode(ctr_historiales::updateCuotaSocio($cuotaUna, $cuotaDos, $cuotaExtra));
+		return json_encode(ctr_historiales::levantarDB());
+		// return json_encode(ctr_historiales::updateCuotaSocio($cuotaUna, $cuotaDos, $cuotaExtra));
 		// return json_encode(ctr_historiales::insertarVacunaMascota($id));
 		// return json_encode(ctr_mascotas::getInfoVencimientos());
 		// return json_encode(ctr_usuarios::notificarSocio($idSocio,$idMascota));

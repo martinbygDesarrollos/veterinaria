@@ -25,7 +25,7 @@ class configuracionSistema{
 		}else if($cantMascotas == 2){
 			return $tarifa->cuotaDos;
 		}else if($cantMascotas > 2){
-			return ($tarifa->cuotaDos + ($cantMascotas * $tarifa->cuotaExtra));
+			return ($tarifa->cuotaDos + (($cantMascotas - 2) * $tarifa->cuotaExtra));
 		}
 	}
 

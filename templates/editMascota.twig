@@ -6,7 +6,7 @@
 	<div class="row">
 		<div class="col">
 			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header">Editar información de {{ mascota.nombre }}</h5>
+				<h5 class="card-header" style="background: #85B58A">Editar información de {{ mascota.nombre }}</h5>
 				<div class="card-body">
 					<h6 class="card-subtitle mb-2 text-muted">Información obligatoria</h6>
 					<ul class="list-group list-group-flush">
@@ -32,7 +32,7 @@
 											<label class="input-group-text" for="inputGroupSelect01">Sexo</label>
 										</div>
 										<select class="custom-select" id="inpEditSexo">
-											<option selected>Seleccione</option>
+											<option value="2" selected>Seleccione</option>
 											<option value="0">Hembra</option>
 											<option value="1">Macho</option>
 										</select>
@@ -159,11 +159,11 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<p class="text-center">¿Desea actualizar la información de {{ info.mascota.nombre }} ?</p>
+				<p class="text-center">¿Desea actualizar la información de {{ mascota.nombre }} ?</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-danger" data-dismiss="modal" >Cancelar</button>
-				<button class="btn btn-success" id="{{ info.mascota.idMascota }}" onclick="editarMascota(this)">Guardar</button>
+				<button class="btn btn-success" id="{{ mascota.idMascota }}" onclick="editarMascota(this)">Guardar</button>
 
 			</div>
 		</div>

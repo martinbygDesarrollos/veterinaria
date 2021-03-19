@@ -5,6 +5,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 require_once 'controladores/ctr_usuarios.php';
+require_once 'controladores/ctr_mascotas.php';
 
 return function (App $app) {
     $container = $app->getContainer();
@@ -18,6 +19,13 @@ return function (App $app) {
             return $this->view->render($response, "login.twig");
         }
     })->setName("login");
+
+    $app->get('/cerrarSesion', function ($request, $response, $args) use ($container) {
+        if (isset($_SESSION['administrador'])) {
+         session_destroy();
+     }
+     return $this->view->render($response, "login.twig");
+ })->setName("login");
 
     $app->get('/newSocio', function($request, $response, $args) use ($container){
 
@@ -33,6 +41,16 @@ return function (App $app) {
             $args['administrador'] = $_SESSION['administrador'];
             $args['socios'] = ctr_usuarios::getSocios();
             return $this->view->render($response, "socios.twig", $args);
+        }
+    })->setName("socios");
+
+    $app->get('/asignarSocioMascota/{idMascota}', function($request, $response, $args) use ($container){
+        if (isset($_SESSION['administrador'])) {
+            $args['administrador'] = $_SESSION['administrador'];
+            $idMascota = $args['idMascota'];
+            $args['socios'] = ctr_usuarios::sociosNoVinculados($idMascota);
+            $args['mascota'] = ctr_mascotas::getMascota($idMascota);
+            return $this->view->render($response, "asignarSocioMascota.twig", $args);
         }
     })->setName("socios");
 
@@ -70,15 +88,16 @@ return function (App $app) {
         }
     });
 
-    $app->post('/insertNewUsuario',function(Request $request, Response $response){
+    $app->post('/updatePassAdministrador',function(Request $request, Response $response){
 
         $sesionActiva = $_SESSION['administrador'];
         if (isset($sesionActiva)) {
             $data = $request->getParams();
-            $usuario = $data['usuario'];
-            $pass = $data['pass'];
+            $passActual = $data['passActual'];
+            $pass1 = $data['pass1'];
+            $pass2 = $data['pass2'];
 
-            return json_encode(ctr_usuarios::insertNewUsuario($usuario, sha1($pass)));
+            return json_encode(ctr_usuarios::updatePassAdministrador(sha1($passActual), sha1($pass1), sha1($pass2)));
         }
     });
 
@@ -103,8 +122,8 @@ return function (App $app) {
 
     $app->post('/updateSocio', function(Request $request, Response $response){
 
-        // $sesionActiva = $_SESSION['administrador'];
-        // if (isset($sesionActiva)) {
+        $sesionActiva = $_SESSION['administrador'];
+        if (isset($sesionActiva)) {
 
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
@@ -120,7 +139,7 @@ return function (App $app) {
             $telefax = $data['telefax'];
 
             return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $fechaIngreso, $email, $rut, $telefax));
-        // }
+        }
     });
 
     $app->post('/notificarSocio', function(Request $request, Response $response){

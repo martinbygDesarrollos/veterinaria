@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{{path_for('Inicio')}}">Veterinaria Nan</a>
+<nav class="navbar navbar-expand-lg navbar-light" style="background: #85B58A">
+  <a class="navbar-brand" href="{{path_for('Inicio')}}"><h4>Veterinaria Nan</h4></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -20,7 +20,8 @@
           Mascotas
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{{path_for('Inicio')}}mascotas">Mascotas</a>
+          <a class="dropdown-item" href="{{path_for('Inicio')}}mascotas">Mascotas Activas</a>
+                    <a class="dropdown-item" href="{{path_for('Inicio')}}mascotasInactivasPendientes">Mascotas Inactivas & Pendientes</a>
           <a class="dropdown-item" href="{{path_for('Inicio')}}newMascota">Nueva Mascota</a>
         </div>
       </li>
@@ -28,9 +29,9 @@
     </ul>
     {% if administrador %}
     <a class="btn btn-info" style="margin-right: 1%" href="{{path_for('Inicio')}}settings" type="submit"><i class="fas fa-cogs"></i></a>
-    <a class="btn btn-outline-danger my-2 my-sm-0" href="{{path_for('Inicio')}}login" type="submit">Cerrar sesión</a>
+    <a class="btn btn-danger my-2 my-sm-0" href="{{path_for('Inicio')}}cerrarSesion" type="submit">Cerrar sesión</a>
     {% else %}
-    <a class="btn btn-outline-success my-2 my-sm-0" href="{{path_for('Inicio')}}login" type="submit">Iniciar sesion</a>
+    <a class="btn btn-success my-2 my-sm-0" href="{{path_for('Inicio')}}login" type="submit">Iniciar sesion</a>
     {% endif %}
   </div>
 </nav>

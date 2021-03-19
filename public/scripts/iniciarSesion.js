@@ -23,11 +23,10 @@ function iniciarSesion(){
 				}else{
 					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
 					$('#modalColorRetorno').addClass('alert-danger');
-					$("#modalRetorno").modal();
+
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
-					$("#modalRetorno").modal();
 				}
 			},
 			error: function (response) {
@@ -38,10 +37,10 @@ function iniciarSesion(){
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
-				$("#modalRetorno").modal();
+
 			},
 		});
-
+		$("#modalRetorno").modal();
 	}
 }
 

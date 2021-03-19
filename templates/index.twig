@@ -2,12 +2,18 @@
 {% block head %}
 {% endblock %}
 {% block content %}
-{% if session %}
-{% endif %}
+
 <div class="d-flex justify-content-between align-items-center">
 	<div></div>
+	{% if administrador %}
+	{% if hayVencimientos != null%}
+	<a class="btn btn-warning" href="{{path_for('Inicio')}}vencimientos">Vencimientos del día de hoy</a>
+	{% endif %}
+	{% endif %}
+</div>
 
-	<a id="hayVencimietnosHoy" class="btn btn-warning" href="{{path_for('Inicio')}}vencimientos">Vencimientos del día de hoy</a>
+<div class="d-flex justify-content-center">
+	<img style="width: 500px; height: 500px; border-radius: 50%" src="{{path_for('Inicio')}}img/inicio.png">
 </div>
 
 {%block script%}

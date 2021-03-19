@@ -14,7 +14,7 @@ class ctr_mascotas {
 	}
 
     //----------------------------------- FUNCIONES DE MASCOTA ------------------------------------------
-	public function  insertNewMascota($idSocio, $idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
+	public function  insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
 		$response = new \stdClass();
 
 		$fechaNacimientoFormat = fechas::parceFechaInt($fechaNacimiento);
@@ -74,6 +74,71 @@ class ctr_mascotas {
 		return $response;
 	}
 
+	public function activarDesactivarMascota($idMascota){
+		$response = new \stdClass();
+
+		$mascota = mascotas::getMascota($idMascota);
+		if($mascota != null){
+			$estado = 0;
+			if($mascota->estado == 0)
+				$estado = 1;
+			$result = mascotas::activarDesactivarMascota($idMascota, $estado);
+
+			if($estado == 1)
+				$estado = "Activada";
+			else
+				$estado = "Desactivada";
+
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "La mascota fue " . $estado . " correctamente.";
+				$response->titulo = "Mascota " . $estado;
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "Ocurrio un error, la mascota no pudo ser " . $estado . ", porfavor vuelva a intentarlo.";
+				$response->titulo = "Error: Mascota no " . $estado;
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "La mascota seleccionada no fue encontrada.";
+			$response->titulo = "Error: Mascota no encontrada";
+		}
+
+		return $response;
+	}
+
+	public function vincularSocioMascota($idSocio, $idMascota){
+		$response = new \stdClass();
+
+		$socio = socios::getSocio($idSocio);
+
+		if($socio != null){
+			$mascota = ctr_mascotas::getMascota($idMascota);
+			if($mascota != null){
+				$fechaActual = fechas::parceFechaInt(date('Y-m-d'));
+				$result = mascotas::vincularMascotaSocio($idSocio, $idMascota, $fechaActual);
+				if($result){
+					$mensajeCuota = ", la cuota no pudo ser actualizada verifiquela.";
+					if(ctr_usuarios::calcularCostoCuota($idSocio))
+						$mensajeCuota = ", la cuota de este socio se modifico respecto a su cantidad de mascotas actual.";
+					$response->retorno = true;
+					$response->mensaje = "La mascota fue vinculada al socio correctamente" . $mensajeCuota;
+				}else{
+					$response->retorno = false;
+					$response->mensajeError = "La mascota no pudo ser vinculada al socio porfavor vuelva a intentarlo.";
+				}
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "La mascota seleccionada no fue encontrada en el sistema, porfavor vuelva a intentarlo.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "El socio que selecciono no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
 	public function getMasctoasSocio($idSocio){
 		return mascotas::getMascotasSocios($idSocio);
 	}
@@ -84,12 +149,14 @@ class ctr_mascotas {
 
 	public function getMascotaCompleto($idMascota){
 		$mascota = mascotas::getMascota($idMascota);
+		$enfermedades = vacunasMascota::getEnfermedades($idMascota);
 		$vacunasMascota = vacunasMascota::getVacunaMascotaID($idMascota);
 		$duenio = ctr_usuarios::getSocioMascota($idMascota);
 		return array(
 			"mascota" => $mascota,
 			"vacunas" => $vacunasMascota,
 			"hayHistorial" => ctr_historiales::checkHayHistorial($idMascota),
+			"enfermedades" => $enfermedades,
 			"duenio" => $duenio);
 	}
 
@@ -97,6 +164,9 @@ class ctr_mascotas {
 		return mascotas::getMascotas();
 	}
 
+	public function getMascotasInactivasPendientes(){
+		return mascotas::getMascotasInactivasPendientes();
+	}
     //---------------------------------------------------------------------------------------------------
 
 	//-------------------------------------FUNCIONES VACUNAS---------------------------------------------
@@ -171,7 +241,60 @@ class ctr_mascotas {
 		$fecha = date("Y-m-d", strtotime("$fechaActual + 3 day"));
 		$fecha = fechas::parceFechaInt($fecha);
 		$vacunasMascotas = vacunasMascota::getVacunasVencidas($fecha);
-		return $vacunasMascotas;
+		if(sizeof($vacunasMascotas) == 0) return null;
+		else return $vacunasMascotas;
 	}
 	//---------------------------------------------------------------------------------------------------
+
+	//----------------------------------FUNCIONES ENFERMEDAD---------------------------------------------
+
+	public function insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones){
+		$response = new \stdClass();
+
+		$mascota = mascotas::getMascota($idMascota);
+
+		if($mascota != null){
+			$fechaDiagnosticoFormat = fechas::parceFechaInt($fechaDiagnostico);
+
+			$result = vacunasMascota::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnosticoFormat, $observaciones);
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "La enfermdad de " . $mascota->nombre . " fue agregada correctamente.";
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "La enfermdad de " . $mascota->nombre . " no pudo ingresarse, porfavor vuelva a intentarlo.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "La mascota no fue encontrada en el sistema, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
+	public function updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones){
+		$response = new \stdClass();
+
+		$enfermedad = vacunasMascota::getEnfermedadMascota($idEnfermedad);
+
+		if($enfermedad != null){
+			$fechaDiagnostico = fechas::parceFechaInt($fechaDiagnostico);
+			$result = vacunasMascota::updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones);
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "La enfermedad fue modificada correctamente.";
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "Ocurrio un error y la enfermedad no pudo modificarse, porfavor vuelva a intentarlo.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "La enfermedad que se desea modificar no fue encontrada en el sistema, porfavor vuelva a intentarlo.";
+		}
+		return $response;
+	}
+
+	public function getEnfermedadMascota($idEnfermedad){
+		return vacunasMascota::getEnfermedadMascota($idEnfermedad);
+	}
 }

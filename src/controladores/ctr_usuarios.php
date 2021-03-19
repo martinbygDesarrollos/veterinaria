@@ -43,21 +43,29 @@ class ctr_usuarios{
 		return usuarios::getGrupoFuncion($grupoUsuario, $idFuncion);
 	}
 
-	public function insertNewUsuario($nombre, $pass){
+	public function updatePassAdministrador($passActual, $pass1, $pass2){
 
 		$response = new \stdClass();
-		if(usuarios::getUsuarioNombre($nombre) == null){
-			$result = usuarios::insertUsuario($nombre, $pass, 1);
-			if($result){
-				$response->retorno = true;
-				$response->mensaje = "El usuario fue ingresado correctamente, asignelo a un grupo de funciones para comenzar a utilizarlo.";
-			}else{
+		$usuario = usuarios::getUsuarioNombre("admin");
+		if($usuario != null){
+
+			if($usuario->pass == $passActual){
+				$result = usuarios::updateUsuario($pass1);
+
+				if($result){
+					$response->retorno = true;
+					$response->mensaje = "La contraseña del administrador fue modificada correctamente.";
+				}else{
+					$response->retorno = false;
+					$response->mensajeError = "Ocurrio un error interno y la contraseña del administrador no fue modificada, porfavor vuelva a intentarlo.";
+				}
+			}else {
 				$response->retorno = false;
-				$response->mensajeError = "Ocurrio un error interno y el usuario que desea ingresar no fue dado de alta, intentelo nuevamente.";
+				$response->mensajeError = "La contraseña ingresada no corresponde al usuario administrador.";
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "Ya existe un usuario con este nombre, modifique el nombre ingresado para dar de alta un nuevo usuario";
+			$response->mensajeError = "No hay un usuario administrador inicializado, contactese a servicio tecnico.";
 		}
 		return $response;
 	}

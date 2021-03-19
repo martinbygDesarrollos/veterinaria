@@ -15,14 +15,17 @@ function editarMascota(btn){
 	var pedigree = document.getElementById('inpEditPedigree').value || null;
 	var observaciones = document.getElementById('inpEditObservaciones').value || null;
 
-	if(sexo == null){
+
+	if(sexo == 2){
 		if( document.getElementById('inpSexoActual').value == "Hembra")
 			sexo = 0;
 		else sexo = 1;
 	}
 
+	console.log(sexo)
+
 	if(!validarInformacionMascota(nombre, raza, especie, sexo, fechaNacimiento, idSocio)){
-		console.log("llego")
+
 		document.getElementById('modalTituloRetorno').innerHTML = "Modificar mascota";
 		$.ajax({
 			async: false,
@@ -45,7 +48,7 @@ function editarMascota(btn){
 			success: function (response) {
 				response = response.trim();
 				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
+				console.log("response SUCCESS: ", response);
 
 				if(response.retorno){
 					$('#modalColorRetorno').removeClass('alert-danger');

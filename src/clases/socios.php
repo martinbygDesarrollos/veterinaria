@@ -52,7 +52,7 @@ class socios{
 	}
 
 	public function getSociosNoVinculados($idMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE idSocio NOT IN (SELECT idSocio FROM mascotasocio WHERE idMascota != ?)");
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE idSocio NOT IN (SELECT idSocio FROM mascotasocio WHERE idMascota = ?)");
 		$query->bind_param('i', $idMascota);
 		if($query->execute()){
 			$result = $query->get_result();

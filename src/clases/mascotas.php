@@ -31,7 +31,21 @@ class mascotas{
 	}
 
 	public function getMascotas(){
-		$query = DB::conexion()->prepare("SELECT * FROM mascotas");
+		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado = 1");
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], '/');
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function getMascotasInactivasPendientes(){
+		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado != 1");
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();
@@ -79,7 +93,11 @@ class mascotas{
 		else return false;
 	}
 
-
+	public function activarDesactivarMascota($idMascota, $estado){
+		$query = DB::conexion()->prepare("UPDATE mascotas SET estado = ? WHERE idMascota = ?");
+		$query->bind_param('ii', $estado, $idMascota);
+		return $query->execute();
+	}
 
 	public function getMascotasSocios($idSocio){
 		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio = ? )");

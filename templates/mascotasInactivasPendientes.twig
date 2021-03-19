@@ -6,7 +6,7 @@
 	<div class="row">
 		<div class="col">
 			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header" style="background: #85B58A">Mascotas</h5>
+				<h5 class="card-header" style="background: #85B58A">Mascotas Inactivas & Pendientes</h5>
 				<div class="card-body">
 					<table id="tableStandar" class="table table-striped table-bordered">
 						<thead class="thead-dark">
@@ -32,9 +32,7 @@
 								<td class="text-center">Hembra</td>
 								{% endif %}
 								<td class="text-center">{{ mascota.fechaNacimiento }}</td>
-								{% if mascota.estado == 1 %}
-								<td class="text-center">Activa</td>
-								{% elseif mascota.estado == 0 %}
+								{% if mascota.estado == 0 %}
 								<td class="text-center">Inactiva</td>
 								{% elseif mascota.estado == 2 %}
 								<td class="text-center">Pendiente</td>

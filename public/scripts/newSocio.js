@@ -15,7 +15,7 @@ function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut,
 	}else if(cedula.length !== 8){
 		conError = true;
 		mensajeError = "La longitud de la cédula ingresada no corresponde a un documento valido.";
-	}else if(validarCedula(cedula)){
+	}else if(!validarCedula(cedula)){
 		conError = true;
 		mensajeError = "La cédula ingresada no es valida.";
 	}else if(telefono.length > 9 || telefono.length < 5){
@@ -105,6 +105,7 @@ function insertarNuevoSocio(){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
+					$('#modalColorRetorno').removeClass('alert-warning');
 					$('#modalColorRetorno').removeClass('alert-danger');
 					$('#modalColorRetorno').addClass('alert-success');
 					document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
@@ -112,14 +113,15 @@ function insertarNuevoSocio(){
 					$("#modalButtonRetorno").click(function(){
 						document.getElementById('containerNuevaMascota').style.display = "block";
 						document.getElementById('containerNuevoSocio').style.display = "none";
-						document.getElementById('pInformacionMascota').innerHTML = "Usted esta ingresando la informaciòn para la mascota de " + nombre;
+						document.getElementById('pInformacionMascota').innerHTML = "Usted esta ingresando la información para la mascota de " + nombre;
 						document.getElementById('btnCrearMascota').innerHTML = "Ingresar nueva mascota para " + nombre;
 						document.getElementById('idSocioAgregado').value = response.idSocio;
 					});
 				}else{
+					$('#modalColorRetorno').removeClass('alert-warning');
 					$('#modalColorRetorno').removeClass('alert-success');
 					$('#modalColorRetorno').addClass('alert-danger');
-					document.getElementById('mensajeRetorno').innerHTML = response.mensajeError;
+					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
 					$("#modalRetorno").modal();
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
@@ -132,6 +134,7 @@ function insertarNuevoSocio(){
 				console.log("response ERROR:" + eval(response));
 				$('#modalColorRetorno').removeClass('alert-success');
 				$('#modalColorRetorno').addClass('alert-danger');
+				document.getElementById('modalMensajeRetorno').innerHTML = "Ocurrio un error y no pudo comunicarse con el servidor, porfavor vuelva a intentarlo.";
 				$("#modalRetorno").modal();
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
@@ -191,12 +194,12 @@ function validarDatosNuevaMascota(nombre, especie, nacimiento, raza, color, sexo
 	}
 
 	if(conError){
-		$('#colorRetorno').removeClass('alert-success');
-		$('#colorRetorno').addClass('alert-danger');
-		document.getElementById('tituloRetorno').innerHTML = "Información no valida";
-		document.getElementById('mensajeRetorno').innerHTML = mensajeError;
+		$('#modalColorRetorno').removeClass('alert-success');
+		$('#modalColorRetorno').addClass('alert-danger');
+		document.getElementById('modalTituloRetorno').innerHTML = "Información no valida";
+		document.getElementById('modalMensajeRetorno').innerHTML = mensajeError;
 		$("#modalRetorno").modal();
-		$("#buttonRetorno").click(function(){
+		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
 	}
@@ -222,7 +225,7 @@ function insertarNuevaMascota(){
 	var conError = validarDatosNuevaMascota(nombre, especie, nacimiento, raza, color, sexo, pelo, chip, pedigree, observaciones);
 
 	if(!conError){
-		document.getElementById('tituloRetorno').innerHTML = "Nueva mascota";
+
 		$.ajax({
 			async: false,
 			url: urlBase + "/insertNewMascota",
@@ -247,31 +250,32 @@ function insertarNuevaMascota(){
 
 				if(response.retorno){
 
-					$('#colorRetorno').removeClass('alert-danger');
-					$('#colorRetorno').addClass('alert-success');
-					document.getElementById('mensajeRetorno').innerHTML = response.mensaje;
+					$('#modalColorRetorno').removeClass('alert-danger');
+					$('#modalColorRetorno').addClass('alert-success');
+					document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
 					$("#modalRetorno").modal();
-					$("#buttonRetorno").click(function(){
+					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#colorRetorno').removeClass('alert-success');
-					$('#colorRetorno').addClass('alert-danger');
-					document.getElementById('mensajeRetorno').innerHTML = response.mensajeError;
+					$('#modalColorRetorno').removeClass('alert-success');
+					$('#modalColorRetorno').addClass('alert-danger');
+					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
 					$("#modalRetorno").modal();
-					$("#buttonRetorno").click(function(){
+					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
 				}
-
-
+				document.getElementById('modalTituloRetorno').innerHTML = "Nueva mascota";
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				$('#colorRetorno').removeClass('alert-success');
-				$('#colorRetorno').addClass('alert-danger');
+				document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva mascota";
+				document.getElementById('modalMensajeRetorno').innerHTML = "Ocurrio un error y no pudo comunicarse con el servidor, porfavor vuelva a intentarlo.";
+				$('#modalColorRetorno').removeClass('alert-success');
+				$('#modalColorRetorno').addClass('alert-danger');
 				$("#modalRetorno").modal();
-				$("#buttonRetorno").click(function(){
+				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			},
@@ -280,9 +284,7 @@ function insertarNuevaMascota(){
 
 }
 
-function administrarVista(){
 
-}
 
 
 

@@ -6,7 +6,7 @@
 	<div class="row">
 		<div class="col">
 			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header">Configuraciones</h5>
+				<h5 class="card-header" style="background: #85B58A">Configuraciones</h5>
 				<div class="card-body">
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item">
@@ -27,15 +27,15 @@
 								<div class="col-sm-8">
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Contraseña actual</span>
-										<input id="inpPassActual" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpPassActual" type="password" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
 									</div>
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Nueva contraseña</span>
-										<input id="inpPass1" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpPass1" type="password" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
 									</div>
 									<div class="input-group mb-3">
 										<span class="input-group-text" id="inputGroup-sizing-default">Repetir nueva contraseña</span>
-										<input id="inpPass2" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+										<input id="inpPass2" type="password" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
 									</div>
 								</div>
 							</div>
@@ -44,7 +44,7 @@
 							</div>
 						</li>
 						<li class="list-group-item">
-							<h6 class="card-subtitle mb-2 text-muted">Configuracion de cuota por cantidad de mascotas</h6>
+							<h6 class="card-subtitle mb-2 text-muted">Configuración de cuota por cantidad de mascotas</h6>
 							<div class="row">
 								<div class="col-sm">
 									<div class="input-group mb-3">
@@ -109,7 +109,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-danger" data-dismiss="modal" >Cancelar</button>
-				<button class="btn btn-success" id="btnNuevaMascota" onclick="fijarContraseñaAdministrador()">Confirmar</button>
+				<button class="btn btn-success" id="btnNuevaMascota" onclick="fijarPassAdministrador()">Confirmar</button>
 			</div>
 		</div>
 	</div>

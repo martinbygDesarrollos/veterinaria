@@ -99,6 +99,100 @@ function validarDatosCuota(cuotaUno, cuotaDos, cuotaExtra){
 
 }
 
-function fijarContraseñaAdministrador(){
+function fijarPassAdministrador(){
+	$('#modalModificarPass').modal('hide');
+
+	var passActual = document.getElementById('inpPassActual').value || null;
+	var pass1 = document.getElementById('inpPass1').value || null;
+	var pass2 = document.getElementById('inpPass2').value || null;
+
+	if(!validarDatosPassAdministrador(passActual, pass1, pass2)){
+		$.ajax({
+			async: false,
+			url: urlBase + "/updatePassAdministrador",
+			type: "POST",
+			data: {
+				passActual: passActual,
+				pass1: pass1,
+				pass2: pass2
+			},
+			success: function (response) {
+				response = response.trim();
+				response = jQuery.parseJSON(response);
+				console.log("response SUCCESS: ",response);
+				if(response.retorno){
+					$('#modalColorRetorno').removeClass('alert-danger');
+					$('#modalColorRetorno').removeClass('alert-warning');
+					$('#modalColorRetorno').addClass('alert-success');
+					document.getElementById('modalTituloRetorno').innerHTML = "Modificar contraseña";
+					document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+					$("#modalButtonRetorno").click(function(){
+						window.location.reload();
+					});
+				}else{
+					$('#modalColorRetorno').removeClass('alert-success');
+					$('#modalColorRetorno').removeClass('alert-warning');
+					$('#modalColorRetorno').addClass('alert-danger');
+					document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar contraseña";
+					document.getElementById("modalMensajeRetorno").innerHTML = response.mensajeError;
+					$("#modalButtonRetorno").click(function(){
+						$("#modalRetorno").modal('hide');
+					});
+				}
+
+
+			},
+			error: function (response) {
+				console.log("response ERROR:" + eval(response));
+				document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar cuota";
+				$('#modalColorRetorno').removeClass('alert-success');
+				$('#modalColorRetorno').removeClass('alert-warning');
+				$('#modalColorRetorno').addClass('alert-danger');
+				$("#modalRetorno").modal();
+				$("#modalButtonRetorno").click(function(){
+					$("#modalRetorno").modal("hide");
+				});
+			},
+		});
+		$("#modalRetorno").modal();
+	}
+}
+
+function validarDatosPassAdministrador(passActual, pass1, pass2){
+	var conError = false;
+	var mensajeError = "";
+
+	if(passActual == null){
+		conError = true;
+		mensajeError = "Para modificar la contraseña de administrador debe ingresar la contraseña actual.";
+	}else if(pass1 == null){
+		conError = true;
+		mensajeError = "Para modificar la contraseña actual debe ingresar una nueva contraseña.";
+	}else if(pass2 == null){
+		conError = true;
+		mensajeError = "Para modificar la contraseña actual debe repetir la nueva contraseña.";
+	}else if(pass2.length < 5 || pass1.length < 5 || passActual.length < 5 ){
+		conError = true;
+		mensajeError = "El sistema no admite contraseñas con menos de 5 caracteres.";
+	}else if(pass1 != pass2){
+		conError = true;
+		mensajeError = "La nueva contraseña y su confirmación deben coincidir para modificar la contraseña actual.";
+	}else if(pass1 == passActual){
+		conError = true;
+		mensajeError = "Esta intentando asignar la contraseña actual como la nueva contraseña, esta operación no se realizará.";
+	}
+
+	if(conError){
+
+		$("#modalColorRetorno").addClass('alert-warning');
+		document.getElementById('modalTituloRetorno').innerHTML = "Error: Modifcar contraseña administrador";
+		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		$("#modalButtonRetorno").click(function(){
+			$("#modalRetorno").modal("hide");
+		});
+		$("#modalRetorno").modal();
+	}
+
+	return conError;
 
 }
