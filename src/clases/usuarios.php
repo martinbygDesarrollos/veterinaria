@@ -6,20 +6,18 @@ class usuarios{
 	private $nombre;
 	private $pass;
 	private $estado;
-	private $grupo;
 
-	public function __construct($idUsuario, $nombre, $pass, $estado, $grupo){
+	public function __construct($idUsuario, $nombre, $pass, $estado){
 
 		$this->idUsuario = $idUsuario;
 		$this->nombre = $nombre;
 		$this->pass = $pass;
 		$this->estado = $estado;
-		$this->grupo = $grupo;
 	}
 
 	public function getUsuarios(){
 
-		$query = DB::conexion()->prepare("SELECT * FROM usuarios");
+		$query = DB::conexion()->prepare("SELECT idUsuario, nombre FROM usuarios WHERE nombre != 'admin'");
 		if($query->execute()){
 			$response = $query->get_result();
 			$arrayResponse = array();
@@ -33,7 +31,7 @@ class usuarios{
 
 	public function getUsuario($idUsuario){
 
-		$query = DB::conexion()->prepare("SELECT * FROM usuarios WHERE idUsuario = ? AND estado = 1");
+		$query = DB::conexion()->prepare("SELECT * FROM usuarios WHERE idUsuario = ? ");
 		$query->bind_param('i', $idUsuario);
 		if($query->execute()){
 			$response = $query->get_result();
@@ -68,10 +66,16 @@ class usuarios{
 		return $query->execute();
 	}
 
-	public function updateUsuario($pass){
+	public function updateUsuario($idUsuario, $nombre, $email){
 
-		$query = DB::conexion()->prepare("UPDATE usuarios SET pass = ? WHERE nombre = 'admin'");
-		$query->bind_param('s', $pass);
+		$query = DB::conexion()->prepare("UPDATE usuarios SET nombre = ?, email = ? WHERE idUsuario = ?");
+		$query->bind_param('ssi', $nombre, $email, $idUsuario);
+		return $query->execute();
+	}
+
+	public function updatePasswordUsuario($nombre, $pass){
+		$query = DB::conexion()->prepare("UPDATE usuarios SET pass = ? WHERE nombre = ?");
+		$query->bind_param('ss', $pass, $nombre);
 		return $query->execute();
 	}
 

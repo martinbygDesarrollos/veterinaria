@@ -126,9 +126,9 @@ class historiales{
 		}else return null;
 	}
 
-	public function getHistorialUsuario($idHistorialUsuario){
-		$query = DB::conexion()->prepare("SELECT * FROM historialusuarios WHERE idHistorialUsuario = ?");
-		$query->bind_param('i', $idHistorialUsuario);
+	public function getHistorialUsuario($nombre){
+		$query = DB::conexion()->prepare("SELECT * FROM historialusuarios WHERE nombre = ?");
+		$query->bind_param('i', $nombre);
 		if($query->execute()){
 			$response = $query->get_result();
 			return $response->fetch_object();
@@ -138,15 +138,7 @@ class historiales{
 	public function insertHistorialUsuario($usuario, $funcion, $fecha){
 		$query = DB::conexion()->prepare("INSERT INTO historialusuarios (usuario, funcion, fecha) VALUES (?,?,?)");
 		$query->bind_param('iii', $usuario, $funcion, $fecha);
-		if($query->execute()) return true;
-		else return false;
-	}
-
-	public function updateHistorialUsuario($idHistorialUsuario, $usuario, $funcion, $fecha){
-		$query = DB::conexion()->prepare("UPDATE historialusuarios SET usuario= ?, funcion = ?, fecha = ? WHERE idHistorialUsuario = ?");
-		$query->bind_param('iiii', $usuario, $funcion, $fecha, $idHistorialUsuario);
-		if($query->execute()) return true;
-		else return false;
+		$query->execute();
 	}
 	//============================================================================================================
 	//============================================================================================================

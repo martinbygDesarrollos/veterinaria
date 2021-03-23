@@ -56,6 +56,7 @@ function insertNewMascota(){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
+					$('#colorRetorno').removeClass('alert-warning');
 					$('#colorRetorno').removeClass('alert-danger');
 					$('#colorRetorno').addClass('alert-success');
 					document.getElementById('modalTituloRetorno').innerHTML = "Nueva mascota";
@@ -63,6 +64,7 @@ function insertNewMascota(){
 						window.location.reload();
 					});
 				}else{
+					$('#colorRetorno').removeClass('alert-warning');
 					$('#colorRetorno').removeClass('alert-success');
 					$('#colorRetorno').addClass('alert-danger');
 					document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva mascota";
@@ -75,6 +77,7 @@ function insertNewMascota(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
+				$('#colorRetorno').removeClass('alert-warning');
 				$('#colorRetorno').removeClass('alert-success');
 				$('#colorRetorno').addClass('alert-danger');
 				$("#modalRetorno").modal();

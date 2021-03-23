@@ -12,14 +12,49 @@ require_once '../src/controladores/ctr_mascotas.php';
 
 class ctr_usuarios{
     //----------------------------------- FUNCIONES DE USUARIO ------------------------------------------
+	public function insertNewUsuario($nombre, $email){
+		$response = new \stdClass();
+		$usuario = usuarios::getUsuarioNombre($nombre);
 
-	public function signIn($usuario, $pass){
+		if(!$usuario){
+			$result = usuarios::insertUsuario($nombre, $email);
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "El usuario fue ingresado correctamente, al iniciar sesión por primera vez se fijará la contraseña ingresada.";
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "Ocurrio un error interno y el usuario no pudo ser ingresado correctamente, porfavor vuelva a intentarlo.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "El usuario que se esta intentando ingresar ya existe en el sistema.";
+		}
+
+		return $response;
+	}
+
+	public function signIn($nombreUsuario, $pass){
 
 		$response = new \stdClass();
-		$usuario = usuarios::getUsuarioNombre($usuario);
+		$usuario = usuarios::getUsuarioNombre($nombreUsuario);
 
 		if($usuario){
-			if($pass == $usuario->pass){
+			if($usuario->pass == ""){
+				$result = usuarios::updatePasswordUsuario($nombreUsuario, $pass);
+				if($result){
+					$usu = new \stdClass();
+					$usu->usuario = $usuario->nombre;
+					session_destroy();
+					session_start();
+					$_SESSION['administrador'] = $usu;
+					$response->retorno = true;
+					$response->mensaje = "Usted inicio sesión por primera vez, la contraseña ingresada será su contraseña de ahora en más.";
+					$response->primerSesion = 1;
+				}else{
+					$response->retorno = false;
+					$response->mensajeError = "Usted intento iniciar sesión por primera vez, el sistema no pudo asociar su contraseña a esta cuenta, vuelva a intentarlo.";
+				}
+			}else if($pass == $usuario->pass){
 				$usu = new \stdClass();
 				$usu->usuario = $usuario->nombre;
 				session_destroy();
@@ -39,18 +74,42 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function checkPermissions($grupoUsuario, $idFuncion){
-		return usuarios::getGrupoFuncion($grupoUsuario, $idFuncion);
+	public function updateUsuario($idUsuario, $nombre, $email){
+		$response = new \stdClass();
+
+		$usuario = usuarios::getUsuario($idUsuario);
+
+		if($usuario){
+			$usuarioNombre = usuarios::getUsuarioNombre($nombre);
+			if($usuarioNombre->idUsuario == $usuario->idUsuario){
+				$result = usuarios::updateUsuario($idUsuario, $nombre, $email);
+				if($result){
+					$response->retorno = true;
+					$response->mensaje = "El usuario " . $nombre . " fue modificado correctamente.";
+				}else{
+					$response->retorno = false;
+					$response->mensajeError = "El usuario " . $nombre . " no pudo ser modificado, porfavor vuelva a intentarlo.";
+				}
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "El nombre de usuario que desea asignar ya fue vinculado a otro usuario, ingrese uno distinto.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "El usuario que desea modificar no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
 	}
 
-	public function updatePassAdministrador($passActual, $pass1, $pass2){
+	public function updatePassUsuario($nombre, $passActual, $pass){
 
 		$response = new \stdClass();
-		$usuario = usuarios::getUsuarioNombre("admin");
+		$usuario = usuarios::getUsuarioNombre($nombre);
 		if($usuario != null){
 
 			if($usuario->pass == $passActual){
-				$result = usuarios::updateUsuario($pass1);
+				$result = usuarios::updateUsuario($pass);
 
 				if($result){
 					$response->retorno = true;
@@ -73,6 +132,14 @@ class ctr_usuarios{
 	public function insertNewRegistroHistorialUsuario($usuario, $funcion, $fecha){
 		$fechaFormat = fechas::parceFechaInt($fecha);
 		usuarios::insertHistorialUsuario($usuario, $funcion, $fecha);
+	}
+
+	public function getUsuario($idUsuario){
+		return usuarios::getUsuario($idUsuario);
+	}
+
+	public function getUsuarios(){
+		return usuarios::getUsuarios();
 	}
     //---------------------------------------------------------------------------------------------------
 

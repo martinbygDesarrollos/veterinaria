@@ -6,14 +6,27 @@ require_once '../src/clases/historiales.php';
 require_once '../src/clases/copiarDB.php';
 require_once '../src/clases/fechas.php';
 require_once '../src/controladores/ctr_mascotas.php';
+require_once '../src/controladores/ctr_usuarios.php';
 
 class ctr_historiales {
 
 	public function levantarDB(){
- 				//($cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta)
 
-		return copiarDB::getSociosOriginal();
+		$sociosInsertados = copiarDB::seleccionarInsertarSocios();
+
+		$arrayMascotasInsertadas = array();
+		foreach ($sociosInsertados as $keySocio => $socio) {
+			$arrayMascotasInsertadas = copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
+
+			foreach ($arrayMascotasInsertadas as $keyMascota => $mascota) {
+				copiarDB::seleccionarInsertarVacunasMascotas($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'] );
+				copiarDB::seleccionarInsertarEnfermedadesMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
+				copiarDB::seleecionarInsertarHistorialClinicoMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
+				copiarDB::seleccionarInsertarHistorialMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'], $mascota['idSocio']);
+			}
+		}
 	}
+
 
 	//----------------------------------- FUNCIONES DE HISTORIAL CLINICO ------------------------------------------
 
@@ -87,8 +100,34 @@ class ctr_historiales {
 	//-------------------------------------------------------------------------------------------------------------
     //----------------------------------- FUNCIONES DE HISTORIAL USUARIO ------------------------------------------
 
+	public function insertHistorialUsuario($operacion){
+		$response = new \stdClass();
+		$objectFecha = new DateTime();
+		$objectFecha->setTimezone(new DateTimeZone('America/Montevideo'));
+		$fecha = $objectFecha->format('Y-m-d H:i:s');
+		$fecha = fechas::StringToIntFechaHoraGuion($fecha);
 
+		if(isset( $_SESSION['administrador'])){
+			$usuario = $_SESSION['administrador'];
+			$result = historiales::insertHistorialUsuario($usuario->nombre, $operacion, $fecha);
+			if($result){
+				$response->retorno = true;
+				$response->mensaje = "Se generó un registro en el historial de usuario.";
+			}else{
+				$response->retorno = false;
+				$response->mensajeError = "Ocurrio un error y no se pudo generar un registro en el historial de usuario.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "Ocurrio un error y la operación no pudo ingresarse en el sistema, inicie sesión nuevamente";
+		}
 
+		return $response;
+	}
+
+	public function getHistorialUsuario($nombre){
+		return historiales::getHistorialUsuario($nombre);
+	}
 
     //-------------------------------------------------------------------------------------------------------------
 

@@ -183,8 +183,12 @@ class ctr_mascotas {
 
 			$result = vacunasMascota::insertVacunaMascota($nombreVacuna, $idMascota, $intervalo, 1, $fechaDosisFormat, $fechaDosisFormat,$fechaProximaDosis, $observaciones);
 			if($result){
+				$resultInsertHistoria = ctr_historiales::insertHistoriaMascota($idMascota, "Se aplicó primer dosis de la vacuna " . $nombreVacuna, "" , "");
+				$enHistoriaClinica = "";
+				if($resultInsertHistoria)
+					$enHistoriaClinica = "Se generó un registro en la historia clinica de la mascota.";
 				$response->retorno = true;
-				$response->mensaje = "La vacuna fue vinculada correctamente a la mascota.";
+				$response->mensaje = "La vacuna fue vinculada correctamente a la mascota. " . $enHistoriaClinica;
 			}else{
 				$response->retorno = false;
 				$response->mensajeError = "La vacuna no pudo ser ingresada correctamente, verifique la información y vuelva a intentarlo.";
@@ -208,8 +212,12 @@ class ctr_mascotas {
 
 			$result = vacunasMascota::aplicarDosisVacunaMascota($idVacunaMascota, $fechaUltimaDosis, ($vacunaMascota->numDosis + 1), $fechaProximaDosis);
 			if($result){
+				$resultInsertHistoria = ctr_historiales::insertHistoriaMascota($vacunaMascota->idMascota, "Se aplicó dosis N° " . ($vacunaMascota->numDosis + 1) . " de la vacuna " . $vacunaMascota->nombreVacuna, "" , "");
+				$enHistoriaClinica = "";
+				if($resultInsertHistoria)
+					$enHistoriaClinica = "Se generó un registro en la historia clinica de la mascota.";
 				$response->retorno = true;
-				$response->mensaje = "La dosis de la vacuna aplicada fue almacenada correctamente.";
+				$response->mensaje = "La dosis de la vacuna aplicada fue almacenada correctamente. " . $enHistoriaClinica;
 			}else{
 				$response->retorno = false;
 				$response->mensajeError = "La dosis de la vacuna aplicada no pudo ser registrada porfavor vuelva a intentarlo.";
@@ -258,8 +266,12 @@ class ctr_mascotas {
 
 			$result = vacunasMascota::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnosticoFormat, $observaciones);
 			if($result){
+				$resultInsertHistoria = ctr_historiales::insertHistoriaMascota($vacunaMascota->idMascota, "Se asigno enfermedad a ". $mascota->nombre, "Se diagnostico la mascota de " . $nombre, "");
+				$enHistoriaClinica = "";
+				if($resultInsertHistoria)
+					$enHistoriaClinica = "Se generó un registro en la historia clinica de la mascota.";
 				$response->retorno = true;
-				$response->mensaje = "La enfermdad de " . $mascota->nombre . " fue agregada correctamente.";
+				$response->mensaje = "La enfermdad de " . $mascota->nombre . " fue agregada correctamente. ";
 			}else{
 				$response->retorno = false;
 				$response->mensajeError = "La enfermdad de " . $mascota->nombre . " no pudo ingresarse, porfavor vuelva a intentarlo.";

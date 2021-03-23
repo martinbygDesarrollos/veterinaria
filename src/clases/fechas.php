@@ -2,6 +2,23 @@
 
 class fechas{
 
+	public function StringToIntFechaHoraGuion($fecha){ // 2019-12-31 => 20191231
+		$fechaSinGuion = str_replace('-', '', $fecha);
+		$fechaSinDosPuntos = str_replace(':', '', $fechaSinGuion);
+		return str_replace(' ', '', $fechaSinDosPuntos);
+	}
+
+
+	public function parceFechaIntNoDay($anio, $mes){
+		if($mes < 10)
+			$mes = '0' . $mes;
+		return $anio . $mes;
+	}
+
+	public function parceFechaFormatDMANoDay($fecha, $separador){
+		return substr($fecha, 4,2) . $separador . substr($fecha, 0,4);
+	}
+
 	public function parceFechaInt($fecha){
 		$response = null;
 		$soloFecha = explode(" ", $fecha);

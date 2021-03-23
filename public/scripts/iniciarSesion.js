@@ -19,28 +19,41 @@ function iniciarSesion(){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
-					window.location.href = urlBase;
+					if(response.primerSesion == 1){
+						document.getElementById('modalTituloRetorno').innerHTML = "Primer inico de sesión.";
+						$('#modalColorRetorno').removeClass('alert-danger');
+						$('#modalColorRetorno').addClass('alert-success');
+						document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
+						$("#modalButtonRetorno").click(function(){
+							window.location.href = urlBase;
+						});
+						$("#modalRetorno").modal();
+					}else{
+						window.location.href = urlBase;
+					}
 				}else{
+					document.getElementById('modalTituloRetorno').innerHTML = "Error: Iniciar sesión";
 					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
 					$('#modalColorRetorno').addClass('alert-danger');
-
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
+					$("#modalRetorno").modal();
 				}
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
+				document.getElementById('modalTituloRetorno').innerHTML = "Error: Iniciar sesión";
 				document.getElementById('modalMensajeRetorno').innerHTML = "Ocurrio un error y no pudo comunicarse con el servidor, porfavor vuelva a intentarlo.";
 				$('#modalColorRetorno').addClass('alert-danger');
 				$("#modalRetorno").modal();
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
-
+				$("#modalRetorno").modal();
 			},
 		});
-		$("#modalRetorno").modal();
+
 	}
 }
 

@@ -41,6 +41,9 @@ return function (App $app) {
 		$sesionActiva = $_SESSION['administrador'];
 		if (isset($sesionActiva)) {
 			$args['administrador'] = $sesionActiva;
+			// if($sesionActiva == "admin"){
+				$args['usuarios'] = ctr_usuarios::getUsuarios();
+			// }
 			$args['cuotas'] =  ctr_historiales::getMontoCuotas();
 			return $this->view->render($response, "settings.twig", $args);
 		}

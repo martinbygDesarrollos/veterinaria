@@ -39,7 +39,7 @@ class socios{
 	}
 
 	public function getSocios(){
-		$query = DB::conexion()->prepare("SELECT * FROM socios LIMIT 100");
+		$query = DB::conexion()->prepare("SELECT * FROM socios LIMIT 200");
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();

@@ -88,16 +88,50 @@ return function (App $app) {
         }
     });
 
+    $app->post('/insertNewUsuario', function(Request $request, Response $response){
+
+        $sesionActiva = $_SESSION['administrador'];
+        if (isset($sesionActiva)) {
+            $data = $request->getParams();
+            $nombre = $data['nombre'];
+            $email = $data['email'];
+
+            return json_encode(ctr_usuarios::insertNewUsuario($nombre, $email));
+        }
+    });
+
+    $app->post('/updateUsuario', function(Request $request, Response $response){
+
+        $sesionActiva = $_SESSION['administrador'];
+        if (isset($sesionActiva)) {
+            $data = $request->getParams();
+            $idUsuario = $data['idUsuario'];
+            $nombre = $data['nombre'];
+            $email = $data['email'];
+
+            return json_encode(ctr_usuarios::updateUsuario($idUsuario, $nombre, $email));
+        }
+    });
+
+    $app->post('/getUsuario', function(Request $request, Response $response){
+        $sesionActiva = $_SESSION['administrador'];
+        if (isset($sesionActiva)) {
+            $data = $request->getParams();
+            $idUsuario = $data['idUsuario'];
+
+            return json_encode(ctr_usuarios::getUsuario($idUsuario));
+        }
+    });
+
     $app->post('/updatePassAdministrador',function(Request $request, Response $response){
 
         $sesionActiva = $_SESSION['administrador'];
         if (isset($sesionActiva)) {
             $data = $request->getParams();
+            $nombre = $data['nombre'];
             $passActual = $data['passActual'];
             $pass1 = $data['pass1'];
-            $pass2 = $data['pass2'];
-
-            return json_encode(ctr_usuarios::updatePassAdministrador(sha1($passActual), sha1($pass1), sha1($pass2)));
+            return json_encode(ctr_usuarios::updatePassAdministrador($nombre, sha1($passActual), sha1($pass1)));
         }
     });
 
