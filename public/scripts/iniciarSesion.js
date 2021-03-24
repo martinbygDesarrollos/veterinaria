@@ -1,4 +1,4 @@
-const urlBase = '/veterinaria/public';
+const urlBase = '/veterinarianan/public';
 
 function iniciarSesion(){
 	var usuario = document.getElementById('inpUsuario').value || null;
@@ -20,37 +20,26 @@ function iniciarSesion(){
 
 				if(response.retorno){
 					if(response.primerSesion == 1){
-						document.getElementById('modalTituloRetorno').innerHTML = "Primer inico de sesión.";
-						$('#modalColorRetorno').removeClass('alert-danger');
-						$('#modalColorRetorno').addClass('alert-success');
-						document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
+						showReplyMessage('sucess', response.mensaje, "Iniciar sesisón");
 						$("#modalButtonRetorno").click(function(){
 							window.location.href = urlBase;
 						});
-						$("#modalRetorno").modal();
 					}else{
 						window.location.href = urlBase;
 					}
 				}else{
-					document.getElementById('modalTituloRetorno').innerHTML = "Error: Iniciar sesión";
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
-					$('#modalColorRetorno').addClass('alert-danger');
+					showReplyMessage('danger', response.mensajeError,"Iniciar sesisón");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
-					$("#modalRetorno").modal();
 				}
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Iniciar sesión";
-				document.getElementById('modalMensajeRetorno').innerHTML = "Ocurrio un error y no pudo comunicarse con el servidor, porfavor vuelva a intentarlo.";
-				$('#modalColorRetorno').addClass('alert-danger');
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
-				$("#modalRetorno").modal();
 			},
 		});
 
@@ -77,14 +66,10 @@ function verificarDatosUsuario(usuario, pass){
 	}
 
 	if(conError){
-		$("#modalColorRetorno").addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva vacuna";
-		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		showReplyMessage('warning', mensajeError ,"Iniciar sesisón");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
-		$("#modalRetorno").modal();
 	}
-
 	return conError;
 }

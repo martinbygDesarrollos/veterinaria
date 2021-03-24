@@ -1,4 +1,4 @@
-const urlBase = '/veterinaria/public';
+const urlBase = '/veterinarianan/public';
 function seleccionarSocio(btn){
 	var idMascota = btn.name;
 	var idSocio = btn.id;
@@ -25,37 +25,23 @@ function vincularSocioMascota(idSocio, idMascota){
 			console.log("response SUCCESS: ", response);
 
 			if(response.retorno){
-				$('#modalColorRetorno').removeClass('alert-danger');
-				$('#modalColorRetorno').addClass('alert-success');
-				document.getElementById('modalTituloRetorno').innerHTML = "Socio vinculado";
-				document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
-				$("#modalRetorno").modal();
+				showReplyMessage('success', response.mensaje,"Vincular socio");
 				$("#modalButtonRetorno").click(function(){
 					window.location.href = urlBase + "/mascotas";
 				});
 			}else{
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').addClass('alert-danger');
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Vincular socio";
-				document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', response.mensajeError,"Vincular socio");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			}
-
-
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			$('#modalColorRetorno').removeClass('alert-success');
-			document.getElementById('modalTituloRetorno').innerHTML = "Error: Vincular socio";
-			$('#modalColorRetorno').addClass('alert-danger');
-			$("#modalRetorno").modal();
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
 		},
 	});
-	$("#modalRetorno").modal();
 }

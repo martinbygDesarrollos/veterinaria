@@ -13,8 +13,10 @@ return function (App $app) {
 
 	$app->post('/prueba', function(Request $request, Response $response){
 		$data = $request->getParams();
-
-		return json_encode(ctr_historiales::levantarDB());
+		$operacion = $data['operacion'];
+		$observaciones = $data['observaciones'];
+		return json_encode(ctr_historiales::insertHistorialUsuario($operacion, $observaciones));
+		// return json_encode(ctr_historiales::levantarDB());
 		// return json_encode(ctr_historiales::updateCuotaSocio($cuotaUna, $cuotaDos, $cuotaExtra));
 		// return json_encode(ctr_historiales::insertarVacunaMascota($id));
 		// return json_encode(ctr_mascotas::getInfoVencimientos());
@@ -23,9 +25,9 @@ return function (App $app) {
 
     //-------------------------- VISTAS ------------------------------------------
 	$app->get('/historiaClinica/{idMascota}', function($request, $response, $args) use ($container){
-		$sesionActiva = $_SESSION['administrador'];
-		if (isset($sesionActiva)) {
-			$args['administrador'] = $sesionActiva;
+
+		if (isset($_SESSION['administrador'])) {
+			$args['administrador'] = $_SESSION['administrador'];
 			$idMascota = $args['idMascota'];
 			$args['mascota'] = ctr_mascotas::getMascota($idMascota);
 			$historial = ctr_historiales::getHistoriasClinica($idMascota);
@@ -38,14 +40,26 @@ return function (App $app) {
 	})->setName('historiasClinica');
 
 	$app->get('/settings', function($request, $response, $args) use ($container){
-		$sesionActiva = $_SESSION['administrador'];
-		if (isset($sesionActiva)) {
-			$args['administrador'] = $sesionActiva;
-			// if($sesionActiva == "admin"){
+		if (isset($_SESSION['administrador'])) {
+			$args['administrador'] = $_SESSION['administrador'];
+			if($_SESSION['administrador']->usuario == "admin"){
 				$args['usuarios'] = ctr_usuarios::getUsuarios();
-			// }
+			}
 			$args['cuotas'] =  ctr_historiales::getMontoCuotas();
 			return $this->view->render($response, "settings.twig", $args);
+		}
+	})->setName("settings");
+
+	$app->get('/historialUsuario', function($request, $response, $args) use ($container){
+		if (isset($_SESSION['administrador'])) {
+			$args['administrador'] = $_SESSION['administrador'];
+			if($_SESSION['administrador']->usuario == 'admin'){
+				$args['operaciones'] = ctr_historiales::getHistorialUsuarios();
+			}else{
+				$args['operaciones'] = ctr_historiales::getHistorialUsuarios();
+			}
+
+			return $this->view->render($response, "historialUsuario.twig", $args);
 		}
 	})->setName("settings");
 
@@ -54,23 +68,20 @@ return function (App $app) {
     //--------------------------------POST-----------------------------------------
 
 	$app->post('/insertHistoriaMascota', function(Request $request, Response $response){
-		$sesionActiva = $_SESSION['administrador'];
-		if (isset($sesionActiva)) {
-			$args['administrador'] = $sesionActiva;
+
+		if (isset($_SESSION['administrador'])) {
 			$data = $request->getParams();
 			$idMascota = $data['idMascota'];
 			$motivoConsulta = $data['motivoConsulta'];
 			$diagnostico = $data['diagnostico'];
 			$observaciones = $data['observaciones'];
-
 			return json_encode(ctr_historiales::insertHistoriaMascota($idMascota, $motivoConsulta, $diagnostico, $observaciones));
 		}
 	});
 
 	$app->post('/getHistoriaCompleta', function(Request $request, Response $response){
-		$sesionActiva = $_SESSION['administrador'];
-		if (isset($sesionActiva)) {
-			$args['administrador'] = $sesionActiva;
+
+		if (isset($_SESSION['administrador'])) {
 			$data = $request->getParams();
 			$idHistoria = $data['idHistoria'];
 			return json_encode(ctr_historiales::getHistoriaCompleta($idHistoria));
@@ -78,15 +89,12 @@ return function (App $app) {
 	});
 
 	$app->post('/updateCuotaSocio', function(Request $request, Response $response){
-		$sesionActiva = $_SESSION['administrador'];
-		if (isset($sesionActiva)) {
-			$args['administrador'] = $sesionActiva;
-			$data = $request->getParams();
 
+		if (isset($_SESSION['administrador'])) {
+			$data = $request->getParams();
 			$cuotaUna = $data['cuotaUna'];
 			$cuotaDos = $data['cuotaDos'];
 			$cuotaExtra = $data['cuotaExtra'];
-
 			return json_encode(ctr_historiales::updateCuotaSocio($cuotaUna, $cuotaDos, $cuotaExtra));
 		}
 	});

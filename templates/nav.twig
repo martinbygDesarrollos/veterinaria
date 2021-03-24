@@ -21,9 +21,12 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="{{path_for('Inicio')}}mascotas">Mascotas Activas</a>
-                    <a class="dropdown-item" href="{{path_for('Inicio')}}mascotasInactivasPendientes">Mascotas Inactivas & Pendientes</a>
+          <a class="dropdown-item" href="{{path_for('Inicio')}}mascotasInactivasPendientes">Mascotas Inactivas & Pendientes</a>
           <a class="dropdown-item" href="{{path_for('Inicio')}}newMascota">Nueva Mascota</a>
         </div>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link disabled" href="{{path_for('Inicio')}}historialUsuario">Historial</a>
       </li>
       {% endif %}
     </ul>

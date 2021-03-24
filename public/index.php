@@ -7,7 +7,7 @@ if (PHP_SAPI == 'cli-server') {
 	}
 }
 
-require __DIR__ . '/../vendor/autoload.php';
+require 'C:/xampp/htdocs/utils/vendor/autoload.php';
 session_start();
 
 $settings = require __DIR__ . '/../src/settings.php';

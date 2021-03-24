@@ -2,144 +2,146 @@
 {% block head %}
 {% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-	<div class="col-7">
-		<div id="containerNuevoSocio" class="card">
-			<div class="card-header d-flex justify-content-between align-items-center" style="background: #85B58A">
-				<h5>Socio {{ socio.nombre}}</h5>
-				<a style="color: white;" class="btn btn-info btn-sm" href="{{path_for('Inicio')}}editSocio/{{ socio.idSocio }}"><i class="fas fa-edit"> editar</i></a>
-			</div>
-			<div class="card-body">
-				<ul class="list-group list-group-flush">
-					<li class="list-group-item">
-						<h6 class="card-subtitle mb-2 text-muted">Información del socio</h6>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Cédula</span>
-									<p style="text-align: center;" class="form-control">{{ socio.cedula }}</p>
+<div class="container h-100">
+	<div class="row justify-content-center">
+		<div class="col-sm align-self-center text-center">
+			<div class="col">
+				<div id="containerNuevoSocio" class="card">
+					<div class="card-header d-flex justify-content-between align-items-center" style="background: #85B58A">
+						<h5>Socio {{ socio.nombre}}</h5>
+						<a style="color: white;" class="btn btn-info btn-sm" href="{{path_for('Inicio')}}editSocio/{{ socio.idSocio }}"><i class="fas fa-edit"> editar</i></a>
+					</div>
+					<div class="card-body">
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">
+								<h6 class="card-subtitle mb-2 text-muted">Información del socio</h6>
+								<div class="row">
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Cédula</span>
+											<p style="text-align: center;" class="form-control">{{ socio.cedula }}</p>
+										</div>
+									</div>
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Teléfono</span>
+											<p style="text-align: center;" class="form-control">{{ socio.telefono }}</p>
+										</div>
+									</div>
 								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Teléfono</span>
-									<p style="text-align: center;" class="form-control">{{ socio.telefono }}</p>
+								<div class="row">
+									<div class="col">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Dirección</span>
+											<p style="text-align: center;" class="form-control">{{ socio.direccion }}</p>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Dirección</span>
-									<p style="text-align: center;" class="form-control">{{ socio.direccion }}</p>
+							</li>
+							<li class="list-group-item">
+								<h6 class="card-subtitle mb-2 text-muted">Información de pago</h6>
+								<div class="row">
+									<div class="col-sm-3">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Cuota</span>
+											<p style="text-align: center;" class="form-control">$ {{ socio.cuota }}</p>
+										</div>
+									</div>
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Fecha Pago</span>
+											<p style="text-align: center;" class="form-control">{{ socio.fechaPago }}</p>
+										</div>
+									</div>
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Lugar de pago</span>
+											{% if socio.lugarPago == 0 %}
+											<p style="text-align: center;" class="form-control">Veterinaria</p>
+											{% elseif socio.lugurPago == 1 %}
+											<p style="text-align: center;" class="form-control">Cobrador</p>
+											{% else %}
+											<p style="text-align: center;" class="form-control">No especificado</p>
+											{% endif %}
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-					</li>
-					<li class="list-group-item">
-						<h6 class="card-subtitle mb-2 text-muted">Información de pago</h6>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Cuota</span>
-									<p style="text-align: center;" class="form-control">$ {{ socio.cuota }}</p>
+								<div class="row">
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Fecha ultimo pago</span>
+											<p style="text-align: center;" class="form-control">{{ socio.fechaUltimoPago }}</p>
+										</div>
+									</div>
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Ultimo mes pago</span>
+											<p style="text-align: center;" class="form-control">{{ socio.fechaUltimaCuota }}</p>
+										</div>
+									</div>
 								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Fecha Pago</span>
-									<p style="text-align: center;" class="form-control">{{ socio.fechaPago }}</p>
+							</li>
+							<li class="list-group-item">
+								<h6 class="card-subtitle mb-2 text-muted">Información adicional</h6>
+								<div class="row">
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Ingreso</span>
+											<p style="text-align: center;" class="form-control">{{ socio.fechaIngreso }}</p>
+										</div>
+									</div>
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Rut</span>
+											<p style="text-align: center;" class="form-control">{{ socio.rut }}</p>
+										</div>
+									</div>
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Telefax</span>
+											<p style="text-align: center;" class="form-control">{{ socio.telefax }}</p>
+										</div>
+									</div>
 								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Lugar de pago</span>
-									{% if socio.lugarPago == 0 %}
-									<p style="text-align: center;" class="form-control">Veterinaria</p>
-									{% elseif socio.lugurPago == 1 %}
-									<p style="text-align: center;" class="form-control">Cobrador</p>
-									{% else %}
-									<p style="text-align: center;" class="form-control">No especificado</p>
-									{% endif %}
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Fecha ultimo pago</span>
-									<p style="text-align: center;" class="form-control">{{ socio.fechaUltimoPago }}</p>
-								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Ultimo mes pago</span>
-									<p style="text-align: center;" class="form-control">{{ socio.fechaUltimaCuota }}</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li class="list-group-item">
-						<h6 class="card-subtitle mb-2 text-muted">Información adicional</h6>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Fecha ingreso</span>
-									<p style="text-align: center;" class="form-control">{{ socio.fechaIngreso }}</p>
-								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Rut</span>
-									<p style="text-align: center;" class="form-control">{{ socio.rut }}</p>
-								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Telefax</span>
-									<p style="text-align: center;" class="form-control">{{ socio.telefax }}</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li class="list-group-item">
-						<h6 class="card-subtitle mb-2 text-muted">Mascotas</h6>
-						<table class="table table-striped table-bordered">
-							<thead class="thead-dark">
-								<tr>
-									<th class="text-center" scope="col">Nombre</th>
-									<th class="text-center"abbr="" scope="col">Raza</th>
-									<th class="text-center" scope="col">Especie</th>
-									<th class="text-center" scope="col">Sexo</th>
-									<th class="text-center" scope="col">Nacimiento</th>
-								</tr>
-							</thead>
-							<tbody>
-								{% for mascota in socio.mascotas%}
-								<tr>
-									<td class="text-center">
-										<a class="btn btn-info btn-sm" href="{{path_for('Inicio')}}verMascota/{{ mascota.idMascota }}">{{ mascota.nombre }}</a>
-									</td>
-									<td class="text-center">{{ mascota.raza }}</td>
-									<td class="text-center">{{ mascota.especie }}</td>
-									{% if mascota.sexo == 0 %}
-									<td class="text-center">Hembra</td>
-									{% else %}
-									<td class="text-center">Macho</td>
-									{% endif %}
-									<td class="text-center">{{ mascota.fechaNacimiento }}</td>
-								</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</li>
-				</ul>
+							</li>
+							<li class="list-group-item">
+								<h6 class="card-subtitle mb-2 text-muted">Mascotas</h6>
+								<table class="table table-striped table-bordered">
+									<thead class="thead-dark">
+										<tr>
+											<th class="text-center" scope="col">Nombre</th>
+											<th class="text-center"abbr="" scope="col">Raza</th>
+											<th class="text-center" scope="col">Especie</th>
+											<th class="text-center" scope="col">Sexo</th>
+											<th class="text-center" scope="col">Nacimiento</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for mascota in socio.mascotas%}
+										<tr>
+											<td class="text-center">
+												<a class="btn btn-info btn-sm" href="{{path_for('Inicio')}}verMascota/{{ mascota.idMascota }}">{{ mascota.nombre }}</a>
+											</td>
+											<td class="text-center">{{ mascota.raza }}</td>
+											<td class="text-center">{{ mascota.especie }}</td>
+											{% if mascota.sexo == 0 %}
+											<td class="text-center">Hembra</td>
+											{% else %}
+											<td class="text-center">Macho</td>
+											{% endif %}
+											<td class="text-center">{{ mascota.fechaNacimiento }}</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-
-{%block script%}
-{% endblock %}
-{% endblock %}
+	{%block script%}
+	{% endblock %}
+	{% endblock %}

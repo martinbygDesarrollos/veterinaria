@@ -1,4 +1,4 @@
-const urlBase = '/veterinaria/public';
+const urlBase = '/veterinarianan/public';
 function openModalVencimiento(btn){
 	document.getElementById("idSocioVencimiento").value = btn.id;
 	document.getElementById("idMascotaVencimiento").value = btn.name;
@@ -38,13 +38,10 @@ function notificarVencimientos(){
 
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			$('#modalColorRetorno').removeClass('alert-success');
-			$('#modalColorRetorno').addClass('alert-danger');
-			document.getElementById("modalMensajeRetorno").innerHTML = "Ocurrio un error y no pudo comunicarse con el servidor, porfavor vuelva a intentarlo.";
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+			$("#modalButtonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
 		},
 	});
-	$("#modalButtonRetorno").click(function(){
-		$("#modalRetorno").modal('hide');
-	});
-	$('#modalRetorno').modal();
 }

@@ -95,24 +95,24 @@ return function (App $app) {
     });
 
     $app->post('/updateMascota', function(Request $request, Response $response){
-        // $sesionActiva = $_SESSION['administrador'];
-        // if (isset($sesionActiva)) {
-        $data = $request->getParams();
-        $idSocio = $data['idSocio'];
-        $idMascota = $data['idMascota'];
-        $nombre = $data['nombre'];
-        $especie = $data['especie'];
-        $raza = $data['raza'];
-        $sexo = $data['sexo'];
-        $color = $data['color'];
-        $pedigree = $data['pedigree'];
-        $fechaNacimiento = $data['fechaNacimiento'];
-        $pelo = $data['pelo'];
-        $chip = $data['chip'];
-        $observaciones = $data['observaciones'];
+        $sesionActiva = $_SESSION['administrador'];
+        if (isset($sesionActiva)) {
+            $data = $request->getParams();
+            $idSocio = $data['idSocio'];
+            $idMascota = $data['idMascota'];
+            $nombre = $data['nombre'];
+            $especie = $data['especie'];
+            $raza = $data['raza'];
+            $sexo = $data['sexo'];
+            $color = $data['color'];
+            $pedigree = $data['pedigree'];
+            $fechaNacimiento = $data['fechaNacimiento'];
+            $pelo = $data['pelo'];
+            $chip = $data['chip'];
+            $observaciones = $data['observaciones'];
 
-        return json_encode(ctr_mascotas::updateMascota($idSocio, $idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
-        // }
+            return json_encode(ctr_mascotas::updateMascota($idSocio, $idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
+        }
     });
 
     $app->post('/activarDesactivarMascota', function(Request $request, Response $response){
@@ -191,14 +191,27 @@ return function (App $app) {
 
     $app->post('/vincularSocioMascota', function(Request $request, Response $response){
 
-        // $sesionActiva = $_SESSION['administrador'];
-        // if (isset($sesionActiva)) {
+        $sesionActiva = $_SESSION['administrador'];
+        if (isset($sesionActiva)) {
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             $idMascota = $data['idMascota'];
             return json_encode(ctr_mascotas::vincularSocioMascota($idSocio, $idMascota));
-        // }
+        }
     });
+
+    $app->post('/insertNewAnalisis', function(Request $request, Response $response){
+
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            $fechaAnalisis = $data['fechaAnalisis'];
+            $nombreAnalisis = $data['nombreAnalisis'];
+            $detalleAnalisis = $data['detalleAnalisis'];
+            $resultadoAnalisis = $data['resultadoAnalisis'];
+
+            return json_encode(ctr_mascotas::insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
+    });
+
 
 	//------------------------------------------------------------------------------------------
 

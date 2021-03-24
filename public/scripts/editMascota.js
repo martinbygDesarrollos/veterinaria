@@ -15,18 +15,13 @@ function editarMascota(btn){
 	var pedigree = document.getElementById('inpEditPedigree').value || null;
 	var observaciones = document.getElementById('inpEditObservaciones').value || null;
 
-
 	if(sexo == 2){
 		if( document.getElementById('inpSexoActual').value == "Hembra")
 			sexo = 0;
 		else sexo = 1;
 	}
 
-	console.log(sexo)
-
 	if(!validarInformacionMascota(nombre, raza, especie, sexo, fechaNacimiento, idSocio)){
-
-		document.getElementById('modalTituloRetorno').innerHTML = "Modificar mascota";
 		$.ajax({
 			async: false,
 			url: urlBase + "/updateMascota",
@@ -51,36 +46,25 @@ function editarMascota(btn){
 				console.log("response SUCCESS: ", response);
 
 				if(response.retorno){
-					$('#modalColorRetorno').removeClass('alert-danger');
-					$('#modalColorRetorno').addClass('alert-success');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
-					$("#modalRetorno").modal();
+					showReplyMessage('success', response.mensaje,"Modificar mascota");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#modalColorRetorno').removeClass('alert-success');
-					$('#modalColorRetorno').addClass('alert-danger');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
-					$("#modalRetorno").modal();
+					showReplyMessage('danger', response.mensajeError,"Modificar mascota");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
 				}
-
-
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').addClass('alert-danger');
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			},
 		});
-		$("#modalRetorno").modal();
 	}
 }
 
@@ -125,12 +109,7 @@ function validarInformacionMascota(nombre, raza, especie, sexo, fechaNacimiento,
 	}
 
 	if(conError){
-		$('#modalColorRetorno').removeClass('alert-success');
-		$('#modalColorRetorno').removeClass('alert-danger');
-		$('#modalColorRetorno').addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Información no valida";
-		document.getElementById('modalMensajeRetorno').innerHTML = mensajeError;
-		$("#modalRetorno").modal();
+		showReplyMessage('warning', mensajeError,"Modificar mascota");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});

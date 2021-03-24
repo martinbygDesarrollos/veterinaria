@@ -1,4 +1,4 @@
-const urlBase = '/veterinaria/public';
+const urlBase = '/veterinarianan/public';
 
 function fijarCostoCuota(){
 	$("#modalFijarCuota").modal('hide');
@@ -42,17 +42,12 @@ function fijarCostoCuota(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar cuota";
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').addClass('alert-danger');
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			},
 		});
-		$("#modalRetorno").modal();
 	}
 
 }
@@ -144,17 +139,12 @@ function fijarPassAdministrador(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar cuota";
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').addClass('alert-danger');
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			},
 		});
-		$("#modalRetorno").modal();
 	}
 }
 
@@ -247,15 +237,10 @@ function selectUsuarioModificar(btn){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			document.getElementById('modalTituloRetorno').innerHTML = "Error: Seleccionar usuario";
-			$('#modalColorRetorno').removeClass('alert-success');
-			$('#modalColorRetorno').removeClass('alert-warning');
-			$('#modalColorRetorno').addClass('alert-danger');
-			$("#modalRetorno").modal();
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
-			$("#modalRetorno").modal();
 		},
 	});
 }
@@ -337,17 +322,12 @@ function agregarUsuario(cuenta, email){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar usuario";
-			$('#modalColorRetorno').removeClass('alert-success');
-			$('#modalColorRetorno').removeClass('alert-warning');
-			$('#modalColorRetorno').addClass('alert-danger');
-			$("#modalRetorno").modal();
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
 		},
 	});
-	$("#modalRetorno").modal();
 }
 
 function modificarUsuario(idUsuario, cuenta, email){
@@ -388,15 +368,10 @@ function modificarUsuario(idUsuario, cuenta, email){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar usuario";
-			$('#modalColorRetorno').removeClass('alert-success');
-			$('#modalColorRetorno').removeClass('alert-warning');
-			$('#modalColorRetorno').addClass('alert-danger');
-			$("#modalRetorno").modal();
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
 		},
 	});
-	$("#modalRetorno").modal();
 }

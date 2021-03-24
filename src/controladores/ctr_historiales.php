@@ -100,8 +100,9 @@ class ctr_historiales {
 	//-------------------------------------------------------------------------------------------------------------
     //----------------------------------- FUNCIONES DE HISTORIAL USUARIO ------------------------------------------
 
-	public function insertHistorialUsuario($operacion){
+	public function insertHistorialUsuario($operacion, $observaciones){
 		$response = new \stdClass();
+
 		$objectFecha = new DateTime();
 		$objectFecha->setTimezone(new DateTimeZone('America/Montevideo'));
 		$fecha = $objectFecha->format('Y-m-d H:i:s');
@@ -109,24 +110,28 @@ class ctr_historiales {
 
 		if(isset( $_SESSION['administrador'])){
 			$usuario = $_SESSION['administrador'];
-			$result = historiales::insertHistorialUsuario($usuario->nombre, $operacion, $fecha);
-			if($result){
-				$response->retorno = true;
-				$response->mensaje = "Se generó un registro en el historial de usuario.";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Ocurrio un error y no se pudo generar un registro en el historial de usuario.";
+			$usuario = ctr_usuarios::getUsuarioNombre($usuario->usuario);
+			if($usuario){
+				$result = historiales::insertHistorialUsuario($usuario->idUsuario, $operacion, $fecha, $observaciones);
+				if($result){
+					$response->retorno = true;
+					$response->mensaje = "Se generó un registro en el historial de usuario.";
+					return $response;
+				}
 			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "Ocurrio un error y la operación no pudo ingresarse en el sistema, inicie sesión nuevamente";
 		}
-
+		$response->retorno = false;
+		$response->mensajeError = "Algo impidió que se genere el registro en el historial.";
 		return $response;
 	}
 
 	public function getHistorialUsuario($nombre){
-		return historiales::getHistorialUsuario($nombre);
+		$usuario = ctr_usuarios::getUsuarioNombre($nombre);
+		return historiales::getHistorialUsuario($usuario->idUsuario);
+	}
+
+	public function getHistorialUsuarios(){
+		return historiales::getHistorialUsuarios();
 	}
 
     //-------------------------------------------------------------------------------------------------------------

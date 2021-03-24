@@ -1,4 +1,4 @@
-const urlBase = '/veterinaria/public';
+const urlBase = '/veterinarianan/public';
 
 function agregarNuevaVacuna(){
 	var codigo = document.getElementById('inpCodigoVacuna').value || null;
@@ -41,15 +41,12 @@ function agregarNuevaVacuna(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				$('#colorRetorno').removeClass('alert-success');
-				$('#colorRetorno').addClass('alert-danger');
-				$("#modalRetorno").modal();
-				$("#buttonRetorno").click(function(){
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			},
 		});
-		$("#modalRetorno").modal();
 	}
 }
 

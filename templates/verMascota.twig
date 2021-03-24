@@ -3,7 +3,7 @@
 {% endblock %}
 {% block content %}
 <div class="row justify-content-center">
-	<div class="col-5">
+	<div class="col">
 		<div id="containerNuevoSocio" class="card">
 			<div class="card-header d-flex justify-content-between align-items-center" style="background: #85B58A">
 				{% if info.duenio != null %}
@@ -123,8 +123,9 @@
 			<div class="card-header">
 				<nav>
 					<div class="nav nav-tabs" id="nav-tab" role="tablist">
-						<a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-vacunas" role="tab" aria-controls="nav-home" aria-selected="true">Vacunas</a>
-						<a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-enfermedades" role="tab" aria-controls="nav-profile" aria-selected="false">Enfermedades</a>
+						<a class="nav-item nav-link text-info active" id="nav-home-tab" data-toggle="tab" href="#nav-vacunas" role="tab" aria-controls="nav-home" aria-selected="true">Vacunas</a>
+						<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-enfermedades" role="tab" aria-controls="nav-profile" aria-selected="false">Enfermedades</a>
+						<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-analisis" role="tab" aria-controls="nav-profile" aria-selected="false">Analisis</a>
 					</div>
 				</nav>
 				<div class="tab-content" id="nav-tabContent">
@@ -139,10 +140,9 @@
 												<tr>
 													<th class="text-center" scope="col">Prox. dosis</th>
 													<th class="text-center" scope="col">Ultima dosis</th>
-													<th class="text-center" scope="col">Primer dosis</th>
 													<th class="text-center" scope="col">Nombre</th>
-													<th class="text-center" scope="col">Intervalo(Dias)</th>
-													<th class="text-center" scope="col">Nº dosis totales</th>
+													<th class="text-center" scope="col">Intervalo</th>
+													<th class="text-center" scope="col">Nº dosis</th>
 													<th class="text-center" scope="col">Vacunar</th>
 												</tr>
 											</thead>
@@ -159,7 +159,6 @@
 													{% endif %}
 													{% endif %}
 													<td class="text-center">{{ vacuna.fechaUltimaDosis }}</td>
-													<td class="text-center">{{ vacuna.fechaPrimerDosis }}</td>
 													<td class="text-center">{{ vacuna.nombreVacuna }}</td>
 													{% if vacuna.intervaloDosis == 1 %}
 													<td class="text-center">dosis única</td>
@@ -196,7 +195,7 @@
 											<thead class="thead-dark">
 												<tr>
 													<th class="text-center" scope="col">Fecha diagnostico</th>
-													<th class="text-center" scope="col">Nombre enfermedad</th>
+													<th class="text-center" scope="col">Nombre</th>
 													<th class="text-center" scope="col">Observaciones</th>
 													<th class="text-center" scope="col">Modificar</th>
 												</tr>
@@ -227,8 +226,92 @@
 								</div>
 							</div>
 						</div>
+						<div class="tab-pane fade" id="nav-analisis" role="tabpanel" aria-labelledby="nav-profile-tab">
+							<div class="card">
+								<h5 class="card-header" style="background: #85B58A">Analisis de {{ info.mascota.nombre}}</h5>
+								<div class="card-body">
+									<ul class="list-group list-group-flush">
+										<li class="list-group-item">
+											<table id="tableStandar" class="table table-striped table-bordered">
+												<thead class="thead-dark">
+													<tr>
+														<th class="text-center" scope="col">Fecha</th>
+														<th class="text-center" scope="col">Nombre</th>
+														<th class="text-center" scope="col">Ver</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for estudio in info.analisis %}
+													<tr>
+														<td class="text-center">{{ estudio.fecha }}</td>
+														<td class="text-center">{{ estudio.nombre }}</td>
+														<td class="text-center">
+															<button class="btn btn-info btn-sm" name="{{ estudio.idAnalisis }}" name="ModificarEnfermedad" onclick="verDetalleAnalsisi(this)">
+																<i class="fas fa-eye"></i>
+															</button>
+														</td>
+													</tr>
+													{% endfor %}
+												</tbody>
+											</table>
+										</li>
+										<li class="list-group-item">
+											<div class="row">
+												<div class="col-sm text-center">
+													<button class="btn btn-success" id="{{info.mascota.idMascota}}" onclick="verModalNuevoAnalisis(this)">Agregar nuevo analisis</button>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+<!-- -----------------------------------------------------AGREGAR NUEVO ANALISIS--------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+<div class="modal fade" id="modalAgregarAnalisisMascota" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header alert-success">
+				<h5 class="modal-title">Agregar analisis a {{ info.mascota.nombre }}</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+					<input id="inpNombreAnalisis" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="inputGroup-sizing-default">Fecha realización</span>
+					<input id="inpFechaAnalisis" type="date" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+				</div>
+				<h6 class="card-subtitle mb-2 text-muted">Detalle</h6>
+				<div class="col-sm">
+					<div class="input-group mb-3">
+						<textarea id="inpDetalleAnalisis" class="form-control rounded-0" maxlength="500" rows="8"></textarea>
+					</div>
+				</div>
+				<h6 class="card-subtitle mb-2 text-muted">Resultados</h6>
+				<div class="col-sm">
+					<div class="input-group mb-3">
+						<textarea id="inpResultadoAnalisis" class="form-control rounded-0" maxlength="500" rows="3"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+				<button class="btn btn-success" id="modalButtonAgregarAnalisisMascota">Agregar</button>
 			</div>
 		</div>
 	</div>
@@ -301,19 +384,19 @@
 				<h6 class="card-subtitle mb-2 text-muted">Motivo de la consulta</h6>
 				<div class="col-sm">
 					<div class="input-group mb-3">
-						<textarea id="inpHistoriaMotivoConsulta" onfocus="ocultarAlert()" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
+						<textarea id="inpHistoriaMotivoConsulta" onfocus="ocultarAlert()" class="form-control rounded-0" maxlength="200" rows="3"></textarea>
 					</div>
 				</div>
 				<h6 class="card-subtitle mb-2 text-muted">Diagnostico</h6>
 				<div class="col-sm">
 					<div class="input-group mb-3">
-						<textarea id="inpHistoriaDiagnostico" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
+						<textarea id="inpHistoriaDiagnostico" class="form-control rounded-0" maxlength="200" rows="3"></textarea>
 					</div>
 				</div>
 				<h6 class="card-subtitle mb-2 text-muted">Observaciones</h6>
 				<div class="col-sm">
 					<div class="input-group mb-3">
-						<textarea id="inpHistoriaObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
+						<textarea id="inpHistoriaObservaciones" class="form-control rounded-0" maxlength="200" rows="3"></textarea>
 					</div>
 				</div>
 				<div style="display: none;" class="alert alert-danger" id="mensajeErrorHistoriaAlert"></div>
@@ -434,6 +517,7 @@
 
 	document.getElementById('inpPrimerDosisVacuna').value = `${year}-${month}-${day}`;
 	document.getElementById('inpFechaDiagnosticoEnfermedad').value = `${year}-${month}-${day}`;
+	document.getElementById('inpFechaAnalisis').value = `${year}-${month}-${day}`;
 </script>
 {% endblock %}
 {% endblock %}

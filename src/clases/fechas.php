@@ -77,6 +77,10 @@ class fechas{
 		return substr($fecha, 0,4). $separador .substr($fecha, 4,2). $separador .substr($fecha, 6,2);
 	}
 
+	public function parceFechaTimeFormatDMA($fecha){ // 20191231143020
+		return substr($fecha, 6,2).'/'.substr($fecha, 4,2).'/'.substr($fecha, 0,4).' '.substr($fecha, 8,2) .':'.substr($fecha, 10,2).':'.substr($fecha,12,2);
+	}
+
 	public function obtenerDiferenciaDias($fechaProxDosis, $fechaLimite){
 		$fechaP = fechas::parceFechaFormatAMD($fechaProxDosis, "-");
 		$dias = (strtotime($fechaP)- strtotime($fechaLimite))/86400;

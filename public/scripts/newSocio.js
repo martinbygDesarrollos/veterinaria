@@ -1,4 +1,4 @@
-const urlBase = '/veterinaria/public';
+const urlBase = '/veterinarianan/public';
 
 function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut, telefax, fechaPago, lugarPago){
 	var soloLetras = /^[A-Za-z0-9\s]+$/g;
@@ -132,10 +132,7 @@ function insertarNuevoSocio(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').addClass('alert-danger');
-				document.getElementById('modalMensajeRetorno').innerHTML = "Ocurrio un error y no pudo comunicarse con el servidor, porfavor vuelva a intentarlo.";
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -270,11 +267,7 @@ function insertarNuevaMascota(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva mascota";
-				document.getElementById('modalMensajeRetorno').innerHTML = "Ocurrio un error y no pudo comunicarse con el servidor, porfavor vuelva a intentarlo.";
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').addClass('alert-danger');
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});

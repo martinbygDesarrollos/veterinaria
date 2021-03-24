@@ -1,4 +1,4 @@
-const urlBase = '/veterinaria/public';
+const urlBase = '/veterinarianan/public';
 
 function modificarSocio(btn){
 	$("#modalModificarSocio").modal('hide');
@@ -46,42 +46,25 @@ function modificarSocio(btn){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
-					document.getElementById('modalTituloRetorno').innerHTML = "Modificar Socio";
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').removeClass('alert-danger');
-					$('#modalColorRetorno').addClass('alert-success');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
-					$("#modalRetorno").modal();
+					showReplyMessage('success', response.mensaje,"Modificar socio");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar Socio";
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').removeClass('alert-success');
-					$('#modalColorRetorno').addClass('alert-danger');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
-					$("#modalRetorno").modal();
+					showReplyMessage('danger', response.mensajeError,"Modificar socio");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
 				}
-
-
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar Socio";
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').addClass('alert-danger');
-				$("#modalRetorno").modal();
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
 			},
 		});
-		$("#modalRetorno").modal();
 	}
 }
 
@@ -147,17 +130,11 @@ function validarInformacionSocio(nombre, cedula, direccion, telefono, fechaPago,
 	}
 
 	if(conError){
-		$('#modalColorRetorno').removeClass('alert-success');
-		$('#modalColorRetorno').removeClass('alert-danger');
-		$('#modalColorRetorno').addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Información no valida";
-		document.getElementById('modalMensajeRetorno').innerHTML = mensajeError;
-		$("#modalRetorno").modal();
+		showReplyMessage('warning', mensajeError, "Modificar socio");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
 	}
-
 	return conError;
 }
 

@@ -19,6 +19,13 @@ class ctr_usuarios{
 		if(!$usuario){
 			$result = usuarios::insertUsuario($nombre, $email);
 			if($result){
+				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Usuario agregado", "fue agregado el usuario " . $nombre . " y email " . $email . " por el administrador del sistema.");
+				if($resultInsertOperacionUsuario)
+					$response->historialUsuario = "Registrado en el historial del usuario.";
+				else
+					$response->historialUsuario = "No ingresado en historial de usuario.";
+				//----------------------------------------------------------------------------------------------------------------
 				$response->retorno = true;
 				$response->mensaje = "El usuario fue ingresado correctamente, al iniciar sesión por primera vez se fijará la contraseña ingresada.";
 			}else{
@@ -84,6 +91,15 @@ class ctr_usuarios{
 			if($usuarioNombre->idUsuario == $usuario->idUsuario){
 				$result = usuarios::updateUsuario($idUsuario, $nombre, $email);
 				if($result){
+
+					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de usuario", "La informacion del usuario " . $nombre . " fue actualizada en el sistema.");
+					if($resultInsertOperacionUsuario)
+						$response->historialUsuario = "Registrado en el historial del usuario.";
+					else
+						$response->historialUsuario = "No ingresado en historial de usuario.";
+					//----------------------------------------------------------------------------------------------------------------
+
 					$response->retorno = true;
 					$response->mensaje = "El usuario " . $nombre . " fue modificado correctamente.";
 				}else{
@@ -112,6 +128,14 @@ class ctr_usuarios{
 				$result = usuarios::updateUsuario($pass);
 
 				if($result){
+					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de contraseña", "El usuario " . $nombre . " actualizo su contraseña.");
+					if($resultInsertOperacionUsuario)
+						$response->historialUsuario = "Registrado en el historial del usuario.";
+					else
+						$response->historialUsuario = "No ingresado en historial de usuario.";
+					//----------------------------------------------------------------------------------------------------------------
+
 					$response->retorno = true;
 					$response->mensaje = "La contraseña del administrador fue modificada correctamente.";
 				}else{
@@ -129,13 +153,12 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function insertNewRegistroHistorialUsuario($usuario, $funcion, $fecha){
-		$fechaFormat = fechas::parceFechaInt($fecha);
-		usuarios::insertHistorialUsuario($usuario, $funcion, $fecha);
-	}
-
 	public function getUsuario($idUsuario){
 		return usuarios::getUsuario($idUsuario);
+	}
+
+	public function getUsuarioNombre($nombre){
+		return usuarios::getUsuarioNombre($nombre);
 	}
 
 	public function getUsuarios(){
@@ -162,6 +185,14 @@ class ctr_usuarios{
 
 				$result = socios::insertSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, 1, null, null, $email, $rut, null, null);
 				if($result != false){
+					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
+					if($resultInsertOperacionUsuario)
+						$response->historialUsuario = "Registrado en el historial del usuario.";
+					else
+						$response->historialUsuario = "No ingresado en historial de usuario.";
+					//----------------------------------------------------------------------------------------------------------------
+
 					$response->retorno = true;
 					$response->mensaje = "El socio fue ingresado correctamente, asignele una mascota";
 					$response->idSocio = $result;
@@ -197,6 +228,15 @@ class ctr_usuarios{
 			$result = socios::updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngresoFormat, $fechaPago, $lugarPago, $email, $rut);
 
 			if($result){
+
+				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
+				if($resultInsertOperacionUsuario)
+					$response->historialUsuario = "Registrado en el historial del usuario.";
+				else
+					$response->historialUsuario = "No ingresado en historial de usuario.";
+				//----------------------------------------------------------------------------------------------------------------
+
 				$response->retorno = true;
 				$response->mensaje = "La información del socio fue actualizada" . $mensajeCuota;
 			}else{
@@ -259,6 +299,14 @@ class ctr_usuarios{
 						$mensaje = $socio->nombre . " se le informa: <br> Las siguientes vacunas de " . $mascota->nombre . " vencieron o venceran pronto.";
 						$result = usuarios::enviarNotificacionVacunas($mensaje, $socio->email, $vacunasVencidas);
 						if($result){
+							//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+							$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Notificar socio", "Se notificó al socio de nombre " . $nombre . " a traves de un correo electrónico.");
+							if($resultInsertOperacionUsuario)
+								$response->historialUsuario = "Registrado en el historial del usuario.";
+							else
+								$response->historialUsuario = "No ingresado en historial de usuario.";
+							//----------------------------------------------------------------------------------------------------------------
+
 							$response->retorno = true;
 							$response->mensaje = "Se le envió un email a " . $socio->nombre . " con la información de las vacunas vencidas de " . $mascota->nombre;
 						}else{
