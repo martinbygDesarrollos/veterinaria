@@ -21,28 +21,20 @@ function fijarCostoCuota(){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
-					$('#modalColorRetorno').removeClass('alert-danger');
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').addClass('alert-success');
-					document.getElementById('modalTituloRetorno').innerHTML = "Modificar cuota";
+					showReplyMessage('sucess', response.mensaje, response.enHistorial, "Modificar cuota");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#modalColorRetorno').removeClass('alert-success');
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').addClass('alert-danger');
-					document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar cuota";
+					showReplyMessage('danger', response.mensajeError, null, "Modificar cuota");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal('hide');
 					});
 				}
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
-
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -80,18 +72,12 @@ function validarDatosCuota(cuotaUno, cuotaDos, cuotaExtra){
 	}
 
 	if(conError){
-
-		$("#modalColorRetorno").addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar cuota";
-		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		showReplyMessage('warning', mensajeError, null, "Modificar cuota");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
-		$("#modalRetorno").modal();
 	}
-
 	return conError;
-
 }
 
 function fijarPassAdministrador(){
@@ -116,30 +102,20 @@ function fijarPassAdministrador(){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
-					$('#modalColorRetorno').removeClass('alert-danger');
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').addClass('alert-success');
-					document.getElementById('modalTituloRetorno').innerHTML = "Modificar contraseña";
-					document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+					showReplyMessage('sucess', response.mensaje,  response.enHistorial, "Modificar contraseña");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#modalColorRetorno').removeClass('alert-success');
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').addClass('alert-danger');
-					document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar contraseña";
-					document.getElementById("modalMensajeRetorno").innerHTML = response.mensajeError;
+					showReplyMessage('danger', response.mensajeError, null, "Modificar contraseña");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal('hide');
 					});
 				}
-
-
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -173,20 +149,13 @@ function validarDatosPassAdministrador(passActual, pass1, pass2){
 	}
 
 	if(conError){
-
-		$("#modalColorRetorno").addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Error: Modifcar contraseña administrador";
-		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		showReplyMessage('warning', mensajeError, null, "Modificar contraseña");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
-		$("#modalRetorno").modal();
 	}
-
 	return conError;
-
 }
-
 
 function selectUsuarioModificar(btn){
 	var idUsuario = btn.id;
@@ -205,7 +174,6 @@ function selectUsuarioModificar(btn){
 			if(response){
 				document.getElementById('cuentaUsuario').value = response.nombre;
 				document.getElementById('emailUsuario').value = response.email;
-
 				document.getElementById('titleNuevoUsuario').innerHTML = "Modificar usuario";
 				document.getElementById('btnNuevoUsuario').innerHTML = "Modificar usuario";
 				document.getElementById('btnCancelarUsuario').style.display = "block";
@@ -222,22 +190,15 @@ function selectUsuarioModificar(btn){
 					document.getElementById('btnCancelarUsuario').style.display = "none";
 				});
 			}else{
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').addClass('alert-danger');
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Seleccionar usuario";
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensajeError;
+				showReplyMessage('danger', response.mensajeError, null, "Seleccionar usuario");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal('hide');
 				});
-				$("#modalRetorno").modal();
 			}
-
-
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -269,14 +230,10 @@ function filtrarOperacion(btn){
 		}
 	}
 	if(conErro){
-
-		$("#modalColorRetorno").addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Error: " + operacion;
-		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		showReplyMessage('warning', mensajeError, null, operacion);
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
-		$("#modalRetorno").modal();
 	}else{
 		if(operacion == "Agregar usuario"){
 			agregarUsuario(cuenta, email);
@@ -300,29 +257,20 @@ function agregarUsuario(cuenta, email){
 			response = jQuery.parseJSON(response);
 			console.log("response SUCCESS: ",response);
 			if(response.retorno){
-				$('#modalColorRetorno').removeClass('alert-danger');
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').addClass('alert-success');
-				document.getElementById('modalTituloRetorno').innerHTML = "Agregar usuario";
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+				showReplyMessage('success', response.mensaje, response.enHistorial, "Agregar usuario");
 				$("#modalButtonRetorno").click(function(){
 					window.location.reload();
 				});
 			}else{
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').addClass('alert-danger');
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Agregar usuario";
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensajeError;
+				showReplyMessage('danger', response.mensajeError, null, "Agregar usuario");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal('hide');
 				});
-
 			}
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -346,32 +294,65 @@ function modificarUsuario(idUsuario, cuenta, email){
 			response = jQuery.parseJSON(response);
 			console.log("response SUCCESS: ",response);
 			if(response.retorno){
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').removeClass('alert-danger');
-				$('#modalColorRetorno').addClass('alert-success');
-				document.getElementById('modalTituloRetorno').innerHTML = "Modificar usuario";
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
+				showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar usuario");
 				$("#modalButtonRetorno").click(function(){
 					window.location.reload();
 				});
 			}else{
-				$('#modalColorRetorno').removeClass('alert-success');
-				$('#modalColorRetorno').removeClass('alert-warning');
-				$('#modalColorRetorno').addClass('alert-danger');
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Modificar usuario";
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensajeError;
+				showReplyMessage('danger', response.mensajeError, null, "Modificar usuario");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal('hide');
 				});
-
 			}
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
 		},
 	});
+}
+
+function fijarPlazoDeuda(){
+	var plazoDeuda = document.getElementById('inpPlazoDeuda').value || null;
+
+	if(plazoDeuda == null){
+		showReplyMessage('warning', "Debe ingresar un plazo para poder modificar este dato, no puede mantenerse este campo nulo.", null,"Plazo deuda");
+	}else if(plazoDeuda < 31){
+		showReplyMessage('warning', "El plazo de deuda no puede ser menor a un 31 dias.",null, "Plazo deuda");
+	}else{
+		$.ajax({
+			async: false,
+			url: urlBase + "/updatePlazoDeuda",
+			type: "POST",
+			data: {
+				plazoDeuda: plazoDeuda
+			},
+			success: function (response) {
+				response = response.trim();
+				response = jQuery.parseJSON(response);
+				console.log("response SUCCESS: ",response);
+				if(response.retorno){
+					showReplyMessage('success', response.mensaje, response.enHistorial, "Plazo deuda");
+					$("#modalButtonRetorno").click(function(){
+						window.location.reload();
+					});
+				}else{
+					showReplyMessage('danger', response.mensajeError, null, "Plazo deuda");
+					$("#modalButtonRetorno").click(function(){
+						$("#modalRetorno").modal('hide');
+					});
+				}
+			},
+			error: function (response) {
+				console.log("response ERROR:" + eval(response));
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				$("#modalButtonRetorno").click(function(){
+					$("#modalRetorno").modal("hide");
+				});
+			},
+		});
+	}
 }

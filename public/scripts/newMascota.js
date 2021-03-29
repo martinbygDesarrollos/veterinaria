@@ -56,28 +56,20 @@ function insertNewMascota(){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
-					$('#colorRetorno').removeClass('alert-warning');
-					$('#colorRetorno').removeClass('alert-danger');
-					$('#colorRetorno').addClass('alert-success');
-					document.getElementById('modalTituloRetorno').innerHTML = "Nueva mascota";
+					showReplyMessage('success', response.mensaje, response.enHistorial, "Nueva mascota");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#colorRetorno').removeClass('alert-warning');
-					$('#colorRetorno').removeClass('alert-success');
-					$('#colorRetorno').addClass('alert-danger');
-					document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva mascota";
+					showReplyMessage('danger', response.mensajeError, null, "Nueva mascota");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal('hide');
 					});
 				}
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
-
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -160,14 +152,10 @@ function validarDatosMascota(nombre, raza, especie, fechaNacimiento, sexo, color
 	}
 
 	if(!datosValidos){
-		$("#modalColorRetorno").addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva mascota";
-		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		showReplyMessage('warning', mensajeError, null, "Nueva mascota");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
-		$("#modalRetorno").modal();
 	}
-
 	return datosValidos;
 }

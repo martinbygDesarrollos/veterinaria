@@ -117,7 +117,6 @@ return function (App $app) {
 
     $app->post('/activarDesactivarMascota', function(Request $request, Response $response){
         $data = $request->getParams();
-
         $idMascota = $data['idMascota'];
         return json_encode(ctr_mascotas::activarDesactivarMascota($idMascota));
     });
@@ -202,16 +201,34 @@ return function (App $app) {
 
     $app->post('/insertNewAnalisis', function(Request $request, Response $response){
 
-            $data = $request->getParams();
-            $idMascota = $data['idMascota'];
-            $fechaAnalisis = $data['fechaAnalisis'];
-            $nombreAnalisis = $data['nombreAnalisis'];
-            $detalleAnalisis = $data['detalleAnalisis'];
-            $resultadoAnalisis = $data['resultadoAnalisis'];
+        $data = $request->getParams();
+        $idMascota = $data['idMascota'];
+        $fechaAnalisis = $data['fechaAnalisis'];
+        $nombreAnalisis = $data['nombreAnalisis'];
+        $detalleAnalisis = $data['detalleAnalisis'];
+        $resultadoAnalisis = $data['resultadoAnalisis'];
 
-            return json_encode(ctr_mascotas::insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
+        return json_encode(ctr_mascotas::insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
     });
 
+    $app->post('/updateAnalisis', function(Request $request, Response $response){
+
+        $data = $request->getParams();
+        $idAnalisis = $data['idAnalisis'];
+        $fechaAnalisis = $data['fechaAnalisis'];
+        $nombreAnalisis = $data['nombreAnalisis'];
+        $detalleAnalisis = $data['detalleAnalisis'];
+        $resultadoAnalisis = $data['resultadoAnalisis'];
+
+        return json_encode(ctr_mascotas::updateAnalisis($idAnalisis, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
+    });
+
+    $app->post('/getAnalisis', function(Request $request, Response $response){
+
+        $data = $request->getParams();
+        $idAnalisis = $data['idAnalisis'];
+        return json_encode(ctr_mascotas::getAnalisis($idAnalisis));
+    });
 
 	//------------------------------------------------------------------------------------------
 

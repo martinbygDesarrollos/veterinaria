@@ -1,4 +1,4 @@
-function showReplyMessage(color, mensaje, titulo){
+function showReplyMessage(color, mensaje,enHisotiral, titulo){
 
 	if(color == 'danger'){
 		$('#modalColorRetorno').removeClass('alert-success');
@@ -16,6 +16,11 @@ function showReplyMessage(color, mensaje, titulo){
 		$('#modalColorRetorno').addClass('alert-' + color);
 		document.getElementById('modalTituloRetorno').innerHTML = "Datos no validos en: " + titulo;
 	}
+
+	if(enHisotiral){
+		document.getElementById('modalEnHistorialRetorno').innerHTML = enHisotiral;
+	}
+
 	document.getElementById('modalMensajeRetorno').innerHTML = mensaje;
 	$("#modalRetorno").modal();
 }

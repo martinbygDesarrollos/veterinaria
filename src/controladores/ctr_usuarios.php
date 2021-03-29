@@ -22,9 +22,9 @@ class ctr_usuarios{
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
 				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Usuario agregado", "fue agregado el usuario " . $nombre . " y email " . $email . " por el administrador del sistema.");
 				if($resultInsertOperacionUsuario)
-					$response->historialUsuario = "Registrado en el historial del usuario.";
+					$response->enHistorial = "Registrado en el historial del usuario.";
 				else
-					$response->historialUsuario = "No ingresado en historial de usuario.";
+					$response->enHistorial = "No ingresado en historial de usuario.";
 				//----------------------------------------------------------------------------------------------------------------
 				$response->retorno = true;
 				$response->mensaje = "El usuario fue ingresado correctamente, al iniciar sesión por primera vez se fijará la contraseña ingresada.";
@@ -95,9 +95,9 @@ class ctr_usuarios{
 					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
 					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de usuario", "La informacion del usuario " . $nombre . " fue actualizada en el sistema.");
 					if($resultInsertOperacionUsuario)
-						$response->historialUsuario = "Registrado en el historial del usuario.";
+						$response->enHistorial = "Registrado en el historial del usuario.";
 					else
-						$response->historialUsuario = "No ingresado en historial de usuario.";
+						$response->enHistorial = "No ingresado en historial de usuario.";
 					//----------------------------------------------------------------------------------------------------------------
 
 					$response->retorno = true;
@@ -131,9 +131,9 @@ class ctr_usuarios{
 					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
 					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de contraseña", "El usuario " . $nombre . " actualizo su contraseña.");
 					if($resultInsertOperacionUsuario)
-						$response->historialUsuario = "Registrado en el historial del usuario.";
+						$response->enHistorial = "Registrado en el historial del usuario.";
 					else
-						$response->historialUsuario = "No ingresado en historial de usuario.";
+						$response->enHistorial = "No ingresado en historial de usuario.";
 					//----------------------------------------------------------------------------------------------------------------
 
 					$response->retorno = true;
@@ -188,9 +188,9 @@ class ctr_usuarios{
 					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
 					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
 					if($resultInsertOperacionUsuario)
-						$response->historialUsuario = "Registrado en el historial del usuario.";
+						$response->enHistorial = "Registrado en el historial del usuario.";
 					else
-						$response->historialUsuario = "No ingresado en historial de usuario.";
+						$response->enHistorial = "No ingresado en historial de usuario.";
 					//----------------------------------------------------------------------------------------------------------------
 
 					$response->retorno = true;
@@ -232,9 +232,9 @@ class ctr_usuarios{
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
 				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 				if($resultInsertOperacionUsuario)
-					$response->historialUsuario = "Registrado en el historial del usuario.";
+					$response->enHistorial = "Registrado en el historial del usuario.";
 				else
-					$response->historialUsuario = "No ingresado en historial de usuario.";
+					$response->enHistorial = "No ingresado en historial de usuario.";
 				//----------------------------------------------------------------------------------------------------------------
 
 				$response->retorno = true;
@@ -251,8 +251,13 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function getSocios(){
-		return socios::getSocios();
+	public function getSociosActivos($estado){
+		if($estado == 0){
+			$estado = " = 0";
+		}else{
+			$estado = " != 0";
+		}
+		return socios::getSocios($estado);
 	}
 
 	public function sociosNoVinculados($idMascota){
@@ -302,9 +307,9 @@ class ctr_usuarios{
 							//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
 							$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Notificar socio", "Se notificó al socio de nombre " . $nombre . " a traves de un correo electrónico.");
 							if($resultInsertOperacionUsuario)
-								$response->historialUsuario = "Registrado en el historial del usuario.";
+								$response->enHistorial = "Registrado en el historial del usuario.";
 							else
-								$response->historialUsuario = "No ingresado en historial de usuario.";
+								$response->enHistorial = "No ingresado en historial de usuario.";
 							//----------------------------------------------------------------------------------------------------------------
 
 							$response->retorno = true;
@@ -328,6 +333,29 @@ class ctr_usuarios{
 		}else{
 			$response->retorno = false;
 			$response->mensajeError = "El socio al que desea notificar no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
+	public function actualizarEstadosSocios($plazoDeuda){
+		$response = new \stdClass();
+
+		$fechaInt = fechas::parceFechaInt(fechas::calcularFechaProximaDosis(date('Y-m-d'), $plazoDeuda));
+		$fechaInt = substr($fechaInt, 0,4) . substr($fechaInt, 4,2);
+
+		$arraySocios = socios::getSociosConPlazoVencido($fechaInt);
+		if($arraySocios){
+			foreach ($arraySocios as $key => $value) {
+				socios::actualizarEstadoSocio($value->idSocio);
+				ctr_mascotas::desactivarMascotasSocio($idSocio);
+			}
+
+			$response->retorno = true;
+			$response->mensaje = "Los estados de los socios se actualaizador segun el nuevo plazo.";
+		}else{
+			$response->retorno = false;
+			$response->mensaje = "Los estados de los socios no fueron modificados.";
 		}
 
 		return $response;

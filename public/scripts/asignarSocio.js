@@ -25,12 +25,12 @@ function vincularSocioMascota(idSocio, idMascota){
 			console.log("response SUCCESS: ", response);
 
 			if(response.retorno){
-				showReplyMessage('success', response.mensaje,"Vincular socio");
+				showReplyMessage('success', response.mensaje, response.enHistorial, "Vincular socio");
 				$("#modalButtonRetorno").click(function(){
 					window.location.href = urlBase + "/mascotas";
 				});
 			}else{
-				showReplyMessage('danger', response.mensajeError,"Vincular socio");
+				showReplyMessage('danger', response.mensajeError, null,"Vincular socio");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -38,7 +38,7 @@ function vincularSocioMascota(idSocio, idMascota){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});

@@ -12,19 +12,20 @@ class ctr_historiales {
 
 	public function levantarDB(){
 
-		$sociosInsertados = copiarDB::seleccionarInsertarSocios();
+		return fechas::getFechaNoDayInt(61);
+		// $sociosInsertados = copiarDB::seleccionarInsertarSocios();
 
-		$arrayMascotasInsertadas = array();
-		foreach ($sociosInsertados as $keySocio => $socio) {
-			$arrayMascotasInsertadas = copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
+		// $arrayMascotasInsertadas = array();
+		// foreach ($sociosInsertados as $keySocio => $socio) {
+		// 	$arrayMascotasInsertadas = copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
 
-			foreach ($arrayMascotasInsertadas as $keyMascota => $mascota) {
-				copiarDB::seleccionarInsertarVacunasMascotas($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'] );
-				copiarDB::seleccionarInsertarEnfermedadesMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
-				copiarDB::seleecionarInsertarHistorialClinicoMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
-				copiarDB::seleccionarInsertarHistorialMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'], $mascota['idSocio']);
-			}
-		}
+		// 	foreach ($arrayMascotasInsertadas as $keyMascota => $mascota) {
+		// 		copiarDB::seleccionarInsertarVacunasMascotas($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'] );
+		// 		copiarDB::seleccionarInsertarEnfermedadesMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
+		// 		copiarDB::seleecionarInsertarHistorialClinicoMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
+		// 		copiarDB::seleccionarInsertarHistorialMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'], $mascota['idSocio']);
+		// 	}
+		// }
 	}
 
 
@@ -97,6 +98,28 @@ class ctr_historiales {
 		return configuracionSistema::getCuota();
 	}
 
+	public function updatePlazoDeuda($plazoDeuda){
+		$response = new \stdClass();
+
+		$result = configuracionSistema::updatePlazoDeuda($plazoDeuda);
+		if($result){
+			$resultActualizacionPlazo = ctr_usuarios::actualizarEstadosSocios($plazoDeuda);
+			//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+			$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar plazo deuda", "Se modifico el plazo de deuda para los socios (". $plazoDeuda ." dias).");
+			if($resultInsertOperacionUsuario)
+				$response->enHistorial = "Registrado en el historial del usuario.";
+			else
+				$response->enHistorial = "No ingresado en historial de usuario.";
+			//----------------------------------------------------------------------------------------------------------------
+			$response->retorno = true;
+			$response->mensaje = "EL plazo de vencimiento de deuda fue modificado correctamente. " . $resultActualizacionPlazo->mensaje;
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "Ocurrio un error y la cuota no pudo modificarse correctamente, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
 	//-------------------------------------------------------------------------------------------------------------
     //----------------------------------- FUNCIONES DE HISTORIAL USUARIO ------------------------------------------
 

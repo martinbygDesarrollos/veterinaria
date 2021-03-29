@@ -9,6 +9,7 @@
 				<h5 class="card-header" style="background: #85B58A">Configuraciones</h5>
 				<div class="card-body">
 					{% if administrador.usuario == 'admin' %}
+					<h6 class="card-subtitle mb-2 text-muted">Administracion de cuentas de usuario</h6>
 					<nav>
 						<div class="nav nav-tabs" id="nav-tab" role="tablist">
 							<a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-vacunas" role="tab" aria-controls="nav-home" aria-selected="true">Administrador</a>
@@ -18,7 +19,6 @@
 					<div class="tab-content" id="nav-tabContent">
 						<div class="tab-pane fade show active" id="nav-vacunas" role="tabpanel" aria-labelledby="nav-home-tab">
 							<div class="card">
-								<h5 class="card-header" style="background: #85B58A">Información de usuario</h5>
 								<div class="card-body">
 									<ul class="list-group list-group-flush">
 										<li class="list-group-item">
@@ -36,7 +36,6 @@
 											</div>
 										</li>
 										<li class="list-group-item">
-											<h6 class="card-subtitle mb-2 text-muted">Modificar contraseña administrador</h6>
 											<div class="row">
 												<div class="col">
 													<div class="input-group mb-3">
@@ -63,7 +62,6 @@
 						</div>
 						<div class="tab-pane fade" id="nav-enfermedades" role="tabpanel" aria-labelledby="nav-profile-tab">
 							<div class="card">
-								<h5 class="card-header" style="background: #85B58A">Otros usuario</h5>
 								<div class="card-body">
 									<div class="row">
 										<div class="col-5">
@@ -142,6 +140,20 @@
 							<button class="btn btn-success" data-toggle="modal" data-target="#modalFijarCuota">Fijar nueva cuota</button>
 						</div>
 					</li>
+					<li class="list-group-item">
+						<h6 class="card-subtitle mb-2 text-muted">Tiempo para inactividad automatica</h6>
+						<div class="row">
+							<div class="col-sm-7">
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="inputGroup-sizing-default">Cantidad de dias antes de marcar socio inactivo</span>
+									<input id="inpPlazoDeuda" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length== 5) return false;" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ cuotas.plazoDeuda }}">
+								</div>
+							</div>
+						</div>
+						<div class="d-flex justify-content-center">
+							<button class="btn btn-success" onclick="fijarPlazoDeuda()">Fijar plazo</button>
+						</div>
+					</li>
 				</ul>
 				{% else %}
 				<div class="input-group mb-3">
@@ -188,7 +200,6 @@
 			<div class="modal-footer">
 				<button class="btn btn-danger" data-dismiss="modal" >Cancelar</button>
 				<button class="btn btn-success" id="btnNuevaMascota" onclick="fijarCostoCuota()">Confirmar</button>
-
 			</div>
 		</div>
 	</div>

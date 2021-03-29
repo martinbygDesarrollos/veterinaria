@@ -10,9 +10,17 @@ class serviciosMascota {
     //------------------------------------------------------ANALISIS MASCOTA ---------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
+    public function getAnalisis($idAnalisis){
+        $query = DB::conexion()->prepare("SELECT * FROM analisismascota WHERE idAnalisis = ?");
+        $query->bind_param('i',$idAnalisis);
+        if($query->execute()){
+            $result = $query->get_result();
+            return $result->fetch_object();
+        }else return null;
+    }
 
     public function getAnalisisMascota($idMascota){
-        $query =DB::conexion()->prepare("SELECT fecha, nombre FROM analisismascota WHERE idMascota = ?");
+        $query =DB::conexion()->prepare("SELECT idAnalisis, fecha, nombre FROM analisismascota WHERE idMascota = ?");
         $query->bind_param('i', $idMascota);
         if($query->execute()){
             $result = $query->get_result();
@@ -28,6 +36,12 @@ class serviciosMascota {
     public function insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis){
         $query = DB::conexion()->prepare("INSERT INTO analisismascota(idMascota, nombre, fecha, detalle, resultado) VALUES(?,?,?,?,?)");
         $query->bind_param('isiss', $idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis);
+        return $query->execute();
+    }
+
+    public function updateAnalisisMascota($idAnalisis, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis){
+        $query = DB::conexion()->prepare("UPDATE analisismascota SET nombre= ?, fecha = ?, detalle= ?, resultado = ? WHERE idAnalisis = ?");
+        $query->bind_param('sissi', $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis, $idAnalisis);
         return $query->execute();
     }
 
@@ -88,14 +102,14 @@ class serviciosMascota {
             $response = $query->get_result();
             $arrayResponse = array();
             while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-               $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'],"/");
-               $arrayResponse[] = $row;
-           }
-           return $arrayResponse;
-       }else return null;
-   }
+             $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'],"/");
+             $arrayResponse[] = $row;
+         }
+         return $arrayResponse;
+     }else return null;
+ }
 
-   public function getVacunaMascota($idVacunaMascota){
+ public function getVacunaMascota($idVacunaMascota){
     $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota WHERE idVacunaMascota = ?");
     $query->bind_param('i', $idVacunaMascota);
     if($query->execute()){

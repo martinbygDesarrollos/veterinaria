@@ -114,6 +114,7 @@
 											<th class="text-center" scope="col">Especie</th>
 											<th class="text-center" scope="col">Sexo</th>
 											<th class="text-center" scope="col">Nacimiento</th>
+											<th class="text-center" scope="col">Estado</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -130,18 +131,37 @@
 											<td class="text-center">Macho</td>
 											{% endif %}
 											<td class="text-center">{{ mascota.fechaNacimiento }}</td>
+											<td class="text-center">
+												{% if socio.estado != 0 %}
+												{% if mascota.estado == 0 %}
+												<button class="btn btn-success btn-sm" name="{{ mascota.idMascota }}" onclick="activarDesactivarMascota(this)">Activar</button>
+												{% else %}
+												Activa
+												{% endif %}
+												{% else %}
+												Inactiva
+												{% endif %}
+											</td>
 										</tr>
 										{% endfor %}
 									</tbody>
 								</table>
 							</li>
 						</ul>
+						<div class="d-flex justify-content-between" style="margin-top: 1%">
+							{% if socio.estado == 0 %}
+							<button class="btn btn-success" onclick="activarDesactivarSocio()">Activar socio</button>
+							{% else %}
+							<button class="btn btn-success" onclick="activarDesactivarSocio()">Desactivar socio</button>
+							{% endif %}
+							<button class="btn btn-info">Exportar actividad</button>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
 	{%block script%}
+	<script type="text/javascript" src="{{path_for('Inicio')}}scripts/verMascota.js"></script>
 	{% endblock %}
 	{% endblock %}

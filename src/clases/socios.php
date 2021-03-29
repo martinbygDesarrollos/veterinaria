@@ -1,45 +1,10 @@
 <?php
 
 class socios{
+	//activo = 1 inactivo = 0 Honorario = 4 No socio = 2
 
-	private $idSocio;
-	private $cedula;
-	private $nombre;
-	private $telefono;
-	private $telefax;
-	private $direccion;
-	private $fechaIngreso;
-	private $fechaPago;
-	private $lugarPago;
-	private $estado; //activo = 1 inactivo = 0 Honorario = 4 No socio = 2 Sin Mascota = 3
-	private $motivoBaja;
-	private $cuota;
-	private $email;
-	private $rut;
-	private $fechaUltimoPago;
-	private $fechaUltimaCuota;
-
-	public function __construct($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCuota){
-		$this->idSocio = $idSocio;
-		$this->nombre = $nombre;
-		$this->cedula = $cedula;
-		$this->telefono = $telefono;
-		$this->telefax = $telefax;
-		$this->direccion = $direccion;
-		$this->fechaIngreso = $fechaIngreso;
-		$this->fechaPago = $fechaPago;
-		$this->lugarPago = $lugarPago;
-		$this->estado = $estado;
-		$this->motivoBaja = $motivoBaja;
-		$this->cuota = $cuota;
-		$this->email = $email;
-		$this->rut = $rut;
-		$this->fechaUltimoPago = $fechaUltimoPago;
-		$this->fechaUltimaCuota = $fechaUltimaCuota;
-	}
-
-	public function getSocios(){
-		$query = DB::conexion()->prepare("SELECT * FROM socios LIMIT 200");
+	public function getSocios($estado){
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado" . $estado);
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();
@@ -121,6 +86,26 @@ class socios{
 		$query->bind_param('ii', $cuotaSocio, $idSocio);
 		if($query->execute()) return true;
 		return false;
+	}
+
+	public function getSociosConPlazoVencido($plazoDeuda){
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 OR estado = 3 AND fechaUltimaCuota < ? LIMIT 200");
+		$query->bind_param('i', $plazoDeuda);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function actualizarEstadoSocio($idSocio){
+		$query = DB::conexion()->prepare("UPDATE socios SET estado = 0 WHERE idSocio = ?");
+		$query->bind_param('i', $idSocio);
+		return $query->execute();
 	}
 
 	public function esMiMascota($idSocio, $idMascota){

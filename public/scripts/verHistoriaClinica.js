@@ -30,21 +30,15 @@ function verHistoriaClinica(btn){
 
 				$('#modalHistoriaClinica').modal();
 			}else{
-				$('#colorRetorno').removeClass('alert-warning');
-				$('#colorRetorno').removeClass('alert-success');
-				$('#colorRetorno').addClass('alert-danger');
-				document.getElementById('modalTituloRetorno').innerHTML = "Error: Ver historia.";
+				showReplyMessage('danger', response.mensajeError, null, "Ver historia clínica");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal('hide');
 				});
-				$("#modalRetorno").modal();
 			}
-			document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
 		},
-
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});

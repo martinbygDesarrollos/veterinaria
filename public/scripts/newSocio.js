@@ -53,12 +53,7 @@ function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut,
 	}
 
 	if(conError){
-		$('#modalColorRetorno').removeClass('alert-success');
-		$('#modalColorRetorno').removeClass('alert-danger');
-		$('#modalColorRetorno').addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Información no valida";
-		document.getElementById('modalMensajeRetorno').innerHTML = mensajeError;
-		$("#modalRetorno").modal();
+		showReplyMessage('warning', mensajeError, null, "Nuevo socio");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
@@ -78,12 +73,9 @@ function insertarNuevoSocio(){
 	var fechaPago = document.getElementById('inpFechaPagoSocio').value;
 	var lugarPago = document.getElementById('inpLugarPagoSocio').value;
 
-
 	var conError = validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut, telefax, fechaPago, lugarPago);
 
 	if(!conError){
-
-		document.getElementById('modalTituloRetorno').innerHTML = "Nuevo socio";
 		$.ajax({
 			async: false,
 			url: urlBase + "/insertNewSocio",
@@ -105,11 +97,7 @@ function insertarNuevoSocio(){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').removeClass('alert-danger');
-					$('#modalColorRetorno').addClass('alert-success');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
-					$("#modalRetorno").modal();
+					showReplyMessage('sucess', response.mensaje, response.enHistorial, "Nuevo socio");
 					$("#modalButtonRetorno").click(function(){
 						document.getElementById('containerNuevaMascota').style.display = "block";
 						document.getElementById('containerNuevoSocio').style.display = "none";
@@ -118,21 +106,15 @@ function insertarNuevoSocio(){
 						document.getElementById('idSocioAgregado').value = response.idSocio;
 					});
 				}else{
-					$('#modalColorRetorno').removeClass('alert-warning');
-					$('#modalColorRetorno').removeClass('alert-success');
-					$('#modalColorRetorno').addClass('alert-danger');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
-					$("#modalRetorno").modal();
+					showReplyMessage('danger', response.mensajeError, null, "Nuevo socio");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
 				}
-
-
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -191,11 +173,7 @@ function validarDatosNuevaMascota(nombre, especie, nacimiento, raza, color, sexo
 	}
 
 	if(conError){
-		$('#modalColorRetorno').removeClass('alert-success');
-		$('#modalColorRetorno').addClass('alert-danger');
-		document.getElementById('modalTituloRetorno').innerHTML = "Información no valida";
-		document.getElementById('modalMensajeRetorno').innerHTML = mensajeError;
-		$("#modalRetorno").modal();
+		showReplyMessage('warning', mensajeError, null, "Nueva mascota");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
@@ -246,28 +224,20 @@ function insertarNuevaMascota(){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
-
-					$('#modalColorRetorno').removeClass('alert-danger');
-					$('#modalColorRetorno').addClass('alert-success');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensaje;
-					$("#modalRetorno").modal();
+					showReplyMessage('sucess', response.mensaje, response.enHistorial, "Nueva mascota");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#modalColorRetorno').removeClass('alert-success');
-					$('#modalColorRetorno').addClass('alert-danger');
-					document.getElementById('modalMensajeRetorno').innerHTML = response.mensajeError;
-					$("#modalRetorno").modal();
+					showReplyMessage('danger', response.mensajeError, null, "Nueva mascota");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
 				}
-				document.getElementById('modalTituloRetorno').innerHTML = "Nueva mascota";
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -276,11 +246,6 @@ function insertarNuevaMascota(){
 	}
 
 }
-
-
-
-
-
 
 function validarCedula(ci){
 	ci = clean_ci(ci);

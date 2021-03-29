@@ -46,12 +46,12 @@ function editarMascota(btn){
 				console.log("response SUCCESS: ", response);
 
 				if(response.retorno){
-					showReplyMessage('success', response.mensaje,"Modificar mascota");
+					showReplyMessage('success', response.mensaje, response.enHistorial,"Modificar mascota");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					showReplyMessage('danger', response.mensajeError,"Modificar mascota");
+					showReplyMessage('danger', response.mensajeError, null,"Modificar mascota");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
@@ -59,7 +59,7 @@ function editarMascota(btn){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -109,7 +109,7 @@ function validarInformacionMascota(nombre, raza, especie, sexo, fechaNacimiento,
 	}
 
 	if(conError){
-		showReplyMessage('warning', mensajeError,"Modificar mascota");
+		showReplyMessage('warning', mensajeError, null, "Modificar mascota");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});

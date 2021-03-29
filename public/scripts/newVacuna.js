@@ -20,28 +20,20 @@ function agregarNuevaVacuna(){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
-					$('#colorRetorno').removeClass('alert-warning');
-					$('#colorRetorno').removeClass('alert-danger');
-					$('#colorRetorno').addClass('alert-success');
-					document.getElementById('modalTituloRetorno').innerHTML = "Nueva vacuna";
+					showReplyMessage('sucess', response.mensaje, response.enHistorial, "Nueva vacuna");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					$('#colorRetorno').removeClass('alert-warning');
-					$('#colorRetorno').removeClass('alert-success');
-					$('#colorRetorno').addClass('alert-danger');
-					document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva vacuna";
+					showReplyMessage('danger', response.mensajeError, null, "Nueva vacuna");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal('hide');
 					});
 				}
-				document.getElementById("modalMensajeRetorno").innerHTML = response.mensaje;
-
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -75,13 +67,10 @@ function validarDatosVacuna(codigo, nombre, laboratorio){
 	}
 
 	if(conError){
-		$("#modalColorRetorno").addClass('alert-warning');
-		document.getElementById('modalTituloRetorno').innerHTML = "Error: Nueva vacuna";
-		document.getElementById("modalMensajeRetorno").innerHTML = mensajeError;
+		showReplyMessage('warning', mensajeError, null, "Nueva vacuna");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
-		$("#modalRetorno").modal();
 	}
 
 	return conError;

@@ -22,10 +22,10 @@ return function (App $app) {
 
     $app->get('/cerrarSesion', function ($request, $response, $args) use ($container) {
         if (isset($_SESSION['administrador'])) {
-         session_destroy();
-     }
-     return $this->view->render($response, "login.twig");
- })->setName("login");
+           session_destroy();
+       }
+       return $this->view->render($response, "login.twig");
+   })->setName("login");
 
     $app->get('/newSocio', function($request, $response, $args) use ($container){
 
@@ -35,14 +35,23 @@ return function (App $app) {
         }
     })->setName("newSocio");
 
-    $app->get('/verSocios', function($request, $response, $args) use ($container){
+    $app->get('/verSociosActivos', function($request, $response, $args) use ($container){
 
         if (isset($_SESSION['administrador'])) {
             $args['administrador'] = $_SESSION['administrador'];
-            $args['socios'] = ctr_usuarios::getSocios();
-            return $this->view->render($response, "socios.twig", $args);
+            $args['socios'] = ctr_usuarios::getSociosActivos(1);
+            return $this->view->render($response, "sociosActivos.twig", $args);
         }
-    })->setName("socios");
+    })->setName("sociosActivos");
+
+    $app->get('/verSociosInactivos', function($request, $response, $args) use ($container){
+
+        if (isset($_SESSION['administrador'])) {
+            $args['administrador'] = $_SESSION['administrador'];
+            $args['socios'] = ctr_usuarios::getSociosActivos(0);
+            return $this->view->render($response, "sociosInactivos.twig", $args);
+        }
+    })->setName("sociosInactivos");
 
     $app->get('/asignarSocioMascota/{idMascota}', function($request, $response, $args) use ($container){
         if (isset($_SESSION['administrador'])) {

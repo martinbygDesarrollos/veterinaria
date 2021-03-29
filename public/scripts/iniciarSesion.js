@@ -20,7 +20,7 @@ function iniciarSesion(){
 
 				if(response.retorno){
 					if(response.primerSesion == 1){
-						showReplyMessage('sucess', response.mensaje, "Iniciar sesisón");
+						showReplyMessage('sucess', response.mensaje, null,  "Iniciar sesisón");
 						$("#modalButtonRetorno").click(function(){
 							window.location.href = urlBase;
 						});
@@ -28,7 +28,7 @@ function iniciarSesion(){
 						window.location.href = urlBase;
 					}
 				}else{
-					showReplyMessage('danger', response.mensajeError,"Iniciar sesisón");
+					showReplyMessage('danger', response.mensajeError, null, "Iniciar sesisón");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal("hide");
 					});
@@ -36,7 +36,7 @@ function iniciarSesion(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo","Conexión");
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -66,7 +66,7 @@ function verificarDatosUsuario(usuario, pass){
 	}
 
 	if(conError){
-		showReplyMessage('warning', mensajeError ,"Iniciar sesisón");
+		showReplyMessage('warning', mensajeError , null, "Iniciar sesisón");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});

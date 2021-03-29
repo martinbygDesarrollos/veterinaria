@@ -2,12 +2,17 @@
 
 class fechas{
 
+	public function getFechaNoDayInt($intervaloVencimiento){
+		$fechActual = date('Y-m-d');
+		$nuevafecha = date("Y-m-d", strtotime("$fechActual - ". $intervaloVencimiento ." day"));
+		return fechas::parceFechaInt($nuevafecha);
+	}
+
 	public function StringToIntFechaHoraGuion($fecha){ // 2019-12-31 => 20191231
 		$fechaSinGuion = str_replace('-', '', $fecha);
 		$fechaSinDosPuntos = str_replace(':', '', $fechaSinGuion);
 		return str_replace(' ', '', $fechaSinDosPuntos);
 	}
-
 
 	public function parceFechaIntNoDay($anio, $mes){
 		if($mes < 10)

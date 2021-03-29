@@ -114,4 +114,18 @@ class mascotas{
 		}
 		return null;
 	}
+
+	public function desactivarMascotasSocio($idSocio){
+		$query = DB::conexion()->prepare("SELECT M.idMascota FROM mascotas AS M, mascotasocio AS MS WHERE M.idMascota = MS.idMascota AND MS.idSocio = ?");
+		$query->bind_param('i', $idSocio);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayMascotas = array();
+			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+				$arrayMascotas[] = $row;
+			}
+			return $arrayMascotas;
+		}
+		return null;
+	}
 }
