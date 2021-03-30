@@ -69,7 +69,7 @@ class serviciosMascota {
 
     public function getVacunasVencidas($fechaLimite){
         $query = DB::conexion()->prepare("SELECT VM.fechaProximaDosis, VM.idMascota, VM.nombreVacuna, M.nombre AS nombreMascota
-            FROM vacunasmascota AS VM, mascotas AS M WHERE M.idMascota = VM.idMascota AND VM.idVacunaMascota IN (SELECT idVacunaMascota FROM `vacunasmascota` WHERE fechaProximaDosis <= ? AND fechaProximaDosis != 0)");
+            FROM vacunasmascota AS VM, mascotas AS M WHERE M.idMascota = VM.idMascota AND M.estado = 1 AND VM.idVacunaMascota IN (SELECT idVacunaMascota FROM `vacunasmascota` WHERE fechaProximaDosis <= ? AND fechaProximaDosis != 0)");
         $query->bind_param('i', $fechaLimite);
         if($query->execute()){
             $response = $query->get_result();

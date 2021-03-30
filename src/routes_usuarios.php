@@ -83,6 +83,27 @@ return function (App $app) {
         }
     })->setName("verScoio");
 
+    $app->get('/cuotasVencidas', function($request, $response, $args) use ($container){
+
+        if (isset($_SESSION['administrador'])) {
+            $args['administrador'] = $_SESSION['administrador'];
+            $args['fechaVencimiento'] = ctr_mascotas::getFechaActual();
+            $args['infoVencimientos'] = ctr_usuarios::getSociosCuotasVencidas();
+            return $this->view->render($response, "vencimientosCuota.twig", $args);
+        }
+    })->setName("cuotasVencidas");
+
+    $app->get('/obtenerBusqueda/{busqueda}', function($request, $response, $args) use ($container){
+        if (isset($_SESSION['administrador'])) {
+            $busqueda = $args['busqueda'];
+            $args['administrador'] = $_SESSION['administrador'];
+            $args['buscado'] = $busqueda;
+            $args['busqueda'] = ctr_usuarios::obtenerBusqueda($busqueda);
+            return $this->view->render($response, "resultadoBusqueda.twig", $args);
+        }
+    })->setName("settings");
+
+
     //------------------------------------------------------------------------------------------
 
     //------------------------------ POST ------------------------------------------------------
@@ -158,8 +179,9 @@ return function (App $app) {
             $lugarPago = $data['lugarPago'];
             $email = $data['email'];
             $rut = $data['rut'];
+            $tipoSocio = $data['tipoSocio'];
 
-            return json_encode(ctr_usuarios::insertNewSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaPago, $lugarPago, $email, $rut));
+            return json_encode(ctr_usuarios::insertNewSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaPago, $lugarPago, $email, $rut, $tipoSocio));
         }
     });
 
@@ -180,12 +202,20 @@ return function (App $app) {
             $email = $data['email'];
             $rut = $data['rut'];
             $telefax = $data['telefax'];
+            $tipoSocio = $data['tipo'];
 
-            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $fechaIngreso, $email, $rut, $telefax));
+            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $fechaIngreso, $email, $rut, $telefax, $tipoSocio));
         }
     });
 
-    $app->post('/notificarSocio', function(Request $request, Response $response){
+    $app->post('/activarDesactivarSocio', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $idSocio = $data['idSocio'];
+
+        return json_encode(ctr_usuarios::activarDesactivarSocio($idSocio));
+    });
+
+    $app->post('/notificarSocioVacuna', function(Request $request, Response $response){
 
         $sesionActiva = $_SESSION['administrador'];
         if (isset($sesionActiva)) {
@@ -193,10 +223,18 @@ return function (App $app) {
             $idSocio = $data['idSocio'];
             $idMascota = $data['idMascota'];
 
-            return json_encode(ctr_usuarios::notificarSocio($idSocio, $idMascota));
+            return json_encode(ctr_usuarios::notificarSocioVacuna($idSocio, $idMascota));
         }
     });
 
+    $app->post('/notificarSocioCuota', function(Request $request, Response $response){
+        // $sesionActiva = $_SESSION['administrador'];
+        // if (isset($sesionActiva)) {
+            $data = $request->getParams();
+            $idSocio = $data['idSocio'];
+            return json_encode(ctr_usuarios::notificarSocioCuota($idSocio));
+        // }
+    });
     //------------------------------------------------------------------------------------------
 
 }

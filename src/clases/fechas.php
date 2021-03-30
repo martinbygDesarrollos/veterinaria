@@ -102,4 +102,27 @@ class fechas{
 		$nuevafecha = fechas::parceFechaInt($nuevafecha);
 		return fechas::parceFechaFormatDMA($nuevafecha, "/");
 	}
+
+	public function esUnaCuotaVencida($fechaUltimaCuota, $fechaPago){
+		$fecha = fechas::parceFechaInt(date('Y-m-d'));
+		$yearActual = substr($fecha, 0, 4);
+		$monthActual = substr($fecha, 4, 2);
+		$dayActual = substr($fecha, 6, 2);
+
+		$yearUltimaCuota = substr($fechaUltimaCuota, 0, 4);
+		$monthUltimaCuota = substr($fechaUltimaCuota, 4, 2);
+
+		if($yearUltimaCuota < $yearActual){
+			return true;
+		}else if($yearUltimaCuota == $yearActual){
+			if(($monthActual - $monthUltimaCuota) > 1){
+				return true;
+			}else if(($monthActual - $monthUltimaCuota) == 1){
+				if($fechaPago <= $dayActualy){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

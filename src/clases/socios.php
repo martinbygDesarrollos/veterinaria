@@ -1,10 +1,28 @@
 <?php
 
 class socios{
-	//activo = 1 inactivo = 0 Honorario = 4 No socio = 2
+	//TIPO SOCIO::: SOCIO = 1, NO SOCIO = 0 ONG = 2
+	//activo = 1 inactivo = 0
 
 	public function getSocios($estado){
 		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado" . $estado);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function getSociosParaCuotasVencidas(){
+		$fecha = date('Y-m-d');
+		$fecha = substr($fecha, 0, 4) . substr($fecha, 5, 2);
+
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota <= ? ");
+		$query->bind_param('i', $fecha);
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();
@@ -56,17 +74,30 @@ class socios{
 		}else return null;
 	}
 
-	public function insertSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUPago, $fechaUCuota){
+	public function obtenerBusqueda($busqueda){
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE nombre LIKE '%" . $busqueda ."%' LIMIT 100");
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function insertSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUPago, $fechaUCuota, $tipoSocio){
 		$conexion = DB::conexion();
-		$query = $conexion->prepare("INSERT INTO socios (cedula, nombre, telefono, telefax, direccion, fechaIngreso, fechaPago, lugarPago, estado, motivoBaja, cuota, email, rut, fechaUltimoPago, fechaUltimaCuota) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-		$query->bind_param('sssssiiiisissii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUPago, $fechaUCuota);
+		$query = $conexion->prepare("INSERT INTO socios (cedula, nombre, telefono, telefax, direccion, fechaIngreso, fechaPago, lugarPago, estado, motivoBaja, cuota, email, rut, fechaUltimoPago, fechaUltimaCuota, tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		$query->bind_param('sssssiiiisissiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUPago, $fechaUCuota, $tipoSocio);
 		if($query->execute()) return $conexion->insert_id;
 		else return false;
 	}
 
-	public function updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut){
-		$query = DB::conexion()->prepare("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ? WHERE idSocio = ?");
-		$query->bind_param('sssssiiissi', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $idSocio);
+	public function updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio){
+		$query = DB::conexion()->prepare("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ? WHERE idSocio = ?");
+		$query->bind_param('sssssiiissii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $idSocio);
 		return $query->execute();
 	}
 
@@ -102,9 +133,9 @@ class socios{
 		return null;
 	}
 
-	public function actualizarEstadoSocio($idSocio){
-		$query = DB::conexion()->prepare("UPDATE socios SET estado = 0 WHERE idSocio = ?");
-		$query->bind_param('i', $idSocio);
+	public function actualizarEstadoSocio($idSocio, $estado){
+		$query = DB::conexion()->prepare("UPDATE socios SET estado = ? WHERE idSocio = ?");
+		$query->bind_param('ii', $estado, $idSocio);
 		return $query->execute();
 	}
 

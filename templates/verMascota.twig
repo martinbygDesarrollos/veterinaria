@@ -93,9 +93,11 @@
 								<a class="btn btn-info" href="{{path_for('Inicio')}}historiaClinica/{{ info.mascota.idMascota }}">Ver historia clínica </a>
 							</div>
 							{% endif %}
+							{% if info.mascota.estado == 1%}
 							<div class="col-sm  text-center">
 								<button class="btn btn-success" data-toggle="modal" data-target="#modalNuevaHistoria">Agregar historia clinica</button>
 							</div>
+							{% endif %}
 						</div>
 						<div class="row" style="margin-top: 2%;">
 							{% if info.mascota.estado == 1 %}
@@ -174,6 +176,7 @@
 											</tbody>
 										</table>
 									</li>
+									{% if info.mascota.estado == 1%}
 									<li class="list-group-item">
 										<div class="row">
 											<div class="col-sm text-center">
@@ -181,6 +184,7 @@
 											</div>
 										</div>
 									</li>
+									{% endif %}
 								</ul>
 							</div>
 						</div>
@@ -215,6 +219,7 @@
 												</tbody>
 											</table>
 										</li>
+										{% if info.mascota.estado == 1%}
 										<li class="list-group-item">
 											<div class="row">
 												<div class="col-sm text-center">
@@ -222,6 +227,7 @@
 												</div>
 											</div>
 										</li>
+										{% endif %}
 									</ul>
 								</div>
 							</div>
@@ -261,6 +267,7 @@
 												</tbody>
 											</table>
 										</li>
+										{% if info.mascota.estado == 1%}
 										<li class="list-group-item">
 											<div class="row">
 												<div class="col-sm text-center">
@@ -268,6 +275,7 @@
 												</div>
 											</div>
 										</li>
+										{% endif %}
 									</ul>
 								</div>
 							</div>

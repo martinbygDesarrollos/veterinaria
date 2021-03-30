@@ -22,6 +22,7 @@ return function (App $app) {
         if (isset($_SESSION['administrador'])) {
             $args['administrador'] = $_SESSION['administrador'];
             $args['hayVencimientos'] = ctr_mascotas::getInfoVencimientos();
+            $args['hayVencimientoSocio'] = ctr_usuarios::haySociosConCuotasVencidas();
         }
         return $this->view->render($response, "index.twig", $args);
     })->setName("Inicio");

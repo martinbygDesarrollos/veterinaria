@@ -96,12 +96,12 @@ function activarDesactivarMascota(btn){
 			response = jQuery.parseJSON(response);
 			console.log("response SUCCESS: ",response);
 			if(response.retorno){
-				showReplyMessage('success', response.mensaje, response.enHistorial, response.titulo);
+				showReplyMessage('success', response.mensaje, response.enHistorial,"Activar/Desactivar Mascota");
 				$("#modalButtonRetorno").click(function(){
 					window.location.reload();
 				});
 			}else{
-				showReplyMessage('danger', response.mensajeError, null, response.titulo);
+				showReplyMessage('danger', response.mensajeError, null, "Activar/Desactivar Mascota");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal('hide');
 				});

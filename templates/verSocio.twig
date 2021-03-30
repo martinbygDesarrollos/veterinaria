@@ -19,21 +19,33 @@
 									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Cédula</span>
-											<p style="text-align: center;" class="form-control">{{ socio.cedula }}</p>
+											<p class="form-control text-center">{{ socio.cedula }}</p>
 										</div>
 									</div>
 									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Teléfono</span>
-											<p style="text-align: center;" class="form-control">{{ socio.telefono }}</p>
+											<p class="form-control text-center">{{ socio.telefono }}</p>
 										</div>
 									</div>
 								</div>
 								<div class="row">
-									<div class="col">
+									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Dirección</span>
-											<p style="text-align: center;" class="form-control">{{ socio.direccion }}</p>
+											<p class="form-control text-center">{{ socio.direccion }}</p>
+										</div>
+									</div>
+									<div class="col-sm">
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Tipo de socio</span>
+											{% if socio.tipo == 1 %}
+											<p  class="form-control text-center">Socio</p>
+											{% elseif socio.tipo == 0 %}
+											<p class="form-control text-center">No socio</p>
+											{% else %}
+											<p class="form-control text-center">ONG</p>
+											{% endif %}
 										</div>
 									</div>
 								</div>
@@ -41,42 +53,34 @@
 							<li class="list-group-item">
 								<h6 class="card-subtitle mb-2 text-muted">Información de pago</h6>
 								<div class="row">
-									<div class="col-sm-3">
+									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Cuota</span>
-											<p style="text-align: center;" class="form-control">$ {{ socio.cuota }}</p>
+											<p class="form-control text-center">$ {{ socio.cuota }}</p>
+										</div>
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Ultimo pago</span>
+											<p class="form-control text-center">{{ socio.fechaUltimoPago }}</p>
+										</div>
+										<div class="input-group mb-3">
+											<span class="input-group-text" id="inputGroup-sizing-default">Lugar de pago</span>
+											{% if socio.lugarPago == 0 %}
+											<p class="form-control text-center">Veterinaria</p>
+											{% elseif socio.lugurPago == 1 %}
+											<p class="form-control text-center">Cobrador</p>
+											{% else %}
+											<p class="form-control text-center">No especificado</p>
+											{% endif %}
 										</div>
 									</div>
 									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Fecha Pago</span>
-											<p style="text-align: center;" class="form-control">{{ socio.fechaPago }}</p>
+											<p class="form-control text-center">{{ socio.fechaPago }}</p>
 										</div>
-									</div>
-									<div class="col-sm">
-										<div class="input-group mb-3">
-											<span class="input-group-text" id="inputGroup-sizing-default">Lugar de pago</span>
-											{% if socio.lugarPago == 0 %}
-											<p style="text-align: center;" class="form-control">Veterinaria</p>
-											{% elseif socio.lugurPago == 1 %}
-											<p style="text-align: center;" class="form-control">Cobrador</p>
-											{% else %}
-											<p style="text-align: center;" class="form-control">No especificado</p>
-											{% endif %}
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-sm">
-										<div class="input-group mb-3">
-											<span class="input-group-text" id="inputGroup-sizing-default">Fecha ultimo pago</span>
-											<p style="text-align: center;" class="form-control">{{ socio.fechaUltimoPago }}</p>
-										</div>
-									</div>
-									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Ultimo mes pago</span>
-											<p style="text-align: center;" class="form-control">{{ socio.fechaUltimaCuota }}</p>
+											<p  class="form-control text-center">{{ socio.fechaUltimaCuota }}</p>
 										</div>
 									</div>
 								</div>
@@ -87,19 +91,19 @@
 									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Ingreso</span>
-											<p style="text-align: center;" class="form-control">{{ socio.fechaIngreso }}</p>
+											<p class="form-control text-center">{{ socio.fechaIngreso }}</p>
 										</div>
 									</div>
 									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Rut</span>
-											<p style="text-align: center;" class="form-control">{{ socio.rut }}</p>
+											<p class="form-control text-center">{{ socio.rut }}</p>
 										</div>
 									</div>
 									<div class="col-sm">
 										<div class="input-group mb-3">
 											<span class="input-group-text" id="inputGroup-sizing-default">Telefax</span>
-											<p style="text-align: center;" class="form-control">{{ socio.telefax }}</p>
+											<p class="form-control text-center">{{ socio.telefax }}</p>
 										</div>
 									</div>
 								</div>
@@ -150,9 +154,9 @@
 						</ul>
 						<div class="d-flex justify-content-between" style="margin-top: 1%">
 							{% if socio.estado == 0 %}
-							<button class="btn btn-success" onclick="activarDesactivarSocio()">Activar socio</button>
+							<button class="btn btn-success"  data-toggle="modal" data-target="#modalActivarDesactivarSocio">Activar socio</button>
 							{% else %}
-							<button class="btn btn-success" onclick="activarDesactivarSocio()">Desactivar socio</button>
+							<button class="btn btn-danger" data-toggle="modal" data-target="#modalActivarDesactivarSocio">Desactivar socio</button>
 							{% endif %}
 							<button class="btn btn-info">Exportar actividad</button>
 						</div>
@@ -161,7 +165,32 @@
 			</div>
 		</div>
 	</div>
-	{%block script%}
-	<script type="text/javascript" src="{{path_for('Inicio')}}scripts/verMascota.js"></script>
-	{% endblock %}
-	{% endblock %}
+</div>
+<div class="modal fade" id="modalActivarDesactivarSocio" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header alert-info" >
+				{% if socio.estado == 0 %}
+				<h5 class="modal-title" >Activar socio</h5>
+				{% else %}
+				<h5 class="modal-title" >Desactivar socio</h5>
+				{% endif %}
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p class="text-center">¿Seguro que desea desactivar este socio?</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+				<button class="btn btn-success" id="{{ socio.idSocio }}" name="{{ socio.estado }}" onclick="activarDesactivarSocio(this)">Aplicar</button>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/verMascota.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/verSocio.js"></script>
+{% endblock %}
+{% endblock %}

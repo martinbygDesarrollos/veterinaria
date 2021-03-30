@@ -134,7 +134,7 @@ class ctr_mascotas {
 						$response->titulo = "Error: Mascota no " . $estado;
 					}
 				}else{
-					$responsable->retorno = false;
+					$response->retorno = false;
 					$response->mensajeError = "No se puede modificar el estado de una mascota de un socio inactivo, sin activarlo previamente.";
 				}
 			}else{
@@ -169,7 +169,7 @@ class ctr_mascotas {
 					//----------------------------------------------------------------------------------------------
 
 					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Vincular socio a mascota", "La mascota de nombre " . $nombre . " se vinculo al socio " . $socio->nombre . $cuotaAsignada);
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Vincular socio a mascota", "La mascota de nombre " . $socio->nombre . " se vinculo al socio " . $socio->nombre . $cuotaAsignada);
 					if($resultInsertOperacionUsuario)
 						$response->enHistorial = "Registrado en el historial del usuario.";
 					else
@@ -224,19 +224,16 @@ class ctr_mascotas {
 		return mascotas::getMascotasInactivasPendientes();
 	}
 
-	public function  desactivarMascotasSocio($idSocio){
-		$response = new \stdClass();
+	public function  desactivarMascotasSocio($idSocio, $estado){
 
 		$arrayMascotas =  mascotas::desactivarMascotasSocio($idSocio);
 		if($arrayMascotas){
 			foreach ($arrayMascotas as $key => $value) {
-				mascotas::activarDesactivarMascota($value->idMascota, 0);
+				mascotas::activarDesactivarMascota($value['idMascota'], $estado);
 			}
-			$response->retorno = true;
-		}else{
-			$response->retorno = false;
+			return true;
 		}
-		return $response;
+		return false;
 	}
 
     //--------------------------------------------------------------------------------------------------------------------------------------------

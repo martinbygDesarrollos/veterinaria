@@ -32,7 +32,7 @@ return function (App $app) {
         $sesionActiva = $_SESSION['administrador'];
         if (isset($sesionActiva)) {
             $args['administrador'] = $sesionActiva;
-            $args['socios'] = ctr_usuarios::getSocios();
+            $args['socios'] = ctr_usuarios::getSociosActivos(1);
             return $this->view->render($response, "newMascota.twig", $args);
         }
     })->setName('newMascota');

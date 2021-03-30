@@ -72,6 +72,9 @@ function insertarNuevoSocio(){
 	var telefax = document.getElementById('inpTelefaxSocio').value || null;
 	var fechaPago = document.getElementById('inpFechaPagoSocio').value;
 	var lugarPago = document.getElementById('inpLugarPagoSocio').value;
+	var tipoSocio = document.getElementById('inpTipoSocio').value;
+
+	console.log(tipoSocio)
 
 	var conError = validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut, telefax, fechaPago, lugarPago);
 
@@ -89,7 +92,8 @@ function insertarNuevoSocio(){
 				rut: rut,
 				telefax: telefax,
 				fechaPago: fechaPago,
-				lugarPago: lugarPago
+				lugarPago: lugarPago,
+				tipoSocio: tipoSocio
 			},
 			success: function (response) {
 				response = response.trim();
@@ -97,7 +101,7 @@ function insertarNuevoSocio(){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
-					showReplyMessage('sucess', response.mensaje, response.enHistorial, "Nuevo socio");
+					showReplyMessage('success', response.mensaje, response.enHistorial, "Nuevo socio");
 					$("#modalButtonRetorno").click(function(){
 						document.getElementById('containerNuevaMascota').style.display = "block";
 						document.getElementById('containerNuevoSocio').style.display = "none";
@@ -224,7 +228,7 @@ function insertarNuevaMascota(){
 				console.log("response SUCCESS: ",response);
 
 				if(response.retorno){
-					showReplyMessage('sucess', response.mensaje, response.enHistorial, "Nueva mascota");
+					showReplyMessage('success', response.mensaje, response.enHistorial, "Nueva mascota");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
@@ -244,6 +248,10 @@ function insertarNuevaMascota(){
 			},
 		});
 	}
+
+}
+
+function getSocioCedula(inputCedula){
 
 }
 

@@ -20,6 +20,7 @@ class copiarDB{
             $array = array();
             while($row = $response->fetch_array(MYSQLI_ASSOC)){
                 $estado = copiarDB::getEstado($row['estado']);
+                $tipoSocio = copiarDB::getTipoSocio($row['estado']);
 
                 $fechaUltimoP = null;
                 if(strlen($row['ultimopago']) == 8)
@@ -35,19 +36,26 @@ class copiarDB{
                 if(strlen($cedula) == 8 || strlen($cedula) == 11)
                     $cedula = copiarDB::extructurarCedula($row['cedula']);
 
-                $idSocio = copiarDB::insertarSocio($cedula, $row['nombre'], $row['numero'], $row['telefono'], $row['telfax'], $row['calle'] . " " . $row['numerocasa'] ." ". $row['apto'], $fechaIngreso , 0, $row['lugarpago'], $estado, $row['motivobaja'], $row['cuota'], $row['email'], null, $fechaUltimoP, $fechaUltimaC);
+                $idSocio = copiarDB::insertarSocio($cedula, $row['nombre'], $row['numero'], $row['telefono'], $row['telfax'], $row['calle'] . " " . $row['numerocasa'] ." ". $row['apto'], $fechaIngreso , 0, $row['lugarpago'], $estado, $row['motivobaja'], $row['cuota'], $row['email'], null, $fechaUltimoP, $fechaUltimaC, $tipoSocio);
                 $array[] = array("idSocio" => $idSocio, "numSocio" => $row['numero']);
             }
             return $array;
         }
     }
 
-    public function insertarSocio($cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta){
+    public function getTipoSocio($tipo){
+        if($tipo == "No Socio") return 0;
+        else if($tipo == "Sin Mascota") return 0;
+        else if($tipo == "Activo")return 1;
+        else if($tipo == "Honorario") return 2;
+        return 0;
+    }
+
+    public function insertarSocio($cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta, $tipoSocio){
         $conn = DB::conexion();
 
-        $sql = $conn->prepare("INSERT INTO `socios`(`cedula`, `nombre`, `numSocio`, `telefono`, `telefax`, `direccion`, `fechaIngreso`, `fechaPago`, `lugarPago`, `estado`, `motivoBaja`, `cuota`, `email`, `rut`, `fechaUltimoPago`, `fechaUltimaCuota`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        $sql->bind_param('ssisssiisisissii',$cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta );
-
+        $sql = $conn->prepare("INSERT INTO `socios`(`cedula`, `nombre`, `numSocio`, `telefono`, `telefax`, `direccion`, `fechaIngreso`, `fechaPago`, `lugarPago`, `estado`, `motivoBaja`, `cuota`, `email`, `rut`, `fechaUltimoPago`, `fechaUltimaCuota`, tipo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        $sql->bind_param('ssisssiisisissiii',$cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta, $tipoSocio );
         if($sql->execute()){
             return $conn->insert_id;
         }else return null;
@@ -146,7 +154,7 @@ class copiarDB{
     }
 
     function insertEnfermedadMascota($idMascota, $enfermedad, $fecha){
-        $query = DB::conexion()->prepare("INSERT INTO mascotaenfermedades(idMascota, fechaDiagnostico, nombreEnfermedad) VALUES (?,?,?)");
+        $query = DB::conexion()->prepare("INSERT INTO enfermedadesmascota(idMascota, fechaDiagnostico, nombreEnfermedad) VALUES (?,?,?)");
         $query->bind_param('iis',$idMascota, $fecha, $enfermedad);
         $query->execute();
     }
@@ -165,8 +173,8 @@ class copiarDB{
     }
 
     public function insertarHistoriaClinica($idRelacion, $fecha, $motivoConsulta, $diagnostico, $observaciones){
-        $sql = DB::conexion()->prepare("INSERT INTO `hisotiralclinico`(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES (?,?,?,?,?)");
-        $sql->bind_param('iisss', $idRelacion, $fecha,$observaciones, $motivoConsulta, $diagnostico);
+        $sql = DB::conexion()->prepare("INSERT INTO `historiasclinica`(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES (?,?,?,?,?)");
+        $sql->bind_param('iisss', $idRelacion, $fecha, $observaciones, $motivoConsulta, $diagnostico);
         $sql->execute();
     }
 
@@ -227,16 +235,10 @@ class copiarDB{
     }
     function getEstado($estado){
 
-        if($estado == "Activo")
-            return 1;
-        else if($estado == "Inactivo")
+        if($estado == "Inactivo")
             return 0;
-        else if ($estado == "No Socio")
-            return 2;
-        else if ($estado == "Sin Mascota")
-            return 3;
-        else if($estado == "Honorario")
-            return 4;
+
+        return 1;
     }
 
     function calcularUltimaCuota($fecha){

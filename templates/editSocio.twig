@@ -41,6 +41,28 @@
 							</div>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-sm-8">
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<label class="input-group-text" for="inputGroupSelect01">Tipo de socio</label>
+								</div>
+								<select class="custom-select" id="inpTipoSocio">
+									<option value="3">Seleccionar</option>
+									<option value="1">Socio</option>
+									<option value="0">No socio</option>
+									<option value="2">ONG</option>
+								</select>
+								{% if socio.tipo == 0 %}
+								<span id="inpTipoActual" class="form-control text-center">No socio</span>
+								{% elseif socio.tipo == 1 %}
+								<span id="inpTipoActual" class="form-control text-center">Socio</span>
+								{% elseif socio.tipo == 2 %}
+								<span id="inpTipoActual" class="form-control text-center">ONG</span>
+								{% endif %}
+							</div>
+						</div>
+					</div>
 				</li>
 				<li class="list-group-item">
 					<h6 class="card-subtitle mb-2 text-muted">Información de pago</h6>

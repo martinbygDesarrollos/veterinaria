@@ -1,0 +1,66 @@
+{% extends "base.twig" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center">
+	<div class="row">
+		<div class="col">
+			<div id="containerNuevoSocio" class="card">
+				<h5 class="card-header" style="background: #85B58A">Cuotas vencidas hasta el {{ fechaVencimiento }}</h5>
+				<div class="card-body">
+					<table id="tableStandar" class="table table-striped table-bordered">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center" scope="col">Ultima cuota</th>
+								<th class="text-center" scope="col">Día de pago</th>
+								<th class="text-center" scope="col">Socio</th>
+								<th class="text-center" scope="col">Teléfono</th>
+								<th class="text-center" scope="col">Email</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for vencimiento in infoVencimientos %}
+							<tr>
+								<td class="text-center">{{ vencimiento.fechaUltimaCuota }}</td>
+								<td class="text-center">{{ vencimiento.fechaPago }}</td>
+								<td class="text-center"><a class="btn btn-info btn-sm" href="{{path_for('Inicio')}}verSocio/{{ vencimiento.idSocio }}">{{ vencimiento.nombreSocio }}</a></td>
+								<td class="text-center">{{ vencimiento.telefono }}</td>
+								{% if vencimiento.email %}
+								<td class="text-center" ><button class="btn btn-info btn-sm" id="{{ vencimiento.idSocio }}"  onclick="openModalVencimientoCuota(this)" >Enviar correo</button></td>
+								{% else %}
+								<td class="text-center">Sin email</td>
+								{% endif %}
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalNotificacionCuota" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<input type="text" id="idSocioVencimiento" style="display: none;">
+			<div class="modal-header alert-success" >
+				<h5 class="modal-title" id="exampleModalLongTitle">Notificar vencimientos</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p class="text-center">¿Desea enviar una notificación con al socio sobre el vencimiento de su cuota?</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-dismiss="modal" >Cancelar</button>
+				<button class="btn btn-success" id="btnNuevaMascota" onclick="notificarVencimientoCuota()">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vencimientos.js"></script>
+{% endblock %}
+{% endblock %}

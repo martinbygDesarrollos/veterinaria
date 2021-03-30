@@ -135,5 +135,46 @@ class usuarios{
 		return mail($email, $subtitulo, $mensaje, $header);
 	}
 
+		public function enviarNotificacionCuota($mensaje, $email){
+		$header  = 'MIME-Version: 1.0' . "\r\n";
+		$header .= 'Content-type:text/html; charset=UTF-8' . "\r\n";
+		$header .= "From: Veterinaria Nan <veterinariaNan@byg.uy>" . "\r\n";
+
+
+		$subtitulo = "Veterinaria Nan";
+		$mensaje = '<html>' .
+		'<head>' .
+		'<title>Veterinaria Nan</title>' .
+		'<head>' .
+		'<style>
+		.fondo{
+			border: 2px solid  #06692C;
+			border-radius: 25px;
+			background-color: #06692C;
+			padding: 15px;
+		}
+		.message{
+			text-align: center;
+			color:white;
+			font-size:25px;
+		}
+		table, th, td {
+			border: 1px solid white;
+			border-collapse: collapse;
+			color: white
+		}
+
+
+
+		</style>' .
+		'</head>' .
+		'<body class="fondo"><h1 style="color: white; font-size:35px; text-align: center;">' . $subtitulo . '</h1>' .
+		'<p class="message">' . $mensaje . '</p>' .
+		'</body>' .
+		'</html>';
+
+		return mail($email, $subtitulo, $mensaje, $header);
+	}
+
 	//----------------------------------------------------------------------------------------------------------
 }

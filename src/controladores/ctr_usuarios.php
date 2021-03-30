@@ -167,7 +167,7 @@ class ctr_usuarios{
     //---------------------------------------------------------------------------------------------------
 
     //----------------------------------- FUNCIONES DE SOCIO --------------------------------------------
-	public function insertNewSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaPago, $lugarPago, $email, $rut){
+	public function insertNewSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaPago, $lugarPago, $email, $rut, $tipoSocio){
 		$response = new \stdClass();
 
 		if(ctr_usuarios::validarCedula($cedula)){
@@ -183,7 +183,7 @@ class ctr_usuarios{
 					}
 				}else $rut = null;
 
-				$result = socios::insertSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, 1, null, null, $email, $rut, null, null);
+				$result = socios::insertSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, 1, null, null, $email, $rut, null, null, $tipoSocio);
 				if($result != false){
 					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
 					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
@@ -212,36 +212,42 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $fechaIngreso, $email, $rut, $telefax){
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $fechaIngreso, $email, $rut, $telefax, $tipoSocio){
 		$response = new \stdClass();
 
 		$socio = socios::getSocio($idSocio);
 		if($socio != null){
-			$fechaIngresoFormat = fechas::parceFechaInt($fechaIngreso);
-			$cuotaActualizada = ctr_usuarios::calcularCostoCuota($idSocio);
-			$mensajeCuota = ".";
-			if($cuotaActualizada)
-				$mensajeCuota = ", el sistema actualizo la cuota con el costo ingresado en el sistema.";
-			else
-				$mensajeCuota = ", pero el sistema no puedo actualizar la cuota para este socio.";
+			$socioCedula = socios::getSocioCedula($cedula);
+			if($socio->cedula !=  $socio->cedula){
+				$fechaIngresoFormat = fechas::parceFechaInt($fechaIngreso);
+				$cuotaActualizada = ctr_usuarios::calcularCostoCuota($idSocio);
+				$mensajeCuota = ".";
+				if($cuotaActualizada)
+					$mensajeCuota = ", el sistema actualizo la cuota con el costo ingresado en el sistema.";
+				else
+					$mensajeCuota = ", pero el sistema no puedo actualizar la cuota para este socio.";
 
-			$result = socios::updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngresoFormat, $fechaPago, $lugarPago, $email, $rut);
+				$result = socios::updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngresoFormat, $fechaPago, $lugarPago, $email, $rut, $tipoSocio);
 
-			if($result){
+				if($result){
 
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
-				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
+					if($resultInsertOperacionUsuario)
+						$response->enHistorial = "Registrado en el historial del usuario.";
+					else
+						$response->enHistorial = "No ingresado en historial de usuario.";
 				//----------------------------------------------------------------------------------------------------------------
 
-				$response->retorno = true;
-				$response->mensaje = "La información del socio fue actualizada" . $mensajeCuota;
+					$response->retorno = true;
+					$response->mensaje = "La información del socio fue actualizada" . $mensajeCuota;
+				}else{
+					$response->retorno = true;
+					$response->mensaje = "La informacion del socio no pudo ser actualizada, porfavor vuelva a intentarlo.";
+				}
 			}else{
-				$response->retorno = true;
-				$response->mensaje = "La informacion del socio no pudo ser actualizada, porfavor vuelva a intentarlo.";
+				$response->retorno = false;
+				$response->mensajeError = "La cédula ingresada ya pertenece a otro usuario, porfavor verifiquela.";
 			}
 		}else{
 			$response->retorno = false;
@@ -251,6 +257,7 @@ class ctr_usuarios{
 		return $response;
 	}
 
+	// pasar 0 para socios inactivos
 	public function getSociosActivos($estado){
 		if($estado == 0){
 			$estado = " = 0";
@@ -258,6 +265,15 @@ class ctr_usuarios{
 			$estado = " != 0";
 		}
 		return socios::getSocios($estado);
+	}
+
+	public function obtenerBusqueda($busqueda){
+		$socios = socios::obtenerBusqueda($busqueda);
+		$sociosCount = sizeof($socios);
+		return array(
+			"socios" => $socios,
+			"sociosSize" => $sociosCount
+		);
 	}
 
 	public function sociosNoVinculados($idMascota){
@@ -271,10 +287,10 @@ class ctr_usuarios{
 			if(strlen($socio->fechaUltimoPago) == 8)
 				$socio->fechaUltimoPago = fechas::parceFechaFormatDMA($socio->fechaUltimoPago, "/");
 			else
-				$socio->fechaUltimoPago = "No especificado";
+				$socio->fechaUltimoPago = "No ingresado";
 			if(strlen($socio->fechaUltimaCuota) == 6)
 				$socio->fechaUltimaCuota = fechas::parceFechaMesFormatDMA($socio->fechaUltimaCuota);
-			else $socio->fechaUltimaCuota = "No especificado";
+			else $socio->fechaUltimaCuota = "No pago";
 
 			$socio->mascotas = ctr_mascotas::getMasctoasSocio($idSocio);
 		}
@@ -291,7 +307,37 @@ class ctr_usuarios{
 		return $socio;
 	}
 
-	public function notificarSocio($idSocio, $idMascota){
+	public function notificarSocioCuota($idSocio){
+		$response = new \stdClass();
+
+		$socio = ctr_usuarios::getSocio($idSocio);
+
+		if($socio){
+			$mensaje =  $socio->nombre . " se le informa que su último pago registrado es el correspondiente al mes de " . $socio->fechaUltimaCuota . " se le solicita que realize el abono correspondiente.";
+			$result = usuarios::enviarNotificacionCuota($mensaje, $socio->email);
+			if($result){
+				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Notificar socio cuota", "Se notificó al socio de nombre " . $socio->nombre . " a traves de un correo electrónico sobre su falta de pago.");
+				if($resultInsertOperacionUsuario)
+					$response->enHistorial = "Registrado en el historial del usuario.";
+				else
+					$response->enHistorial = "No ingresado en historial de usuario.";
+				//----------------------------------------------------------------------------------------------------------------
+				$response->retorno = true;
+				$response->mensaje = "Se envio un recordatorio al socio sobre su falta de pago.";
+			}else{
+				$response->retorno = false;
+				$response->mensaje = "Ocurrio un error y el recordatorio de su falta de pago no fue enviado.";
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "El socio al que quiere notificar no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
+	public function notificarSocioVacuna($idSocio, $idMascota){
 		$response = new \stdClass();
 
 		$socio = ctr_usuarios::getSocio($idSocio);
@@ -305,7 +351,7 @@ class ctr_usuarios{
 						$result = usuarios::enviarNotificacionVacunas($mensaje, $socio->email, $vacunasVencidas);
 						if($result){
 							//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-							$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Notificar socio", "Se notificó al socio de nombre " . $nombre . " a traves de un correo electrónico.");
+							$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Notificar socio vacuna", "Se notificó al socio de nombre " . $nombre . " a traves de un correo electrónico sobre las vacunas vencidas de su mascota.");
 							if($resultInsertOperacionUsuario)
 								$response->enHistorial = "Registrado en el historial del usuario.";
 							else
@@ -338,6 +384,46 @@ class ctr_usuarios{
 		return $response;
 	}
 
+	public function activarDesactivarSocio($idSocio){
+		$response = new \stdClass();
+
+		$socio = socios::getSocio($idSocio);
+		if($socio){
+			$estadoMensaje = "activo";
+			$estado = $socio->estado;
+			if($estado == 0)$estado = 1;
+			else{
+				$estadoMensaje = "inactivo";
+				$estado = 0;
+			}
+			$result = socios::actualizarEstadoSocio($idSocio, $estado);
+			if($result){
+				$mensajeMascotasDesactivadas = "El estado de sus mascotas no fue modificado.";
+				if($estado == 0){
+					$resultDesactivarMascotas = ctr_mascotas::desactivarMascotasSocio($idSocio, $estado);
+					$mensajeMascotasDesactivadas = "Las mascotas de este socio fueron desactivadas correctamente.";
+					if(!$resultDesactivarMascotas)
+						$mensajeMascotasDesactivadas = "Las mascotas de este socio no fueron desactivadas.";
+				}
+				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar estado socio", "El estado del socio " . $socio->nombre . " fue modificado y ahora se encuentra " . $estadoMensaje . ". " . $mensajeMascotasDesactivadas);
+				if($resultInsertOperacionUsuario)
+					$response->enHistorial = "Registrado en el historial del usuario.";
+				else
+					$response->enHistorial = "No ingresado en historial de usuario.";
+				//----------------------------------------------------------------------------------------------------------------
+
+				$response->retorno = true;
+				$response->mensaje = "El estado fue modificado correctamente y ahora el socio " . $socio->nombre . " se encuentra " . $estadoMensaje . ". " . $mensajeMascotasDesactivadas;
+			}
+		}else{
+			$response->retorno = false;
+			$response->mensajeError = "El socio que quiere modificar no fue encontrado en el sisitema porfavor vuelva a intentarlo.";
+		}
+
+		return $response;
+	}
+
 	public function actualizarEstadosSocios($plazoDeuda){
 		$response = new \stdClass();
 
@@ -347,8 +433,8 @@ class ctr_usuarios{
 		$arraySocios = socios::getSociosConPlazoVencido($fechaInt);
 		if($arraySocios){
 			foreach ($arraySocios as $key => $value) {
-				socios::actualizarEstadoSocio($value->idSocio);
-				ctr_mascotas::desactivarMascotasSocio($idSocio);
+				socios::actualizarEstadoSocio($value->idSocio, 0);
+				ctr_mascotas::desactivarMascotasSocio($idSocio, 0);
 			}
 
 			$response->retorno = true;
@@ -359,6 +445,34 @@ class ctr_usuarios{
 		}
 
 		return $response;
+	}
+
+	public function getSociosCuotasVencidas(){
+		$arraySocios = socios::getSociosParaCuotasVencidas();
+		$arrayResult = array();
+		foreach ($arraySocios as $key => $value) {
+			if(strlen($value['fechaUltimaCuota']) == 6){
+				$result = fechas::esUnaCuotaVencida($value['fechaUltimaCuota'], $value['fechaPago']);
+				if($result){
+					$arrayResult[] = array(
+						"idSocio" => $value['idSocio'],
+						"nombreSocio" => $value['nombre'],
+						"tipoSocio" => $value['tipo'],
+						"fechaUltimaCuota" => fechas::parceFechaFormatDMANoDay($value['fechaUltimaCuota'], "/"),
+						"fechaPago" => $value['fechaPago'],
+						"telefono" => $value['telefono'],
+						"email" => $value['email'],
+					);
+				}
+			}
+		}
+		return $arrayResult;
+	}
+
+	public function haySociosConCuotasVencidas(){
+		$arrayResult = ctr_usuarios::getSociosCuotasVencidas();
+		if(sizeof($arrayResult) > 0) return 1;
+		else return 0;
 	}
 
 	public function esMiMascota($idSocio, $idMascota){

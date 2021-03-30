@@ -12,6 +12,7 @@ function modificarSocio(btn){
 	var lugar = document.getElementById("inpLugarPago").value || null;
 	var email = document.getElementById("inpEmail").value || null;
 	var fechaIngreso = document.getElementById("inpFechaIngreso").value || document.getElementById("inpFechaIngresoActual").innerHTML;
+	var tipo = document.getElementById("inpTipoSocio").value;
 	var rut = document.getElementById("inpRut").value || null;
 	var telefax = document.getElementById("inpTelefax").value || null;
 
@@ -22,6 +23,15 @@ function modificarSocio(btn){
 		else lugar = 1;
 	}
 
+	if(tipo == 3){
+		tipo = document.getElementById("inpTipoActual").innerHTML;
+		if(tipo == 'Socio')
+			tipo = 1;
+		else if(tipo = 'No socio')
+			tipo = 0;
+		else if (tipo = 'ONG')
+			tipo = 2;
+	}
 	if(!validarInformacionSocio(nombre, cedula, direccion, telefono, fechaPago, lugar, email, fechaIngreso, rut, telefax)){
 		$.ajax({
 			async: false,
@@ -38,7 +48,8 @@ function modificarSocio(btn){
 				email: email,
 				fechaIngreso: fechaIngreso,
 				rut: rut,
-				telefax: telefax
+				telefax: telefax,
+				tipo: tipo
 			},
 			success: function (response) {
 				response = response.trim();

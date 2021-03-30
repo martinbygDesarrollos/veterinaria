@@ -1,4 +1,5 @@
 const urlBase = '/veterinarianan/public';
+
 function seleccionarSocio(btn){
 	var idMascota = btn.name;
 	var idSocio = btn.id;
@@ -11,6 +12,8 @@ function seleccionarSocio(btn){
 
 function vincularSocioMascota(idSocio, idMascota){
 	$("#modalAsociar").modal('hide');
+	console.log(idSocio)
+	console.log(idMascota)
 	$.ajax({
 		async: false,
 		url: urlBase + "/vincularSocioMascota",

@@ -3,20 +3,36 @@
 {% endblock %}
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center">
-	<div></div>
-	{% if administrador %}
-	{% if hayVencimientos != null%}
-	<a class="btn btn-warning" href="{{path_for('Inicio')}}vencimientos">Vencimientos del día de hoy</a>
+{% if administrador %}
+<div class="col-md-6">
+	<div class="input-group mb-3">
+		<span class="input-group-text" id="inputGroup-sizing-default">Busqueda socio (nombre)</span>
+		<input id="inpTextBusqueda" type="text" class="form-control text-center" value="{{ socio.nombre }}">
+		<div class="input-group-append">
+			<button class="btn btn-outline-secondary" type="button" onclick="realizarBusqueda()">Buscar</button>
+		</div>
+	</div>
+	{% if hayVencimientos != null %}
+	<div class="col-md-6">
+		<div class="input-group mb-3">
+			<a  id="hayVencimientosHoy" class="btn btn-warning" href="{{path_for('Inicio')}}vencimientos" ></a>
+		</div>
+	</div>
 	{% endif %}
+	{% if hayVencimientoSocio == 1 %}
+	<div class="col-md-6">
+		<div class="input-group mb-3">
+			<a id="hayCuotasVencidas" class="btn btn-warning" href="{{path_for('Inicio')}}cuotasVencidas"></a>
+		</div>
+	</div>
 	{% endif %}
 </div>
-
+{% endif %}
 <div class="d-flex justify-content-center">
-	<img style="width: 500px; height: 500px; border-radius: 50%" src="{{path_for('Inicio')}}img/inicio.png">
+	<img style="width: 500px; height: 500px; border-radius: 50%;margin-top: 2%" src="{{path_for('Inicio')}}img/inicio.png">
 </div>
-
 {%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/index.js"></script>
 <script>
 	let date = new Date()
 
@@ -31,8 +47,13 @@
 	if(day < 10){
 		day = "0" + day;
 	}
-	if(document.getElementById('hayVencimietnosHoy'))
-		document.getElementById('hayVencimietnosHoy').innerHTML = "Vencimietos del " + day + "/" + month + "/" + year;
+	var cuotas = document.getElementById('hayCuotasVencidas');
+	var vacunas = document.getElementById('hayVencimientosHoy');
+
+	if(vacunas)
+		vacunas.innerHTML = "Vacunas vencidas hasta el " + day + "/" + month + "/" + year;
+	if(cuotas)
+		cuotas.innerHTML = "Cuotas vencidas hasta el " + day + "/" + month + "/" + year;
 </script>
 {% endblock %}
 {% endblock %}

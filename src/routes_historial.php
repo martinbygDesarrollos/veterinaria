@@ -13,15 +13,16 @@ return function (App $app) {
 
 	$app->post('/prueba', function(Request $request, Response $response){
 		$data = $request->getParams();
+
 		// $operacion = $data['operacion'];
 		// $observaciones = $data['observaciones'];
 		// return json_encode(ctr_historiales::insertHistorialUsuario($operacion, $observaciones));
-		// return json_encode(ctr_historiales::levantarDB());
+		return json_encode(ctr_historiales::levantarDB());
 		// return json_encode(ctr_historiales::updateCuotaSocio($cuotaUna, $cuotaDos, $cuotaExtra));
 		// return json_encode(ctr_historiales::insertarVacunaMascota($id));
-		// return json_encode(ctr_mascotas::getInfoVencimientos());
+		// return json_encode(ctr_usuarios::obtenerBusqueda($idSocio));
 		// return json_encode(ctr_usuarios::notificarSocio($idSocio,$idMascota));
-		return json_encode(ctr_usuarios::actualizarEstadosSocios(90));
+		// return json_encode(ctr_usuarios::actualizarEstadosSocios(90));
 	});
 
     //-------------------------- VISTAS ------------------------------------------
@@ -63,7 +64,6 @@ return function (App $app) {
 			return $this->view->render($response, "historialUsuario.twig", $args);
 		}
 	})->setName("settings");
-
     //-----------------------------------------------------------------------------
 
     //--------------------------------POST-----------------------------------------
