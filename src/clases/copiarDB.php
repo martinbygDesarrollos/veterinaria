@@ -14,7 +14,7 @@ class copiarDB{
     public function seleccionarInsertarSocios(){
 
         $conexion = copiarDB::getConexion();
-        $sql = $conexion->prepare("SELECT * FROM socio LIMIT 150");
+        $sql = $conexion->prepare("SELECT * FROM socio");
         if($sql->execute()){
             $response = $sql->get_result();
             $array = array();

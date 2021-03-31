@@ -39,7 +39,7 @@ return function (App $app) {
 
         if (isset($_SESSION['administrador'])) {
             $args['administrador'] = $_SESSION['administrador'];
-            $args['socios'] = ctr_usuarios::getSociosActivos(1);
+            // $args['socios'] = ctr_usuarios::getSociosActivos(1);
             return $this->view->render($response, "sociosActivos.twig", $args);
         }
     })->setName("sociosActivos");
@@ -234,6 +234,12 @@ return function (App $app) {
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::notificarSocioCuota($idSocio));
         // }
+    });
+
+    $app->post('/getSociosPagina', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $ultimoID = $data['ultimoID'];
+        return json_encode(ctr_usuarios::getSociosActivosPagina($ultimoID));
     });
     //------------------------------------------------------------------------------------------
 

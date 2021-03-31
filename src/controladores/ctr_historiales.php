@@ -14,17 +14,17 @@ class ctr_historiales {
 
 		$sociosInsertados = copiarDB::seleccionarInsertarSocios();
 
-		$arrayMascotasInsertadas = array();
-		foreach ($sociosInsertados as $keySocio => $socio) {
-			$arrayMascotasInsertadas = copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
+		// $arrayMascotasInsertadas = array();
+		// foreach ($sociosInsertados as $keySocio => $socio) {
+		// 	$arrayMascotasInsertadas = copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
 
-			foreach ($arrayMascotasInsertadas as $keyMascota => $mascota) {
-				copiarDB::seleccionarInsertarVacunasMascotas($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'] );
-				copiarDB::seleccionarInsertarEnfermedadesMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
-				copiarDB::seleecionarInsertarHistorialClinicoMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
-				copiarDB::seleccionarInsertarHistorialMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'], $mascota['idSocio']);
-			}
-		}
+		// 	foreach ($arrayMascotasInsertadas as $keyMascota => $mascota) {
+		// 		copiarDB::seleccionarInsertarVacunasMascotas($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'] );
+		// 		copiarDB::seleccionarInsertarEnfermedadesMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
+		// 		copiarDB::seleecionarInsertarHistorialClinicoMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
+		// 		copiarDB::seleccionarInsertarHistorialMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'], $mascota['idSocio']);
+		// 	}
+		// }
 	}
 
 

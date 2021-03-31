@@ -276,6 +276,27 @@ class ctr_usuarios{
 		);
 	}
 
+	public function getSociosActivosPagina($ultimoId){
+		if($ultimoId == 0){
+			$maxId = socios::getSocioMaxId();
+			$socios = socios::getSociosActivosPagina($maxId->idMaximo);
+			$minId = socios::getMin($socios, $maxId->idMaximo);
+			return array(
+				"min" => $minId,
+				"max" => $maxId,
+				"socios" => $socios
+			);
+		}else{
+			$socios = socios::getSociosActivosPagina($ultimoId);
+			$minId = socios::getMin($socios, $ultimoId);
+			return array(
+				"min" => $minId,
+				"max" => $ultimoId,
+				"socios" => $socios
+			);
+		}
+	}
+
 	public function sociosNoVinculados($idMascota){
 		return socios::getSociosNoVinculados($idMascota);
 	}

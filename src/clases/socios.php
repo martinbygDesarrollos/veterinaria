@@ -4,6 +4,36 @@ class socios{
 	//TIPO SOCIO::: SOCIO = 1, NO SOCIO = 0 ONG = 2
 	//activo = 1 inactivo = 0
 
+	public function getMin($socios, $maxValor){
+		$valorMinimo = $maxValor;
+		foreach ($socios as $key => $value) {
+			if($value['idSocio'] < $valorMinimo)
+				$valorMinimo = $value['idSocio'];
+		}
+		return $valorMinimo;
+	}
+
+	public function getSocioMaxId(){
+		$query = DB::conexion()->prepare("SELECT MAX(idSocio) AS idMaximo FROM socios WHERE estado = 1");
+		if($query->execute()){
+			$result = $query->get_result();
+			return $result->fetch_object();
+		}else return null;
+	}
+	public function getSociosActivosPagina($idMaximo){
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10");
+		$query->bind_param('i', $idMaximo);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
 	public function getSocios($estado){
 		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado" . $estado);
 		if($query->execute()){
