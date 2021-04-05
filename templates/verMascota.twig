@@ -2,289 +2,248 @@
 {% block head %}
 {% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-	<div class="col">
-		<div id="containerNuevoSocio" class="card">
-			<div class="card-header d-flex justify-content-between align-items-center" style="background: #85B58A">
-				{% if info.duenio != null %}
-				<h5>Mascota {{ info.mascota.nombre}} de <a style="color: black;" href="{{path_for('Inicio')}}verSocio/{{ info.duenio.idSocio }}"> {{ info.duenio.nombre}}</a></h5>
-				{% else %}
-				<h5>Mascota {{ info.mascota.nombre}}</h5>
-				{% endif %}
-				<a style="color: white;" class="btn btn-info btn-sm" href="{{path_for('Inicio')}}editMascota/{{ info.mascota.idMascota }}"><i class="fas fa-edit"> editar</i></a>
-			</div>
-			<div class="card-body">
-				<ul class="list-group list-group-flush">
-					<li class="list-group-item">
-						<h6 class="card-subtitle mb-2 text-muted">Información de la mascota</h6>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Especie</span>
-									<p class="form-control text-center">{{ info.mascota.especie }}</p>
-								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Raza</span>
-									<p class="form-control text-center">{{ info.mascota.raza }}</p>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Sexo</span>
-									{% if info.mascota.sexo == 0 %}
-									<p class="form-control  text-center">Hembra</p>
-									{% else %}
-									<p class="form-control  text-center">Macho</p>
-									{% endif %}
-								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Nacimiento</span>
-									<p class="form-control text-center">{{ info.mascota.fechaNacimiento }}</p>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Pelo</span>
-									<p class="form-control text-center">{{ info.mascota.pelo }}</p>
-								</div>
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Pedigree</span>
-									{% if info.mascota.pedigree == 1 %}
-									<p class="form-control text-center">Si</p>
-									{% else %}
-									<p class="form-control text-center">Si</p>
-									{% endif %}
-								</div>
-							</div>
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Color</span>
-									<p class="form-control text-center">{{ info.mascota.color }}</p>
-								</div>
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="inputGroup-sizing-default">Chip</span>
-									<p class="form-control text-center">{{ info.mascota.chip }}</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li class="list-group-item">
-						<h6 class="card-subtitle mb-2 text-muted">Observaciones</h6>
-						<div class="row">
-							<div class="col-sm">
-								<div class="input-group mb-3">
-									<textarea id="inpObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3" disabled>{{ info.mascota.observaciones }}</textarea>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li class="list-group-item">
-						<div class="row">
-							{% if info.hayHistorial == true %}
-							<div class="col-sm  text-center">
-								<a class="btn btn-info" href="{{path_for('Inicio')}}historiaClinica/{{ info.mascota.idMascota }}">Ver historia clínica </a>
-							</div>
-							{% endif %}
-							{% if info.mascota.estado == 1%}
-							<div class="col-sm  text-center">
-								<button class="btn btn-success" data-toggle="modal" data-target="#modalNuevaHistoria">Agregar historia clinica</button>
-							</div>
-							{% endif %}
-						</div>
-						<div class="row" style="margin-top: 2%;">
-							{% if info.mascota.estado == 1 %}
-							<div class="col-sm  text-center">
-								<button class="btn btn-danger" id="{{ info.mascota.idMascota }}" name="inactivar" onclick="setEstadoMascota(this)">Guardar como inactiva</button>
-							</div>
-							{% elseif info.mascota.estado == 0 %}
-							<div class="col-sm  text-center">
-								<button class="btn btn-success" id="{{ info.mascota.idMascota }}" name="activar" onclick="setEstadoMascota(this)">Guardar como activa</button>
-							</div>
-							{% endif %}
-							{% if info.duenio == null %}
-							<div class="col-sm  text-center">
-								<a class="btn btn-success" href="{{path_for('Inicio')}}asignarSocioMascota/{{ info.mascota.idMascota }}">Asignar socio</a>
-							</div>
-							{% endif %}
-						</div>
-					</li>
-				</ul>
-			</div>
+<div class="d-flex justify-content-center">
+	<input type="text" id="idMascotaSeleccionada" value="{{ info.mascota.idMascota }}" style="display: none;">
+	<div class="card" style="width: 50%; min-width: 800px;">
+		<div class="card-header d-flex justify-content-between align-items-center" style="background: #85B58A">
+			{% if info.duenio != null %}
+			<h5>Mascota {{ info.mascota.nombre}} de <a style="color: black;" href="{{path_for('Inicio')}}verSocio/{{ info.duenio.idSocio }}"> {{ info.duenio.nombre}}</a></h5>
+			{% else %}
+			<h5>Mascota {{ info.mascota.nombre}}</h5>
+			{% endif %}
+			<a style="color: white;" class="btn btn-info btn-sm" href="{{path_for('Inicio')}}editMascota/{{ info.mascota.idMascota }}"><i class="fas fa-edit"> editar</i></a>
 		</div>
-	</div>
-	<div class="col-sm">
-		<div class="card text-center">
-			<div class="card-header">
-				<nav>
-					<div class="nav nav-tabs" id="nav-tab" role="tablist">
-						<a class="nav-item nav-link text-info active" id="nav-home-tab" data-toggle="tab" href="#nav-vacunas" role="tab" aria-controls="nav-home" aria-selected="true">Vacunas</a>
-						<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-enfermedades" role="tab" aria-controls="nav-profile" aria-selected="false">Enfermedades</a>
-						<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-analisis" role="tab" aria-controls="nav-profile" aria-selected="false">Analisis</a>
-					</div>
-				</nav>
-				<div class="tab-content" id="nav-tabContent">
-					<div class="tab-pane fade show active" id="nav-vacunas" role="tabpanel" aria-labelledby="nav-home-tab">
-						<div class="card">
-							<h5 class="card-header" style="background: #85B58A">Vacunas de {{ info.mascota.nombre}}</h5>
-							<div class="card-body">
-								<ul class="list-group list-group-flush">
-									<li class="list-group-item">
-										<table id="tableStandar" class="table table-striped table-bordered">
-											<thead class="thead-dark">
-												<tr>
-													<th class="text-center" scope="col">Prox. dosis</th>
-													<th class="text-center" scope="col">Ultima dosis</th>
-													<th class="text-center" scope="col">Nombre</th>
-													<th class="text-center" scope="col">Intervalo</th>
-													<th class="text-center" scope="col">Nº dosis</th>
-													<th class="text-center" scope="col">Vacunar</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for vacuna in info.vacunas%}
-												<tr>
-													{% if vacuna.fechaProximaDosis == 0 %}
-													<td class="text-center">Dosis única</td>
-													{% else %}
-													{% if vacuna.vencida == 1 %}
-													<td class="text-center alert-danger">{{ vacuna.fechaProximaDosis }}</td>
-													{% else %}
-													<td class="text-center">{{ vacuna.fechaProximaDosis }}</td>
-													{% endif %}
-													{% endif %}
-													<td class="text-center">{{ vacuna.fechaUltimaDosis }}</td>
-													<td class="text-center">{{ vacuna.nombreVacuna }}</td>
-													{% if vacuna.intervaloDosis == 1 %}
-													<td class="text-center">dosis única</td>
-													{% else %}
-													<td class="text-center">{{ vacuna.intervaloDosis }}</td>
-													{% endif %}
-													<td class="text-center">{{ vacuna.numDosis }}</td>
-													<td class="text-center">
-														<button id="{{ vacuna.idVacunaMascota }}" name="{{ vacuna.nombreVacuna }}" class="btn btn-success btn-sm"  onclick="abrirModalAplicarDosis(this)"><i class="fas fa-syringe"></i></button>
-													</td>
-												</tr>
-												{% endfor %}
-											</tbody>
-										</table>
-									</li>
-									{% if info.mascota.estado == 1%}
-									<li class="list-group-item">
-										<div class="row">
-											<div class="col-sm text-center">
-												<button class="btn btn-success" data-toggle="modal" data-target="#vacunasModal">Aplicar nueva vacuna</button>
-											</div>
-										</div>
-									</li>
-									{% endif %}
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="tab-pane fade" id="nav-enfermedades" role="tabpanel" aria-labelledby="nav-profile-tab">
-						<div class="card">
-							<h5 class="card-header" style="background: #85B58A">Enfermedades de {{ info.mascota.nombre}}</h5>
-							<div class="card-body">
-								<ul class="list-group list-group-flush">
-									<li class="list-group-item">
-										<table id="tableStandar" class="table table-striped table-bordered">
-											<thead class="thead-dark">
-												<tr>
-													<th class="text-center" scope="col">Fecha diagnostico</th>
-													<th class="text-center" scope="col">Nombre</th>
-													<th class="text-center" scope="col">Observaciones</th>
-													<th class="text-center" scope="col">Modificar</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for enfermedad in info.enfermedades%}
-												<tr>
-													<td class="text-center">{{ enfermedad.fechaDiagnostico }}</td>
-													<td class="text-center">{{ enfermedad.nombreEnfermedad }}</td>
-													<td class="text-center">{{ enfermedad.observaciones }}</td>
-													<td class="text-center">
-														<button class="btn btn-success btn-sm" id="{{ enfermedad.idEnfermedad }}" name="ModificarEnfermedad" onclick="operacionEnfermedad(this)">
-															<i class="fas fa-edit"></i>
-														</button></td>
-													</tr>
-													{% endfor %}
-												</tbody>
-											</table>
-										</li>
-										{% if info.mascota.estado == 1%}
-										<li class="list-group-item">
-											<div class="row">
-												<div class="col-sm text-center">
-													<button class="btn btn-success" id="{{info.mascota.idMascota}}" name="AgregarEnfermedad" onclick="operacionEnfermedad(this)">Agregar Nueva enfermedad</button>
-												</div>
-											</div>
-										</li>
-										{% endif %}
-									</ul>
+		<div class="card-body">
+			<nav>
+				<div class="nav nav-tabs" id="nav-tab" role="tablist">
+					<a class="nav-item nav-link text-info active" id="nav-home-tab" data-toggle="tab" href="#nav-informacion" role="tab" aria-controls="nav-home" aria-selected="true">Información</a>
+					<a class="nav-item nav-link text-info" id="nav-home-tab" data-toggle="tab" href="#nav-vacunas" role="tab" aria-controls="nav-home" aria-selected="true">Vacunas</a>
+					<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-enfermedades" role="tab" aria-controls="nav-profile" aria-selected="false">Enfermedades</a>
+					<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-analisis" role="tab" aria-controls="nav-profile" aria-selected="false">Analisis</a>
+				</div>
+			</nav>
+			<div class="tab-content" id="nav-tabContent">
+				<div class="tab-pane fade show active" id="nav-informacion" role="tabpanel" aria-labelledby="nav-home-tab">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-sm">
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Especie</span>
+										<p class="form-control text-center">{{ info.mascota.especie }}</p>
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Raza</span>
+										<p class="form-control text-center">{{ info.mascota.raza }}</p>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="tab-pane fade" id="nav-analisis" role="tabpanel" aria-labelledby="nav-profile-tab">
-							<div class="card">
-								<h5 class="card-header" style="background: #85B58A">Analisis de {{ info.mascota.nombre}}</h5>
-								<div class="card-body">
-									<ul class="list-group list-group-flush">
-										<li class="list-group-item">
-											<table id="tableStandar" class="table table-striped table-bordered">
-												<thead class="thead-dark">
-													<tr>
-														<th class="text-center" scope="col">Fecha</th>
-														<th class="text-center" scope="col">Nombre</th>
-														<th class="text-center" scope="col">Modificar</th>
-														<th class="text-center" scope="col">Ver</th>
-													</tr>
-												</thead>
-												<tbody>
-													{% for estudio in info.analisis %}
-													<tr>
-														<td class="text-center">{{ estudio.fecha }}</td>
-														<td class="text-center">{{ estudio.nombre }}</td>
-														<td class="text-center">
-															<button class="btn btn-success btn-sm" name="ModificarAnalisis" id="{{ estudio.idAnalisis }}"  onclick="operacionAnalisis(this)">
-																<i class="fas fa-edit"></i>
-															</button>
-														</td>
-														<td class="text-center">
-															<button class="btn btn-info btn-sm" id="{{ estudio.idAnalisis }}"  onclick="verDetalleAnalsisi(this)">
-																<i class="fas fa-eye"></i>
-															</button>
-														</td>
-													</tr>
-													{% endfor %}
-												</tbody>
-											</table>
-										</li>
-										{% if info.mascota.estado == 1%}
-										<li class="list-group-item">
-											<div class="row">
-												<div class="col-sm text-center">
-													<button class="btn btn-success" id="{{info.mascota.idMascota}}" name="AgregarAnalisis" onclick="operacionAnalisis(this)">Agregar nuevo analisis</button>
-												</div>
-											</div>
-										</li>
+							<div class="row">
+								<div class="col-sm">
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Sexo</span>
+										{% if info.mascota.sexo == 0 %}
+										<p class="form-control  text-center">Hembra</p>
+										{% else %}
+										<p class="form-control  text-center">Macho</p>
 										{% endif %}
-									</ul>
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Nacimiento</span>
+										<p class="form-control text-center">{{ info.mascota.fechaNacimiento }}</p>
+									</div>
 								</div>
 							</div>
-						</div>
-					</div>
+							<div class="row">
+								<div class="col-sm">
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Pelo</span>
+										<p class="form-control text-center">{{ info.mascota.pelo }}</p>
+									</div>
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Pedigree</span>
+										{% if info.mascota.pedigree == 1 %}
+										<p class="form-control text-center">Si</p>
+										{% else %}
+										<p class="form-control text-center">Si</p>
+										{% endif %}
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Color</span>
+										<p class="form-control text-center">{{ info.mascota.color }}</p>
+									</div>
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="inputGroup-sizing-default">Chip</span>
+										<p class="form-control text-center">{{ info.mascota.chip }}</p>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li class="list-group-item">
+							<h6 class="card-subtitle mb-2 text-muted">Observaciones</h6>
+							<div class="row">
+								<div class="col-sm">
+									<div class="input-group mb-3">
+										<textarea id="inpObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3" disabled>{{ info.mascota.observaciones }}</textarea>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li class="list-group-item">
+							<div class="row">
+								{% if info.hayHistorial == true %}
+								<div class="col-sm  text-center">
+									<a class="btn btn-info" href="{{path_for('Inicio')}}historiaClinica/{{ info.mascota.idMascota }}">Ver historia clínica </a>
+								</div>
+								{% endif %}
+								{% if info.mascota.estado == 1%}
+								<div class="col-sm  text-center">
+									<button class="btn btn-success" data-toggle="modal" data-target="#modalNuevaHistoria">Agregar historia clinica</button>
+								</div>
+								{% endif %}
+							</div>
+							<div class="row" style="margin-top: 2%;">
+								{% if info.mascota.estado == 1 %}
+								<div class="col-sm  text-center">
+									<button class="btn btn-danger" id="{{ info.mascota.idMascota }}" name="inactivar" onclick="setEstadoMascota(this)">Guardar como inactiva</button>
+								</div>
+								{% elseif info.mascota.estado == 0 %}
+								<div class="col-sm  text-center">
+									<button class="btn btn-success" id="{{ info.mascota.idMascota }}" name="activar" onclick="setEstadoMascota(this)">Guardar como activa</button>
+								</div>
+								{% endif %}
+								{% if info.duenio == null %}
+								<div class="col-sm  text-center">
+									<a class="btn btn-success" href="{{path_for('Inicio')}}asignarSocioMascota/{{ info.mascota.idMascota }}">Asignar socio</a>
+								</div>
+								{% endif %}
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="tab-pane fade show" id="nav-vacunas" role="tabpanel" aria-labelledby="nav-home-tab">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">
+							<table class="table table-striped table-bordered">
+								<thead class="thead-dark">
+									<tr>
+										<th class="text-center" scope="col">Prox. dosis</th>
+										<th class="text-center" scope="col">Ultima dosis</th>
+										<th class="text-center" scope="col">Nombre</th>
+										<th class="text-center" scope="col">Intervalo</th>
+										<th class="text-center" scope="col">Nº dosis</th>
+										<th class="text-center" scope="col">Vacunar</th>
+									</tr>
+								</thead>
+								<tbody id="tbodyVacunas"></tbody>
+							</table>
+							<div id="noHayResultadosVacunasMensaje" style="display: none" class="alert alert-info text-center" role="alert">
+								<h3>No hay Vacunas</h3>
+								Hasta el momento esta mascota no tiene una vacuna aplicada.
+							</div>
+							<div class="d-flex justify-content-between">
+								<button id="irAtrasPaginaVacunas" class="btn btn-sm btn-info" onclick="paginaAnteriorVacunas()">Atras</button>
+								<button id="irAdelantePaginaVacunas" class="btn btn-sm btn-info" onclick="paginaPosteriorVacunas()">Adelante</button>
+							</div>
+						</li>
+						{% if info.mascota.estado == 1%}
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-sm text-center">
+									<button class="btn btn-success" data-toggle="modal" data-target="#vacunasModal">Aplicar nueva vacuna</button>
+								</div>
+							</div>
+						</li>
+						{% endif %}
+					</ul>
+				</div>
+				<div class="tab-pane fade" id="nav-enfermedades" role="tabpanel" aria-labelledby="nav-profile-tab">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">
+							<table class="table table-striped table-bordered">
+								<thead class="thead-dark">
+									<tr>
+										<th class="text-center" scope="col">Fecha diagnostico</th>
+										<th class="text-center" scope="col">Nombre</th>
+										<th class="text-center" scope="col">Observaciones</th>
+										<th class="text-center" scope="col">Modificar</th>
+									</tr>
+								</thead>
+								<tbody id="tbodyEnfermedades"></tbody>
+							</table>
+							<div id="noHayResultadosEnfermedadesMensaje" style="display: none" class="alert alert-info text-center" role="alert">
+								<h3>No hay Enfermedades</h3>
+								Hasta el momento esta mascota no se le asignaron enfermedades.
+							</div>
+							<div class="d-flex justify-content-between">
+								<button id="irAtrasPaginaEnfermedades" class="btn btn-sm btn-info" onclick="paginaAnteriorVacunas()">Atras</button>
+								<button id="irAdelantePaginaEnfermedades" class="btn btn-sm btn-info" onclick="paginaPosteriorVacunas()">Adelante</button>
+							</div>
+						</li>
+						{% if info.mascota.estado == 1%}
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-sm text-center">
+									<button class="btn btn-success" id="{{info.mascota.idMascota}}" name="AgregarEnfermedad" onclick="operacionEnfermedad(this)">Agregar Nueva enfermedad</button>
+								</div>
+							</div>
+						</li>
+						{% endif %}
+					</ul>
+				</div>
+				<div class="tab-pane fade" id="nav-analisis" role="tabpanel" aria-labelledby="nav-profile-tab">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">
+							<table id="tableStandar" class="table table-striped table-bordered">
+								<thead class="thead-dark">
+									<tr>
+										<th class="text-center" scope="col">Fecha</th>
+										<th class="text-center" scope="col">Nombre</th>
+										<th class="text-center" scope="col">Modificar</th>
+										<th class="text-center" scope="col">Ver</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for estudio in info.analisis %}
+									<tr>
+										<td class="text-center">{{ estudio.fecha }}</td>
+										<td class="text-center">{{ estudio.nombre }}</td>
+										<td class="text-center">
+											<button class="btn btn-success btn-sm" name="ModificarAnalisis" id="{{ estudio.idAnalisis }}"  onclick="operacionAnalisis(this)">
+												<i class="fas fa-edit"></i>
+											</button>
+										</td>
+										<td class="text-center">
+											<button class="btn btn-info btn-sm" id="{{ estudio.idAnalisis }}"  onclick="verDetalleAnalsisi(this)">
+												<i class="fas fa-eye"></i>
+											</button>
+										</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</li>
+						{% if info.mascota.estado == 1%}
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-sm text-center">
+									<button class="btn btn-success" id="{{info.mascota.idMascota}}" name="AgregarAnalisis" onclick="operacionAnalisis(this)">Agregar nuevo analisis</button>
+								</div>
+							</div>
+						</li>
+						{% endif %}
+					</ul>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 </div>
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
@@ -573,6 +532,11 @@
 	document.getElementById('inpFechaDiagnosticoEnfermedad').value = `${year}-${month}-${day}`;
 	document.getElementById('inpFechaAnalisis').value = `${year}-${month}-${day}`;
 	document.getElementById('inpHistoriaFechaRealizacion').value = `${year}-${month}-${day}`;
+
+	var idMascotaSeleccionada = document.getElementById('idMascotaSeleccionada').value;
+	cargarTablaVacunas(idMascotaSeleccionada);
+	cargarTablaEnfermedades(idMascotaSeleccionada);
+	// cargarTablaAnalisis();
 </script>
 {% endblock %}
 {% endblock %}

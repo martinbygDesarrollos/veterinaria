@@ -210,7 +210,6 @@ class ctr_mascotas {
 		return array(
 			"mascota" => $mascota,
 			"duenio" => $duenio,
-			"vacunas" => $vacunasMascota,
 			"hayHistorial" => ctr_historiales::checkHayHistorial($idMascota),
 			"enfermedades" => $enfermedades,
 			"analisis" => $analisis);
@@ -222,6 +221,31 @@ class ctr_mascotas {
 
 	public function getMascotasInactivasPendientes(){
 		return mascotas::getMascotasInactivasPendientes();
+	}
+
+	public function getMascotasPagina($ultimoID, $estadoMascota){
+		if($ultimoID == 0){
+			$maxId = mascotas::getMascotaMaxId($estadoMascota);
+			$mascotas = mascotas::getMascotasPagina($maxId->idMaximo, $estadoMascota);
+			$minId = mascotas::getMin($mascotas, $maxId->idMaximo);
+			return array(
+				"min" => $minId,
+				"max" => $maxId,
+				"mascotas" => $mascotas
+			);
+		}else{
+			$mascotas = mascotas::getMascotasPagina($ultimoID, $estadoMascota);
+			$minId = mascotas::getMin($mascotas, $ultimoID);
+			return array(
+				"min" => $minId,
+				"max" => $ultimoID,
+				"mascotas" => $mascotas
+			);
+		}
+	}
+
+	public function buscadorMascotaNombre($nombreMascota, $estadoMascota){
+		return mascotas::buscadorMascotaNombre($nombreMascota, $estadoMascota);
 	}
 
 	public function  desactivarMascotasSocio($idSocio, $estado){
@@ -339,6 +363,26 @@ class ctr_mascotas {
 		return vacunas::getVacunasNoAplicadas($idMascota);
 	}
 
+	public function getVacunasPagina($ultimoID, $idMascota){
+		if($ultimoID == 0){
+			$maxId = serviciosMascota::getVacunaMaxId($idMascota);
+			$vacunas = serviciosMascota::getVacunasPagina($maxId, $idMascota);
+			$minId = serviciosMascota::getVacunasMinId($vacunas, $maxId);
+			return array(
+				"min" => $minId,
+				"max" => $maxId,
+				"vacunas" => $vacunas
+			);
+		}else{
+			$vacunas = serviciosMascota::getVacunasPagina($ultimoID, $idMascota);
+			$minId = serviciosMascota::getVacunasMinId($vacunas, $ultimoID);
+			return array(
+				"min" => $minId,
+				"max" => $ultimoID,
+				"vacunas" => $vacunas
+			);
+		}
+	}
 
 	public function getInfoVencimientos(){
 		$fechaActual = date('Y-m-d');
@@ -430,6 +474,27 @@ class ctr_mascotas {
 		}
 	}
 
+	public function getAnalisisPagina($ultimoID, $idMascota){
+		if($ultimoID == 0){
+			$maxId = serviciosMascota::getVacunaMaxId($idMascota);
+			$vacunas = serviciosMascota::getVacunasPagina($maxId, $idMascota);
+			$minId = serviciosMascota::getMinId($vacunas, $maxId);
+			return array(
+				"min" => $minId,
+				"max" => $maxId,
+				"vacunas" => $vacunas
+			);
+		}else{
+			$vacunas = serviciosMascota::getVacunasPagina($ultimoID, $idMascota);
+			$minId = serviciosMascota::getMinId($vacunas, $ultimoID);
+			return array(
+				"min" => $minId,
+				"max" => $ultimoID,
+				"vacunas" => $vacunas
+			);
+		}
+	}
+
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//-------------------------------------------------------------FUNCIONES ENFERMEDAD-----------------------------------------------------------
@@ -505,5 +570,26 @@ class ctr_mascotas {
 
 	public function getEnfermedadMascota($idEnfermedad){
 		return serviciosMascota::getEnfermedadMascota($idEnfermedad);
+	}
+
+	public function getEnfermedadesPagina($ultimoID, $idMascota){
+		if($ultimoID == 0){
+			$maxId = serviciosMascota::getEnfermedadesMaxId($idMascota);
+			$enfermedades = serviciosMascota::getEnfermedadesPagina($maxId, $idMascota);
+			$minId = serviciosMascota::getEnfermedadesMinId($enfermedades, $maxId);
+			return array(
+				"min" => $minId,
+				"max" => $maxId,
+				"enfermedades" => $enfermedades
+			);
+		}else{
+			$enfermedades = serviciosMascota::getEnfermedadesPagina($ultimoID, $idMascota);
+			$minId = serviciosMascota::getEnfermedadesMinId($enfermedades, $ultimoID);
+			return array(
+				"min" => $minId,
+				"max" => $ultimoID,
+				"enfermedades" => $enfermedades
+			);
+		}
 	}
 }

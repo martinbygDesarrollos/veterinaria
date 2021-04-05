@@ -165,3 +165,64 @@ function validarDatosEnfermedada(nombre, fecha, observaciones, tituloError){
 	}
 	return conError;
 }
+
+let menorIdEnfermedades = 0;
+let maxIdEnfermedades= 0;
+
+function cargarTablaEnfermedades(idMascota){
+	$.ajax({
+		async: false,
+		url: urlBase + "/getEnfermedadesPagina",
+		type: "POST",
+		data: {
+			ultimoID: menorIdEnfermedades,
+			idMascota: idMascota
+		},
+		success: function (response) {
+			response = response.trim();
+			response = jQuery.parseJSON(response);
+			console.log(response);
+			menorIdEnfermedades = response.min;
+			maxIdEnfermedades = response.max;
+			$('#tbodyEnfermedades').empty();
+			var enfermedades = response.enfermedades;
+			if(enfermedades.length == 0){
+				document.getElementById("noHayResultadosEnfermedadesMensaje").style.display = "block";
+				document.getElementById("irAdelantePaginaEnfermedades").style.display = "none";
+				document.getElementById("irAtrasPaginaEnfermedades").style.display = "none";
+			}else{
+				document.getElementById("irAtrasPaginaEnfermedades").style.display = "block";
+				document.getElementById("irAdelantePaginaEnfermedades").style.display = "block";
+				document.getElementById("noHayResultadosEnfermedadesMensaje").style.display = "none";
+				for(var i = 0; i < enfermedades.length; i ++ ){
+					var fila = "<tr>" +
+					"<td class='text-center'>" + enfermedades[i].fechaDiagnostico + "'</td>" +
+					"<td class='text-center'>'" + enfermedades[i].nombreEnfermedad + "'</td>" +
+					"<td class='text-center'>'" + enfermedades[i].observaciones +"'</td>" +
+					"<td class='text-center'> <button class='btn btn-success btn-sm' id='" + enfermedades[i].idEnfermedad + "' name='ModificarEnfermedad' onclick='operacionEnfermedad(this)'><i class='fas fa-edit'></i> </button></td></tr>";
+					$('#tbodyEnfermedades').append(fila);
+				}
+			}
+		},
+		error: function (response) {
+			console.log("response ERROR:" + eval(response));
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			$("#modalButtonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
+		},
+	});
+}
+
+function paginaPosteriorEnfermedades(){
+	$('#tbodyEnfermedades').empty();
+	cargarTablaEnfermedades();
+}
+
+function paginaAnteriorEnfermedades(){
+	if(menorIdEnfermedades != 0){
+		menorIdEnfermedades= parseInt(maxIdEnfermedades) + 10;
+		$('#tbodyEnfermedades').empty();
+		cargarTablaEnfermedades();
+	}
+}

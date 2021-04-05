@@ -51,13 +51,51 @@ class serviciosMascota {
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
 
+    public function getVacunaMaxId($idMascota){
+        $query = DB::conexion()->prepare("SELECT MAX(idVacunaMascota) AS idMaximo FROM vacunasmascota WHERE idMascota = ?");
+        $query->bind_param('i', $idMascota);
+        if($query->execute()){
+            $result = $query->get_result();
+            $response = $result->fetch_object();
+            return $response->idMaximo;
+        }else return null;
+    }
+
+    public function getVacunasPagina($maxID, $idMascota){
+        $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota WHERE idMascota = ? AND idVacunaMascota <= ? ORDER BY idVacunaMascota DESC LIMIT 10");
+        $query->bind_param('ii', $idMascota, $maxID);
+        if($query->execute()){
+            $result = $query->get_result();
+            $arrayResult = array();
+            while($row = $result->fetch_array(MYSQLI_ASSOC)){
+                if($row['fechaProximaDosis'] == 0) $row['fechaProximaDosis'] = "Dosis única";
+                else $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'], "/");
+                $row['fechaUltimaDosis'] = fechas::parceFechaFormatDMA($row['fechaUltimaDosis'], "/");
+                $row['fechaPrimerDosis'] = fechas::parceFechaFormatDMA($row['fechaPrimerDosis'], "/");
+                $arrayResult[] = $row;
+            }
+            return $arrayResult;
+        }
+        return null;
+    }
+
+    public function getVacunasMinId($vacunas, $maxID){
+        $valorMinimo = $maxID;
+        foreach ($vacunas as $key => $value) {
+            if($value['idVacunaMascota'] < $valorMinimo)
+                $valorMinimo = $value['idVacunaMascota'];
+        }
+        return $valorMinimo;
+    }
+
     public function getVacunasMascotas(){
         $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota, mascotas WHERE mascotas.idMascota = vacunasmascota.idMascota");
         if($query->execute()){
             $response = $query->get_result();
             $arrayResponse = array();
             while($row = $response->fetch_array(MYSQLI_ASSOC)){
-                $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'], "/");
+                if($row['fechaProximaDosis'] == 0) $row['fechaProximaDosis'] = "Dosis única";
+                else $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'], "/");
                 $row['fechaUltimaDosis'] = fechas::parceFechaFormatDMA($row['fechaUltimaDosis'], "/");
                 $row['fechaPrimerDosis'] = fechas::parceFechaFormatDMA($row['fechaPrimerDosis'], "/");
 
@@ -102,14 +140,14 @@ class serviciosMascota {
             $response = $query->get_result();
             $arrayResponse = array();
             while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-             $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'],"/");
-             $arrayResponse[] = $row;
-         }
-         return $arrayResponse;
-     }else return null;
- }
+               $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'],"/");
+               $arrayResponse[] = $row;
+           }
+           return $arrayResponse;
+       }else return null;
+   }
 
- public function getVacunaMascota($idVacunaMascota){
+   public function getVacunaMascota($idVacunaMascota){
     $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota WHERE idVacunaMascota = ?");
     $query->bind_param('i', $idVacunaMascota);
     if($query->execute()){
@@ -165,6 +203,39 @@ public function aplicarDosisVacunaMascota($idVacunaMascota, $nuevaUltimaDosis, $
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
 
+public function getEnfermedadesMaxId($idMascota){
+    $query = DB::conexion()->prepare("SELECT MAX(idEnfermedad) AS idMaximo FROM enfermedadesmascota WHERE idMascota = ?");
+    $query->bind_param('i', $idMascota);
+    if($query->execute()){
+        $result = $query->get_result();
+        $response = $result->fetch_object();
+        return $response->idMaximo;
+    }else return null;
+}
+
+public function getEnfermedadesPagina($maxID, $idMascota){
+    $query = DB::conexion()->prepare("SELECT * FROM enfermedadesmascota WHERE idMascota = ? AND idEnfermedad <= ? ORDER BY idEnfermedad DESC LIMIT 10");
+    $query->bind_param('ii', $idMascota, $maxID);
+    if($query->execute()){
+        $result = $query->get_result();
+        $arrayResult = array();
+        while($row = $result->fetch_array(MYSQLI_ASSOC)){
+            $row['fechaDiagnostico'] = fechas::parceFechaFormatDMA($row['fechaDiagnostico'], "/");
+            $arrayResult[] = $row;
+        }
+        return $arrayResult;
+    }
+    return null;
+}
+
+public function getEnfermedadesMinId($enfermedades, $maxID){
+    $valorMinimo = $maxID;
+    foreach ($enfermedades as $key => $value) {
+        if($value['idEnfermedad'] < $valorMinimo)
+            $valorMinimo = $value['idEnfermedad'];
+    }
+    return $valorMinimo;
+}
 public function insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones){
     $query = DB::conexion()->prepare("INSERT INTO enfermedadesmascota (idMascota, fechaDiagnostico, nombreEnfermedad, observaciones) VALUES (?,?,?,?)");
     $query->bind_param('iiss', $idMascota, $fechaDiagnostico, $nombre, $observaciones);

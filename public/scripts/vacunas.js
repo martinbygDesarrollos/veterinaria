@@ -122,3 +122,66 @@ function aplicarDosisVacuna(btn){
 		},
 	});
 }
+
+let menorIdVacuna = 0;
+let maxIdVacuna = 0;
+
+function cargarTablaVacunas(idMascota){
+	$.ajax({
+		async: false,
+		url: urlBase + "/getVacunasPagina",
+		type: "POST",
+		data: {
+			ultimoID: menorIdVacuna,
+			idMascota: idMascota
+		},
+		success: function (response) {
+			response = response.trim();
+			response = jQuery.parseJSON(response);
+			console.log(response);
+			menorIdVacuna = response.min;
+			maxIdVacuna = response.max;
+			$('#tbodyVacunas').empty();
+			var vacunas = response.vacunas;
+			if(vacunas.length == 0){
+				document.getElementById("noHayResultadosVacunasMensaje").style.display = "block";
+				document.getElementById("irAdelantePaginaVacunas").style.display = "none";
+				document.getElementById("irAtrasPaginaVacunas").style.display = "none";
+			}else{
+				document.getElementById("irAtrasPaginaVacunas").style.display = "block";
+				document.getElementById("irAdelantePaginaVacunas").style.display = "block";
+				document.getElementById("noHayResultadosVacunasMensaje").style.display = "none";
+				for(var i = 0; i < vacunas.length; i ++ ){
+					var fila = "<tr><td class='text-center'>" + vacunas[i].fechaProximaDosis +"</td>" +
+					"<td class='text-center'>" + vacunas[i].fechaUltimaDosis +"</td>" +
+					"<td class='text-center'>" + vacunas[i].nombreVacuna + "</td>" +
+					"<td class='text-center'>" + vacunas[i].intervaloDosis +"</td>" +
+					"<td class='text-center'>" + vacunas[i].numDosis +"</td>" +
+					"<td class='text-center'> <button id='" + vacunas[i].idVacunaMascota + "' name='" + vacunas[i].nombreVacuna +"' class='btn btn-success btn-sm'  onclick='abrirModalAplicarDosis(this)'><i class='fas fa-syringe'></i></button> </td>" +
+					"</td></tr>"
+					$('#tbodyVacunas').append(fila);
+				}
+			}
+		},
+		error: function (response) {
+			console.log("response ERROR:" + eval(response));
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			$("#modalButtonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
+		},
+	});
+}
+
+function paginaPosteriorVacunas(){
+	$('#tbodyVacunas').empty();
+	cargarTablaVacunas();
+}
+
+function paginaAnteriorVacunas(){
+	if(menorIdVacuna != 0){
+		menorIdVacuna = parseInt(maxIdVacuna) + 10;
+		$('#tbodyVacunas').empty();
+		cargarTablaVacunas();
+	}
+}

@@ -14,7 +14,6 @@ return function (App $app) {
         $sesionActiva = $_SESSION['administrador'];
         if (isset($sesionActiva)) {
             $args['administrador'] = $sesionActiva;
-            $args['mascotas'] = ctr_mascotas::getMascotas();
             return $this->view->render($response, "mascotas.twig", $args);
         }
     })->setName('verMascotas');
@@ -73,6 +72,42 @@ return function (App $app) {
 
     //------------------------------------------------------------------------------------------
 	//----------------------------- POST -------------------------------------------------------
+
+    $app->post('/getMascotasPagina', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $ultimoID = $data['ultimoID'];
+        $estadoMascota = $data['estadoMascota'];
+        return json_encode(ctr_mascotas::getMascotasPagina($ultimoID, $estadoMascota));
+    });
+
+    $app->post('/buscadorDeMascotas', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $nombreMascota = $data['nombreMascota'];
+        $estadoMascota = $data['estadoMascota'];
+        return json_encode(ctr_mascotas::buscadorMascotaNombre($nombreMascota, $estadoMascota));
+    });
+
+    $app->post('/getVacunasPagina', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $ultimoID = $data['ultimoID'];
+        $idMascota = $data['idMascota'];
+        return json_encode(ctr_mascotas::getVacunasPagina($ultimoID, $idMascota));
+    });
+
+    $app->post('/getEnfermedadesPagina', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $ultimoID = $data['ultimoID'];
+        $idMascota = $data['idMascota'];
+        return json_encode(ctr_mascotas::getEnfermedadesPagina($ultimoID, $idMascota));
+    });
+
+    $app->post('/getAnalisisPagina', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $ultimoID = $data['ultimoID'];
+        $idMascota = $data['idMascota'];
+        return json_encode(ctr_mascotas::getAnalisisPagina($ultimoID, $idMascota));
+    });
+
     $app->post('/insertNewMascota', function(Request $request, Response $response){
         $sesionActiva = $_SESSION['administrador'];
         if (isset($sesionActiva)) {

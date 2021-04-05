@@ -13,16 +13,18 @@ class socios{
 		return $valorMinimo;
 	}
 
-	public function getSocioMaxId(){
-		$query = DB::conexion()->prepare("SELECT MAX(idSocio) AS idMaximo FROM socios WHERE estado = 1");
+	public function getSocioMaxId($estadoSocio){
+		$query = DB::conexion()->prepare("SELECT MAX(idSocio) AS idMaximo FROM socios WHERE estado = ?");
+		$query->bind_param('i', $estadoSocio);
 		if($query->execute()){
 			$result = $query->get_result();
 			return $result->fetch_object();
 		}else return null;
 	}
-	public function getSociosActivosPagina($idMaximo){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10");
-		$query->bind_param('i', $idMaximo);
+
+	public function getSociosPagina($idMaximo, $estadoSocio){
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = ? AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10");
+		$query->bind_param('ii', $estadoSocio, $idMaximo);
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();
@@ -106,6 +108,20 @@ class socios{
 
 	public function obtenerBusqueda($busqueda){
 		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE nombre LIKE '%" . $busqueda ."%' LIMIT 100");
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function buscadorSocioNombre($nombreSocio, $estadoSocio){
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE  estado = ? AND nombre LIKE '%" . $nombreSocio ."%' LIMIT 10 ");
+		$query->bind_param('i', $estadoSocio);
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();

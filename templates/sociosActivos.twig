@@ -6,11 +6,12 @@
 	<div class="row">
 		<div class="col">
 			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header" style="background: #85B58A">Socios activos</h5>
+				<h5  class="card-header" style="background: #85B58A">Socios activos</h5>
+				<input type="text" id="estadoSocioVista" value="1" style="display: none">
 				<div class="card-body">
 					<div class="input-group mb-3">
-						<span class="input-group-text" id="inputGroup-sizing-default">Buscar</span>
-						<input id="inpEditNombre" type="text" class="form-control text-center" aria-label="Sizing example input" value="{{ mascota.nombre }}">
+						<span class="input-group-text" id="inputGroup-sizing-default"><i class="fas fa-search"></i></span>
+						<input type="text" class="form-control" onchange="buscarSocio(this)" onkeyup="this.onchange()" aria-label="Sizing example input" placeholder="Buscar nombre...">
 					</div>
 					<table class="table table-striped table-bordered">
 						<thead class="thead-dark">
@@ -22,11 +23,15 @@
 								<th class="text-center" scope="col">Ver</th>
 							</tr>
 						</thead>
-						<tbody id="tbodySociosActivos"></tbody>
+						<tbody id="tbodySocios1"></tbody>
 					</table>
+					<div id="noHayResultadosMensaje" style="display: none" class="alert alert-info text-center" role="alert">
+						<h3>No hay resultado</h3>
+						No se encontraron resultados para esta busqueda.
+					</div>
 					<div class="d-flex justify-content-between">
-						<button class="btn btn-sm btn-info" onclick="paginaAnterior()">Atras</button>
-						<button class="btn btn-sm btn-info" onclick="paginaPosterior()">Adelante</button>
+						<button id="irAtrasPagina" class="btn btn-sm btn-info" onclick="paginaAnterior()">Atras</button>
+						<button id="irAdelantePagina" class="btn btn-sm btn-info" onclick="paginaPosterior()">Adelante</button>
 					</div>
 				</div>
 			</div>
@@ -34,7 +39,7 @@
 	</div>
 </div>
 {%block script%}
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/sociosActivos.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/tableSocios.js"></script>
 <script type="text/javascript">
 	cargarTabla()
 </script>

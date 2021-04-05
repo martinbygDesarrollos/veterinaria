@@ -22,10 +22,10 @@ return function (App $app) {
 
     $app->get('/cerrarSesion', function ($request, $response, $args) use ($container) {
         if (isset($_SESSION['administrador'])) {
-           session_destroy();
-       }
-       return $this->view->render($response, "login.twig");
-   })->setName("login");
+         session_destroy();
+     }
+     return $this->view->render($response, "login.twig");
+ })->setName("login");
 
     $app->get('/newSocio', function($request, $response, $args) use ($container){
 
@@ -230,18 +230,25 @@ return function (App $app) {
     $app->post('/notificarSocioCuota', function(Request $request, Response $response){
         // $sesionActiva = $_SESSION['administrador'];
         // if (isset($sesionActiva)) {
-            $data = $request->getParams();
-            $idSocio = $data['idSocio'];
-            return json_encode(ctr_usuarios::notificarSocioCuota($idSocio));
+        $data = $request->getParams();
+        $idSocio = $data['idSocio'];
+        return json_encode(ctr_usuarios::notificarSocioCuota($idSocio));
         // }
     });
 
     $app->post('/getSociosPagina', function(Request $request, Response $response){
         $data = $request->getParams();
         $ultimoID = $data['ultimoID'];
-        return json_encode(ctr_usuarios::getSociosActivosPagina($ultimoID));
+        $estadoSocio = $data['estadoSocios'];
+        return json_encode(ctr_usuarios::getSociosPagina($ultimoID, $estadoSocio));
     });
     //------------------------------------------------------------------------------------------
 
+    $app->post('/buscadorDeSocios', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $nombreSocio = $data['nombreSocio'];
+        $estadoSocio = $data['estadoSocio'];
+        return json_encode(ctr_usuarios::buscadorSocioNombre($nombreSocio, $estadoSocio));
+    });
 }
 ?>

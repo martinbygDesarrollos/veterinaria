@@ -3,32 +3,8 @@
 require_once 'fechas.php';
 
 class mascotas{
-
-	private $idMascota;
-	private $nombre;
-	private $especie;
-	private $raza;
-	private $sexo;
-	private $color;
-	private $pedigree;
-	private $propietario;
-	private $estado; //0 INACTIVA 1 ACTIVA 2 PENDIENTE
-	private $pelo;
-	private $chip;
-
-	public function __construct($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $propietario, $estado, $pelo, $chip){
-		$this->idMascota = $idMascota;
-		$this->nombre = $nombre;
-		$this->especie = $especie;
-		$this->raza = $raza;
-		$this->sexo = $sexo;
-		$this->color = $color;
-		$this->pedigree = $pedigree;
-		$this->propietario = $propietario;
-		$this->estado = $estado;
-		$this->pelo = $pelo;
-		$this->chip = $chip;
-	}
+ //0 INACTIVA 1 ACTIVA 2 PENDIENTE
+	//MACHO 1 HEMBRA 0
 
 	public function getMascotas(){
 		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado = 1");
@@ -51,6 +27,55 @@ class mascotas{
 			$arrayResult = array();
 			while($row = $result->fetch_array(MYSQLI_ASSOC)){
 				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], '/');
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function getMin($mascotas, $maxValor){
+		$valorMinimo = $maxValor;
+		foreach ($mascotas as $key => $value) {
+			if($value['idMascota'] < $valorMinimo)
+				$valorMinimo = $value['idMascota'];
+		}
+		return $valorMinimo;
+	}
+
+	public function getMascotaMaxId($estadoMascota){
+		$query = DB::conexion()->prepare("SELECT MAX(idMascota) AS idMaximo FROM mascotas WHERE estado = ?");
+		$query->bind_param('i', $estadoMascota);
+		if($query->execute()){
+			$result = $query->get_result();
+			return $result->fetch_object();
+		}else return null;
+	}
+
+	public function getMascotasPagina($ultimoID, $estadoMascota){
+		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado = ? AND idMascota <= ? ORDER BY idMascota DESC LIMIT 10");
+		$query->bind_param('ii', $estadoMascota, $ultimoID);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], "/");
+				if($row['sexo'] == 0) $row['sexo'] = "Hembra";
+				else $row['sexo'] = "Macho";
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function buscadorMascotaNombre($nombreMascota, $estadoMascota){
+		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE  estado = ? AND nombre LIKE '%" . $nombreMascota ."%' LIMIT 10 ");
+		$query->bind_param('i', $estadoMascota);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 				$arrayResult[] = $row;
 			}
 			return $arrayResult;

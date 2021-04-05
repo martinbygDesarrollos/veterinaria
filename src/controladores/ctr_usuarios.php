@@ -276,10 +276,10 @@ class ctr_usuarios{
 		);
 	}
 
-	public function getSociosActivosPagina($ultimoId){
+	public function getSociosPagina($ultimoId, $estadoSocio){
 		if($ultimoId == 0){
-			$maxId = socios::getSocioMaxId();
-			$socios = socios::getSociosActivosPagina($maxId->idMaximo);
+			$maxId = socios::getSocioMaxId($estadoSocio);
+			$socios = socios::getSociosPagina($maxId->idMaximo, $estadoSocio);
 			$minId = socios::getMin($socios, $maxId->idMaximo);
 			return array(
 				"min" => $minId,
@@ -287,7 +287,7 @@ class ctr_usuarios{
 				"socios" => $socios
 			);
 		}else{
-			$socios = socios::getSociosActivosPagina($ultimoId);
+			$socios = socios::getSociosPagina($ultimoId, $estadoSocio);
 			$minId = socios::getMin($socios, $ultimoId);
 			return array(
 				"min" => $minId,
@@ -500,6 +500,10 @@ class ctr_usuarios{
 		$result = socios::esMiMascota($idSocio, $idMascota);
 		if($result != null) return true;
 		else return false;
+	}
+
+	public function buscadorSocioNombre($nombreSocio, $estadoSocio){
+		return socios::buscadorSocioNombre($nombreSocio, $estadoSocio);
 	}
 
     //---------------------------------------------------------------------------------------------------
