@@ -66,6 +66,40 @@ class historiales{
 			return $arrayResponse;
 		}else return null;
 	}
+
+	public function getHistoriaClinicaMinId($historial, $maxValor){
+		$valorMinimo = $maxValor;
+		foreach ($historial as $key => $value) {
+			if($value['idHistorialClinico'] < $valorMinimo)
+				$valorMinimo = $value['idHistorialClinico'];
+		}
+		return $valorMinimo;
+	}
+
+	public function getHistoriaClinicaMaxId($idMascota){
+		$query = DB::conexion()->prepare("SELECT MAX(idHistorialClinico) AS idMaximo FROM historiasclinica WHERE idMascota = ?");
+		$query->bind_param('i', $idMascota);
+		if($query->execute()){
+			$result = $query->get_result();
+			$response = $result->fetch_object();
+			return $response->idMaximo;
+		}else return null;
+	}
+
+	public function getHistoriaClinicaPagina($ultimoID, $idMascota){
+		$query = DB::conexion()->prepare("SELECT * FROM historiasclinica WHERE idMascota=? AND idHistorialClinico<= ? ORDER BY idHistorialClinico DESC LIMIT 10");
+		$query->bind_param('ii', $idMascota, $ultimoID);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$row['fecha'] = fechas::parceFechaFormatDMA($row['fecha'], "/");
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
 	//============================================================================================================
 	//============================================================================================================
 	//============================================================================================================
@@ -146,6 +180,39 @@ class historiales{
 		$query = DB::conexion()->prepare("INSERT INTO historialusuarios(usuario, funcion, fecha, observacion) VALUES (?,?,?,?)");
 		$query->bind_param('isss', $usuario, $funcion, $fecha, $observaciones);
 		return $query->execute();
+	}
+
+	public function getHistorialUsuariosMaxId(){
+		$query = DB::conexion()->prepare("SELECT MAX(idHistorialUsuario) AS idMaximo FROM historialusuarios");
+		if($query->execute()){
+			$result = $query->get_result();
+			$response = $result->fetch_object();
+			return $response->idMaximo;
+		}else return null;
+	}
+
+	public function getHistorialUsuariosPagina($maxID){
+		$query = DB::conexion()->prepare("SELECT HU.idHistorialUsuario, HU.funcion, HU.observacion, HU.fecha, US.nombre FROM historialusuarios AS HU, usuarios AS US WHERE US.idUsuario = HU.usuario AND  HU.idHistorialUsuario <= ? ORDER BY  HU.idHistorialUsuario DESC LIMIT 10");
+		$query->bind_param('i',  $maxID);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$row['fecha'] = fechas::parceFechaTimeFormatDMA($row['fecha'], "/");
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
+	public function getHistorialUsuariosMinId($historial, $maxID){
+		$valorMinimo = $maxID;
+		foreach ($historial as $key => $value) {
+			if($value['idHistorialUsuario'] < $valorMinimo)
+				$valorMinimo = $value['idHistorialUsuario'];
+		}
+		return $valorMinimo;
 	}
 	//============================================================================================================
 	//============================================================================================================

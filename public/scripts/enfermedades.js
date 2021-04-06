@@ -181,7 +181,6 @@ function cargarTablaEnfermedades(idMascota){
 		success: function (response) {
 			response = response.trim();
 			response = jQuery.parseJSON(response);
-			console.log(response);
 			menorIdEnfermedades = response.min;
 			maxIdEnfermedades = response.max;
 			$('#tbodyEnfermedades').empty();
@@ -191,15 +190,19 @@ function cargarTablaEnfermedades(idMascota){
 				document.getElementById("irAdelantePaginaEnfermedades").style.display = "none";
 				document.getElementById("irAtrasPaginaEnfermedades").style.display = "none";
 			}else{
-				document.getElementById("irAtrasPaginaEnfermedades").style.display = "block";
-				document.getElementById("irAdelantePaginaEnfermedades").style.display = "block";
+				if(enfermedades.length < 5){
+					document.getElementById("irAdelantePaginaEnfermedades").style.display = "none";
+				}else{
+					document.getElementById("irAtrasPaginaEnfermedades").style.display = "block";
+					document.getElementById("irAdelantePaginaEnfermedades").style.display = "block";
+				}
 				document.getElementById("noHayResultadosEnfermedadesMensaje").style.display = "none";
 				for(var i = 0; i < enfermedades.length; i ++ ){
 					var fila = "<tr>" +
-					"<td class='text-center'>" + enfermedades[i].fechaDiagnostico + "'</td>" +
-					"<td class='text-center'>'" + enfermedades[i].nombreEnfermedad + "'</td>" +
-					"<td class='text-center'>'" + enfermedades[i].observaciones +"'</td>" +
-					"<td class='text-center'> <button class='btn btn-success btn-sm' id='" + enfermedades[i].idEnfermedad + "' name='ModificarEnfermedad' onclick='operacionEnfermedad(this)'><i class='fas fa-edit'></i> </button></td></tr>";
+					"<td class='text-center'>" + enfermedades[i].fechaDiagnostico + "</td>" +
+					"<td class='text-center'>" + enfermedades[i].nombreEnfermedad + "</td>" +
+					"<td class='text-center'>" + enfermedades[i].observaciones +"</td>" +
+					"<td class='text-center'> <button class='btn btn-success btn-sm' id='" + enfermedades[i].idEnfermedad + "' name='ModificarEnfermedad' onclick='operacionEnfermedad(this)'><i class='fas fa-edit'></i></button></td></tr>";
 					$('#tbodyEnfermedades').append(fila);
 				}
 			}
@@ -215,14 +218,12 @@ function cargarTablaEnfermedades(idMascota){
 }
 
 function paginaPosteriorEnfermedades(){
-	$('#tbodyEnfermedades').empty();
 	cargarTablaEnfermedades();
 }
 
 function paginaAnteriorEnfermedades(){
 	if(menorIdEnfermedades != 0){
-		menorIdEnfermedades= parseInt(maxIdEnfermedades) + 10;
-		$('#tbodyEnfermedades').empty();
+		menorIdEnfermedades= parseInt(maxIdEnfermedades) + 5;
 		cargarTablaEnfermedades();
 	}
 }

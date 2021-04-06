@@ -272,6 +272,9 @@ class ctr_mascotas {
 		$mascota = mascotas::getMascota($idMascota);
 		if($mascota){
 			$socio = ctr_usuarios::getSocioMascota($idMascota);
+			$conSocio = "sin socio vinculado";
+			if($socio != null)
+				$conSocio = "vinculada al socio " . $socio->nombre;
 			$fechaDosisFormat = fechas::parceFechaInt($fechaDosis);
 			$fechaProximaDosis = 0;
 			if($intervalo != 1)
@@ -285,7 +288,7 @@ class ctr_mascotas {
 					$enHistoriaClinica = "Se generó un registro en la historia clínica de la mascota.";
 
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Aplicar nueva vacuna", "La mascota de nombre " . $mascota->nombre . " vinculada al socio " . $socio->nombre . " se le aplicó una vacuna de nombre " . $nombreVacuna . ". " . $enHistoriaClinica);
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Aplicar nueva vacuna", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le aplicó una vacuna de nombre " . $nombreVacuna . ". " . $enHistoriaClinica);
 				if($resultInsertOperacionUsuario)
 					$response->enHistorial = "Registrado en el historial del usuario.";
 				else
@@ -313,6 +316,10 @@ class ctr_mascotas {
 			$mascota = mascotas::getMascota($vacunaMascota->idMascota);
 			if($mascota){
 				$socio = ctr_usuarios::getSocioMascota($mascota->idMascota);
+				$conSocio = "sin socio vinculado";
+				if($socio != null)
+					$conSocio = "vinculada al socio " . $socio->nombre;
+
 				$fechaUltimaDosis = fechas::parceFechaInt(date('Y-m-d'));
 				$fechaProximaDosis = 0;
 				if($vacunaMascota->intervaloDosis != 1)
@@ -326,7 +333,7 @@ class ctr_mascotas {
 						$enHistoriaClinica = "Se generó un registro en la historia clínica de la mascota.";
 
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Aplicar dosis vacuna", "La mascota de nombre " . $mascota->nombre . " vinculada al socio " . $socio->nombre . " se le fue aplicada una dosis de " . $vacunaMascota->nombreVacuna . ". " . $enHistoriaClinica);
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Aplicar dosis vacuna", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le fue aplicada una dosis de " . $vacunaMascota->nombreVacuna . ". " . $enHistoriaClinica);
 					if($resultInsertOperacionUsuario)
 						$response->enHistorial = "Registrado en el historial del usuario.";
 					else
@@ -408,8 +415,11 @@ class ctr_mascotas {
 
 			if($result){
 				$socio = ctr_usuarios::getSocioMascota($idMascota);
+				$conSocio = "sin socio vinculado";
+				if($socio != null)
+					$conSocio = "vinculada al socio " . $socio->nombre;
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Nuevo Analisis ingresado", "La mascota de nombre " . $mascota->nombre . " vinculada al socio " . $socio->nombre . " se le fue ingresado un analisis de " . $nombreAnalisis . ".");
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Nuevo Analisis ingresado", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le fue ingresado un analisis de " . $nombreAnalisis . ".");
 				if($resultInsertOperacionUsuario)
 					$response->enHistorial = "Registrado en el historial del usuario.";
 				else
@@ -436,11 +446,14 @@ class ctr_mascotas {
 		if($analisis){
 			$mascota = mascotas::getMascota($analisis->idMascota);
 			$socio =  ctr_usuarios::getSocioMascota($mascota->idMascota);
+			$conSocio = "sin socio vinculado";
+			if($socio != null)
+				$conSocio = "vinculada al socio " . $socio->nombre;
 			$fechaAnalisisFormat = fechas::parceFechaInt($fechaAnalisis);
 			$result = serviciosMascota::updateAnalisisMascota($idAnalisis, $nombreAnalisis, $fechaAnalisisFormat, $detalleAnalisis, $resultadoAnalisis);
 			if($result){
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar Analisis", "El analisis de " . $nombreAnalisis ." perteneciente a la mascota " . $mascota->nombre . " vinculada al socio " . $socio->nombre . " fue modificado.");
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar Analisis", "El analisis de " . $nombreAnalisis ." perteneciente a la mascota " . $mascota->nombre . " " . $conSocio . " fue modificado.");
 				if($resultInsertOperacionUsuario)
 					$response->enHistorial = "Registrado en el historial del usuario.";
 				else
@@ -476,21 +489,21 @@ class ctr_mascotas {
 
 	public function getAnalisisPagina($ultimoID, $idMascota){
 		if($ultimoID == 0){
-			$maxId = serviciosMascota::getVacunaMaxId($idMascota);
-			$vacunas = serviciosMascota::getVacunasPagina($maxId, $idMascota);
-			$minId = serviciosMascota::getMinId($vacunas, $maxId);
+			$maxId = serviciosMascota::getAnalisisMaxId($idMascota);
+			$analisis = serviciosMascota::getAnalisisPagina($maxId, $idMascota);
+			$minId = serviciosMascota::getAnalisisMinId($analisis, $maxId);
 			return array(
 				"min" => $minId,
 				"max" => $maxId,
-				"vacunas" => $vacunas
+				"analisis" => $analisis
 			);
 		}else{
-			$vacunas = serviciosMascota::getVacunasPagina($ultimoID, $idMascota);
-			$minId = serviciosMascota::getMinId($vacunas, $ultimoID);
+			$analisis = serviciosMascota::getAnalisisPagina($ultimoID, $idMascota);
+			$minId = serviciosMascota::getAnalisisMinId($analisis, $ultimoID);
 			return array(
 				"min" => $minId,
 				"max" => $ultimoID,
-				"vacunas" => $vacunas
+				"analisis" => $analisis
 			);
 		}
 	}
@@ -509,6 +522,9 @@ class ctr_mascotas {
 		if($mascota != null){
 			$fechaDiagnosticoFormat = fechas::parceFechaInt($fechaDiagnostico);
 			$socio = ctr_usuarios::getSocioMascota($idMascota);
+			$conSocio = "sin socio vinculado";
+			if($socio != null)
+				$conSocio = "vinculada al socio " . $socio->nombre;
 			$result = serviciosMascota::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnosticoFormat, $observaciones);
 			if($result){
 				$resultInsertHistoria = ctr_historiales::insertHistoriaMascota($idMascota, "Se asigno enfermedad a ". $mascota->nombre, "Se diagnostico la mascota de " . $nombre, "");
@@ -517,7 +533,7 @@ class ctr_mascotas {
 					$enHistoriaClinica = "Se generó un registro en la historia clínica de la mascota.";
 
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Enfermedad mascota", "La mascota de nombre " . $mascota->nombre . " vinculada al socio " . $socio->nombre . " se le fue diagnosticada la enfermedad " . $nombre . ". " . $enHistoriaClinica);
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Enfermedad mascota", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le fue diagnosticada la enfermedad " . $nombre . ". " . $enHistoriaClinica);
 				if($resultInsertOperacionUsuario)
 					$response->enHistorial = "Registrado en el historial del usuario.";
 				else
@@ -548,7 +564,7 @@ class ctr_mascotas {
 			if($result){
 
 				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Enfermedad actualizada", "La mascota de nombre " . $mascota->nombre . " vinculada al socio " . $socio->nombre . " se le actualizó la información de la enfermedad " . $nombre . ".");
+				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Enfermedad actualizada", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le actualizó la información de la enfermedad " . $nombre . ".");
 				if($resultInsertOperacionUsuario)
 					$response->enHistorial = "Registrado en el historial del usuario.";
 				else

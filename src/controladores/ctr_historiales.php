@@ -68,6 +68,27 @@ class ctr_historiales {
 		return historiales::checkHayHistorialClinico($idMascota);
 	}
 
+	public function getHistoriaClinicaPagina($ultimoID, $idMascota){
+		if($ultimoID == 0){
+			$maxId = historiales::getHistoriaClinicaMaxId($idMascota);
+			$historial = historiales::getHistoriaClinicaPagina($maxId, $idMascota);
+			$minId = historiales::getHistoriaClinicaMinId($historial, $maxId);
+			return array(
+				"min" => $minId,
+				"max" => $maxId,
+				"historial" => $historial
+			);
+		}else{
+			$historial = historiales::getHistoriaClinicaPagina($ultimoID, $idMascota);
+			$minId = historiales::getHistoriaClinicaMinId($historial, $ultimoID);
+			return array(
+				"min" => $minId,
+				"max" => $ultimoID,
+				"historial" => $historial
+			);
+		}
+	}
+
 
     //-------------------------------------------------------------------------------------------------------------
     //----------------------------------- FUNCIONES DE HISTORIAL SOCIO --------------------------------------------
@@ -124,7 +145,6 @@ class ctr_historiales {
 
 	public function insertHistorialUsuario($operacion, $observaciones){
 		$response = new \stdClass();
-
 		$objectFecha = new DateTime();
 		$objectFecha->setTimezone(new DateTimeZone('America/Montevideo'));
 		$fecha = $objectFecha->format('Y-m-d H:i:s');
@@ -154,6 +174,27 @@ class ctr_historiales {
 
 	public function getHistorialUsuarios(){
 		return historiales::getHistorialUsuarios();
+	}
+
+	public function getHistorialUsuariosPagina($ultimoID){
+		if($ultimoID == 0){
+			$maxId = historiales::getHistorialUsuariosMaxId();
+			$historial = historiales::getHistorialUsuariosPagina($maxId);
+			$minId = historiales::getHistorialUsuariosMinId($historial, $maxId);
+			return array(
+				"min" => $minId,
+				"max" => $maxId,
+				"historial" => $historial
+			);
+		}else{
+			$historial = historiales::getHistorialUsuariosPagina($ultimoID);
+			$minId = historiales::getHistorialUsuariosMinId($historial, $ultimoID);
+			return array(
+				"min" => $minId,
+				"max" => $ultimoID,
+				"historial" => $historial
+			);
+		}
 	}
 
     //-------------------------------------------------------------------------------------------------------------

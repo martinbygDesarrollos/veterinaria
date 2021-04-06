@@ -180,8 +180,8 @@ return function (App $app) {
 
     $app->post('/aplicarNuevaVacunaMascota', function(Request $request, Response $response){
 
-        $sesionActiva = $_SESSION['administrador'];
-        if (isset($sesionActiva)) {
+        // $sesionActiva = $_SESSION['administrador'];
+        // if (isset($sesionActiva)) {
             $data = $request->getParams();
             $idMascota = $data['idMascota'];
             $nombreVacuna = $data['nombreVacuna'];
@@ -190,7 +190,7 @@ return function (App $app) {
             $observaciones = $data['observaciones'];
 
             return json_encode(ctr_mascotas::aplicarNuevaVacunaMascota($idMascota, $nombreVacuna, $intervalo, $fechaDosis, $observaciones));
-        }
+        // }
     });
 
     $app->post('/insertEnfermedadMascota', function(Request $request, Response $response){

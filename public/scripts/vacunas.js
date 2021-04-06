@@ -138,18 +138,21 @@ function cargarTablaVacunas(idMascota){
 		success: function (response) {
 			response = response.trim();
 			response = jQuery.parseJSON(response);
-			console.log(response);
 			menorIdVacuna = response.min;
 			maxIdVacuna = response.max;
-			$('#tbodyVacunas').empty();
 			var vacunas = response.vacunas;
+			$('#tbodyVacunas').empty();
 			if(vacunas.length == 0){
 				document.getElementById("noHayResultadosVacunasMensaje").style.display = "block";
 				document.getElementById("irAdelantePaginaVacunas").style.display = "none";
 				document.getElementById("irAtrasPaginaVacunas").style.display = "none";
 			}else{
-				document.getElementById("irAtrasPaginaVacunas").style.display = "block";
-				document.getElementById("irAdelantePaginaVacunas").style.display = "block";
+				if(vacunas.length < 5){
+					document.getElementById("irAdelantePaginaVacunas").style.display = "none";
+				}else{
+					document.getElementById("irAtrasPaginaVacunas").style.display = "block";
+					document.getElementById("irAdelantePaginaVacunas").style.display = "block";
+				}
 				document.getElementById("noHayResultadosVacunasMensaje").style.display = "none";
 				for(var i = 0; i < vacunas.length; i ++ ){
 					var fila = "<tr><td class='text-center'>" + vacunas[i].fechaProximaDosis +"</td>" +
@@ -174,14 +177,14 @@ function cargarTablaVacunas(idMascota){
 }
 
 function paginaPosteriorVacunas(){
-	$('#tbodyVacunas').empty();
-	cargarTablaVacunas();
+	var idMascota = document.getElementById('idMascotaSeleccionada').value;
+	cargarTablaVacunas(idMascota);
 }
 
 function paginaAnteriorVacunas(){
+	var idMascota = document.getElementById('idMascotaSeleccionada').value;
 	if(menorIdVacuna != 0){
-		menorIdVacuna = parseInt(maxIdVacuna) + 10;
-		$('#tbodyVacunas').empty();
-		cargarTablaVacunas();
+		menorIdVacuna = parseInt(maxIdVacuna) + 5;
+		cargarTablaVacunas(idMascota);
 	}
 }

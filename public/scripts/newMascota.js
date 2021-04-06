@@ -13,7 +13,7 @@ function seleccionarSocio(btn){
 	var nombre = btn.name;
 	var idSocio = btn.id;
 
-	document.getElementById('inpDuenio').value = "N° Socio: " + btn.innerHTML + " Nombre: " + nombre;
+	document.getElementById('inpDuenio').value = "N° Socio: " + btn.id + " Nombre: " + nombre;
 	document.getElementById('idSocioAsignado').value = idSocio;
 	showSocios();
 }
@@ -158,4 +158,100 @@ function validarDatosMascota(nombre, raza, especie, fechaNacimiento, sexo, color
 		});
 	}
 	return datosValidos;
+}
+
+function cargarTabla(){
+
+	$.ajax({
+		async: false,
+		url: urlBase + "/getSociosPagina",
+		type: "POST",
+		data: {
+			ultimoID: menorID,
+			estadoSocios: "1"
+		},
+		success: function (response) {
+			response = response.trim();
+			response = jQuery.parseJSON(response);
+			menorID = response.min;
+			maxID = response.max;
+			$('#tbodySocios').empty();
+			var socios = response.socios;
+			for(var i = 0; i < socios.length; i ++ ){
+				var fila = "<tr><td class='text-center'>" +
+				"<button class='btn btn-sm btn-outline-primary' id='" + socios[i].idSocio + "' name='" + socios[i].nombre +"' onclick='seleccionarSocio(this)'>" + socios[i].nombre + "</button></td></tr>";
+				$('#tbodySocios').append(fila);
+			}
+		},
+		error: function (response) {
+			console.log("response ERROR:" + eval(response));
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			$("#modalButtonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
+		},
+	});
+}
+
+let menorID = 0;
+let maxID = 0;
+
+function paginaPosterior(){
+	cargarTabla();
+}
+
+function paginaAnterior(){
+	if(menorID != 0){
+		menorID = parseInt(maxID) + 10;
+		cargarTabla();
+	}
+}
+
+function buscarSocio(inputSearch){
+	var aBuscar = inputSearch.value;
+	if(aBuscar.length > 3){
+		document.getElementById("irAtrasPagina").style.visibility = "hidden";
+		document.getElementById("irAdelantePagina").style.visibility = "hidden";
+		$.ajax({
+			async: false,
+			url: urlBase + "/buscadorDeSocios",
+			type: "POST",
+			data: {
+				nombreSocio: aBuscar,
+				estadoSocio: "1"
+			},
+			success: function (response) {
+				response = response.trim();
+				response = jQuery.parseJSON(response);
+				var socios = response;
+				$('#tbodySocios').empty();
+				if(socios.length == 0){
+					document.getElementById("noHayResultadosMensaje").style.display = "block";
+				}else{
+					document.getElementById("noHayResultadosMensaje").style.display = "none";
+					for(var i = 0; i < socios.length; i ++ ){
+						var fila = "<tr><td class='text-center'>" +
+						"<button class='btn btn-sm btn-outline-primary' id='" + socios[i].idSocio + "' name='" + socios[i].nombre +"' onclick='seleccionarSocio(this)'>" + socios[i].nombre + "</button></td></tr>";
+						$('#tbodySocios').append(fila);
+					}
+				}
+			},
+			error: function (response) {
+				console.log("response ERROR:" + eval(response));
+				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				$("#modalButtonRetorno").click(function(){
+					$("#modalRetorno").modal("hide");
+				});
+			},
+		});
+	}else{
+		if(aBuscar.length == 0){
+			menorID = 0;
+			maxID = 0;
+			cargarTabla();
+			document.getElementById("noHayResultadosMensaje").style.display = "none";
+			document.getElementById("irAtrasPagina").style.visibility = "visible";
+			document.getElementById("irAdelantePagina").style.visibility = "visible";
+		}
+	}
 }

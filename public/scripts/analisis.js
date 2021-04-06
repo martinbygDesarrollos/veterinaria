@@ -208,3 +208,68 @@ function modificarAnalisis(idAnalisis){
 		});
 	}
 }
+
+let menorIdAnalisis = 0;
+let maxIdAnalisis = 0;
+
+function cargarTablaAnalisis(idMascota){
+	$.ajax({
+		async: false,
+		url: urlBase + "/getAnalisisPagina",
+		type: "POST",
+		data: {
+			ultimoID: menorIdAnalisis,
+			idMascota: idMascota
+		},
+		success: function (response) {
+			response = response.trim();
+			response = jQuery.parseJSON(response);
+			menorIdAnalisis = response.min;
+			maxIdAnalisis = response.max;
+			var analisis = response.analisis;
+			$('#tbodyAnalisis').empty();
+			if(analisis.length == 0){
+				document.getElementById("noHayResultadosAnalisisMensaje").style.display = "block";
+				document.getElementById("irAdelantePaginaAnalisis").style.display = "none";
+				document.getElementById("irAtrasPaginaAnalisis").style.display = "none";
+			}else{
+				if(analisis.length < 5){
+					document.getElementById("irAdelantePaginaAnalisis").style.display = "none";
+				}else{
+					document.getElementById("irAtrasPaginaAnalisis").style.display = "block";
+					document.getElementById("irAdelantePaginaAnalisis").style.display = "block";
+				}
+				document.getElementById("noHayResultadosAnalisisMensaje").style.display = "none";
+				for(var i = 0; i < analisis.length; i ++ ){
+					var fila = "<tr><td class='text-center'>" + analisis[i].fecha +"</td>" +
+					"<td class='text-center'>" + analisis[i].nombre +"</td>" +
+					"<td class='text-center'>" +
+					"<button class='btn btn-success btn-sm' name='ModificarAnalisis' id='" + analisis[i].idAnalisis + "'  onclick='operacionAnalisis(this)'><i class='fas fa-edit'></i></button></td>" +
+					"<td class='text-center'>" +
+					"<button class='btn btn-info btn-sm' id='" + analisis[i].idAnalisis + "'  onclick='verDetalleAnalsisi(this)'><i class='fas fa-eye'></i></button></td></tr>"
+					$('#tbodyAnalisis').append(fila);
+				}
+			}
+		},
+		error: function (response) {
+			console.log("response ERROR:" + eval(response));
+			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			$("#modalButtonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
+		},
+	});
+}
+
+function paginaPosteriorAnalisis(){
+	var idMascota = document.getElementById('idMascotaSeleccionada').value;
+	cargarTablaAnalisis(idMascota);
+}
+
+function paginaAnteriorAnalisis(){
+	var idMascota = document.getElementById('idMascotaSeleccionada').value;
+	if(menorIdAnalisis != 0){
+		menorIdAnalisis = parseInt(maxIdAnalisis) + 5;
+		cargarTablaAnalisis(idMascota);
+	}
+}

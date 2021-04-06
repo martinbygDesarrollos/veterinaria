@@ -32,12 +32,7 @@ return function (App $app) {
 			$args['administrador'] = $_SESSION['administrador'];
 			$idMascota = $args['idMascota'];
 			$args['mascota'] = ctr_mascotas::getMascota($idMascota);
-			$historial = ctr_historiales::getHistoriasClinica($idMascota);
-
-			if(sizeof($historial) > 0){
-				$args['historias'] = $historial;
-				return $this->view->render($response, "historiaClinica.twig", $args);
-			}
+			return $this->view->render($response, "historiaClinica.twig", $args);
 		}
 	})->setName('historiasClinica');
 
@@ -67,6 +62,19 @@ return function (App $app) {
     //-----------------------------------------------------------------------------
 
     //--------------------------------POST-----------------------------------------
+
+	$app->post('/getHistoriaClinicaPagina', function(Request $request, Response $response){
+		$data = $request->getParams();
+		$ultimoID = $data['ultimoID'];
+		$idMascota = $data['idMascota'];
+		return json_encode(ctr_historiales::getHistoriaClinicaPagina($ultimoID, $idMascota));
+	});
+
+	$app->post('/getHistorialUsuariosPagina', function(Request $request, Response $response){
+		$data = $request->getParams();
+		$ultimoID = $data['ultimoID'];
+		return json_encode(ctr_historiales::getHistorialUsuariosPagina($ultimoID));
+	});
 
 	$app->post('/insertHistoriaMascota', function(Request $request, Response $response){
 
