@@ -59,7 +59,7 @@ function editarMascota(btn){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -75,22 +75,22 @@ function validarInformacionMascota(nombre, raza, especie, sexo, fechaNacimiento,
 
 	if(nombre == null){
 		conError = true;
-		mensajeError = "No puede dejar el campo nombre vacio para modificar la información de la mascota";
+		mensajeError = "No puede dejar el campo nombre vacío para modificar la información de la mascota";
 	}else if(nombre.length < 3){
 		conError = true;
 		mensajeError = "El campo nombre requiere al menos 3 caracteres para ser considerado valido.";
 	}else if(!soloLetras.test(nombre)){
 		conError = true;
-		mensajeError = "El nombre de la mascota solo puede contener caracteres alfabeticos.";
+		mensajeError = "El nombre de la mascota solo puede contener caracteres alfabéticos.";
 	}else if(raza == null){
 		conError = true;
-		mensajeError = "No puede dejar el campo raza vacio para modificar la información de la mascota,";
+		mensajeError = "No puede dejar el campo raza vacío para modificar la información de la mascota,";
 	}else if(raza.length < 3){
 		conError = true;
 		mensajeError = "El campo raza requiere al menos 3 caracteres para ser considerado valido.";
 	}else if(especie == null){
 		conError = true;
-		mensajeError = "No puede dejar el campo especie vacio para modificar la información de la mascota.";
+		mensajeError = "No puede dejar el campo especie vacío para modificar la información de la mascota.";
 	}else if(especie.length < 3){
 		conError = true;
 		mensajeError = "El campo especie requiere al menos 3 caracteres para ser considerado valido.";

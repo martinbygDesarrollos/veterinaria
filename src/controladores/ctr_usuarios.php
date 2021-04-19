@@ -30,7 +30,7 @@ class ctr_usuarios{
 				$response->mensaje = "El usuario fue ingresado correctamente, al iniciar sesión por primera vez se fijará la contraseña ingresada.";
 			}else{
 				$response->retorno = false;
-				$response->mensajeError = "Ocurrio un error interno y el usuario no pudo ser ingresado correctamente, porfavor vuelva a intentarlo.";
+				$response->mensajeError = "Ocurrió un error interno y el usuario no pudo ser ingresado correctamente, por favor vuelva a intentarlo.";
 			}
 		}else{
 			$response->retorno = false;
@@ -40,8 +40,20 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function signIn($nombreUsuario, $pass){
+	public function validarSesionActiva($nombre, $token){
 
+		$result = usuarios::validarSesionActiva($nombre, $token);
+		if($result)
+			return true;
+		else{
+			session_destroy();
+			session_start();
+			$_SESSION['administrador'] = null;
+			return false;
+		}
+	}
+
+	public function signIn($nombreUsuario, $pass){
 		$response = new \stdClass();
 		$usuario = usuarios::getUsuarioNombre($nombreUsuario);
 
@@ -49,26 +61,40 @@ class ctr_usuarios{
 			if($usuario->pass == ""){
 				$result = usuarios::updatePasswordUsuario($nombreUsuario, $pass);
 				if($result){
-					$usu = new \stdClass();
-					$usu->usuario = $usuario->nombre;
-					session_destroy();
-					session_start();
-					$_SESSION['administrador'] = $usu;
-					$response->retorno = true;
-					$response->mensaje = "Usted inicio sesión por primera vez, la contraseña ingresada será su contraseña de ahora en más.";
-					$response->primerSesion = 1;
+					$token = usuarios::generarTokenSesion($nombreUsuario);
+					if($token){
+						$usu = new \stdClass();
+						$usu->usuario = $usuario->nombre;
+						$usu->token = $token;
+						session_destroy();
+						session_start();
+						$_SESSION['administrador'] = $usu;
+						$response->retorno = true;
+						$response->mensaje = "Usted inició sesión por primera vez, la contraseña ingresada será su contraseña de ahora en más.";
+						$response->primerSesion = 1;
+					}else{
+						$response->retorno = false;
+						$response->mensajeError = "La contraseña fue asignada, pero un error interno no permitio que usted ingrese sesión, por favor vuelva a intentarlo.";
+					}
 				}else{
 					$response->retorno = false;
 					$response->mensajeError = "Usted intento iniciar sesión por primera vez, el sistema no pudo asociar su contraseña a esta cuenta, vuelva a intentarlo.";
 				}
 			}else if($pass == $usuario->pass){
-				$usu = new \stdClass();
-				$usu->usuario = $usuario->nombre;
-				session_destroy();
-				session_start();
-				$_SESSION['administrador'] = $usu;
-				$response->retorno = true;
-				$response->mensaje = "Sesión iniciada.";
+				$token = usuarios::generarTokenSesion($nombreUsuario);
+				if($token){
+					$usu = new \stdClass();
+					$usu->usuario = $usuario->nombre;
+					$usu->token = $token;
+					session_destroy();
+					session_start();
+					$_SESSION['administrador'] = $usu;
+					$response->retorno = true;
+					$response->mensaje = "Sesión iniciada.";
+				}else{
+					$response->retorno = false;
+					$response->mensajeError = "Ocurrió un error y no pudo iniciarse sesión, por favor vuelva a intentarlo.";
+				}
 			}else{
 				$response->retorno = false;
 				$response->mensajeError = "El usuario y la contraseña no coinciden.";
@@ -93,7 +119,7 @@ class ctr_usuarios{
 				if($result){
 
 					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de usuario", "La informacion del usuario " . $nombre . " fue actualizada en el sistema.");
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de usuario", "La información del usuario " . $nombre . " fue actualizada en el sistema.");
 					if($resultInsertOperacionUsuario)
 						$response->enHistorial = "Registrado en el historial del usuario.";
 					else
@@ -104,7 +130,7 @@ class ctr_usuarios{
 					$response->mensaje = "El usuario " . $nombre . " fue modificado correctamente.";
 				}else{
 					$response->retorno = false;
-					$response->mensajeError = "El usuario " . $nombre . " no pudo ser modificado, porfavor vuelva a intentarlo.";
+					$response->mensajeError = "El usuario " . $nombre . " no pudo ser modificado, por favor vuelva a intentarlo.";
 				}
 			}else{
 				$response->retorno = false;
@@ -112,7 +138,7 @@ class ctr_usuarios{
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "El usuario que desea modificar no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+			$response->mensajeError = "El usuario que desea modificar no fue encontrado en el sistema, por favor vuelva a intentarlo.";
 		}
 
 		return $response;
@@ -129,7 +155,7 @@ class ctr_usuarios{
 
 				if($result){
 					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de contraseña", "El usuario " . $nombre . " actualizo su contraseña.");
+					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de contraseña", "El usuario " . $nombre . " actualizó su contraseña.");
 					if($resultInsertOperacionUsuario)
 						$response->enHistorial = "Registrado en el historial del usuario.";
 					else
@@ -140,7 +166,7 @@ class ctr_usuarios{
 					$response->mensaje = "La contraseña del administrador fue modificada correctamente.";
 				}else{
 					$response->retorno = false;
-					$response->mensajeError = "Ocurrio un error interno y la contraseña del administrador no fue modificada, porfavor vuelva a intentarlo.";
+					$response->mensajeError = "Ocurrió un error interno y la contraseña del administrador no fue modificada, por favor vuelva a intentarlo.";
 				}
 			}else {
 				$response->retorno = false;
@@ -148,7 +174,7 @@ class ctr_usuarios{
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "No hay un usuario administrador inicializado, contactese a servicio tecnico.";
+			$response->mensajeError = "El usuario al que intenta modificar la contraseña no fue encontrado, por favor vuelva a intentarlo.";
 		}
 		return $response;
 	}
@@ -243,15 +269,15 @@ class ctr_usuarios{
 					$response->mensaje = "La información del socio fue actualizada" . $mensajeCuota;
 				}else{
 					$response->retorno = true;
-					$response->mensaje = "La informacion del socio no pudo ser actualizada, porfavor vuelva a intentarlo.";
+					$response->mensaje = "La informacion del socio no pudo ser actualizada, por favor vuelva a intentarlo.";
 				}
 			}else{
 				$response->retorno = false;
-				$response->mensajeError = "La cédula ingresada ya pertenece a otro usuario, porfavor verifiquela.";
+				$response->mensajeError = "La cédula ingresada ya pertenece a otro usuario, por favor verifiquela.";
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "El socio que se quiere modificar no fue encontrado en el sistema porfavor vuelva a intentarlo.";
+			$response->mensajeError = "El socio que se quiere modificar no fue encontrado en el sistema por favor vuelva a intentarlo.";
 		}
 
 		return $response;
@@ -345,14 +371,14 @@ class ctr_usuarios{
 					$response->enHistorial = "No ingresado en historial de usuario.";
 				//----------------------------------------------------------------------------------------------------------------
 				$response->retorno = true;
-				$response->mensaje = "Se envio un recordatorio al socio sobre su falta de pago.";
+				$response->mensaje = "Se envió un recordatorio al socio sobre su falta de pago.";
 			}else{
 				$response->retorno = false;
-				$response->mensaje = "Ocurrio un error y el recordatorio de su falta de pago no fue enviado.";
+				$response->mensaje = "Ocurrió un error y el recordatorio de su falta de pago no fue enviado.";
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "El socio al que quiere notificar no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+			$response->mensajeError = "El socio al que quiere notificar no fue encontrado en el sistema, por favor vuelva a intentarlo.";
 		}
 
 		return $response;
@@ -383,7 +409,7 @@ class ctr_usuarios{
 							$response->mensaje = "Se le envió un email a " . $socio->nombre . " con la información de las vacunas vencidas de " . $mascota->nombre;
 						}else{
 							$response->retorno = false;
-							$response->mensajeError = "El email a " . $socio->nombre . " no fue enviado por un error interno, porfavor vuelva a intentarlo.";
+							$response->mensajeError = "El email a " . $socio->nombre . " no fue enviado por un error interno, por favor vuelva a intentarlo.";
 						}
 					}else{
 						$response->retorno = false;
@@ -399,7 +425,7 @@ class ctr_usuarios{
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "El socio al que desea notificar no fue encontrado en el sistema, porfavor vuelva a intentarlo.";
+			$response->mensajeError = "El socio al que desea notificar no fue encontrado en el sistema, por favor vuelva a intentarlo.";
 		}
 
 		return $response;
@@ -439,7 +465,7 @@ class ctr_usuarios{
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "El socio que quiere modificar no fue encontrado en el sisitema porfavor vuelva a intentarlo.";
+			$response->mensajeError = "El socio que quiere modificar no fue encontrado en el sisitema por favor vuelva a intentarlo.";
 		}
 
 		return $response;
@@ -448,51 +474,66 @@ class ctr_usuarios{
 	public function actualizarEstadosSocios($plazoDeuda){
 		$response = new \stdClass();
 
-		$fechaInt = fechas::parceFechaInt(fechas::calcularFechaProximaDosis(date('Y-m-d'), $plazoDeuda));
+		$fechaInt = fechas::parceFechaInt(fechas::calcularFechaMinimaDeuda(date('Y-m-d'), $plazoDeuda));
 		$fechaInt = substr($fechaInt, 0,4) . substr($fechaInt, 4,2);
 
-		$arraySocios = socios::getSociosConPlazoVencido($fechaInt);
-		if($arraySocios){
-			foreach ($arraySocios as $key => $value) {
-				socios::actualizarEstadoSocio($value->idSocio, 0);
-				ctr_mascotas::desactivarMascotasSocio($idSocio, 0);
+		$resultSocio = socios::setSociosInactivosPorCuotaVencida(0, $fechaInt);
+		$resultRestaurarSocio = socios::setSociosActivosPorCuotaVencida(1, $fechaInt);
+
+		if($resultSocio && $resultRestaurarSocio){
+			$resultMascota = ctr_mascotas::modificarEstadoSociosCuotas(0,0);
+			$resultRestaurarMascota = ctr_mascotas::modificarEstadoSociosCuotas(1,1);
+			if($resultMascota && $resultRestaurarMascota){
+				$response->retorno = true;
+				$response->mensaje = "Los socios fueron desactivados y restaurados segun el nuevo plazo, así tambien sus respectivas mascotas.";
+			}else{
+				if($resultRestaurarMascota){
+					$response->retorno = true;
+					$response->mensaje = "Los socios fueron desactivados y restaurados segun el nuevo plazo, fallo la desactivación de sus mascotas.";
+				}else if($resultMascota){
+					$response->retorno = true;
+					$response->mensaje = "Los socios fueron desactivados y restaurados segun el nuevo plazo, fallo la desactivación de sus mascotas.";
+				}else{
+					$response->retorno = true;
+					$response->mensaje = "Los socios fueron desactivados y restaurados segun el nuevo plazo, fallo la modificación de sus mascotas.";
+				}
 			}
-
-			$response->retorno = true;
-			$response->mensaje = "Los estados de los socios se actualaizador segun el nuevo plazo.";
 		}else{
-			$response->retorno = false;
-			$response->mensaje = "Los estados de los socios no fueron modificados.";
+			if($resultRestaurarSocio){
+				$response->retorno = false;
+				$response->mensaje = "Los socios con cuotas vencidas no fueron desactivados por lo que el proceso no continuo.";
+			}else if($resultSocio){
+				$response->retorno = false;
+				$response->mensaje = "Los socios inactivos que debian ser activados con el nuevo plazo no se modificaron, el proceso no continuo.";
+			}else{
+				$response->retorno = false;
+				$response->mensaje = "Ocurrió un error, no se desactivaron y tampoco se restauraron los socios segun el nuevo plazo estipulado.";
+			}
 		}
-
 		return $response;
 	}
 
-	public function getSociosCuotasVencidas(){
-		$arraySocios = socios::getSociosParaCuotasVencidas();
-		$arrayResult = array();
-		foreach ($arraySocios as $key => $value) {
-			if(strlen($value['fechaUltimaCuota']) == 6){
-				$result = fechas::esUnaCuotaVencida($value['fechaUltimaCuota'], $value['fechaPago']);
-				if($result){
-					$arrayResult[] = array(
-						"idSocio" => $value['idSocio'],
-						"nombreSocio" => $value['nombre'],
-						"tipoSocio" => $value['tipo'],
-						"fechaUltimaCuota" => fechas::parceFechaFormatDMANoDay($value['fechaUltimaCuota'], "/"),
-						"fechaPago" => $value['fechaPago'],
-						"telefono" => $value['telefono'],
-						"email" => $value['email'],
-					);
-				}
-			}
+	public function buscadorDeSociosVencimientoCuota($nombreSocio){
+		return socios::buscadorDeSociosVencimientoCuota($nombreSocio);
+	}
+
+	public function getVencimientosCuotaPagina($ultimoId){
+		if($ultimoId == 0){
+			$ultimoId = socios::getVencimientosCuotaMaxId();
 		}
-		return $arrayResult;
+
+		$vencimientosCuota = socios::getVencimientosCuotaPagina($ultimoId);
+		$minId = socios::getVencimientosCuotaMinId($vencimientosCuota, $ultimoId);
+		return array(
+			"min" => $minId,
+			"max" => $ultimoId,
+			"vencimientos" => $vencimientosCuota
+		);
 	}
 
 	public function haySociosConCuotasVencidas(){
-		$arrayResult = ctr_usuarios::getSociosCuotasVencidas();
-		if(sizeof($arrayResult) > 0) return 1;
+		$result = ctr_usuarios::getVencimientosCuotaPagina(0);
+		if(sizeof($result['vencimientos']) > 0) return 1;
 		else return 0;
 	}
 

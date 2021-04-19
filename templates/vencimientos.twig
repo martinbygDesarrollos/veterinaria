@@ -8,7 +8,7 @@
 			<div id="containerNuevoSocio" class="card">
 				<h5 class="card-header" style="background: #85B58A">Vacunas vencidas hasta el {{ fechaVencimiento }}</h5>
 				<div class="card-body">
-					<table id="tableStandar" class="table table-striped table-bordered">
+					<table class="table table-striped table-bordered">
 						<thead class="thead-dark">
 							<tr>
 								<th class="text-center" scope="col">Fecha vencimiento</th>
@@ -18,28 +18,18 @@
 								<th class="text-center" scope="col">Email</th>
 							</tr>
 						</thead>
-						<tbody>
-							{% for vencimiento in infoVencimientos %}
-							<tr>
-								<td class="text-center">{{ vencimiento.fechaProximaDosis }}</td>
-								<td class="text-center"><a class="btn btn-info btn-sm" href="{{path_for('Inicio')}}verMascota/{{ vencimiento.idMascota }}">{{ vencimiento.nombreMascota }}</a></td>
-								{% if vencimiento.socio != null %}
-								<td class="text-center"><a class="btn btn-info btn-sm" href="{{path_for('Inicio')}}verSocio/{{ vencimiento.socio.idSocio }}">{{ vencimiento.socio.nombre }}</a></td>
-								<td class="text-center">{{ vencimiento.socio.telefono }}</td>
-								{% if vencimiento.socio.email %}
-								<td class="text-center" ><button class="btn btn-info btn-sm" id="{{ vencimiento.socio.idSocio }}" name="{{ vencimiento.idMascota }}" onclick="openModalVencimiento(this)" >Enviar correo</button></td>
-								{% else %}
-								<td class="text-center">Sin email</td>
-								{% endif %}
-								{% else %}
-								<td class="text-center">Socio no vinculado</td>
-								<td class="text-center">No corresponde</td>
-								<td class="text-center">No corresponde</td>
-								{% endif %}
-							</tr>
-							{% endfor %}
+						<tbody id="tbodyVencimientosVacuna">
+
 						</tbody>
 					</table>
+					<div id="noHayResultadosMensaje" style="display: none" class="alert alert-info text-center" role="alert">
+						<h3>No hay resultado</h3>
+						No se encontraron resultados para esta busqueda.
+					</div>
+					<div class="d-flex justify-content-between">
+						<button id="irAtrasPagina" class="btn btn-sm btn-info" onclick="paginaAnteriorVencimientoVacunas()">Atras</button>
+						<button id="irAdelantePagina" class="btn btn-sm btn-info" onclick="paginaPosteriorVencimientoVacunas()">Adelante</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -69,5 +59,8 @@
 </div>
 {%block script%}
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/vencimientos.js"></script>
+<script type="text/javascript">
+	cargarTablaVencimientoVacunas();
+</script>
 {% endblock %}
 {% endblock %}

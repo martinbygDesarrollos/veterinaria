@@ -7,7 +7,12 @@ if (PHP_SAPI == 'cli-server') {
 	}
 }
 
-require 'C:/xampp/htdocs/utils/vendor/autoload.php';
+if (file_exists('/home/byguyqrd/utils/vendor/autoload.php') ){
+	require '/home/byguyqrd/utils/vendor/autoload.php';
+}else{
+	require 'C:/xampp/htdocs/utils/vendor/autoload.php';
+}
+
 session_start();
 
 $settings = require __DIR__ . '/../src/settings.php';

@@ -9,7 +9,7 @@ function insertarHistoriaClinica(btn){
 
 	var alert  = document.getElementById('mensajeErrorHistoriaAlert');
 	if(motivoConsulta == null){
-		alert.innerHTML = "No puede ingresar una historia clinica sin un motivo de consulta.";
+		alert.innerHTML = "No puede ingresar una historia clínica sin un motivo de consulta.";
 		alert.style.display = "block";
 		return;
 	}else if(motivoConsulta.length < 10) {
@@ -47,7 +47,7 @@ function insertarHistoriaClinica(btn){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -109,7 +109,7 @@ function activarDesactivarMascota(btn){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});

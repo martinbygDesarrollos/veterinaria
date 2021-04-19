@@ -103,6 +103,12 @@ class fechas{
 		return fechas::parceFechaFormatDMA($nuevafecha, "/");
 	}
 
+	public function calcularFechaMinimaDeuda($fechaUltimaDosis, $intervalo){
+		$nuevafecha = date("Y-m-d", strtotime("$fechaUltimaDosis - ". $intervalo ." day"));
+		$nuevafecha = fechas::parceFechaInt($nuevafecha);
+		return fechas::parceFechaFormatDMA($nuevafecha, "/");
+	}
+
 	public function esUnaCuotaVencida($fechaUltimaCuota, $fechaPago){
 		$fecha = fechas::parceFechaInt(date('Y-m-d'));
 		$yearActual = substr($fecha, 0, 4);

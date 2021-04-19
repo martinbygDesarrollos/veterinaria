@@ -69,7 +69,7 @@ function insertNewMascota(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -85,34 +85,34 @@ function validarDatosMascota(nombre, raza, especie, fechaNacimiento, sexo, color
 
 	if(nombre == null){
 		datosValidos = false;
-		mensajeError = "El nombre de la mascota no puede ser ingresado nulo.";
+		mensajeError = "El nombre de la mascota no puede ser ingresado vacío.";
 	}else if(nombre.length < 3){
 		datosValidos = false;
 		mensajeError = "El nombre de la mascota debe contener al menos 3 caracteres para ser considerado valido.";
 	}else if(!/^[A-Za-z\s]+$/g.test(nombre)){
 		datosValidos = false;
-		mensajeError = "El nombre solo puede contener caracteres alfabeticos para ser considerado valido.";
+		mensajeError = "El nombre solo puede contener caracteres alfabéticos para ser considerado valido.";
 	}else if ( raza == null){
 		datosValidos = false;
-		mensajeError = "La raza de la mascota no puede ser ingresada nula.";
+		mensajeError = "La raza de la mascota no puede ser ingresada vacía.";
 	}else if( raza.length < 4){
 		datosValidos = false;
 		mensajeError = "La raza de la mascota debe contener al menos 4 caracteres para ser considerado valido.";
 	}else if(!/^[A-Za-z\s]+$/g.test(raza)){
 		datosValidos = false;
-		mensajeError = "La raza solo puede contener caracteres alfabeticos para ser considerado valido.";
+		mensajeError = "La raza solo puede contener caracteres alfabéticos para ser considerado valido.";
 	}else if ( especie == null){
 		datosValidos = false;
-		mensajeError = "La especie de la mascota no puede ser ingresada nula.";
+		mensajeError = "La especie de la mascota no puede ser ingresada vacía.";
 	}else if( especie.length < 4){
 		datosValidos = false;
 		mensajeError = "La especie de la mascota debe contener al menos 4 caracteres para ser considerado valido.";
 	}else if(!/^[A-Za-z\s]+$/g.test(especie)){
 		datosValidos = false;
-		mensajeError = "La especie solo puede contener caracteres alfabeticos para ser considerado valido.";
+		mensajeError = "La especie solo puede contener caracteres alfabéticos para ser considerado valido.";
 	}else if(fechaNacimiento == null){
 		datosValidos = false;
-		mensajeError = "La fecha de nacimiento de la mascota no puede ser ingresada nula.";
+		mensajeError = "La fecha de nacimiento de la mascota no puede ser ingresada vacía.";
 	}else if(fechaNacimiento >= new Date()){
 		datosValidos = false;
 		mensajeError = "La fecha de nacimiento no puede ser superior a la fecha actual.";
@@ -130,7 +130,7 @@ function validarDatosMascota(nombre, raza, especie, fechaNacimiento, sexo, color
 			mensajeError = "El color de la mascota debe contener al menos 4 caracteres para ser considerado valido. De lo contrario deje el campo vacío.";
 		}else if(!/^[A-Za-z\s]+$/g.test(color)){
 			datosValidos = false;
-			mensajeError = "El color solo puede contener caracteres alfabeticos para ser considerado valido. De lo contrario deje el campo vacío.";
+			mensajeError = "El color solo puede contener caracteres alfabéticos para ser considerado valido. De lo contrario deje el campo vacío.";
 		}
 	}
 
@@ -140,7 +140,7 @@ function validarDatosMascota(nombre, raza, especie, fechaNacimiento, sexo, color
 			mensajeError = "El pelo de la mascota debe contener al menos 4 caracteres para ser considerado valido. De lo contrario deje el campo vacío.";
 		}else if(!/^[A-Za-z\s]+$/g.test(pelo)){
 			datosValidos = false;
-			mensajeError = "El pelo solo puede contener caracteres alfabeticos para ser considerado valido. De lo contrario deje el campo vacío.";
+			mensajeError = "El pelo solo puede contener caracteres alfabéticos para ser considerado valido. De lo contrario deje el campo vacío.";
 		}
 	}
 
@@ -185,7 +185,7 @@ function cargarTabla(){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -238,7 +238,7 @@ function buscarSocio(inputSearch){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});

@@ -18,8 +18,12 @@ class copiarDB{
         if($sql->execute()){
             $response = $sql->get_result();
             $array = array();
+
+            $fechaInt = fechas::parceFechaInt(fechas::calcularFechaMinimaDeuda(date('Y-m-d'), 1500));
+            $fechaInt = substr($fechaInt, 0,4) . substr($fechaInt, 4,2);
+
             while($row = $response->fetch_array(MYSQLI_ASSOC)){
-                $estado = copiarDB::getEstado($row['estado']);
+
                 $tipoSocio = copiarDB::getTipoSocio($row['estado']);
 
                 $fechaUltimoP = null;
@@ -32,8 +36,15 @@ class copiarDB{
                 if(strlen($row['fechaingreo']) > 9)
                     $fechaIngreso = fechas::parceFechaInt($row['fechaingreo']);
 
+
+
+                // $estado = copiarDB::getEstado($row['estado']);
+                $estado = 1;
+                if($fechaInt > $fechaUltimaC)
+                    $estado = 0;
+
                 $cedula = null;
-                if(strlen($cedula) == 8 || strlen($cedula) == 11)
+                if(strlen($row['cedula']) > 8 || strlen($row['cedula']) < 12)
                     $cedula = copiarDB::extructurarCedula($row['cedula']);
 
                 $idSocio = copiarDB::insertarSocio($cedula, $row['nombre'], $row['numero'], $row['telefono'], $row['telfax'], $row['calle'] . " " . $row['numerocasa'] ." ". $row['apto'], $fechaIngreso , 0, $row['lugarpago'], $estado, $row['motivobaja'], $row['cuota'], $row['email'], null, $fechaUltimoP, $fechaUltimaC, $tipoSocio);
@@ -61,25 +72,22 @@ class copiarDB{
         }else return null;
     }
 
-
-
     function extructurarCedula($cedula){
+        $cedula = preg_replace('([^A-Za-z0-9])', '', $cedula);
         if(copiarDB::validarCedula($cedula)){
-
-            $cedulaValidada =  substr($cedula,0,1) . substr($cedula,2,3) . substr($cedula,6,3) . substr($cedula,10,1);
-            if($cedulaValidada < 9999999)
-                return null;
-            else return $cedulaValidada;
-        }else return null;
+            // $cedulaValidada =  substr($cedula,0,1) . substr($cedula,2,3) . substr($cedula,6,3) . substr($cedula,10,1);
+            if($cedula > 9999999 && strlen($cedula) <= 8)
+                return $cedula;
+        }
+        return null;
     }
 
     function seleccionarInsertarMascota($idSocio, $numSocio){
         $conexion = copiarDB::getConexion();
-        $sql = $conexion->prepare("SELECT * FROM mascota WHERE duenio = ? AND nombre NOT LIKE '%[^0-9.]%'");
+        $sql = $conexion->prepare("SELECT * FROM mascota WHERE duenio = ?");
         $sql->bind_param('i', $numSocio);
         if($sql->execute()){
             $response = $sql->get_result();
-            $arrayMascotas = array();
             while($row = $response->fetch_array(MYSQLI_ASSOC)){
                 $estado = copiarDB::getEstadoMascota($row['estado']);
 
@@ -94,16 +102,67 @@ class copiarDB{
                 if(!ctype_alpha($row['pelo']))
                     $row['pelo'] = null;
 
+                if(!ctype_alpha($row['especie']))
+                    $row['especie'] = null;
+
+                if(!ctype_alpha($row['raza']))
+                    $row['raza'] = null;
+
                 $sexo = 0;
                 if($row['sexo'] == "Macho")
                     $sexo = 1;
 
-                $idMascota = copiarDB::insertarMascota($row['nombre'], $row['especie'], $row['raza'], $sexo, $row['color'], $row['pedigree'], $fecha, $estado, $row['pelo'], $row['chip']);
+                $pedigree = 0;
+                if($row['pedigree'] == "Si")
+                    $pedigree = 1;
 
-                $arrayMascotas[] = array("idMascota" => $idMascota, "idSocio" => $idSocio,"numSocio" => $numSocio, "nombreMascota" => $row['nombre']);
+                $idMascota = copiarDB::insertarMascota($row['nombre'], $row['especie'], $row['raza'], $sexo, $row['color'], $pedigree, $fecha, $estado, $row['pelo'], $row['chip']);
 
+                copiarDB::insertarMascotaSocio($idSocio, $idMascota);
             }
-            return $arrayMascotas;
+        }
+    }
+
+    public function seleccionarInsertarMascotaSinSocio(){
+        $conexion = copiarDB::getConexion();
+        $query = $conexion->prepare("SELECT * FROM mascota WHERE duenio NOT IN (SELECT numero FROM socio)");
+        if($query->execute()){
+            $result = $query->get_result();
+            $arrayResult = array();
+            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+                $estado = copiarDB::getEstadoMascota($row['estado']);
+
+                $fecha = fechas::parceFechaInt($row['nacimiento']);
+
+                if(strlen($row['chip']) < 12)
+                    $row['chip'] = null;
+
+                if(!ctype_alpha($row['color']) || strlen($row['color']) < 4)
+                    $row['color'] = null;
+
+                if(!ctype_alpha($row['pelo']))
+                    $row['pelo'] = null;
+
+                if(!ctype_alpha($row['especie']))
+                    $row['especie'] = null;
+
+                if(!ctype_alpha($row['raza']))
+                    $row['raza'] = null;
+
+                $sexo = 0;
+                if($row['sexo'] == "Macho")
+                    $sexo = 1;
+
+                $pedigree = 0;
+                if($row['pedigree'] == "Si")
+                    $pedigree = 1;
+
+                $idMascota = copiarDB::insertarMascota($row['nombre'], $row['especie'], $row['raza'], $sexo, $row['color'], $pedigree, $fecha, $estado, $row['pelo'], $row['chip']);
+
+                // copiarDB::seleccionarInsertarVacunasMascotas($idMascota, $row['nombre'], $row['duenio']);
+                // copiarDB::seleccionarInsertarEnfermedadesMascota($idMascota, $row['nombre'], $row['duenio']);
+                // copiarDB::seleccionarInsertarHistorialClinico($idMascota, $row['nombre'], $row['duenio']);
+            }
         }
     }
 
@@ -114,6 +173,12 @@ class copiarDB{
         if($sql->execute()){
             return $conn->insert_id;
         }return null;
+    }
+
+    public function insertarMascotaSocio($idSocio, $idMascota){
+        $query = DB::conexion()->prepare("INSERT INTO mascotasocio(idSocio, idMascota) VALUES (?,?)");
+        $query->bind_param('ii', $idSocio, $idMascota);
+        $query->execute();
     }
 
     function seleccionarInsertarVacunasMascotas($idMascota, $nombre, $duenio){
@@ -129,16 +194,12 @@ class copiarDB{
                 copiarDB::insertarVacuna($row['nombre'], $idMascota, "1", "1", $fechaPParce, $fechaUParce, $row['docis']);
             }
         }
-        return false;
     }
 
     function insertarVacuna($nombreVacuna, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis, $observacion){
-        $conn = DB::conexion();
-        $sql = $conn->prepare("INSERT INTO vacunasmascota(nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, observacion) VALUES(?,?,?,?,?,?,?)");
+        $sql = DB::conexion()->prepare("INSERT INTO vacunasmascota(nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, observacion) VALUES(?,?,?,?,?,?,?)");
         $sql->bind_param('siiiiis',$nombreVacuna, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis, $observacion);
-        if($sql->execute()){
-            return $conn->insert_id;
-        }return null;
+        $sql->execute();
     }
 
     function seleccionarInsertarEnfermedadesMascota($idMascota, $nombre, $duenio){
@@ -159,7 +220,7 @@ class copiarDB{
         $query->execute();
     }
 
-    public function seleecionarInsertarHistorialClinicoMascota($idMascota, $nombre, $duenio){
+    public function seleccionarInsertarHistorialClinico($idMascota, $nombre, $duenio){
         $conexion = copiarDB::getConexion();
         $sql = $conexion->prepare("SELECT * FROM `historial_clinico` WHERE socio = ? AND mascota = ?");
         $sql->bind_param('is', $duenio, $nombre);
@@ -178,27 +239,24 @@ class copiarDB{
         $sql->execute();
     }
 
-    public function seleccionarInsertarHistorialMascota($idMascota, $nombre, $duenio, $idSocio){
+    public function seleccionarInsertarFechaDeCambio($nombre, $duenio, $idMascotaSocio){
         $conexion = copiarDB::getConexion();
-        $sql = $conexion->prepare("SELECT fechaCambio FROM historial_mascota WHERE nombre = ? AND duenio = ?");
-        $sql->bind_param('si', $nombre, $duenio);
-        if($sql->execute()){
-            $response = $sql->get_result();
-            while($row = $response->fetch_array(MYSQLI_ASSOC)){
-                $fechaFormateada = fechas::parceFechaInt($row['fechaCambio']);
-                $idRelacion = copiarDB::insertMascotaSocio($idSocio, $idMascota, $fechaFormateada);
+        $query = $conexion->prepare("SELECT fechacambio FROM historial_mascota WHERE nombre = ? AND duenio = ?");
+        $query->bind_param('ss', $nombre, $duenio);
+        if($query->execute()){
+            $result = $query->get_result();
+            $arrayResult = array();
+            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+                $row['fechacambio'] = fechas::parceFechaInt($row['fechacambio']);
+                copiarDB::actualizarMascotaSocio($idMascotaSocio, $row['fechacambio']);
             }
         }
     }
 
-    public function insertMascotaSocio($idSocio, $idMascota, $fecha){
-        $conn = DB::conexion();
-        $sql = $conn->prepare("INSERT INTO mascotasocio(idMascota, idSocio, fechaCambio) VALUES(?,?,?)");
-        $sql->bind_param('iii', $idMascota, $idSocio, $fecha);
-
-        if($sql->execute()){
-            return $conn->insert_id;
-        }else return null;
+    public function actualizarMascotaSocio($idMascotaSocio, $fechacambio){
+        $query = DB::conexion()->prepare("UPDATE mascotasocio SET fechaCambio= ? WHERE idMascotaSocio = ?");
+        $query->bind_param('ii', $fechacambio, $idMascotaSocio);
+        return  $query->execute();
     }
 
     function getEstadoMascota($estado){

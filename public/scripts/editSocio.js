@@ -70,7 +70,7 @@ function modificarSocio(btn){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -86,34 +86,34 @@ function validarInformacionSocio(nombre, cedula, direccion, telefono, fechaPago,
 
 	if(nombre == null){
 		conError = true;
-		mensajeError = "Para modificar la información del socio el campo nombre no puede estar vacio.";
+		mensajeError = "Para modificar la información del socio el campo nombre no puede estar vacío.";
 	}else if(nombre.length < 8){
 		conError = true;
 		mensajeError = "El campo nombre debe tener al menos 8 caracteres para ser considerado valido.";
 	}else if(cedula == null){
 		conError = true;
-		mensajeError = "Para modificar la información del socio el campo cédula no puede estar vacio.";
+		mensajeError = "Para modificar la información del socio el campo cédula no puede estar vacío.";
 	}else if(cedula.length != 8){
 		conError = true;
-		mensajeError = "La cédula ingresada no tiene una longitud valida, porfavor vuelva a ingresarla sin puntos ni guiones.";
+		mensajeError = "La cédula ingresada no tiene una longitud valida, por favor vuelva a ingresarla sin puntos ni guiones.";
 	}else if(!validarCedula(cedula)){
 		conError = true;
-		mensajeError = "La cédula ingresada no es valida, porfavor verifiquela.";
+		mensajeError = "La cédula ingresada no es valida, por favor verifiquela.";
 	}else if(direccion == null){
 		conError = true;
-		mensajeError = "Para modificar la información del socio el campo dirección no puede estar vacio.";
+		mensajeError = "Para modificar la información del socio el campo dirección no puede estar vacío.";
 	}else if(direccion.length < 8){
 		conError = true;
-		mensajeError = "El campo direccion debe tener al menos 8 caracteres para ser considerado valido.";
+		mensajeError = "El campo dirección debe tener al menos 8 caracteres para ser considerado valido.";
 	}else if(telefono == null){
 		conError = true;
-		mensajeError = "Para modificar la información del socio el campo teléfono no puede estar vacio.";
+		mensajeError = "Para modificar la información del socio el campo teléfono no puede estar vacío.";
 	}else if(telefono < 5){
 		conError = true;
 		mensajeError = "El campo teléfono debe tener al menos 5 caracteres numéricos para ser considerado valido.";
 	}else if(fechaPago == null){
 		conError = true;
-		mensajeError = "Para modificar la información del socio el campo fecha de pago no puede estar vacio.";
+		mensajeError = "Para modificar la información del socio el campo fecha de pago no puede estar vacío.";
 	}else if( fechaPago > 31 || fechaPago < 1){
 		conError = true;
 		mensajeError = "El campo fecha de pago debe estar comprendido entre 1-31.";

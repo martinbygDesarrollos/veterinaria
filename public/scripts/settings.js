@@ -34,7 +34,7 @@ function fijarCostoCuota(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -115,7 +115,7 @@ function fijarPassAdministrador(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -198,7 +198,7 @@ function selectUsuarioModificar(btn){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -270,7 +270,7 @@ function agregarUsuario(cuenta, email){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -307,7 +307,7 @@ function modificarUsuario(idUsuario, cuenta, email){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -319,9 +319,9 @@ function fijarPlazoDeuda(){
 	var plazoDeuda = document.getElementById('inpPlazoDeuda').value || null;
 
 	if(plazoDeuda == null){
-		showReplyMessage('warning', "Debe ingresar un plazo para poder modificar este dato, no puede mantenerse este campo nulo.", null,"Plazo deuda");
+		showReplyMessage('warning', "Debe ingresar un plazo para poder modificar este dato, no puede mantenerse este campo vacío.", null,"Plazo deuda");
 	}else if(plazoDeuda < 31){
-		showReplyMessage('warning', "El plazo de deuda no puede ser menor a un 31 dias.",null, "Plazo deuda");
+		showReplyMessage('warning', "El plazo de deuda no puede ser menor a un 31 días.",null, "Plazo deuda");
 	}else{
 		$.ajax({
 			async: false,
@@ -348,7 +348,7 @@ function fijarPlazoDeuda(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});

@@ -1,13 +1,81 @@
-function aplicarNuevaVacunaMascota(btnId){
-	$('#vacunasModal').modal('hide');
+function operacionVacuna(buttonOp){
 
-	var idMascota = btnId.id;
+	if(buttonOp.name == "ModificarVacuna"){
+		document.getElementById("modalTituloVacuna").innerHTML = "Modificar vacuna";
+		document.getElementById("modalButtonVacuna").innerHTML = "Modificar";
+		$("#modalButtonVacuna").click(function(){
+			modificarVacuna(buttonOp.id);
+		});
+		precargarInformacionVacuna(buttonOp.id);
+	}else if(buttonOp.name == "AgregarVacuna"){
+		let date = new Date()
+		let day = date.getDate()
+		let month = date.getMonth() + 1
+		let year = date.getFullYear()
+
+		if(month < 10) month = "0" + month;
+		if(day < 10) day = "0" + day;
+
+		document.getElementById('inpNombreVacuna').value = null;
+		document.getElementById('inpIntervaloVacuna').value = null;
+		document.getElementById('inpPrimerDosisVacuna').value = `${year}-${month}-${day}`;
+		document.getElementById('inpObservacionesVacuna').value = null;
+		document.getElementById("modalTituloVacuna").innerHTML = "Agregar Vacuna";
+		document.getElementById("modalButtonVacuna").innerHTML = "Agregar";
+		$("#modalButtonVacuna").click(function(){
+			aplicarNuevaVacunaMascota(buttonOp.id);
+		});
+		$("#modalNuevaVacuna").modal();
+	}
+
+}
+
+function precargarInformacionVacuna(idVacunaMascota){
+	$.ajax({
+		async: false,
+		url: urlBase + "/getVacunaMascota",
+		type: "POST",
+		data: {
+			idVacunaMascota: idVacunaMascota
+		},
+		success: function (response) {
+			response = response.trim();
+			response = jQuery.parseJSON(response);
+			console.log("response SUCCESS: ");
+			if(response){
+				document.getElementById('inpNombreVacuna').value = response.nombreVacuna;
+				document.getElementById('inpIntervaloVacuna').value = response.intervaloDosis;
+				var fechaToset = response.fechaUltimaDosis.split('/');
+				document.getElementById('inpPrimerDosisVacuna').value = fechaToset[2] + "-" + fechaToset[1] + "-"+ fechaToset[0];
+				document.getElementById('inpObservacionesVacuna').value = response.observacion;
+				$("#modalNuevaVacuna").modal();
+			}else{
+				showReplyMessage('danger', response.mensajeError, null, "Obtener vacuna");
+				$("#modalButtonRetorno").click(function(){
+					$("#modalRetorno").modal('hide');
+				});
+			}
+		},
+		error: function (response) {
+			console.log("response ERROR:" + eval(response));
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
+			$("#modalButtonRetorno").click(function(){
+				$("#modalRetorno").modal("hide");
+			});
+		},
+	});
+
+}
+
+function aplicarNuevaVacunaMascota(idMascota){
+	$('#modalNuevaVacuna').modal('hide');
+
 	var nombreVacuna = document.getElementById('inpNombreVacuna').value || null;
 	var intervalo = document.getElementById('inpIntervaloVacuna').value || null;
 	var fechaDosis = document.getElementById('inpPrimerDosisVacuna').value || null;
 	var observaciones = document.getElementById('inpObservacionesVacuna').value || null;
 
-	if(!validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaDosis)){
+	if(!validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaDosis, "Vacunar mascota")){
 
 		$.ajax({
 			async: false,
@@ -23,7 +91,7 @@ function aplicarNuevaVacunaMascota(btnId){
 			success: function (response) {
 				response = response.trim();
 				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
+				console.log("response SUCCESS: ");
 				if(response.retorno){
 					showReplyMessage('success', response.mensaje, response.enHistorial, "Vacunar mascota");
 					$("#modalButtonRetorno").click(function(){
@@ -38,7 +106,7 @@ function aplicarNuevaVacunaMascota(btnId){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -47,19 +115,67 @@ function aplicarNuevaVacunaMascota(btnId){
 	}
 }
 
-function validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaDosis){
+function modificarVacuna(idVacunaMascota){
+	$('#modalNuevaVacuna').modal('hide');
+
+	var nombreVacuna = document.getElementById('inpNombreVacuna').value || null;
+	var intervalo = document.getElementById('inpIntervaloVacuna').value || null;
+	var fechaUltimaDosis = document.getElementById('inpPrimerDosisVacuna').value || null;
+	var observaciones = document.getElementById('inpObservacionesVacuna').value || null;
+
+	if(!validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaUltimaDosis, "Modificar vacuna")){
+
+		$.ajax({
+			async: false,
+			url: urlBase + "/updateVacunaMascota",
+			type: "POST",
+			data: {
+				idVacunaMascota: idVacunaMascota,
+				nombre: nombreVacuna,
+				intervalo: intervalo,
+				fechaUltimaDosis: fechaUltimaDosis,
+				observaciones: observaciones
+			},
+			success: function (response) {
+				response = response.trim();
+				response = jQuery.parseJSON(response);
+				console.log("response SUCCESS: ");
+				if(response.retorno){
+					showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar mascota");
+					$("#modalButtonRetorno").click(function(){
+						window.location.reload();
+					});
+				}else{
+					showReplyMessage('danger', response.mensajeError, null, "Modificar mascota");
+					$("#modalButtonRetorno").click(function(){
+						$("#modalRetorno").modal('hide');
+					});
+				}
+			},
+			error: function (response) {
+				console.log("response ERROR:" + eval(response));
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
+				$("#modalButtonRetorno").click(function(){
+					$("#modalRetorno").modal("hide");
+				});
+			},
+		});
+	}
+}
+
+function validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaDosis, titulo){
 	conError = false;
 	mensajeError = "";
 
 	if(nombreVacuna == null){
 		conError = true;
-		mensajeError = "El nombre de la vacuna no puede ser ingresado nulo.";
+		mensajeError = "El nombre de la vacuna no puede ser ingresado vacío.";
 	}else if(nombreVacuna.length < 4 ){
 		conError = true;
 		mensajeError = "El campo nombre vacuna debe tener al menos 4 caracteres para ser considerado valido.";
 	}else if(intervalo == null){
 		conError = true;
-		mensajeError = "El campo intervalo no puede ser ingresado nulo.";
+		mensajeError = "El campo intervalo no puede ser ingresado vacío.";
 	}else if(fechaDosis == null){
 		conError = true;
 		mensajeError = "Para aplicar una nueva vacuna debe ingresar una fecha de dosis, por defecto se toma la fecha actual.";
@@ -69,7 +185,7 @@ function validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaDosis){
 	}
 
 	if(conError){
-		showReplyMessage('warning', mensajeError, null, "Vacunar mascota");
+		showReplyMessage('warning', mensajeError, null, titulo);
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
@@ -115,7 +231,7 @@ function aplicarDosisVacuna(btn){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -158,17 +274,18 @@ function cargarTablaVacunas(idMascota){
 					var fila = "<tr><td class='text-center'>" + vacunas[i].fechaProximaDosis +"</td>" +
 					"<td class='text-center'>" + vacunas[i].fechaUltimaDosis +"</td>" +
 					"<td class='text-center'>" + vacunas[i].nombreVacuna + "</td>" +
+					"<td class='text-justify'>" + vacunas[i].observacion + "</td>" +
 					"<td class='text-center'>" + vacunas[i].intervaloDosis +"</td>" +
 					"<td class='text-center'>" + vacunas[i].numDosis +"</td>" +
 					"<td class='text-center'> <button id='" + vacunas[i].idVacunaMascota + "' name='" + vacunas[i].nombreVacuna +"' class='btn btn-success btn-sm'  onclick='abrirModalAplicarDosis(this)'><i class='fas fa-syringe'></i></button> </td>" +
-					"</td></tr>"
+					"<td class='text-center'> <button class='btn btn-success btn-sm' id='" + vacunas[i].idVacunaMascota + "' name='ModificarVacuna' onclick='operacionVacuna(this)'><i class='fas fa-edit'></i></button></td></tr>"
 					$('#tbodyVacunas').append(fila);
 				}
 			}
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});

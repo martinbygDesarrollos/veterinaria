@@ -79,6 +79,25 @@ class usuarios{
 		return $query->execute();
 	}
 
+	public function generarTokenSesion($nomUsuario){
+		$longitud = 40;
+		$token = bin2hex(random_bytes(($longitud - ($longitud % 2)) / 2));
+
+		$query = DB::conexion()->prepare("UPDATE usuarios SET token = ? WHERE nombre = ?");
+		$query->bind_param('ss', $token, $nomUsuario);
+		if($query->execute()) return $token;
+		else return null;
+	}
+
+	public function validarSesionActiva($nomUsuario, $token){
+		$query = DB::conexion()->prepare("SELECT * FROM usuarios WHERE nombre = ? AND token = ? ");
+		$query->bind_param('ss', $nomUsuario, $token);
+		if($query->execute()){
+			$result = $query->get_result();
+			return $result->fetch_object();
+		}else return null;
+	}
+
 	public function enviarNotificacionVacunas($mensaje, $email, $vacunas){
 		$header  = 'MIME-Version: 1.0' . "\r\n";
 		$header .= 'Content-type:text/html; charset=UTF-8' . "\r\n";
@@ -135,7 +154,7 @@ class usuarios{
 		return mail($email, $subtitulo, $mensaje, $header);
 	}
 
-		public function enviarNotificacionCuota($mensaje, $email){
+	public function enviarNotificacionCuota($mensaje, $email){
 		$header  = 'MIME-Version: 1.0' . "\r\n";
 		$header .= 'Content-type:text/html; charset=UTF-8' . "\r\n";
 		$header .= "From: Veterinaria Nan <veterinariaNan@byg.uy>" . "\r\n";

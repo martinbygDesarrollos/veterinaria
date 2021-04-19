@@ -38,7 +38,7 @@ function verHistoriaClinica(btn){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -88,7 +88,7 @@ function cargarHistoriaClinica(idMascota){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});

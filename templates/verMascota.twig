@@ -4,7 +4,7 @@
 {% block content %}
 <div class="d-flex justify-content-center">
 	<input type="text" id="idMascotaSeleccionada" value="{{ info.mascota.idMascota }}" style="display: none;">
-	<div class="card" style="width: 50%; min-width: 800px;">
+	<div class="card" style="width: 90%; min-width: 800px;">
 		<div class="card-header d-flex justify-content-between align-items-center" style="background: #85B58A">
 			{% if info.duenio != null %}
 			<h5>Mascota {{ info.mascota.nombre}} de <a style="color: black;" href="{{path_for('Inicio')}}verSocio/{{ info.duenio.idSocio }}"> {{ info.duenio.nombre}}</a></h5>
@@ -19,7 +19,7 @@
 					<a class="nav-item nav-link text-info active" id="nav-home-tab" data-toggle="tab" href="#nav-informacion" role="tab" aria-controls="nav-home" aria-selected="true">Información</a>
 					<a class="nav-item nav-link text-info" id="nav-home-tab" data-toggle="tab" href="#nav-vacunas" role="tab" aria-controls="nav-home" aria-selected="true">Vacunas</a>
 					<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-enfermedades" role="tab" aria-controls="nav-profile" aria-selected="false">Enfermedades</a>
-					<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-analisis" role="tab" aria-controls="nav-profile" aria-selected="false">Analisis</a>
+					<a class="nav-item nav-link text-info" id="nav-profile-tab" data-toggle="tab" href="#nav-analisis" role="tab" aria-controls="nav-profile" aria-selected="false">Análisis</a>
 				</div>
 			</nav>
 			<div class="tab-content" id="nav-tabContent">
@@ -103,9 +103,11 @@
 								</div>
 								{% endif %}
 								{% if info.mascota.estado == 1%}
+								{% if info.duenio != null %}
 								<div class="col-sm  text-center">
 									<button class="btn btn-success" data-toggle="modal" data-target="#modalNuevaHistoria">Agregar historia</button>
 								</div>
+								{% endif %}
 								{% endif %}
 								{% if info.mascota.estado == 1 %}
 								<div class="col-sm  text-center">
@@ -131,12 +133,14 @@
 							<table class="table table-sm table-striped table-bordered">
 								<thead class="thead-dark">
 									<tr>
-										<th class="text-center" scope="col">Prox. dosis</th>
-										<th class="text-center" scope="col">Ultima dosis</th>
-										<th class="text-center" scope="col">Nombre</th>
+										<th class="text-center" style="width: 100px" scope="col">Prox. dosis</th>
+										<th class="text-center" style="width: 100px" scope="col">Última dosis</th>
+										<th class="text-center" style="width: 150px"scope="col">Nombre</th>
+										<th class="text-center" scope="col">Observaciones</th>
 										<th class="text-center" scope="col">Intervalo</th>
 										<th class="text-center" scope="col">Nº dosis</th>
 										<th class="text-center" scope="col">Vacunar</th>
+										<th class="text-center" scope="col">Modificar</th>
 									</tr>
 								</thead>
 								<tbody id="tbodyVacunas"></tbody>
@@ -151,13 +155,15 @@
 							</div>
 						</li>
 						{% if info.mascota.estado == 1%}
+						{% if info.duenio != null %}
 						<li class="list-group-item">
 							<div class="row">
 								<div class="col-sm text-center">
-									<button class="btn btn-success" data-toggle="modal" data-target="#vacunasModal">Aplicar nueva vacuna</button>
+									<button class="btn btn-success" onclick="operacionVacuna(this)" name="AgregarVacuna" id="{{ info.mascota.idMascota }}">Aplicar nueva vacuna</button>
 								</div>
 							</div>
 						</li>
+						{% endif %}
 						{% endif %}
 					</ul>
 				</div>
@@ -167,8 +173,8 @@
 							<table class="table table-sm table-striped table-bordered">
 								<thead class="thead-dark">
 									<tr>
-										<th class="text-center" scope="col">Fecha diagnostico</th>
-										<th class="text-center" scope="col">Nombre</th>
+										<th class="text-center" scope="col">Diagnóstico</th>
+										<th class="text-center" style="width: 180px;" scope="col">Nombre</th>
 										<th class="text-center" scope="col">Observaciones</th>
 										<th class="text-center" scope="col">Modificar</th>
 									</tr>
@@ -185,6 +191,7 @@
 							</div>
 						</li>
 						{% if info.mascota.estado == 1%}
+						{% if info.duenio != null %}
 						<li class="list-group-item">
 							<div class="row">
 								<div class="col-sm text-center">
@@ -192,6 +199,7 @@
 								</div>
 							</div>
 						</li>
+						{% endif %}
 						{% endif %}
 					</ul>
 				</div>
@@ -202,7 +210,8 @@
 								<thead class="thead-dark">
 									<tr>
 										<th class="text-center" scope="col">Fecha</th>
-										<th class="text-center" scope="col">Nombre</th>
+										<th class="text-center" style="width: 150px;" scope="col">Nombre</th>
+										<th class="text-center" scope="col">Resultado</th>
 										<th class="text-center" scope="col">Modificar</th>
 										<th class="text-center" scope="col">Ver</th>
 									</tr>
@@ -212,8 +221,8 @@
 								</tbody>
 							</table>
 							<div id="noHayResultadosAnalisisMensaje" style="display: none" class="alert alert-info text-center" role="alert">
-								<h3>No hay Analisis</h3>
-								Hasta el momento esta mascota no se le asignaron analisis.
+								<h3>No hay Análisis</h3>
+								Hasta el momento esta mascota no se le asignaron análisis.
 							</div>
 							<div class="d-flex justify-content-between">
 								<button id="irAtrasPaginaAnalisis" class="btn btn-sm btn-info" onclick="paginaAnteriorAnalisis()">Atras</button>
@@ -221,13 +230,15 @@
 							</div>
 						</li>
 						{% if info.mascota.estado == 1%}
+						{% if info.duenio != null %}
 						<li class="list-group-item">
 							<div class="row">
 								<div class="col-sm text-center">
-									<button class="btn btn-success" id="{{info.mascota.idMascota}}" name="AgregarAnalisis" onclick="operacionAnalisis(this)">Agregar nuevo analisis</button>
+									<button class="btn btn-success" id="{{info.mascota.idMascota}}" name="AgregarAnalisis" onclick="operacionAnalisis(this)">Agregar nuevo análisis</button>
 								</div>
 							</div>
 						</li>
+						{% endif %}
 						{% endif %}
 					</ul>
 				</div>
@@ -338,7 +349,9 @@
 		</div>
 	</div>
 </div>
-
+{% if info.duenio == null %}
+<p style="visibility: hidden;" id="mensajeAplicarDosis"></p>
+{% endif %}
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- ----------------------------------------------------APLICAR DOSIS------------------------------------------------------------------------------------- -->
@@ -348,17 +361,28 @@
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header alert-info" >
+				{% if info.duenio != null %}
 				<h5 class="modal-title" id="exampleModalLongTitle">Aplicar dosis</h5>
+				{% else %}
+				<h5 class="modal-title" >Aplicar dosis</h5>
+				{% endif %}
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
+				{% if info.duenio != null %}
 				<p class="text-center" id="mensajeAplicarDosis"></p>
+				{% else %}
+				<p style="visibility: hidden;" id="btnAplicarDosis"></p>
+				<p class="text-center">La mascotca a la que quiere aplicar la dosis esta desactivada, esta operación no puede realizarse.</p>
+				{% endif %}
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+				{% if info.duenio != null %}
 				<button class="btn btn-success" id="btnAplicarDosis" onclick="aplicarDosisVacuna(this)">Aplicar</button>
+				{% endif %}
 			</div>
 		</div>
 	</div>
@@ -372,7 +396,7 @@
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header alert-success" >
-				<h5 class="modal-title" id="exampleModalLongTitle">Nueva hisotira clinica de {{ info.mascota.nombre }}</h5>
+				<h5 class="modal-title" id="exampleModalLongTitle">Nueva historia clínica de {{ info.mascota.nombre }}</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -388,7 +412,7 @@
 						<textarea id="inpHistoriaMotivoConsulta" onfocus="ocultarAlert()" class="form-control rounded-0" maxlength="200" rows="3"></textarea>
 					</div>
 				</div>
-				<h6 class="card-subtitle mb-2 text-muted">Diagnostico</h6>
+				<h6 class="card-subtitle mb-2 text-muted">Diagnóstico</h6>
 				<div class="col-sm">
 					<div class="input-group mb-3">
 						<textarea id="inpHistoriaDiagnostico" class="form-control rounded-0" maxlength="200" rows="3"></textarea>
@@ -411,14 +435,14 @@
 </div>
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
-<!-- -----------------------------------------------------NUEVA VACUNA------------------------------------------------------------------------------------- -->
+<!-- -------------------------------------------------NUEVA/MODIFICAR VACUNA------------------------------------------------------------------------------- -->
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------ -->
-<div class="modal fade" id="vacunasModal" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+<div class="modal fade" id="modalNuevaVacuna" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header alert-info" >
-				<h5 class="modal-title" id="exampleModalLongTitle">Aplicar nueva vacuna</h5>
+				<h5 class="modal-title" id="modalTituloVacuna">Aplicar nueva vacuna</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -433,7 +457,7 @@
 						<label class="input-group-text" for="inputGroupSelect01">Intervalo</label>
 					</div>
 					<select class="custom-select" id="inpIntervaloVacuna">
-						<option value="1" selected>Unica dosis</option>
+						<option value="1" selected>Única dosis</option>
 						<option value="30">Mensual</option>
 						<option value="60">Bimestral</option>
 						<option value="180">Semestral</option>
@@ -455,7 +479,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-				<button class="btn btn-success" id="{{info.mascota.idMascota}}" onclick="aplicarNuevaVacunaMascota(this)">Aplicar</button>
+				<button class="btn btn-success" id="modalButtonVacuna"></button>
 			</div>
 		</div>
 	</div>
@@ -477,10 +501,10 @@
 			<div class="modal-body">
 				<div class="input-group mb-3">
 					<span class="input-group-text" id="inputGroup-sizing-default">Enfermedad</span>
-					<input id="inpNombreEnfermedad" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+					<input id="inpNombreEnfermedad" type="text" class="form-control text-center" maxlength="40" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
 				</div>
 				<div class="input-group mb-3">
-					<span class="input-group-text" id="inputGroup-sizing-default">Fecha Diagnostico</span>
+					<span class="input-group-text" id="inputGroup-sizing-default">Fecha Diagnóstico</span>
 					<input id="inpFechaDiagnosticoEnfermedad" type="date" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
 				</div>
 				<h6 class="card-subtitle mb-2 text-muted">Observaciones</h6>

@@ -23,12 +23,12 @@ function agregarNuevoAnalisis(idMascota){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Nuevo analisis");
+					showReplyMessage('success', response.mensaje, response.enHistorial, "Nuevo análisis");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Nuevo analisis");
+					showReplyMessage('danger', response.mensajeError, null, "Nuevo análisis");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal('hide');
 					});
@@ -36,7 +36,7 @@ function agregarNuevoAnalisis(idMascota){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -51,20 +51,20 @@ function validarInformacionAnalisis(nombre, fecha, detalle){
 
 	if(!nombre){
 		conError = true;
-		mensajeError = "El nombre del analisis no puede ser ingresado nulo.";
+		mensajeError = "El nombre del análisis no puede ser ingresado nulo.";
 	}else if(nombre.length < 5){
 		conError = true;
-		mensajeError = "El nombre del analisis debe tener al menos 5 caracteres para ser considerado valido.";
+		mensajeError = "El nombre del análisis debe tener al menos 5 caracteres para ser considerado valido.";
 	}else if(!fecha){
 		conError = true;
-		mensajeError = "La fecha del analisis no puede ser ingresada nula.";
+		mensajeError = "La fecha del análisis no puede ser ingresada nula.";
 	}else if(fecha  >= new Date()){
 		conError= true;
-		mensajeError = "La fecha de realización del analisis no puede superar a la fecha actual.";
+		mensajeError = "La fecha de realización del análisis no puede superar a la fecha actual.";
 	}
 
 	if(conError){
-		showReplyMessage('warning', mensajeError, null,  "Nuevo analisis");
+		showReplyMessage('warning', mensajeError, null,  "Nuevo análisis");
 		$("#modalButtonRetorno").click(function(){
 			$("#modalRetorno").modal("hide");
 		});
@@ -87,7 +87,7 @@ function verDetalleAnalsisi(btn){
 			response = jQuery.parseJSON(response);
 			console.log("response SUCCESS: ",response);
 			if(response.retorno == false){
-				showReplyMessage('danger', response.mensajeError, null, "Nuevo analisis");
+				showReplyMessage('danger', response.mensajeError, null, "Nuevo análisis");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal('hide');
 				});
@@ -101,7 +101,7 @@ function verDetalleAnalsisi(btn){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -111,14 +111,27 @@ function verDetalleAnalsisi(btn){
 
 function operacionAnalisis(buttonOp){
 	if(buttonOp.name == "ModificarAnalisis"){
-		document.getElementById("tituloAgregarAnalisis").innerHTML = "Modificar Analisis";
+		document.getElementById("tituloAgregarAnalisis").innerHTML = "Modificar Análisis";
 		document.getElementById("modalButtonAgregarAnalisisMascota").innerHTML = "Modificar";
 		precargarInformacionAnalisis(buttonOp.id);
 		$("#modalButtonAgregarAnalisisMascota").click(function(){
 			modificarAnalisis(buttonOp.id);
 		});
 	}else if(buttonOp.name == "AgregarAnalisis"){
-		document.getElementById("tituloAgregarAnalisis").innerHTML = "Agregar analisis";
+		let date = new Date()
+		let day = date.getDate()
+		let month = date.getMonth() + 1
+		let year = date.getFullYear()
+
+		if(month < 10) month = "0" + month;
+		if(day < 10) day = "0" + day;
+
+		var nombre = document.getElementById('inpNombreAnalisis').value = null;
+		var fecha = document.getElementById('inpFechaAnalisis').value = `${year}-${month}-${day}`;
+		var detalle = document.getElementById('inpDetalleAnalisis').value = null;
+		var resultado = document.getElementById('inpResultadoAnalisis').value = null;
+
+		document.getElementById("tituloAgregarAnalisis").innerHTML = "Agregar análisis";
 		document.getElementById("modalButtonAgregarAnalisisMascota").innerHTML = "Agregar";
 		$("#modalButtonAgregarAnalisisMascota").click(function(){
 			agregarNuevoAnalisis(buttonOp.id);
@@ -140,7 +153,7 @@ function precargarInformacionAnalisis(idAnalisis){
 			response = jQuery.parseJSON(response);
 			console.log("response SUCCESS: ",response);
 			if(response.retorno == false){
-				showReplyMessage('danger', response.mensajeError, null, "Obtener Analisis");
+				showReplyMessage('danger', response.mensajeError, null, "Obtener Análisis");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal('hide');
 				});
@@ -154,7 +167,7 @@ function precargarInformacionAnalisis(idAnalisis){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -187,12 +200,12 @@ function modificarAnalisis(idAnalisis){
 				response = jQuery.parseJSON(response);
 				console.log("response SUCCESS: ",response);
 				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar analisis");
+					showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar análisis");
 					$("#modalButtonRetorno").click(function(){
 						window.location.reload();
 					});
 				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Modificar analisis");
+					showReplyMessage('danger', response.mensajeError, null, "Modificar análisis");
 					$("#modalButtonRetorno").click(function(){
 						$("#modalRetorno").modal('hide');
 					});
@@ -200,7 +213,7 @@ function modificarAnalisis(idAnalisis){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -243,6 +256,7 @@ function cargarTablaAnalisis(idMascota){
 				for(var i = 0; i < analisis.length; i ++ ){
 					var fila = "<tr><td class='text-center'>" + analisis[i].fecha +"</td>" +
 					"<td class='text-center'>" + analisis[i].nombre +"</td>" +
+					"<td class='text-justify'>" + analisis[i].resultado +"</td>" +
 					"<td class='text-center'>" +
 					"<button class='btn btn-success btn-sm' name='ModificarAnalisis' id='" + analisis[i].idAnalisis + "'  onclick='operacionAnalisis(this)'><i class='fas fa-edit'></i></button></td>" +
 					"<td class='text-center'>" +
@@ -253,7 +267,7 @@ function cargarTablaAnalisis(idMascota){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});

@@ -10,23 +10,48 @@ require_once '../src/controladores/ctr_usuarios.php';
 
 class ctr_historiales {
 
-	public function levantarDB(){
+	public function insertarSociosOriginales(){
+		copiarDB::seleccionarInsertarSocios();
+	}
 
-		$sociosInsertados = copiarDB::seleccionarInsertarSocios();
-
-		$arrayMascotasInsertadas = array();
-		foreach ($sociosInsertados as $keySocio => $socio) {
-			$arrayMascotasInsertadas = copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
-
-			foreach ($arrayMascotasInsertadas as $keyMascota => $mascota) {
-				copiarDB::seleccionarInsertarVacunasMascotas($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'] );
-				copiarDB::seleccionarInsertarEnfermedadesMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
-				copiarDB::seleecionarInsertarHistorialClinicoMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio']);
-				copiarDB::seleccionarInsertarHistorialMascota($mascota['idMascota'], $mascota['nombreMascota'], $mascota['numSocio'], $mascota['idSocio']);
-			}
+	public function insertarMascotasOriginales(){
+		$sociosSeleccionados = socios::getTotSocios();
+		foreach ($sociosSeleccionados as $key => $socio) {
+			copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
 		}
 	}
 
+	public function insertarMascotasSinSociosOriginales(){
+		copiarDB::seleccionarInsertarMascotaSinSocio();
+	}
+
+	public function insertarVacunasOriginales(){
+		$mascotasSocio = mascotas::getMascotaIds();
+		foreach ($mascotasSocio as $key => $mascotaSocio) {
+			copiarDB::seleccionarInsertarVacunasMascotas($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $mascotaSocio['numSocio']);
+		}
+	}
+
+	public function insertarHistorialClinicoOriginales(){
+		$mascotasSocio = mascotas::getMascotaIds();
+		foreach ($mascotasSocio as $key => $mascotaSocio) {
+			copiarDB::seleccionarInsertarHistorialClinico($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $mascotaSocio['numSocio']);
+		}
+	}
+
+	public function insertarEnfermedadesOriginales(){
+		$mascotasSocio = mascotas::getMascotaIds();
+		foreach ($mascotasSocio as $key => $mascotaSocio) {
+			copiarDB::seleccionarInsertarEnfermedadesMascota($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $mascotaSocio['numSocio']);
+		}
+	}
+
+	public function insertarFechaDeCambioOriginales(){
+		$mascotasSocio = mascotas::getMascotaIds();
+		foreach ($mascotasSocio as $key => $mascotaSocio) {
+			copiarDB::seleccionarInsertarFechaDeCambio($mascotaSocio['nombre'], $mascotaSocio['numSocio'], $mascotaSocio['idMascotaSocio']);
+		}
+	}
 
 	//----------------------------------- FUNCIONES DE HISTORIAL CLINICO ------------------------------------------
 
@@ -41,14 +66,14 @@ class ctr_historiales {
 
 			if($result){
 				$response->retorno = true;
-				$response->mensaje = "Se realizo un nuevo registro en el historial clinico de " . $mascota->nombre . " puede acceder a él desde Ver historia clinica.";
+				$response->mensaje = "Se realizó un nuevo registro en el historial clínico de " . $mascota->nombre . " puede acceder a él desde Ver historia clínica.";
 			}else{
 				$response->retorno = false;
-				$response->mensajeError = "No se realizo el registro en la historia clinica de " . $mascota->nombre . " por un error interno, porfavor vuelva a intentarlo.";
+				$response->mensajeError = "No se realizó el registro en la historia clínica de " . $mascota->nombre . " por un error interno, por favor vuelva a intentarlo.";
 			}
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "La mascota seleccionada no fue encontrada en el sistema, porfavor vuelva a intentarlo.";
+			$response->mensajeError = "La mascota seleccionada no fue encontrada en el sistema, por favor vuelva a intentarlo.";
 		}
 
 		return $response;
@@ -108,7 +133,7 @@ class ctr_historiales {
 			$response->mensaje = "Los nuevos montos de las cuotas fueron ingresados correctamente.";
 		}else{
 			$response->retorno = false;
-			$response->mensaje = "Ocurrio un error y la cuota no pudo ser actualizada, porfavor vuelva a intentarlo.";
+			$response->mensaje = "Ocurrió un error y la cuota no pudo ser actualizada, por favor vuelva a intentarlo.";
 		}
 
 		return $response;
@@ -125,7 +150,7 @@ class ctr_historiales {
 		if($result){
 			$resultActualizacionPlazo = ctr_usuarios::actualizarEstadosSocios($plazoDeuda);
 			//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-			$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar plazo deuda", "Se modifico el plazo de deuda para los socios (". $plazoDeuda ." dias).");
+			$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar plazo deuda", "Se modificó el plazo de deuda para los socios (". $plazoDeuda ." días). " . $resultActualizacionPlazo->mensaje);
 			if($resultInsertOperacionUsuario)
 				$response->enHistorial = "Registrado en el historial del usuario.";
 			else
@@ -135,7 +160,7 @@ class ctr_historiales {
 			$response->mensaje = "EL plazo de vencimiento de deuda fue modificado correctamente. " . $resultActualizacionPlazo->mensaje;
 		}else{
 			$response->retorno = false;
-			$response->mensajeError = "Ocurrio un error y la cuota no pudo modificarse correctamente, porfavor vuelva a intentarlo.";
+			$response->mensajeError = "Ocurrió un error y la cuota no pudo modificarse correctamente, por favor vuelva a intentarlo.";
 		}
 
 		return $response;

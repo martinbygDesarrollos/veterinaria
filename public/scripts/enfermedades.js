@@ -2,18 +2,30 @@ function operacionEnfermedad(buttonOp){
 	if(buttonOp.name == "ModificarEnfermedad"){
 		document.getElementById("modalTituloEnfermedad").innerHTML = "Modificar enfermedad";
 		document.getElementById("modalButtonEnfermedad").innerHTML = "Modificar";
-		precargarInformacionEnfermedad(buttonOp.id);
 		$("#modalButtonEnfermedad").click(function(){
 			modificarEnfermedad(buttonOp.id);
 		});
+		precargarInformacionEnfermedad(buttonOp.id);
 	}else if(buttonOp.name == "AgregarEnfermedad"){
+		let date = new Date()
+		let day = date.getDate()
+		let month = date.getMonth() + 1
+		let year = date.getFullYear()
+
+		if(month < 10) month = "0" + month;
+		if(day < 10) day = "0" + day;
+
+		document.getElementById("inpNombreEnfermedad").value = null;
+		document.getElementById("inpFechaDiagnosticoEnfermedad").value = `${year}-${month}-${day}`;
+		document.getElementById("inpObservacionesEnfermedad").value = null;
 		document.getElementById("modalTituloEnfermedad").innerHTML = "Agregar enfermedad";
 		document.getElementById("modalButtonEnfermedad").innerHTML = "Agregar";
 		$("#modalButtonEnfermedad").click(function(){
 			agregarEnfermedad(buttonOp.id);
 		});
+		$("#modalNuevaEnfermedad").modal();
 	}
-	$("#modalNuevaEnfermedad").modal();
+
 }
 
 function precargarInformacionEnfermedad(idEnfermedad){
@@ -33,6 +45,7 @@ function precargarInformacionEnfermedad(idEnfermedad){
 				var fechaToset = response.fechaDiagnostico.split('/');
 				document.getElementById("inpFechaDiagnosticoEnfermedad").value = fechaToset[2] + "-" + fechaToset[1] + "-"+ fechaToset[0];
 				document.getElementById("inpObservacionesEnfermedad").value = response.observaciones;
+				$("#modalNuevaEnfermedad").modal();
 			}else{
 				showReplyMessage('danger', response.mensajeError, null, "Obtener enfermedad");
 				$("#modalButtonRetorno").click(function(){
@@ -42,7 +55,7 @@ function precargarInformacionEnfermedad(idEnfermedad){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});
@@ -87,7 +100,7 @@ function modificarEnfermedad(idEnfermedad){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -133,7 +146,7 @@ function agregarEnfermedad(idMascota){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
@@ -209,7 +222,7 @@ function cargarTablaEnfermedades(idMascota){
 		},
 		error: function (response) {
 			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 			$("#modalButtonRetorno").click(function(){
 				$("#modalRetorno").modal("hide");
 			});

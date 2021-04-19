@@ -140,10 +140,29 @@ class serviciosMascota {
         }else return null;
     }
 
-    public function getVacunasVencidas($fechaLimite){
-        $query = DB::conexion()->prepare("SELECT VM.fechaProximaDosis, VM.idMascota, VM.nombreVacuna, M.nombre AS nombreMascota
-            FROM vacunasmascota AS VM, mascotas AS M WHERE M.idMascota = VM.idMascota AND M.estado = 1 AND VM.idVacunaMascota IN (SELECT idVacunaMascota FROM `vacunasmascota` WHERE fechaProximaDosis <= ? AND fechaProximaDosis != 0)");
+    public function getVacunasVencidasMaxId($fechaLimite){
+        $query = DB::conexion()->prepare("SELECT MAX(idVacunaMascota) AS idMaximo FROM vacunasmascota WHERE fechaProximaDosis <= ? AND fechaProximaDosis != 0");
         $query->bind_param('i', $fechaLimite);
+        if($query->execute()){
+            $response = $query->get_result();
+            $result = $response->fetch_object();
+            return $result->idMaximo;
+        }else return 0;
+    }
+
+    public function getVacunasVencidasMinId($vacunasVencidas, $maxID){
+        $valorMinimo = $maxID;
+        foreach ($vacunasVencidas as $key => $value) {
+            if($value['idVacunaMascota'] < $valorMinimo)
+                $valorMinimo = $value['idVacunaMascota'];
+        }
+        return $valorMinimo;
+    }
+
+    public function getVacunasVencidasPagina($ultimoID, $fechaLimite){
+        $query = DB::conexion()->prepare("SELECT VM.idVacunaMascota, VM.fechaProximaDosis, VM.idMascota, VM.nombreVacuna, M.nombre AS nombreMascota
+            FROM vacunasmascota AS VM, mascotas AS M WHERE M.idMascota = VM.idMascota AND M.estado = 1 AND VM.idVacunaMascota IN (SELECT idVacunaMascota FROM vacunasmascota WHERE fechaProximaDosis <= ? AND fechaProximaDosis != 0 AND idVacunaMascota <= ?) ORDER BY VM.idVacunaMascota LIMIT 10");
+        $query->bind_param('ii', $fechaLimite, $ultimoID);
         if($query->execute()){
             $response = $query->get_result();
             $arrayResponse = array();
@@ -159,9 +178,13 @@ class serviciosMascota {
                     }
                     $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'],"/");
                 }
-
                 $row['socio'] = ctr_usuarios::getSocioMascota($row['idMascota']);
-
+                if($row['socio'] == null){
+                    $row['socio'] = array(
+                        "nombre" => "No vinculado",
+                        "telefono" => "No corresponde",
+                        "correo" => "No corresponde");
+                }
                 $arrayResponse[] = $row;
             }
             return $arrayResponse;
@@ -187,13 +210,21 @@ class serviciosMascota {
         $query->bind_param('i', $idVacunaMascota);
         if($query->execute()){
             $response = $query->get_result();
-            return $response->fetch_object();
+            $vacunaMascota = $response->fetch_object();
+            $vacunaMascota->fechaUltimaDosis = fechas::parceFechaFormatDMA($vacunaMascota->fechaUltimaDosis,"/");
+            return $vacunaMascota;
         }else return null;
     }
 
     public function insertVacunaMascota($nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones){
         $query = DB::conexion()->prepare("INSERT INTO vacunasmascota (nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, fechaProximaDosis, observacion) VALUES (?,?,?,?,?,?,?,?)");
         $query->bind_param('siiiiiis', $nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones);
+        return $query->execute();
+    }
+
+    public function updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones){
+        $query = DB::conexion()->prepare("UPDATE vacunasmascota SET nombreVacuna= ?, intervaloDosis = ?, fechaUltimaDosis = ?, fechaProximaDosis = ?, observacion = ? WHERE idVacunaMascota = ?");
+        $query->bind_param('siiisi', $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones, $idVacunaMascota);
         return $query->execute();
     }
 

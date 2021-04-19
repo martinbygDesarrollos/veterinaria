@@ -36,6 +36,19 @@ class socios{
 		return null;
 	}
 
+	public function getTotSocios(){
+		$query = DB::conexion()->prepare("SELECT * FROM socios");
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
 	public function getSocios($estado){
 		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado" . $estado);
 		if($query->execute()){
@@ -49,21 +62,70 @@ class socios{
 		return null;
 	}
 
-	public function getSociosParaCuotasVencidas(){
+	public function getVencimientosCuotaMaxId(){
 		$fecha = date('Y-m-d');
 		$fecha = substr($fecha, 0, 4) . substr($fecha, 5, 2);
 
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota <= ? ");
+		$query = DB::conexion()->prepare("SELECT MAX(idSocio) AS idMaximo FROM socios WHERE estado = 1 AND fechaUltimaCuota <= ?");
+		$query->bind_param('i', $fecha);
+		if($query->execute()){
+			$response = $query->get_result();
+			$result = $response->fetch_object();
+			return $result->idMaximo;
+		}else return 0;
+	}
+
+	public function getVencimientosCuotaMinId($vencimientos, $maxValor){
+		$valorMinimo = $maxValor;
+		foreach ($vencimientos as $key => $value) {
+			if($value['idSocio'] < $valorMinimo)
+				$valorMinimo = $value['idSocio'];
+		}
+		return $valorMinimo;
+	}
+
+	public function getVencimientosCuotaPagina($maxID){
+		$fecha = date('Y-m-d');
+		$fecha = substr($fecha, 0, 4) . substr($fecha, 5, 2);
+
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota <= ? AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10");
+		$query->bind_param('ii', $fecha, $maxID);
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				if(strlen($row['fechaUltimaCuota']) == 6){
+					$resultFecha = fechas::esUnaCuotaVencida($row['fechaUltimaCuota'], $row['fechaPago']);
+					if($resultFecha){
+						$row['fechaUltimaCuota'] = fechas::parceFechaFormatDMANoDay($row['fechaUltimaCuota'], "/");
+						$arrayResult[] = $row;
+					}
+				}
+			}
+			return $arrayResult;
+		}else return null;
+	}
+
+	public function buscadorDeSociosVencimientoCuota($busqueda){
+		$fecha = date('Y-m-d');
+		$fecha = substr($fecha, 0, 4) . substr($fecha, 5, 2);
+
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota <= ? AND nombre LIKE '%" . $busqueda ."%' ORDER BY idSocio DESC LIMIT 10");
 		$query->bind_param('i', $fecha);
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();
 			while($row = $result->fetch_array(MYSQLI_ASSOC)){
-				$arrayResult[] = $row;
+				if(strlen($row['fechaUltimaCuota']) == 6){
+					$resultFecha = fechas::esUnaCuotaVencida($row['fechaUltimaCuota'], $row['fechaPago']);
+					if($resultFecha){
+						$row['fechaUltimaCuota'] = fechas::parceFechaFormatDMANoDay($row['fechaUltimaCuota'], "/");
+						$arrayResult[] = $row;
+					}
+				}
 			}
 			return $arrayResult;
-		}
-		return null;
+		}else return null;
 	}
 
 	public function getSociosNoVinculados($idMascota){
@@ -166,7 +228,7 @@ class socios{
 	}
 
 	public function getSociosConPlazoVencido($plazoDeuda){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 OR estado = 3 AND fechaUltimaCuota < ? LIMIT 200");
+		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 OR estado = 3 AND fechaUltimaCuota < ? ");
 		$query->bind_param('i', $plazoDeuda);
 		if($query->execute()){
 			$result = $query->get_result();
@@ -179,9 +241,15 @@ class socios{
 		return null;
 	}
 
-	public function actualizarEstadoSocio($idSocio, $estado){
-		$query = DB::conexion()->prepare("UPDATE socios SET estado = ? WHERE idSocio = ?");
-		$query->bind_param('ii', $estado, $idSocio);
+	public function setSociosInactivosPorCuotaVencida($estado, $fechaUltimaCuotaMinima){
+		$query = DB::conexion()->prepare("UPDATE socios SET estado = ? WHERE fechaUltimaCuota < ?");
+		$query->bind_param('ii', $estado, $fechaUltimaCuotaMinima);
+		return $query->execute();
+	}
+
+	public function setSociosActivosPorCuotaVencida($estado, $fechaUltimaCuotaMinima){
+		$query = DB::conexion()->prepare("UPDATE socios SET estado = ? WHERE fechaUltimaCuota > ?");
+		$query->bind_param('ii', $estado, $fechaUltimaCuotaMinima);
 		return $query->execute();
 	}
 

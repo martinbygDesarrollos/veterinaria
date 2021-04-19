@@ -6,6 +6,32 @@ class mascotas{
  //0 INACTIVA 1 ACTIVA 2 PENDIENTE
 	//MACHO 1 HEMBRA 0
 
+	public function getMascotaIds(){
+		$query = DB::conexion()->prepare("SELECT MS.idMascotaSocio, S.numSocio, M.nombre, MS.idMascota, MS.idSocio FROM mascotasocio AS MS, socios AS S, mascotas AS M WHERE MS.idSocio = S.idSocio AND MS.idMascota = M.idMascota"); // AND MS.idMascota > 13688
+		if($query->execute()){
+			$response = $query->get_result();
+			$arrayResult = array();
+			while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+	}
+
+	public function getTotMascotas(){
+		$query = DB::conexion()->prepare("SELECT * FROM mascotas");
+		if($query->execute()){
+			$result = $query->get_result();
+			$arrayResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], '/');
+				$arrayResult[] = $row;
+			}
+			return $arrayResult;
+		}
+		return null;
+	}
+
 	public function getMascotas(){
 		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado = 1");
 		if($query->execute()){
@@ -116,6 +142,12 @@ class mascotas{
 		$query->bind_param('iii', $idSocio, $idMascota, $fechaCambio);
 		if($query->execute()) return true;
 		else return false;
+	}
+
+	public function modificarEstadoSociosCuotas($estadoNuevo, $estadoSocio){
+		$query = DB::conexion()->prepare("UPDATE mascotas SET estado = ? WHERE idMascota IN (SELECT idMascota FROM mascotasocio AS MS, socios AS S WHERE MS.idSocio = S.idSocio AND S.estado = ?)");
+		$query->bind_param('ii', $estadoNuevo, $estadoActual);
+		return $query->execute();
 	}
 
 	public function activarDesactivarMascota($idMascota, $estado){

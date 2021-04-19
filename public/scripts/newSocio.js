@@ -6,27 +6,43 @@ function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut,
 
 	var conError = false;
 	var mensajeError = "";
-	if(nombre.length <= 4){
+
+	if(nombre == null){
 		conError = true;
-		mensajeError = "El campo nombre debe tener al menos 4 caracteres alfabeticos.";
+		mensajeError = "El campo nombre del socio no puede ser ingresado vacío.";
+	}else if(nombre.length <= 4){
+		conError = true;
+		mensajeError = "El campo nombre debe tener al menos 4 caracteres alfabéticos.";
 	}else if(!soloLetras.test(nombre)){
 		conError = true;
-		mensajeError = "El campo nombre solo permite caracteres alfabeticos.";
+		mensajeError = "El campo nombre solo permite caracteres alfabéticos.";
+	}if(cedula == null){
+		conError = true;
+		mensajeError = "El campo cédula del socio no puede ser ingresado vacío.";
 	}else if(cedula.length !== 8){
 		conError = true;
 		mensajeError = "La longitud de la cédula ingresada no corresponde a un documento valido.";
 	}else if(!validarCedula(cedula)){
 		conError = true;
 		mensajeError = "La cédula ingresada no es valida.";
+	}if(telefono == null){
+		conError = true;
+		mensajeError = "El campo teléfono del socio no puede ser ingresado vacío.";
 	}else if(telefono.length > 9 || telefono.length < 5){
 		conError = true;
 		mensajeError = "La longitud del teléfono no corresponde a un número valido.";
 	}else if (telefono < 11111){
 		conError = true;
 		mensajeError = "El número telefonico no es valido.";
+	}if(direccion == null){
+		conError = true;
+		mensajeError = "El campo dirección del socio no puede ser ingresado vacío.";
 	}else if(direccion.length < 4){
 		conError = true;
 		mensajeError = "La direccion debe tener almenos 4 caracteres alfanuméricos.";
+	}if(fechaPago == null){
+		conError = true;
+		mensajeError = "El campo fecha de pago del socio no puede ser ingresado vacío.";
 	}else if(fechaPago.length == 0){
 		conError = true;
 		mensajeError = "Debe seleccionar la fecha en el mes en la que pagara el socio.";
@@ -63,16 +79,16 @@ function validarDatosNuevoSocio(nombre, cedula, telefono, direccion, email, rut,
 }
 
 function insertarNuevoSocio(){
-	var nombre = document.getElementById('inpNombreSocio').value;
-	var cedula = document.getElementById('inpCedulaSocio').value;
-	var telefono = document.getElementById('inpTelefonoSocio').value;
-	var direccion = document.getElementById('inpDireccionSocio').value;
+	var nombre = document.getElementById('inpNombreSocio').value || null;
+	var cedula = document.getElementById('inpCedulaSocio').value || null;
+	var telefono = document.getElementById('inpTelefonoSocio').value || null;
+	var direccion = document.getElementById('inpDireccionSocio').value || null;
 	var email = document.getElementById('inpEmailSocio').value || null;
 	var rut = document.getElementById('inpRutSocio').value || null;
 	var telefax = document.getElementById('inpTelefaxSocio').value || null;
-	var fechaPago = document.getElementById('inpFechaPagoSocio').value;
-	var lugarPago = document.getElementById('inpLugarPagoSocio').value;
-	var tipoSocio = document.getElementById('inpTipoSocio').value;
+	var fechaPago = document.getElementById('inpFechaPagoSocio').value || null;
+	var lugarPago = document.getElementById('inpLugarPagoSocio').value || null;
+	var tipoSocio = document.getElementById('inpTipoSocio').value || null;
 
 	console.log(tipoSocio)
 
@@ -133,30 +149,36 @@ function validarDatosNuevaMascota(nombre, especie, nacimiento, raza, color, sexo
 	var mensajeError = "";
 	var fechaActual = new Date();
 
-	if(nombre.length < 4){
+	if(nombre == null){
 		conError = true;
-		mensajeError = "El nombre de la mascota debe contener al menos 4 caracteres alfabeticos.";
+		mensajeError = "El nombre de la mascota  no puede ser ingresado vacío.";
+	}else if(nombre.length < 4){
+		conError = true;
+		mensajeError = "El nombre de la mascota debe contener al menos 4 caracteres alfabéticos.";
 	}else if(!soloLetras.test(nombre)){
 		conError = true;
-		mensajeError = "El nombre de la mascota solo admite caracteres alfabeticos.";
+		mensajeError = "El nombre de la mascota solo admite caracteres alfabéticos.";
+	}else if(especie == null){
+		conError = true;
+		mensajeError = "La especie de la mascota  no puede ser ingresada vacía.";
 	}else if(especie.length < 4){
 		conError = true;
-		mensajeError = "La especie de la mascota debe tener al menos 4 caracteres alfabeticos.";
+		mensajeError = "La especie de la mascota debe tener al menos 4 caracteres alfabéticos.";
+	}else if(!soloLetras.test(especie)){
+		conError = true;
+		mensajeError = "La especie de la mascota solo admite caracteres alfabéticos.";
 	}else if(nacimiento >= fechaActual){
 		conError = true;
 		mensajeError = "La fecha de nacimiento no puede ser superior o igual a la fecha actual.";
+	}else if(raza == null){
+		conError = true;
+		mensajeError = "La raza de la mascota  no puede ser ingresada vacía.";
 	}else if(raza.length < 4){
 		conError = true;
-		mensajeError = "La raza de la mascota debe contener al menos 4 caracteres alfabeticos.";
+		mensajeError = "La raza de la mascota debe contener al menos 4 caracteres alfabéticos.";
 	}else if(soloLetras.test(raza)){
 		conError = true;
-		mensajeError = "La raza de la mascota solo admite caracteres alfabeticos.";
-	}else if(color.length < 4){
-		conError = true;
-		mensajeError = "El color de la mascota debe contener al menos 4 caracteres alfabeticos.";
-	}else if(!soloLetras.test(color)){
-		conError = true;
-		mensajeError = "El color de la mascota solo admite caracteres alfabeticos.";
+		mensajeError = "La raza de la mascota solo admite caracteres alfabéticos.";
 	}else if(sexo == 2){
 		conError = true;
 		mensajeError = "Debe seleccionar el sexo de la mascota para ingresarla.";
@@ -165,14 +187,24 @@ function validarDatosNuevaMascota(nombre, especie, nacimiento, raza, color, sexo
 	if(pelo != null){
 		if(pelo.length < 4){
 			conError = true;
-			mensajeError = "El campo pelo puede ser nulo, o debe tener un minimo de 4 caracteres alfabeticos.";
+			mensajeError = "El campo pelo puede ser vacío, o debe tener un minimo de 4 caracteres alfabéticos.";
 		}
 	}
 
 	if(chip != null){
 		if(chip.length != 15){
 			conError = true;
-			mensajeError = "El chip de la mascota debe contener 15 caracteres númericos.";
+			mensajeError = "El campo chip puede ser vacío, o debe contener 15 caracteres númericos.";
+		}
+	}
+
+	if(color != null){
+		if(color.length < 4){
+			conError = true;
+			mensajeError = "El campo color puede ser vacío, o debe contener al menos 4 caracteres alfabéticos.";
+		}else if(!soloLetras.test(color)){
+			conError = true;
+			mensajeError = "El campo color puede ser vacío, o solo debe contener caracteres alfabéticos.";
 		}
 	}
 
@@ -188,12 +220,12 @@ function validarDatosNuevaMascota(nombre, especie, nacimiento, raza, color, sexo
 }
 
 function insertarNuevaMascota(){
-	var nombre = document.getElementById('inpNombreMascota').value;
-	var especie = document.getElementById('inpEspecieMascota').value;
-	var nacimiento = document.getElementById('inpNacimientoMascota').value;
-	var raza = document.getElementById('inpRazaMascota').value;
-	var color = document.getElementById('inpColorMascota').value;
-	var sexo = document.getElementById('slcSexoMascota').value;
+	var nombre = document.getElementById('inpNombreMascota').value || null;
+	var especie = document.getElementById('inpEspecieMascota').value || null;
+	var nacimiento = document.getElementById('inpNacimientoMascota').value || null;
+	var raza = document.getElementById('inpRazaMascota').value || null;
+	var color = document.getElementById('inpColorMascota').value || null;
+	var sexo = document.getElementById('slcSexoMascota').value || null;
 	var pelo = document.getElementById('inpPeloMascota').value || null;
 	var chip = document.getElementById('inpChipMascota').value || null;
 	var pedigree = document.getElementById('slcPedigreeMascota').value;
@@ -241,7 +273,7 @@ function insertarNuevaMascota(){
 			},
 			error: function (response) {
 				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrio un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
+				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});
