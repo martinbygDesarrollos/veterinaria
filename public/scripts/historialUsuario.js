@@ -1,62 +1,25 @@
-const urlBase = '/veterinarianan/public';
-
-let menorIdHistorialUsuario = 0;
-let maxIdHistorialUsuario = 0;
+let lastId = 0;
 
 function cargarHistorialUsuario(){
-	$.ajax({
-		async: false,
-		url: urlBase + "/getHistorialUsuariosPagina",
-		type: "POST",
-		data: {
-			ultimoID: menorIdHistorialUsuario,
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			menorIdHistorialUsuario = response.min;
-			maxIdHistorialUsuario = response.max;
-			var historialUsuarios = response.historial;
-			console.log(response)
-			$('#tbodyHistorialUsuarios').empty();
-			if(historialUsuarios.length == 0){
-				document.getElementById("noHayResultadosHistorialUsuariosMensaje").style.display = "block";
-				document.getElementById("irAdelantePaginaHistorialUsuarios").style.display = "none";
-				document.getElementById("irAtrasPaginaHistorialUsuarios").style.display = "none";
-			}else{
-				if(historialUsuarios.length < 5){
-					document.getElementById("irAdelantePaginaHistorialUsuarios").style.display = "none";
-				}else{
-					document.getElementById("irAtrasPaginaHistorialUsuarios").style.display = "block";
-					document.getElementById("irAdelantePaginaHistorialUsuarios").style.display = "block";
-				}
-				document.getElementById("noHayResultadosHistorialUsuariosMensaje").style.display = "none";
-				for(var i = 0; i < historialUsuarios.length; i ++ ){
-					var fila = "<tr><td class='text-center'>" + historialUsuarios[i].fecha +"</td>" +
-					"<td class='text-center'>" + historialUsuarios[i].nombre +"</td>" +
-					"<td class='text-center'>" + historialUsuarios[i].funcion + "</td>" +
-					"<td class='text-center'>" + historialUsuarios[i].observacion +"</td></tr>";
-					$('#tbodyHistorialUsuarios').append(fila);
-				}
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
-	});
-}
-
-function paginaPosteriorHistorialUsuarios(){
-	cargarHistorialUsuario();
-}
-
-function paginaAnteriorHistorialUsuarios(){
-	if(menorIdHistorialUsuario != 0){
-		menorIdHistorialUsuario = parseInt(maxIdHistorialUsuario) + 10;
-		cargarHistorialUsuario();
+	let response = sendPost("getHistorialUsuario", {lastId: lastId});
+	if(response.result == 2){
+		if(lastId != response.lastId)
+			lastId = response.lastId;
+		let list = response.listResult;
+		for (let i = 0; i < list.length; i++) {
+			let row = createRow(list[i].fecha, list[i].idSocio, list[i].socio, list[i].idMascota, list[i].mascota, list[i].funcion, list[i].observacion);
+			$('#tbodyHistorialUsuario').append(row);
+		}
 	}
+}
+
+function createRow(fecha, idSocio, socio, idMascota, mascota, funcion, observacion){
+	let row = "<tr>";
+	row += "<td class='text-center'>"+ fecha +"</td>";
+	row += "<td class='text-center'>"+ socio +"</td>";
+	row += "<td class='text-center'>"+ mascota +"</td>";
+	row += "<td class='text-center'>"+ funcion +"</td>";
+	row += "<td class='text-center'>"+ observacion +"</td>";
+	row += "</tr>";
+	return row;
 }

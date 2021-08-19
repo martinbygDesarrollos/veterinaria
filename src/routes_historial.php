@@ -25,19 +25,6 @@ return function (App $app) {
 	});
 
     //-------------------------- VISTAS ------------------------------------------
-	$app->get('/historiaClinica/{idMascota}', function($request, $response, $args) use ($container){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$args['administrador'] = $sesion;
-				$idMascota = $args['idMascota'];
-				$args['mascota'] = ctr_mascotas::getMascota($idMascota);
-				return $this->view->render($response, "historiaClinica.twig", $args);
-			}
-		}
-		return $this->view->render($response, "index.twig", $args);
-	})->setName('historiaClinica');
 
 	$app->get('/settings', function($request, $response, $args) use ($container){
 		if (isset($_SESSION['administrador'])) {
@@ -56,109 +43,87 @@ return function (App $app) {
 	})->setName("settings");
 
 	$app->get('/historialUsuario', function($request, $response, $args) use ($container){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$args['administrador'] = $sesion;
-				return $this->view->render($response, "historialUsuario.twig", $args);
-			}
-		}
-		return $this->view->render($response, "index.twig", $args);
-	})->setName("settings");
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$args['administrador'] = $responseSession->session;
+			return $this->view->render($response, "historialUsuario.twig", $args);
+		}else return $response->withRedirect('iniciar-sesion');
+	})->setName("HistorialUsuario");
+
     //-----------------------------------------------------------------------------
 
     //--------------------------------POST-----------------------------------------
 
-	$app->post('/getHistoriaClinicaPagina', function(Request $request, Response $response){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$data = $request->getParams();
-				$ultimoID = $data['ultimoID'];
-				$idMascota = $data['idMascota'];
-				return json_encode(ctr_historiales::getHistoriaClinicaPagina($ultimoID, $idMascota));
-			}
-		}
-
-		$response = new \stdClass();
-		$response->retorno = false;
-		$response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-		return json_encode($response);
+	$app->post('/getHistorialUsuario', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$lastId = $data['lastId'];
+			return json_encode(ctr_historiales::getHistorialUsuario($lastId, $responseSession->session['IDENTIFICADOR']));
+		}else return json_encode($responseSession);
 	});
 
-	$app->post('/getHistorialUsuariosPagina', function(Request $request, Response $response){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$data = $request->getParams();
-				$ultimoID = $data['ultimoID'];
-				return json_encode(ctr_historiales::getHistorialUsuariosPagina($ultimoID));
-			}
-		}
-
-		$response = new \stdClass();
-		$response->retorno = false;
-		$response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-		return json_encode($response);
+	$app->post('/getHistoriaClinicaMascota', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$lastId = $data['lastId'];
+			$idMascota = $data['idMascota'];
+			return json_encode(ctr_historiales::getHistoriaClinicaMascota($lastId, $idMascota));
+		}else return json_encode($responseSession);
 	});
 
-	$app->post('/insertHistoriaMascota', function(Request $request, Response $response){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$data = $request->getParams();
-				$idMascota = $data['idMascota'];
-				$motivoConsulta = $data['motivoConsulta'];
-				$diagnostico = $data['diagnostico'];
-				$observaciones = $data['observaciones'];
-				return json_encode(ctr_historiales::insertHistoriaMascota($idMascota, $motivoConsulta, $diagnostico, $observaciones));
-			}
-		}
-
-		$response = new \stdClass();
-		$response->retorno = false;
-		$response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-		return json_encode($response);
+	$app->post('/getHistoriaClinicaToShow', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$idHistoriaClinica = $data['idHistoriaClinica'];
+			return json_encode(ctr_historiales::getHistoriaClinicaToShow($idHistoriaClinica));
+		}else return json_encode($responseSession);
 	});
 
-	$app->post('/getHistoriaCompleta', function(Request $request, Response $response){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$data = $request->getParams();
-				$idHistoria = $data['idHistoria'];
-				return json_encode(ctr_historiales::getHistoriaCompleta($idHistoria));
-			}
-		}
-
-		$response = new \stdClass();
-		$response->retorno = false;
-		$response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-		return json_encode($response);
+	$app->post('/getHistoriaClinicaToEdit', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$idHistoria = $data['idHistoriaClinica'];
+			return json_encode(ctr_historiales::getHistoriaClinicaToEdit($idHistoria));
+		}else return json_encode($responseSession);
 	});
 
-	$app->post('/updateCuotaSocio', function(Request $request, Response $response){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$data = $request->getParams();
-				$cuotaUna = $data['cuotaUna'];
-				$cuotaDos = $data['cuotaDos'];
-				$cuotaExtra = $data['cuotaExtra'];
-				return json_encode(ctr_historiales::updateCuotaSocio($cuotaUna, $cuotaDos, $cuotaExtra));
-			}
-		}
+	$app->post('/agregarHistoriaClinica', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$idMascota = $data['idMascota'];
+			$fecha = $data['fecha'];
+			$motivoConsulta = $data['motivoConsulta'];
+			$diagnostico = $data['diagnostico'];
+			$observaciones = $data['observaciones'];
+			return json_encode(ctr_historiales::agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones));
+		}else return json_encode($responseSession);
+	});
 
-		$response = new \stdClass();
-		$response->retorno = false;
-		$response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-		return json_encode($response);
+	$app->post('/modificarHistoriaClinica', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$idHistoriaClinica = $data['idHistoriaClinica'];
+			$fecha = $data['fecha'];
+			$motivoConsulta = $data['motivoConsulta'];
+			$diagnostico = $data['diagnostico'];
+			$observaciones = $data['observaciones'];
+			return json_encode(ctr_historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones));
+		}else return json_encode($responseSession);
+	});
+
+	$app->post('/borrarHistoriaClinica', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$idHistoriaClinica = $data['idHistoriaClinica'];
+			return json_encode(ctr_historiales::borrarHistoriaClinica($idHistoriaClinica));
+		}else return json_encode($responseSession);
 	});
 
 	$app->post('/updatePlazoDeuda', function(Request $request, Response $response){

@@ -1,10 +1,26 @@
 <?php
 
-require_once 'fechas.php';
+require_once "../src/utils/fechas.php";
 
 class mascotas{
  //0 INACTIVA 1 ACTIVA 2 PENDIENTE
 	//MACHO 1 HEMBRA 0
+
+	public function getSocioIdByMascota($idMascota){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotasocio WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontro un socio vinculado a la mascota seleccionada.";
+
+		return $responseQuery;
+	}
+
+	public function getSocioActivePets($idSocio){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE estado = 1 AND idMascota IN (SELECT idMascota AS cantMascotas FROM mascotasocio WHERE idSocio = ?)", array('i', $idSocio), "LIST");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se econtraron mascotas vinculadas al socio seleccionado.";
+
+		return $responseQuery;
+	}
 
 	public function getMascotaIds(){
 		$query = DB::conexion()->prepare("SELECT MS.idMascotaSocio, S.numSocio, M.nombre, MS.idMascota, MS.idSocio FROM mascotasocio AS MS, socios AS S, mascotas AS M WHERE MS.idSocio = S.idSocio AND MS.idMascota = M.idMascota"); // AND MS.idMascota > 13688
@@ -32,116 +48,131 @@ class mascotas{
 		return null;
 	}
 
-	public function getMascotas(){
-		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado = 1");
-		if($query->execute()){
-			$result = $query->get_result();
+	public function getMascotaMaxId(){
+		$responseQuery = DataBase::sendQuery("SELECT MAX(idMascota) AS idMaximo FROM mascotas", null, "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontraron mascotas registradas en la base de datos.";
+
+		return $responseQuery;
+	}
+
+	public function getMascotas($lastId, $textToSearch, $stateMascota){
+		if($lastId == 0){
+			$responseGetMaxID = mascotas::getMascotaMaxId();
+			if($responseGetMaxID->result == 2)
+				$lastId = $responseGetMaxID->objectResult->idMaximo + 1;
+			else
+				return $responseGetMaxID;
+		}
+
+		$sqlToSearch = "";
+		if(!is_null($textToSearch))
+			$sqlToSearch = " AND nombre LIKE '". $textToSearch ."%' ";
+
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE estado = ? AND idMascota < ? " . $sqlToSearch ." ORDER BY idMascota DESC LIMIT 14", array('ii', $stateMascota, $lastId), "LIST");
+		if($responseQuery->result == 2){
+			$newLastID = $lastId;
 			$arrayResult = array();
-			while($row = $result->fetch_array(MYSQLI_ASSOC)){
-				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], '/');
+			$noData = "No especificado";
+			foreach ($responseQuery->listResult as $key => $row) {
+				if($newLastID > $row['idMascota']) $newLastID = $row['idMascota'];
+
+				if(is_null($row['especie']) || strlen($row['especie']) < 2)
+					$row['especie'] = $noData;
+
+				if(is_null($row['raza']) || strlen($row['raza']) < 2)
+					$row['raza'] = $noData;
+
+				if($row['sexo'] == 0 )
+					$row['sexo'] = "Hembra";
+				else
+					$row['sexo'] = "Macho";
+
+				if(!is_null($row['fechaNacimiento']) && strlen($row['fechaNacimiento']) == 8)
+					$row['fechaNacimiento'] = fechas::dateToFormatBar($row['fechaNacimiento']);
+				else
+					$row['fechaNacimiento'] = $noData;
+
 				$arrayResult[] = $row;
 			}
-			return $arrayResult;
-		}
-		return null;
+			$responseQuery->lastId = $newLastID;
+			$responseQuery->listResult = $arrayResult;
+		}elseif($responseQuery->result == 1) $responseQuery->message = "No se encontraron mascotas que listar.";
+
+		return $responseQuery;
 	}
 
-	public function getMascotasInactivasPendientes(){
-		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado != 1");
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayResult = array();
-			while($row = $result->fetch_array(MYSQLI_ASSOC)){
-				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], '/');
-				$arrayResult[] = $row;
-			}
-			return $arrayResult;
+	public function getMascotaToEdit($idMascota){
+		$responseQuery = mascotas::getMascota($idMascota);
+		if($responseQuery->result == 2){
+			if(!is_null($responseQuery->objectResult->fechaNacimiento))
+				$responseQuery->objectResult->fechaNacimiento = fechas::dateToFormatHTML($responseQuery->objectResult->fechaNacimiento);
 		}
-		return null;
-	}
 
-	public function getMin($mascotas, $maxValor){
-		$valorMinimo = $maxValor;
-		foreach ($mascotas as $key => $value) {
-			if($value['idMascota'] < $valorMinimo)
-				$valorMinimo = $value['idMascota'];
-		}
-		return $valorMinimo;
-	}
-
-	public function getMascotaMaxId($estadoMascota){
-		$query = DB::conexion()->prepare("SELECT MAX(idMascota) AS idMaximo FROM mascotas WHERE estado = ?");
-		$query->bind_param('i', $estadoMascota);
-		if($query->execute()){
-			$result = $query->get_result();
-			return $result->fetch_object();
-		}else return null;
-	}
-
-	public function getMascotasPagina($ultimoID, $estadoMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE estado = ? AND idMascota <= ? ORDER BY idMascota DESC LIMIT 10");
-		$query->bind_param('ii', $estadoMascota, $ultimoID);
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayResult = array();
-			while($row = $result->fetch_array(MYSQLI_ASSOC)){
-				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], "/");
-				if($row['sexo'] == 0) $row['sexo'] = "Hembra";
-				else $row['sexo'] = "Macho";
-				$arrayResult[] = $row;
-			}
-			return $arrayResult;
-		}
-		return null;
-	}
-
-	public function buscadorMascotaNombre($nombreMascota, $estadoMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE  estado = ? AND nombre LIKE '%" . $nombreMascota ."%' LIMIT 10 ");
-		$query->bind_param('i', $estadoMascota);
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayResult = array();
-			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-				$arrayResult[] = $row;
-			}
-			return $arrayResult;
-		}
-		return null;
+		return $responseQuery;
 	}
 
 	public function getMascota($idMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE idMascota = ?");
-		$query->bind_param('i', $idMascota);
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontro una mascota con el identificador seleccionado.";
 
-		if($query->execute()){
-			$response = $query->get_result();
-			$retorno = $response->fetch_object();
-			$retorno->fechaNacimiento = fechas::parceFechaFormatDMA($retorno->fechaNacimiento, "/");
-			return $retorno;
-		}else return null;
+		return $responseQuery;
+	}
+
+	public function getMascotaToShow($idMascota){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
+		if($responseQuery->result == 2){
+			$responseQuery->objectResult = mascotas::getFormatMascota($responseQuery->objectResult);
+		}elseif($responseQuery->result == 1)$responseQuery->message = "No se encontro una mascota con el identificador seleccionado.";
+
+		return $responseQuery;
+	}
+
+	public function getFormatMascota($mascota){
+		$noData = "No especificado";
+
+		if(is_null($mascota->raza) || strlen($mascota->raza) < 1)
+			$mascota->raza = $noData;
+
+		if(is_null($mascota->especie) || strlen($mascota->especie) < 1)
+			$mascota->especie = $noData;
+
+		if($mascota->sexo == 0) $mascota->sexo = "Hembra";
+		else $mascota->sexo = "Macho";
+
+		if($mascota->pedigree == 0) $mascota->pedigree = "No";
+		else $mascota->pedigree = "Si";
+
+		if(is_null($mascota->pelo) || strlen($mascota->pelo) < 1)
+			$mascota->pelo = $noData;
+
+		if(is_null($mascota->color) || strlen($mascota->color) < 1)
+			$mascota->color = $noData;
+
+		if(is_null($mascota->chip) || strlen($mascota->chip) < 1)
+			$mascota->chip = $noData;
+
+		if(is_null($mascota->observaciones) || strlen($mascota->observaciones) < 1)
+			$mascota->observaciones = $noData;
+
+		if(!is_null($mascota->fechaNacimiento) && strlen($mascota->fechaNacimiento) == 8)
+			$mascota->fechaNacimiento = fechas::dateToFormatBar($mascota->fechaNacimiento);
+		else $mascota->fechaNacimiento = $noData;
+
+		return $mascota;
 	}
 
 	public function insertMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones){
-		$conexion = DB::conexion();
-		$query = $conexion->prepare("INSERT INTO mascotas (nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
-		$query->bind_param('sssisiiisss', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones);
-		if($query->execute())
-			return $conexion->insert_id;
-		else
-			return false;
+		return DataBase::sendQuery("INSERT INTO mascotas(nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('sssisiiisss', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones), "BOOLE");
 	}
 
 	public function updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
-		$query = DB::conexion()->prepare("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, pelo = ?, chip = ? , observaciones = ? WHERE idMascota = ?");
-		$query->bind_param('sssisiisssi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones, $idMascota);
-		return $query->execute();
+		return DataBase::sendQuery("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, pelo = ?, chip = ? , observaciones = ? WHERE idMascota = ?", array('sssisiisssi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones, $idMascota), "BOOLE");
 	}
 
 	public function vincularMascotaSocio($idSocio, $idMascota, $fechaCambio){
-		$query = DB::conexion()->prepare("INSERT INTO mascotasocio (idSocio, idMascota, fechaCambio) VALUES (?,?,?)");
-		$query->bind_param('iii', $idSocio, $idMascota, $fechaCambio);
-		if($query->execute()) return true;
-		else return false;
+		return DataBase::sendQuery("INSERT INTO mascotasocio (idSocio, idMascota, fechaCambio) VALUES (?,?,?)", array('iii', $idSocio, $idMascota, $fechaCambio), "BOOLE");
 	}
 
 	public function modificarEstadoSociosCuotas($estadoNuevo, $estadoSocio){
@@ -151,25 +182,21 @@ class mascotas{
 	}
 
 	public function activarDesactivarMascota($idMascota, $estado){
-		$query = DB::conexion()->prepare("UPDATE mascotas SET estado = ? WHERE idMascota = ?");
-		$query->bind_param('ii', $estado, $idMascota);
-		return $query->execute();
+		return DataBase::sendQuery("UPDATE mascotas SET estado = ? WHERE idMascota = ?", array('ii', $estado, $idMascota), "BOOLE");
 	}
 
-	public function getMascotasSocios($idSocio){
-		$query = DB::conexion()->prepare("SELECT * FROM mascotas WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio = ? )");
-		$query->bind_param('i', $idSocio);
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayMascotas = array();
-
-			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-				$row['fechaNacimiento'] = fechas::parceFechaFormatDMA($row['fechaNacimiento'], "/");
-				$arrayMascotas[] = $row;
+	public function getMascotasSocio($idSocio){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio = ? )", array('i', $idSocio), "LIST");
+		if($responseQuery->result == 2){
+			$arrayResult = array();
+			foreach ($responseQuery->listResult as $key => $row) {
+				$row['fechaNacimiento'] = fechas::dateToFormatBar($row['fechaNacimiento'], "/");
+				$arrayResult[] = $row;
 			}
-			return $arrayMascotas;
-		}
-		return null;
+			$responseQuery->listResult = $arrayResult;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron mascotas para el socio seleccionado.";
+
+		return $responseQuery;
 	}
 
 	public function desactivarMascotasSocio($idSocio){

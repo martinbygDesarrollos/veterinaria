@@ -1,18 +1,38 @@
 <?php
 class usuarios{
 
+	public function updateUserPassword($idUser, $password){
+		return DataBase::sendQuery("UPDATE usuarios SET pass = ? WHERE idUsuario = ?", array('si', $password, $idUser), "BOOLE");
+	}
 
-	private $idUsuario;
-	private $nombre;
-	private $pass;
-	private $estado;
+	public function getToken(){
+		$longitud = 150;
+		return bin2hex(random_bytes(($longitud - ($longitud % 2)) / 2));
+	}
 
-	public function __construct($idUsuario, $nombre, $pass, $estado){
+	public function getUser($idUser){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM usuarios WHERE idUsuario = ? ", array('i', $idUser), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "EL identificador ingresado no corresponde a un usuario del sistema.";
 
-		$this->idUsuario = $idUsuario;
-		$this->nombre = $nombre;
-		$this->pass = $pass;
-		$this->estado = $estado;
+		return $responseQuery;
+	}
+
+	public function signIn($idUser){
+		$responseGetUser = usuarios::getUser($idUser);
+		if($responseGetUser->result == 2){
+			$token = usuarios::getToken();
+			$responseQuery = DataBase::sendQuery("UPDATE usuarios SET token = ? WHERE idUsuario = ?", array('si', $token, $idUser), "BOOLE");
+			if($responseQuery->result == 2){
+				$_SESSION['ADMIN'] = array(
+					"IDENTIFICADOR" => $responseGetUser->objectResult->idUsuario,
+					"USUARIO" => $responseGetUser->objectResult->nombre,
+					"EMAIL" => $responseGetUser->objectResult->email,
+					"TOKEN" => $token
+				);
+			}else if($responseQuery->result == 1) $responseQuery->message = "El usuario no fue encontrado en la base de datos y no pudo iniciarse sesión.";
+			return $responseQuery;
+		}else return $responseGetUser;
 	}
 
 	public function getUsuarios(){
@@ -49,14 +69,12 @@ class usuarios{
 		}else return null;
 	}
 
-	public function getUsuarioNombre($nombre){
+	public function getUserName($name){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM usuarios WHERE nombre = ?", array('s', $name), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontro un usuario con ese nombre en el sisitema.";
 
-		$query = DB::conexion()->prepare("SELECT * FROM usuarios WHERE nombre = ?");
-		$query->bind_param('s', $nombre);
-		if($query->execute()){
-			$response = $query->get_result();
-			return $response->fetch_object();
-		}else return null;
+		return $responseQuery;
 	}
 
 	public function insertUsuario($nombre, $pass){
@@ -71,22 +89,6 @@ class usuarios{
 		$query = DB::conexion()->prepare("UPDATE usuarios SET nombre = ?, email = ? WHERE idUsuario = ?");
 		$query->bind_param('ssi', $nombre, $email, $idUsuario);
 		return $query->execute();
-	}
-
-	public function updatePasswordUsuario($nombre, $pass){
-		$query = DB::conexion()->prepare("UPDATE usuarios SET pass = ? WHERE nombre = ?");
-		$query->bind_param('ss', $pass, $nombre);
-		return $query->execute();
-	}
-
-	public function generarTokenSesion($nomUsuario){
-		$longitud = 40;
-		$token = bin2hex(random_bytes(($longitud - ($longitud % 2)) / 2));
-
-		$query = DB::conexion()->prepare("UPDATE usuarios SET token = ? WHERE nombre = ?");
-		$query->bind_param('ss', $token, $nomUsuario);
-		if($query->execute()) return $token;
-		else return null;
 	}
 
 	public function validarSesionActiva($nomUsuario, $token){

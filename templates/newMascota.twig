@@ -3,164 +3,103 @@
 {% endblock %}
 {% block content %}
 <div class="d-flex justify-content-center">
-	<div class="row">
-		<div class="col">
-			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header" style="background: #85B58A">Nueva Mascota</h5>
-				<div class="card-body">
-					<h6 class="card-subtitle mb-2 text-muted">Información obligatoria</h6>
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-										<input id="inpNombre" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Especie</span>
-										<input id="inpEspecie" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Nacimiento</span>
-										<input id="inpFechaNacimiento" type="date" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Raza</span>
-										<input id="inpRaza" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<div class="input-group-prepend">
-											<label class="input-group-text" for="inputGroupSelect01">Sexo</label>
-										</div>
-										<select class="custom-select" id="inpSexo">
-											<option value="2" selected>Seleccione</option>
-											<option value="0">Hembra</option>
-											<option value="1">Macho</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</li>
-						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Información opcional</h6>
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Color</span>
-										<input id="inpColor" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Pelo</span>
-										<input id="inpPelo" type="text" onKeyPress="if(this.value.length==16)" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<div class="input-group-prepend">
-											<label class="input-group-text" for="inputGroupSelect01">Pedegree</label>
-										</div>
-										<select class="custom-select" id="inpPedegree">
-											<option value="0" selected>No</option>
-											<option value="1">Si</option>
-										</select>
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Chip</span>
-										<input id="inpChip" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==16) return false;" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-							</div>
-						</li>
-						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Observaciones</h6>
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<textarea id="inpObservaciones" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
-									</div>
-								</div>
-							</div>
-						</li>
-						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Dueño</h6>
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Dueño</span>
-										<input id="inpDuenio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" disabled>
-									</div>
-								</div>
-								<div class="col-sm-3">
-									<button class="btn btn-primary" onclick="showSocios()">Seleccionar</button>
-								</div>
-							</div>
-						</li>
-						<li class="list-group-item">
-							<div class="d-flex justify-content-center">
-								<input type="text" id="idSocioAsignado" style="display: none;">
-								<button class="btn btn-success" data-toggle="modal" data-target="#modalNuevaMascota" >Confirmar</button>
-							</div>
-						</li>
-					</ul>
-				</div>
-			</div>
+	<div class="card border-top-0 rounded-bottom border shadow">
+		<div class="card-header d-flex justify-content-between bg-mycolor">
+			<h5 class="card-title mt-2">Nueva mascota para {{ socio.nombre }}</h5>
 		</div>
-		<div id="containerSocios" class="justify-content-center" style="display: none;">
-			<div  class="card">
-				<h5 class="card-header" style="background: #85B58A">Seleccionar socio</h5>
-				<div class="card-body">
-					<div class="input-group mb-3">
-						<span class="input-group-text" id="inputGroup-sizing-default"><i class="fas fa-search"></i></span>
-						<input type="text" class="form-control" onchange="buscarSocio(this)" onkeyup="this.onchange()" aria-label="Sizing example input" placeholder="Buscar nombre...">
+		<div class="card-body">
+			<div class="row">
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputNombre">Nombre</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputNombre" onkeypress="return keyEnterPress(event, this.value, 30)">
+						<small id="emailHelp" class="form-text text-muted">Obligatorio</small>
 					</div>
-					<table class="table table-sm table-striped table-bordered">
-						<thead class="thead-dark">
-							<tr>
-								<th class="text-center" scope="col">Socio</th>
-							</tr>
-						</thead>
-						<tbody id="tbodySocios"></tbody>
-					</table>
-					<div id="noHayResultadosMensaje" style="display: none" class="alert alert-info text-center" role="alert">
-						<h3>No hay resultado</h3>
-						No se encontraron resultados para esta busqueda.
+				</div>
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputEspecie">Especie</label>
+						<input type="email" class="form-control text-center shadow-sm" id="inputEspecie" onkeypress="return keyEnterPress(event, this.value, 30)">
+						<small id="emailHelp" class="form-text text-muted">Obligatorio</small>
 					</div>
-					<div class="d-flex justify-content-between">
-						<button id="irAtrasPagina" class="btn btn-sm btn-info" onclick="paginaAnterior()">Atras</button>
-						<button id="irAdelantePagina" class="btn btn-sm btn-info" onclick="paginaPosterior()">Adelante</button>
+				</div>
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputRaza">Raza</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputRaza" onkeypress="return keyEnterPress(event, this.value, 30)">
+						<small id="emailHelp" class="form-text text-muted">Obligatorio</small>
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-</div>
-<div class="modal fade" id="modalNuevaMascota" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
-	<div class="modal-dialog modal-dialog-centered" role="document">
-		<div class="modal-content">
-			<div class="modal-header alert-success" >
-				<h5 class="modal-title" id="exampleModalLongTitle">Agregar Mascota</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
+			<div class="row">
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputSexo">Sexo</label>
+						<select class="custom-select shadow-sm" id="inputSexo" onkeypress="return keyEnterPress(event, null, null)">
+							<option selected value="0">Hembra</option>
+							<option value="1">Macho</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputNacimiento">Nacimiento</label>
+						<input type="date" class="form-control text-center shadow-sm" id="inputNacimiento" onkeypress="return keyEnterPress(event, null, null)">
+					</div>
+				</div>
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputColor">Color</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputColor" onkeypress="return keyEnterPress(event, this.value, 30)">
+					</div>
+				</div>
 			</div>
-			<div class="modal-body">
-				<p>¿Desea agregar una nueva mascota con la información ingresada?</p>
+			<h6 class="card-subtitle mt-3 mb-2 text-muted">Información adicional</h6>
+			<div class="row">
+				<div class="col">
+					<div class="form-group">
+						<label for="inputPelo">Pelo</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputPelo" onkeypress="return keyEnterPress(event, this.value, 30)">
+					</div>
+				</div>
+				<div class="col">
+					<div class="form-group">
+						<label for="inputChip">Chip</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputChip" onkeypress="return keyEnterPress(event, this.value, 30)">
+					</div>
+				</div>
+				<div class="col">
+					<div class="form-group">
+						<label for="inputColor">Pedegree</label>
+						<select class="custom-select shadow-sm" id="inpPedegree" onkeypress="return keyEnterPress(event, null, null)">
+							<option value="0" selected>No</option>
+							<option value="1">Si</option>
+						</select>
+					</div>
+				</div>
 			</div>
-			<div class="modal-footer">
-				<button class="btn btn-danger" data-dismiss="modal" >Cancelar</button>
-				<button class="btn btn-success" id="btnNuevaMascota" onclick="insertNewMascota()">Confirmar</button>
-
+			<div class="row">
+				<div class="col">
+					<div class="form-group">
+						<label for="inputColor">Observaciones</label>
+						<textarea id="inputObservaciones" class="form-control rounded-0 shadow-sm" maxlength="200" rows="3"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="d-flex justify-content-center">
+				<button id="btnConfirm" name="{{ socio.idSocio }}" onclick="insertNewMascota(this)" class="btn btn-success shadow-sm">Confirmar</button>
 			</div>
 		</div>
 	</div>
 </div>
 {%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/newMascota.js"></script>
 <script type="text/javascript">
-	cargarTabla()
+	$('#inputNombre').focus();
+	$('#inputNacimiento').val(getDateForInput());
 </script>
 {% endblock %}
 {% endblock %}

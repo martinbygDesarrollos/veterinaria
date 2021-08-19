@@ -1,7 +1,7 @@
 <?php
 
-require_once 'fechas.php';
-require_once '../src/conexion/abrir_conexion.php';
+require_once "../src/utils/fechas.php";
+require_once '../src/connection/open_connection.php';
 
 class copiarDB{
 
@@ -47,8 +47,9 @@ class copiarDB{
                 if(strlen($row['cedula']) > 8 || strlen($row['cedula']) < 12)
                     $cedula = copiarDB::extructurarCedula($row['cedula']);
 
-                $idSocio = copiarDB::insertarSocio($cedula, $row['nombre'], $row['numero'], $row['telefono'], $row['telfax'], $row['calle'] . " " . $row['numerocasa'] ." ". $row['apto'], $fechaIngreso , 0, $row['lugarpago'], $estado, $row['motivobaja'], $row['cuota'], $row['email'], null, $fechaUltimoP, $fechaUltimaC, $tipoSocio);
-                $array[] = array("idSocio" => $idSocio, "numSocio" => $row['numero']);
+                $responseQuery = copiarDB::insertarSocio($cedula, $row['nombre'], $row['numero'], $row['telefono'], $row['telfax'], $row['calle'] . " " . $row['numerocasa'] ." ". $row['apto'], $fechaIngreso , 0, $row['lugarpago'], $estado, $row['motivobaja'], $row['cuota'], $row['email'], null, $fechaUltimoP, $fechaUltimaC, $tipoSocio);
+                if($responseQuery->result == 2)
+                    $array[] = array("idSocio" => $responseQuery->id, "numSocio" => $row['numero']);
             }
             return $array;
         }
@@ -63,13 +64,8 @@ class copiarDB{
     }
 
     public function insertarSocio($cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta, $tipoSocio){
-        $conn = DB::conexion();
 
-        $sql = $conn->prepare("INSERT INTO `socios`(`cedula`, `nombre`, `numSocio`, `telefono`, `telefax`, `direccion`, `fechaIngreso`, `fechaPago`, `lugarPago`, `estado`, `motivoBaja`, `cuota`, `email`, `rut`, `fechaUltimoPago`, `fechaUltimaCuota`, tipo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        $sql->bind_param('ssisssiisisissiii',$cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta, $tipoSocio );
-        if($sql->execute()){
-            return $conn->insert_id;
-        }else return null;
+        return DataBase::sendQuery("INSERT INTO socios(cedula, nombre, numSocio, telefono, telefax, direccion, fechaIngreso, fechaPago, lugarPago, estado, motivoBaja, cuota, email, rut, fechaUltimoPago, fechaUltimaCuota, tipo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", array('ssisssiisisissiii',$cedula, $nombre, $numSocio, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUltimoPago, $fechaUltimaCouta, $tipoSocio), "BOOLE");
     }
 
     function extructurarCedula($cedula){
@@ -157,7 +153,7 @@ class copiarDB{
                 if($row['pedigree'] == "Si")
                     $pedigree = 1;
 
-                $idMascota = copiarDB::insertarMascota($row['nombre'], $row['especie'], $row['raza'], $sexo, $row['color'], $pedigree, $fecha, $estado, $row['pelo'], $row['chip']);
+                $responseQuery = copiarDB::insertarMascota($row['nombre'], $row['especie'], $row['raza'], $sexo, $row['color'], $pedigree, $fecha, $estado, $row['pelo'], $row['chip']);
 
                 // copiarDB::seleccionarInsertarVacunasMascotas($idMascota, $row['nombre'], $row['duenio']);
                 // copiarDB::seleccionarInsertarEnfermedadesMascota($idMascota, $row['nombre'], $row['duenio']);
@@ -167,24 +163,17 @@ class copiarDB{
     }
 
     public function insertarMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fecha, $estado, $pelo, $chip){
-        $conn = DB::conexion();
-        $sql = $conn->prepare("INSERT INTO mascotas (nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip) VALUES(?,?,?,?,?,?,?,?,?,?)");
-        $sql->bind_param('sssissiiss',$nombre, $especie, $raza, $sexo, $color, $pedigree, $fecha, $estado, $pelo, $chip);
-        if($sql->execute()){
-            return $conn->insert_id;
-        }return null;
+        return DataBase::sendQuery("INSERT INTO mascotas (nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip) VALUES(?,?,?,?,?,?,?,?,?,?)", array('sssissiiss',$nombre, $especie, $raza, $sexo, $color, $pedigree, $fecha, $estado, $pelo, $chip), "BOOLE");
     }
 
     public function insertarMascotaSocio($idSocio, $idMascota){
-        $query = DB::conexion()->prepare("INSERT INTO mascotasocio(idSocio, idMascota) VALUES (?,?)");
-        $query->bind_param('ii', $idSocio, $idMascota);
-        $query->execute();
+        return DataBase::sendQuery("INSERT INTO mascotasocio(idSocio, idMascota) VALUES (?,?)", array('ii', $idSocio, $idMascota), "BOOLE");
     }
 
     function seleccionarInsertarVacunasMascotas($idMascota, $nombre, $duenio){
 
         $conexion = copiarDB::getConexion();
-        $sql = $conexion->prepare("SELECT * FROM `vacuna_asignada` WHERE mascota = ? AND socio = ?");
+        $sql = $conexion->prepare("SELECT * FROM vacuna_asignada WHERE mascota = ? AND socio = ?");
         $sql->bind_param('si',$nombre, $duenio);
         if($sql->execute()){
             $result = $sql->get_result();
@@ -197,9 +186,7 @@ class copiarDB{
     }
 
     function insertarVacuna($nombreVacuna, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis, $observacion){
-        $sql = DB::conexion()->prepare("INSERT INTO vacunasmascota(nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, observacion) VALUES(?,?,?,?,?,?,?)");
-        $sql->bind_param('siiiiis',$nombreVacuna, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis, $observacion);
-        $sql->execute();
+        return DataBase::sendQuery("INSERT INTO vacunasmascota(nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, observacion) VALUES(?,?,?,?,?,?,?)", array('siiiiis',$nombreVacuna, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis, $observacion), "BOOLE");
     }
 
     function seleccionarInsertarEnfermedadesMascota($idMascota, $nombre, $duenio){
@@ -215,14 +202,12 @@ class copiarDB{
     }
 
     function insertEnfermedadMascota($idMascota, $enfermedad, $fecha){
-        $query = DB::conexion()->prepare("INSERT INTO enfermedadesmascota(idMascota, fechaDiagnostico, nombreEnfermedad) VALUES (?,?,?)");
-        $query->bind_param('iis',$idMascota, $fecha, $enfermedad);
-        $query->execute();
+        return DataBase::sendQuery("INSERT INTO enfermedadesmascota(idMascota, fechaDiagnostico, nombreEnfermedad) VALUES (?,?,?)", array('iis',$idMascota, $fecha, $enfermedad), "BOOLE");
     }
 
     public function seleccionarInsertarHistorialClinico($idMascota, $nombre, $duenio){
         $conexion = copiarDB::getConexion();
-        $sql = $conexion->prepare("SELECT * FROM `historial_clinico` WHERE socio = ? AND mascota = ?");
+        $sql = $conexion->prepare("SELECT * FROM historial_clinico WHERE socio = ? AND mascota = ?");
         $sql->bind_param('is', $duenio, $nombre);
         if($sql->execute()){
             $response = $sql->get_result();
@@ -234,7 +219,7 @@ class copiarDB{
     }
 
     public function insertarHistoriaClinica($idRelacion, $fecha, $motivoConsulta, $diagnostico, $observaciones){
-        $sql = DB::conexion()->prepare("INSERT INTO `historiasclinica`(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES (?,?,?,?,?)");
+        $sql = DB::conexion()->prepare("INSERT INTO historiasclinica(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES (?,?,?,?,?)");
         $sql->bind_param('iisss', $idRelacion, $fecha, $observaciones, $motivoConsulta, $diagnostico);
         $sql->execute();
     }

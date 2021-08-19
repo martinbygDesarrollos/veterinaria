@@ -1,42 +1,112 @@
+function openModalUpdateSocio(btnShowModal){
+	let idSocio = btnShowModal.id;
+	let response = sendPost('getSocio', {idSocio: idSocio});
+	if(response.result == 2){
+		setValues("Modal", response.socio);
+		$('#modalUpdateSocio').modal();
+	}else showReplyMessage(response.result, response.message, "Obtener socio", null);
+}
 
-function activarDesactivarSocio(btn){
-	$('#modalActivarDesactivarSocio').modal('hide');
-	var idSocio = btn.id;
-	var estado = btn.name;
+function calculateQuotaSocio(idSocio){
+	let response = sendPost("actualizarCuotaSocio", {idSocio: idSocio});
+	showReplyMessage(response.result, response.message, "Actualizar cuota", null);
+	if(response.result == 2)
+		$('#inputCuota').val(response.newQuota);
+}
 
-	if(estado == 0)
-		estado = "Activar socio";
-	else estado = "Desactivar socio";
+function saveChangeSocio(buttonConfirm){
+	let idSocio = buttonConfirm.name;
+	let cedula = $('#inputModalCedula').val() || null;
+	let nombre = $('#inputModalNombre').val() || null;
+	let direccion = $('#inputModalDireccion').val() || null;
+	let telefono = $('#inputModalTelefono').val() || null;
+	let fechaPago = $('#inputModalFechaPago').val() || null;
+	let ultimoPago = $('#inputModalUltimoPago').val() || null;
+	let ultimoMesPago = $('#inputModalUltimoMesPago').val() || null;
+	let fechaIngreso = $('#inputModalFechaIngreso').val() || null;
+	let lugarPago = $('#selectLugarPago').val() || null;
+	let tipoSocio = $('#selectModalTipoSocio').val() || null;
+	let rut = $('#inputModalRut').val() || null;
+	let telefax = $('#inputModalTelefax').val() || null;
+	let email = $('#inputModalEmail').val() || null;
 
-	$.ajax({
-		async: false,
-		url: urlBase + "/activarDesactivarSocio",
-		type: "POST",
-		data: {
-			idSocio: idSocio
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response.retorno){
-				showReplyMessage('success', response.mensaje, response.enHistorial, estado);
-				$("#modalButtonRetorno").click(function(){
-					window.location.reload();
-				});
-			}else{
-				showReplyMessage('danger', response.mensajeError, null, estado);
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
-	});
+	if(cedula){
+		if(validateCI(cedula)){
+			if(nombre){
+				if(nombre.length > 5){
+					if(!email || validateEmail(email)){
+						let data = {
+							idSocio: idSocio,
+							cedula: cedula,
+							nombre: nombre,
+							direccion: direccion,
+							telefono: telefono,
+							fechaPago: fechaPago,
+							ultimoPago: ultimoPago,
+							lugarPago: lugarPago,
+							ultimoMesPago: ultimoMesPago,
+							fechaIngreso: fechaIngreso,
+							rut: rut,
+							telefax: telefax,
+							tipo: tipoSocio,
+							email: email
+						};
+						let response = sendPost("updateSocio", data);
+						showReplyMessage(response.result, response.message, "Modificar socio", "modalUpdateSocio");
+						if(response.result == 2)
+							setValues("", response.newSocio);
+					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido.", "Email incorrecto", "modalUpdateSocio");
+				}else showReplyMessage(1, "El nombre del socio debe tener al menos 6 caracteres para ser considerado valido.", "Nombre incorrecto", "modalUpdateSocio");
+			}else showReplyMessage(1, "Debe ingresar el nombre del socio para modificarlo", "Nombre requerido", "modalUpdateSocio");
+		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cédula incorrecta", "modalUpdateSocio");
+	}else showReplyMessage(1, "Debe ingresar la cédula del socio para poder modificarlo.", "Cédula requerida", "modalUpdateSocio");
+}
+
+function setValues(inputFrom, socio){
+	console.log(socio)
+	$('#input'+ inputFrom +'Cedula').val(socio.cedula);
+	$('#input'+ inputFrom +'Nombre').val(socio.nombre);
+	$('#input'+ inputFrom +'Direccion').val(socio.direccion);
+	$('#input'+ inputFrom +'Telefono').val(socio.telefono);
+	$('#input'+ inputFrom +'Email').val(socio.email);
+	$('#input'+ inputFrom +'FechaPago').val(socio.fechaPago);
+	$('#input'+ inputFrom +'UltimoPago').val(socio.fechaUltimoPago);
+	$('#input'+ inputFrom +'UltimoMesPago').val(socio.fechaUltimaCuota)
+	$('#input'+ inputFrom +'FechaIngreso').val(socio.fechaIngreso)
+	$('#select'+ inputFrom +'TipoSocio').val(socio.tipo);
+	$('#input' + inputFrom + 'Cuota').val(socio.cuota);
+	if(inputFrom == "Modal")
+		$('#selectLugarPago').val(socio.lugarPago)
+
+	$('#input'+ inputFrom +'Rut').val(socio.rut);
+	$('#input'+ inputFrom +'Telefax').val(socio.telefax);
+}
+
+function keyEnterPress(eventEnter, value, size){
+	if(eventEnter.keyCode == 13){
+		if(eventEnter.srcElement.id == "inputModalCedula")
+			$('#inputModalNombre').focus();
+		else if(eventEnter.srcElement.id == "inputModalNombre")
+			$('#inputModalTelefono').focus();
+		else if(eventEnter.srcElement.id == "inputModalTelefono")
+			$('#inputModalDireccion').focus();
+		else if(eventEnter.srcElement.id == "inputModalDireccion")
+			$('#inputModalEmail').focus();
+		else if(eventEnter.srcElement.id == "inputModalEmail")
+			$('#inputModalFechaPago').focus();
+		else if(eventEnter.srcElement.id == "inputModalFechaPago")
+			$('#inputModalUltimoPago').focus();
+		else if(eventEnter.srcElement.id == "inputModalUltimoPago")
+			$('#inputModalUltimoMesPago').focus();
+		else if(eventEnter.srcElement.id == "inputModalUltimoMesPago")
+			$('#inputModalFechaIngreso').focus();
+		else if(eventEnter.srcElement.id == "inputModalFechaIngreso")
+			$('#inputModalRut').focus();
+		else if(eventEnter.srcElement.id == "inputModalRut")
+			$('#inputModalTelefax').focus();
+		else if(eventEnter.srcElement.id == "inputModalTelefax")
+			$('#btnConfirmChange').click();
+	}else if(value != null && value.length == size) {
+		return false;
+	}
 }

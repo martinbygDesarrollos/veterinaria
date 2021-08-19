@@ -1,7 +1,6 @@
 <?php
 
-require_once 'fechas.php';
-require_once '../src/controladores/ctr_usuarios.php';
+require_once "../src/utils/fechas.php";
 
 class serviciosMascota {
 
@@ -10,75 +9,78 @@ class serviciosMascota {
     //------------------------------------------------------ANALISIS MASCOTA ---------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
-    public function getAnalisisMaxId($idMascota){
-        $query = DB::conexion()->prepare("SELECT MAX(idAnalisis) AS idMaximo FROM analisismascota WHERE idMascota = ?");
-        $query->bind_param('i', $idMascota);
-        if($query->execute()){
-            $result = $query->get_result();
-            $response = $result->fetch_object();
-            return $response->idMaximo;
-        }else return null;
-    }
 
-    public function getAnalisisPagina($maxID, $idMascota){
-        $query = DB::conexion()->prepare("SELECT * FROM analisismascota WHERE idMascota = ? AND idAnalisis <= ? ORDER BY idAnalisis DESC LIMIT 5");
-        $query->bind_param('ii', $idMascota, $maxID);
-        if($query->execute()){
-            $result = $query->get_result();
-            $arrayResult = array();
-            while($row = $result->fetch_array(MYSQLI_ASSOC)){
-                $row['fecha'] = fechas::parceFechaFormatDMA($row['fecha'], "/");
-                $arrayResult[] = $row;
-            }
-            return $arrayResult;
-        }
-        return null;
-    }
-
-    public function getAnalisisMinId($analisis, $maxID){
-        $valorMinimo = $maxID;
-        foreach ($analisis as $key => $value) {
-            if($value['idAnalisis'] < $valorMinimo)
-                $valorMinimo = $value['idAnalisis'];
-        }
-        return $valorMinimo;
-    }
-
-
-    public function getAnalisis($idAnalisis){
-        $query = DB::conexion()->prepare("SELECT * FROM analisismascota WHERE idAnalisis = ?");
-        $query->bind_param('i',$idAnalisis);
-        if($query->execute()){
-            $result = $query->get_result();
-            return $result->fetch_object();
-        }else return null;
-    }
-
-    public function getAnalisisMascota($idMascota){
-        $query =DB::conexion()->prepare("SELECT idAnalisis, fecha, nombre FROM analisismascota WHERE idMascota = ?");
-        $query->bind_param('i', $idMascota);
-        if($query->execute()){
-            $result = $query->get_result();
-            $arrayResponse = array();
-            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-                $row['fecha'] = fechas::parceFechaFormatDMA($row['fecha'], '/');
-                $arrayResponse[] = $row;
-            }
-            return $arrayResponse;
-        }else return null;
-    }
-
-    public function insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis){
-        $query = DB::conexion()->prepare("INSERT INTO analisismascota(idMascota, nombre, fecha, detalle, resultado) VALUES(?,?,?,?,?)");
-        $query->bind_param('isiss', $idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis);
-        return $query->execute();
+    public function insertAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis){
+        return DataBase::sendQuery("INSERT INTO analisismascota(idMascota, nombre, fecha, detalle, resultado) VALUES(?,?,?,?,?)", array('isiss', $idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis), "BOOLE");
     }
 
     public function updateAnalisisMascota($idAnalisis, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis){
-        $query = DB::conexion()->prepare("UPDATE analisismascota SET nombre= ?, fecha = ?, detalle= ?, resultado = ? WHERE idAnalisis = ?");
-        $query->bind_param('sissi', $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis, $idAnalisis);
-        return $query->execute();
+        return DataBase::sendQuery("UPDATE analisismascota SET nombre= ?, fecha = ?, detalle= ?, resultado = ? WHERE idAnalisis = ?", array('sissi', $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis, $idAnalisis), "BOOLE");
     }
+
+    public function deleteAnalisis($idAnalisis){
+        return DataBase::sendQuery("DELETE FROM analisismascota WHERE idAnalisis = ?", array('i', $idAnalisis), "BOOLE");
+    }
+
+    public function getAnalisisToShow($idAnalisis){
+        $responseQuery = serviciosMascota::getAnalisis($idAnalisis);
+        if($responseQuery->result == 2){
+            $analisis = $responseQuery->objectResult;
+            $noData = "No especificado";
+            if(is_null($analisis->detalle) || strlen($analisis->detalle) < 2)
+                $analisis->detalle = $noData;
+
+            if(is_null($analisis->nombre) || strlen($analisis->nombre) < 2)
+                $analisis->nombre = $noData;
+
+            if(is_null($analisis->resultado) || strlen($analisis->resultado) < 2)
+                $analisis->resultado = $noData;
+
+            if(!is_null($analisis->fecha) && strlen($analisis->fecha) == 10)
+                $analisis->fecha = fechas::dateToFormatBar(fechas::getDateToINT($analisis->fecha));
+            else
+                $analisis->fecha = $noData;
+
+            $responseQuery->objectResult = $analisis;
+        }
+
+        return $responseQuery;
+    }
+
+    public function getAnalisis($idAnalisis){
+        $responseQuery = DataBase::sendQuery("SELECT * FROM analisismascota WHERE idAnalisis = ?", array('i',$idAnalisis), "OBJECT");
+        if($responseQuery->result == 2){
+            $responseQuery->objectResult->fecha = fechas::dateToFormatHTML($responseQuery->objectResult->fecha);
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontro un analisis con el identificador seleccionado.";
+        return $responseQuery;
+    }
+
+    public function getAnalisisMascota($idMascota){
+        $responseQuery = DataBase::sendQuery("SELECT * FROM analisismascota WHERE idMascota = ?", array('i', $idMascota), "LIST");
+        if($responseQuery->result == 2){
+            $noData = "No especificado";
+            $arrayResult = array();
+            foreach ($responseQuery->listResult as $key => $row) {
+
+                if(!is_null($row['fecha']) && strlen($row['fecha']) == 8)
+                    $row['fecha'] = fechas::dateToFormatBar($row['fecha']);
+                else $row['fecha'] = $noData;
+
+                if(is_null($row['nombre']))
+                    $row['nombre'] = $noData;
+
+                if(is_null($row['resultado']))
+                    $row['resultado'] = "No ingresados";
+
+                $arrayResult[] = $row;
+            }
+            $responseQuery->listResult = $arrayResult;
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron analisis para la mascota seleccioanda.";
+
+        return $responseQuery;
+    }
+
+
 
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -86,58 +88,56 @@ class serviciosMascota {
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
 
-    public function getVacunaMaxId($idMascota){
-        $query = DB::conexion()->prepare("SELECT MAX(idVacunaMascota) AS idMaximo FROM vacunasmascota WHERE idMascota = ?");
-        $query->bind_param('i', $idMascota);
-        if($query->execute()){
-            $result = $query->get_result();
-            $response = $result->fetch_object();
-            return $response->idMaximo;
-        }else return null;
+    public function borrarVacunaMascota($idVacunaMascota){
+        return DataBase::sendQuery("DELETE FROM vacunasmascota WHERE idVacunaMascota = ?", array('i', $idVacunaMascota), "BOOLE");
     }
 
-    public function getVacunasPagina($maxID, $idMascota){
-        $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota WHERE idMascota = ? AND idVacunaMascota <= ? ORDER BY idVacunaMascota DESC LIMIT 5");
-        $query->bind_param('ii', $idMascota, $maxID);
-        if($query->execute()){
-            $result = $query->get_result();
+    public function getVacunasMascotas($idMascota){
+        $responseQuery = DataBase::sendQuery("SELECT * FROM vacunasmascota WHERE idMascota = ? ORDER BY idVacunaMascota DESC", array('i', $idMascota), "LIST");
+        if($responseQuery->result == 2){
+            $noData = "No especificada";
             $arrayResult = array();
-            while($row = $result->fetch_array(MYSQLI_ASSOC)){
-                if($row['fechaProximaDosis'] == 0) $row['fechaProximaDosis'] = "Dosis única";
-                else $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'], "/");
-                $row['fechaUltimaDosis'] = fechas::parceFechaFormatDMA($row['fechaUltimaDosis'], "/");
-                $row['fechaPrimerDosis'] = fechas::parceFechaFormatDMA($row['fechaPrimerDosis'], "/");
+            foreach ($responseQuery->listResult as $key => $row) {
+                $row = serviciosMascota::vacunaToFormat($row);
                 $arrayResult[] = $row;
             }
-            return $arrayResult;
-        }
-        return null;
+            $responseQuery->listResult = $arrayResult;
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas de la mascota seleccionada.";
+
+        return $responseQuery;
     }
 
-    public function getVacunasMinId($vacunas, $maxID){
-        $valorMinimo = $maxID;
-        foreach ($vacunas as $key => $value) {
-            if($value['idVacunaMascota'] < $valorMinimo)
-                $valorMinimo = $value['idVacunaMascota'];
-        }
-        return $valorMinimo;
-    }
+    public function vacunaToFormat($vacuna){
+        $noData = "No especificada";
 
-    public function getVacunasMascotas(){
-        $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota, mascotas WHERE mascotas.idMascota = vacunasmascota.idMascota");
-        if($query->execute()){
-            $response = $query->get_result();
-            $arrayResponse = array();
-            while($row = $response->fetch_array(MYSQLI_ASSOC)){
-                if($row['fechaProximaDosis'] == 0) $row['fechaProximaDosis'] = "Dosis única";
-                else $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'], "/");
-                $row['fechaUltimaDosis'] = fechas::parceFechaFormatDMA($row['fechaUltimaDosis'], "/");
-                $row['fechaPrimerDosis'] = fechas::parceFechaFormatDMA($row['fechaPrimerDosis'], "/");
+        if(!is_null($vacuna['fechaPrimerDosis']) && strlen($vacuna['fechaPrimerDosis']) == 8)
+            $vacuna['fechaPrimerDosis'] = fechas::dateToFormatBar($vacuna['fechaPrimerDosis']);
 
-                $arrayResponse[] = $row;
-            }
-            return $arrayResponse;
-        }else return null;
+        if(!is_null($vacuna['fechaProximaDosis']) && strlen($vacuna['fechaProximaDosis']) == 8)
+            $vacuna['fechaProximaDosis'] = fechas::dateToFormatBar($vacuna['fechaProximaDosis']);
+        else
+            $vacuna['fechaProximaDosis'] = $noData;
+
+        if(!is_null($vacuna['fechaUltimaDosis']) && strlen($vacuna['fechaUltimaDosis']) == 8)
+            $vacuna['fechaUltimaDosis'] = fechas::dateToFormatBar($vacuna['fechaUltimaDosis']);
+        else
+            $vacuna['fechaUltimaDosis'] = $noData;
+
+        if(is_null($vacuna['observacion']) || strlen($vacuna['observacion']) < 1)
+            $vacuna['observaciones'] = $noData;
+
+        if($vacuna['intervaloDosis'] == 1)
+            $vacuna['intervaloDosis'] = "Única dosis";
+        else if($vacuna['intervaloDosis'] == 30)
+            $vacuna['intervaloDosis'] = "Mensual";
+        else if($vacuna['intervaloDosis'] == 60)
+            $vacuna['intervaloDosis'] = "Bimestral";
+        else if($vacuna['intervaloDosis'] == 180)
+            $vacuna['intervaloDosis'] = "Semestral";
+        else if($vacuna['intervaloDosis'] == 360)
+            $vacuna['intervaloDosis'] = "Anual";
+
+        return $vacuna;
     }
 
     public function getVacunasVencidasMaxId($fechaLimite){
@@ -205,62 +205,75 @@ class serviciosMascota {
         }else return null;
     }
 
+    public function getVacunaMascotaToShow($idVacunaMascota){
+        $responseQuery = DataBase::sendQuery("SELECT * FROM vacunasmascota WHERE idVacunaMascota = ?", array('i', $idVacunaMascota), "OBJECT");
+        if($responseQuery->result == 2){
+            $responseQuery->objectResult = serviciosMascota::formatVacunaObject($responseQuery->objectResult);
+        }elseif($responseQuery->result == 1) $responseQuery->message = "La se encontro una vacuna con el identificador seleccionado.";
+
+        return $responseQuery;
+    }
+
+    public function formatVacunaObject($vacuna){
+        $noData = "No especificada";
+
+        if(strlen($vacuna->fechaPrimerDosis) == 8)
+            $vacuna->fechaPrimerDosis = fechas::dateToFormatBar($vacuna->fechaPrimerDosis);
+
+        if(!is_null($vacuna->fechaProximaDosis) && strlen($vacuna->fechaProximaDosis) == 8)
+            $vacuna->fechaProximaDosis = fechas::dateToFormatBar($vacuna->fechaProximaDosis);
+        else if($vacuna->intervaloDosis == 1)
+            $vacuna->fechaProximaDosis = "No corresponde.";
+        else
+            $vacuna->fechaProximaDosis = $noData;
+
+        if(strlen($vacuna->fechaUltimaDosis) == 8)
+            $vacuna->fechaUltimaDosis = fechas::dateToFormatBar($vacuna->fechaUltimaDosis);
+
+        if(is_null($vacuna->observacion) || strlen($vacuna->observacion) < 1)
+            $vacuna->observacion = $noData;
+
+        if($vacuna->intervaloDosis == 1)
+            $vacuna->intervaloDosis = "Única dosis";
+        else if($vacuna->intervaloDosis == 30)
+            $vacuna->intervaloDosis = "Mensual";
+        else if($vacuna->intervaloDosis == 60)
+            $vacuna->intervaloDosis = "Bimestral";
+        else if($vacuna->intervaloDosis == 180)
+            $vacuna->intervaloDosis = "Semestral";
+        else if($vacuna->intervaloDosis == 360)
+            $vacuna->intervaloDosis = "Anual";
+
+        return $vacuna;
+    }
+
     public function getVacunaMascota($idVacunaMascota){
-        $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota WHERE idVacunaMascota = ?");
-        $query->bind_param('i', $idVacunaMascota);
-        if($query->execute()){
-            $response = $query->get_result();
-            $vacunaMascota = $response->fetch_object();
-            $vacunaMascota->fechaUltimaDosis = fechas::parceFechaFormatDMA($vacunaMascota->fechaUltimaDosis,"/");
-            return $vacunaMascota;
-        }else return null;
+        $responseQuery = DataBase::sendQuery("SELECT * FROM vacunasmascota WHERE idVacunaMascota = ?", array('i', $idVacunaMascota), "OBJECT");
+        if($responseQuery->result == 2){
+            if(strlen($responseQuery->objectResult->fechaPrimerDosis) == 8)
+                $responseQuery->objectResult->fechaPrimerDosis = fechas::dateToFormatHTML($responseQuery->objectResult->fechaPrimerDosis);
+
+            if(strlen($responseQuery->objectResult->fechaProximaDosis) == 8)
+                $responseQuery->objectResult->fechaProximaDosis = fechas::dateToFormatHTML($responseQuery->objectResult->fechaProximaDosis);
+
+            if(strlen($responseQuery->objectResult->fechaUltimaDosis) == 8)
+                $responseQuery->objectResult->fechaUltimaDosis = fechas::dateToFormatHTML($responseQuery->objectResult->fechaUltimaDosis);
+
+        }elseif($responseQuery->result == 1) $responseQuery->message = "La se encontro una vacuna con el identificador seleccionado.";
+
+        return $responseQuery;
     }
 
     public function insertVacunaMascota($nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones){
-        $query = DB::conexion()->prepare("INSERT INTO vacunasmascota (nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, fechaProximaDosis, observacion) VALUES (?,?,?,?,?,?,?,?)");
-        $query->bind_param('siiiiiis', $nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones);
-        return $query->execute();
+        return DataBase::sendQuery("INSERT INTO vacunasmascota (nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, fechaProximaDosis, observacion) VALUES (?,?,?,?,?,?,?,?)", array('siiiiiis', $nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones),"BOOLE");
     }
 
     public function updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones){
-        $query = DB::conexion()->prepare("UPDATE vacunasmascota SET nombreVacuna= ?, intervaloDosis = ?, fechaUltimaDosis = ?, fechaProximaDosis = ?, observacion = ? WHERE idVacunaMascota = ?");
-        $query->bind_param('siiisi', $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones, $idVacunaMascota);
-        return $query->execute();
-    }
-
-    public function getVacunaMascotaID($idMascota){
-        $query = DB::conexion()->prepare("SELECT * FROM vacunasmascota WHERE idMascota = ?");
-        $query->bind_param('i', $idMascota);
-        if($query->execute()){
-            $response = $query->get_result();
-            $arrayResponse = array();
-            $fechaActual = fechas::parceFechaInt(date('Y-m-d'));
-            while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-
-                $row['fechaPrimerDosis'] = fechas::parceFechaFormatDMA($row['fechaPrimerDosis'], "");
-                $row['fechaUltimaDosis'] = fechas::parceFechaFormatDMA($row['fechaUltimaDosis'], "/");
-
-                if($row['fechaProximaDosis'] != 0){
-                    if($fechaActual > $row['fechaProximaDosis']){
-                        $row['vencida'] = 1;
-                    }else if(fechas::obtenerDiferenciaDias($row['fechaProximaDosis'], date('Y-m-d')) < 5){
-                        $row['vencida'] = 1;
-                    }else{
-                        $row['vencida'] = 0;
-                    }
-                    $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'], "/");
-                }
-
-                $arrayResponse[] = $row;
-            }
-            return $arrayResponse;
-        }else return null;
+        return DataBase::sendQuery("UPDATE vacunasmascota SET nombreVacuna= ?, intervaloDosis = ?, fechaUltimaDosis = ?, fechaProximaDosis = ?, observacion = ? WHERE idVacunaMascota = ?", array('siiisi', $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones, $idVacunaMascota), "BOOLE");
     }
 
     public function aplicarDosisVacunaMascota($idVacunaMascota, $nuevaUltimaDosis, $nuevaNumDosis, $fechaProximaDosis){
-        $query = DB::conexion()->prepare("UPDATE vacunasmascota SET numDosis = ? , fechaUltimaDosis = ?, fechaProximaDosis = ? WHERE idVacunaMascota  = ?");
-        $query->bind_param('iiii', $nuevaNumDosis, $nuevaUltimaDosis, $fechaProximaDosis, $idVacunaMascota);
-        return $query->execute();
+        return DataBase::sendQuery("UPDATE vacunasmascota SET numDosis = ? , fechaUltimaDosis = ?, fechaProximaDosis = ? WHERE idVacunaMascota  = ?", array('iiii', $nuevaNumDosis, $nuevaUltimaDosis, $fechaProximaDosis, $idVacunaMascota), "BOOLE");
     }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -269,74 +282,58 @@ class serviciosMascota {
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
 
-    public function getEnfermedadesMaxId($idMascota){
-        $query = DB::conexion()->prepare("SELECT MAX(idEnfermedad) AS idMaximo FROM enfermedadesmascota WHERE idMascota = ?");
-        $query->bind_param('i', $idMascota);
-        if($query->execute()){
-            $result = $query->get_result();
-            $response = $result->fetch_object();
-            return $response->idMaximo;
-        }else return null;
-    }
-
-    public function getEnfermedadesPagina($maxID, $idMascota){
-        $query = DB::conexion()->prepare("SELECT * FROM enfermedadesmascota WHERE idMascota = ? AND idEnfermedad <= ? ORDER BY idEnfermedad DESC LIMIT 5");
-        $query->bind_param('ii', $idMascota, $maxID);
-        if($query->execute()){
-            $result = $query->get_result();
+    public function getEnfermedadesMascota($idMascota){
+        $responseQuery = DataBase::sendQuery("SELECT * FROM enfermedadesmascota WHERE idMascota = ? ORDER BY idEnfermedad DESC", array('i', $idMascota), "LIST");
+        if($responseQuery->result == 2){
+            $noData = "No especificado.";
             $arrayResult = array();
-            while($row = $result->fetch_array(MYSQLI_ASSOC)){
-                $row['fechaDiagnostico'] = fechas::parceFechaFormatDMA($row['fechaDiagnostico'], "/");
+            foreach ($responseQuery->listResult as $key => $row) {
+                if(!is_null($row['fechaDiagnostico']) && strlen($row['fechaDiagnostico']) == 8)
+                    $row['fechaDiagnostico'] = fechas::dateToFormatBar($row['fechaDiagnostico']);
+                else
+                    $row['fechaDiagnostico'] = $noData;
+
+                if(is_null($row['observaciones']) || strlen($row['observaciones']) == 0)
+                    $row['observaciones'] = $noData;
+
                 $arrayResult[] = $row;
             }
-            return $arrayResult;
-        }
-        return null;
+            $responseQuery->listResult = $arrayResult;
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron enfermedades asociadas a la mascota seleccionada.";
+
+        return $responseQuery;
     }
 
-    public function getEnfermedadesMinId($enfermedades, $maxID){
-        $valorMinimo = $maxID;
-        foreach ($enfermedades as $key => $value) {
-            if($value['idEnfermedad'] < $valorMinimo)
-                $valorMinimo = $value['idEnfermedad'];
-        }
-        return $valorMinimo;
+    public function getEnfermedadMascotaToShow($idEnfermedad){
+        $responseQuery = DataBase::sendQuery("SELECT * FROM enfermedadesmascota WHERE idEnfermedad = ? ", array('i', $idEnfermedad), "OBJECT");
+        if($responseQuery->result == 2){
+            $responseQuery->objectResult->fechaDiagnostico = fechas::dateToFormatBar($responseQuery->objectResult->fechaDiagnostico);
+
+            if(is_null($responseQuery->objectResult->observaciones))
+                $responseQuery->objectResult->observaciones = "No especificado";
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontro una enfermedad con el identificador seleccionado.";
+
+        return $responseQuery;
     }
 
     public function insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones){
-        $query = DB::conexion()->prepare("INSERT INTO enfermedadesmascota (idMascota, fechaDiagnostico, nombreEnfermedad, observaciones) VALUES (?,?,?,?)");
-        $query->bind_param('iiss', $idMascota, $fechaDiagnostico, $nombre, $observaciones);
-        return $query->execute();
+        return DataBase::sendQuery("INSERT INTO enfermedadesmascota (idMascota, fechaDiagnostico, nombreEnfermedad, observaciones) VALUES (?,?,?,?)", array('iiss', $idMascota, $fechaDiagnostico, $nombre, $observaciones), "BOOLE");
     }
 
     public function updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones){
-        $query = DB::conexion()->prepare("UPDATE enfermedadesmascota SET fechaDiagnostico = ?, nombreEnfermedad = ?, observaciones = ? WHERE idEnfermedad = ?");
-        $query->bind_param('issi', $fechaDiagnostico, $nombre, $observaciones, $idEnfermedad);
-        return $query->execute();
+        return DataBase::sendQuery("UPDATE enfermedadesmascota SET fechaDiagnostico = ?, nombreEnfermedad = ?, observaciones = ? WHERE idEnfermedad = ?", array('issi', $fechaDiagnostico, $nombre, $observaciones, $idEnfermedad), "BOOLE");
     }
 
-    public function getEnfermedades($idMascota){
-        $query = DB::conexion()->prepare("SELECT * FROM enfermedadesmascota WHERE idMascota = ?");
-        $query->bind_param('i', $idMascota);
-        if($query->execute()){
-            $response = $query->get_result();
-            $arrayResponse = array();
-            while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-                $row['fechaDiagnostico'] = fechas::parceFechaFormatDMA($row['fechaDiagnostico'],"/");
-                $arrayResponse[] = $row;
-            }
-            return $arrayResponse;
-        }else return null;
+    public function deleteEnfermedad($idEnfermedad){
+        return DataBase::sendQuery("DELETE FROM enfermedadesmascota WHERE idEnfermedad = ?", array('i', $idEnfermedad), "BOOLE");
     }
 
     public function getEnfermedadMascota($idEnfermedad){
-        $query = DB::conexion()->prepare("SELECT * FROM enfermedadesmascota WHERE idEnfermedad  = ?");
-        $query->bind_param('i', $idEnfermedad);
-        if($query->execute()){
-            $response = $query->get_result();
-            $response = $response->fetch_object();
-            $response->fechaDiagnostico = fechas::parceFechaFormatDMA($response->fechaDiagnostico, "/");
-            return $response;
-        }else return null;
+        $responseQuery = DataBase::sendQuery("SELECT * FROM enfermedadesmascota WHERE idEnfermedad  = ?", array('i', $idEnfermedad), "OBJECT");
+        if($responseQuery->result == 2){
+            $responseQuery->objectResult->fechaDiagnostico = fechas::dateToFormatHTML($responseQuery->objectResult->fechaDiagnostico);
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontro una enfermedad con el identificador seleccionado.";
+
+        return $responseQuery;
     }
 }

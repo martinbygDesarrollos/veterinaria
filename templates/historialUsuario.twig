@@ -3,40 +3,38 @@
 {% endblock %}
 {% block content %}
 <div class="d-flex justify-content-center">
-	<div class="row">
-		<div class="col">
-			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header" style="background: #85B58A">Historial de usuario</h5>
-				<div class="card-body">
-					<table class="table table-sm table-striped table-bordered">
-						<thead class="thead-dark">
-							<tr>
-								<th class="text-center" scope="col">Fecha</th>
-								<th class="text-center" scope="col">Usuario</th>
-								<th class="text-center" scope="col">Operación</th>
-								<th class="text-center" scope="col">Detalle</th>
-							</tr>
-						</thead>
-						<tbody id="tbodyHistorialUsuarios"></tbody>
-					</table>
-					<div id="noHayResultadosHistorialUsuariosMensaje" style="display: none" class="alert alert-info text-center" role="alert">
-						<h3>No hay resultado</h3>
-						No se encontraron resultados para esta busqueda.
-					</div>
-					<div class="d-flex justify-content-between">
-						<button id="irAtrasPaginaHistorialUsuarios" class="btn btn-sm btn-info" onclick="paginaAnteriorHistorialUsuarios()">Atras</button>
-						<button id="irAdelantePaginaHistorialUsuarios" class="btn btn-sm btn-info" onclick="paginaPosteriorHistorialUsuarios()">Adelante</button>
-					</div>
-				</div>
-			</div>
+	<div class="card border-top-0 rounded-bottom border shadow w-75">
+		<div class="card-header d-flex justify-content-between bg-mycolor">
+			<h5 class="card-title">Historial de {{ administrador.USUARIO }}</h5>
+		</div>
+		<div class="card-body">
+			<table class="table">
+				<thead class="bg-mycolor">
+					<tr>
+						<td class="text-center" scope="col">Fecha</td>
+						<td class="text-center" scope="col">Socio</td>
+						<td class="text-center" scope="col">Mascota</td>
+						<td class="text-center" scope="col">Operación</td>
+						<td class="text-center" scope="col">Detalle</td>
+					</tr>
+				</thead>
+				<tbody id="tbodyHistorialUsuario"></tbody>
+			</table>
 		</div>
 	</div>
 </div>
 {%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/historialUsuario.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/showReplyMessage.js"></script>
 <script type="text/javascript">
 	cargarHistorialUsuario();
+	$('#containerTable').on('scroll', function() {
+		if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+			cargarHistorialUsuario();
+		}
+	});
 </script>
 {% endblock %}
 {% endblock %}

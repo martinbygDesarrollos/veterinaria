@@ -3,191 +3,120 @@
 {% endblock %}
 {% block content %}
 <div class="d-flex justify-content-center">
-	<div class="row">
-		<div class="col">
-			<div id="containerNuevoSocio" class="card">
-				<h5 class="card-header" style="background: #85B58A">Nuevo socio</h5>
-				<div class="card-body">
-					<h6 class="card-subtitle mb-2 text-muted">Información obligatoria</h6>
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-										<input id="inpNombreSocio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Teléfono</span>
-										<input id="inpTelefonoSocio" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==9) return false;" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Cédula</span>
-										<input id="inpCedulaSocio" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==8) return false;" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Dirección</span>
-										<input id="inpDireccionSocio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-sm-5">
-									<div class="input-group mb-3">
-										<div class="input-group-prepend">
-											<label class="input-group-text" for="inputGroupSelect01">Tipo de Socio</label>
-										</div>
-										<select class="custom-select" id="inpTipoSocio">
-											<option value="1" selected>Socio</option>
-											<option value="0">No socio</option>
-											<option value="2">ONG</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</li>
-						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Información opcional</h6>
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Email</span>
-										<input id="inpEmailSocio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Rut</span>
-										<input id="inpRutSocio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Telefax</span>
-										<input id="inpTelefaxSocio" type="text" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-							</div>
-						</li>
-						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Información de pago</h6>
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Fecha Pago</span>
-										<input id="inpFechaPagoSocio" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==2) return false;" class="form-control text-center" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<div class="input-group-prepend">
-											<label class="input-group-text" for="inputGroupSelect01">Lugar de pago</label>
-										</div>
-										<select class="custom-select" id="inpLugarPagoSocio">
-											<option value="2" selected>Seleccione</option>
-											<option value="0">Veterinaria</option>
-											<option value="1">Cobrador</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</li>
-						<li class="list-group-item">
-							<div class="d-flex justify-content-center">
-								<button onclick="insertarNuevoSocio()" class="btn btn-success">Confirmar</button>
-							</div>
-						</li>
-					</ul>
+	<div class="card border-top-0 rounded-bottom border w-50 shadow">
+		<div class="card-header d-flex justify-content-between bg-mycolor">
+			<h5 class="card-title mt-2">Agregar socio</h5>
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-3">
+					<div class="form-group">
+						<label for="inputCedulaSocio">Cédula</label>
+						<input type="number" class="form-control text-center shadow-sm" id="inputCedulaSocio" onkeypress="return keyEnterPress(event, this.value, 9)">
+						<small id="emailHelp" class="form-text text-muted">Obligatoria</small>
+					</div>
+				</div>
+				<div class="col">
+					<div class="form-group">
+						<label for="inputNombreSocio">Nombre</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputNombreSocio" onkeypress="return keyEnterPress(event, this.value, 50)">
+						<small id="emailHelp" class="form-text text-muted">Obligatorio</small>
+					</div>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="col-3">
+					<div class="form-group">
+						<label for="inputDireccionSocio">Teléfono</label>
+						<input type="number" class="form-control text-center shadow-sm" id="inputTelefonoSocio" onkeypress="return keyEnterPress(event, this.value, 9)">
+					</div>
+				</div>
+				<div class="col">
+					<div class="form-group">
+						<label for="inputDireccionSocio">Dirección</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputDireccionSocio" onkeypress="return keyEnterPress(event, this.value, 100)">
+					</div>
 				</div>
 			</div>
-			<div id="containerNuevaMascota" class="card" style="margin-top: 10px; display: none;">
-				<h5 class="card-header"  style="background: #85B58A">Asociar nueva mascota</h5>
-				<div class="card-body">
-					<p id="pInformacionMascota" class="card-text"></p>
-					<h6 class="card-subtitle mb-2 text-muted">Información obligatoria</h6>
-					<input style="display: none" type="text" id="idSocioAgregado">
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-										<input id="inpNombreMascota" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Raza</span>
-										<input id="inpRazaMascota" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Especie</span>
-										<input id="inpEspecieMascota" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Color</span>
-										<input id="inpColorMascota" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Nacimiento</span>
-										<input id="inpNacimientoMascota" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-									<div class="input-group mb-3">
-										<select id="slcSexoMascota" class="form-select btn" >
-											<option value="2" selected>Sexo</option>
-											<option value="0">Hembra</option>
-											<option value="1">Macho</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</li>
-						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Información adicional</h6>
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Pelo</span>
-										<input id="inpPeloMascota" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<span class="input-group-text" id="inputGroup-sizing-default">Chip</span>
-										<input id="inpChipMascota" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==15) return false;" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-									</div>
-								</div>
-								<div class="col-sm">
-									<div class="col-sm">
-										<select id="slcPedigreeMascota" class="form-select btn" >
-											<option selected value="0">No</option>
-											<option value="1">Si</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</li>
-						<h6 style="margin-top: 10px;" class="card-subtitle mb-2 text-muted">Observaciones</h6>
-						<li class="list-group-item">
-							<div class="row">
-								<div class="col-sm">
-									<div class="input-group mb-3">
-										<textarea id="inpObservacionesMascota" class="form-control rounded-0" maxlength="200" id="exampleFormControlTextarea2" rows="3"></textarea>
-									</div>
-								</div>
-							</div>
-						</li>
-						<li class="list-group-item">
-							<div class="d-flex justify-content-center">
-								<button id="btnCrearMascota" onclick="insertarNuevaMascota()" class="btn btn-success">Crear Mascota y asociar a fulanito</button>
-							</div>
-						</li>
-					</ul>
+			<div class="row">
+				<div class="col-3">
+					<div class="form-group">
+						<label for="selectTipoSocio">Tipo socio</label>
+						<select class="form-select form-control shadow-sm" id="selectTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
+							<option value="0">No socio</option>
+							<option selected value="1">Socio</option>
+							<option value="2">ONG</option>
+						</select>
+					</div>
 				</div>
+				<div class="col">
+					<div class="form-group">
+						<label for="inputDireccionSocio">Email</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputEmailSocio" onkeypress="return keyEnterPress(event, this.value, 50)">
+					</div>
+				</div>
+			</div>
+			<div class="row mt-4">
+				<div class="col-3">
+					<div class="form-group">
+						<label for="inputDireccionSocio">Fecha de pago</label>
+						<input type="number" class="form-control text-center shadow-sm" id="inputFechaPagoSocio" onkeypress="return keyEnterPress(event, this.value, 2)">
+					</div>
+				</div>
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputDireccionSocio">Fecha ingreso</label>
+						<input type="date" class="form-control text-center shadow-sm" id="inputFechaIngresoSocio" onkeypress="return keyEnterPress(event, null, null)">
+					</div>
+				</div>
+				<div class="col-4">
+					<div class="form-group">
+						<label for="selectTipoSocio">Lugar de pago</label>
+						<select class="form-select form-control shadow-sm" id="selectTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
+							<option selected value="0">Veterinaria</option>
+							<option value="1">Cobrador</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<h6 class="card-subtitle mt-4 text-muted">Información adicional</h6>
+			<div class="row mt-2">
+				<div class="col-4">
+					<div class="form-group">
+						<label for="inputDireccionSocio">RUT</label>
+						<input type="number" class="form-control text-center shadow-sm" id="inputRutSocio" onkeypress="return keyEnterPress(event, this.value, 12)">
+					</div>
+				</div>
+				<div class="col">
+					<div class="form-group">
+						<label for="inputDireccionSocio">Telefax</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputTelefaxSocio" onkeypress="return keyEnterPress(event, this.value, 100)">
+					</div>
+				</div>
+			</div>
+			<div class="d-flex justify-content-center">
+				<button id="btnConfirm" onclick="insertarNuevoSocio()" class="btn btn-success shadow-sm" onkeypress="return keyEnterPress(event, null, null)">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="modalResultNewSocio" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-success">
+				<span class="modal-title">Socio agregado</span>
+				<button type="button" class="close" data-dismiss="modal" accesskey="x" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p class="text-center">El socio fue agregado correctamente.</p>
+				<p class="text-center">¿Desea asignarle su primer mascota?</p>
+			</div>
+			<div class="modal-footer d-flex justify-content-between">
+				<button type="button" class="btn btn-danger shadow-sm">Cancelar</button>
+				<button id="modalButtonNewSocio" type="button" class="btn btn-success shadow-sm">Agregar</button>
 			</div>
 		</div>
 	</div>

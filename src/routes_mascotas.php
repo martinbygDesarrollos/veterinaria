@@ -11,81 +11,46 @@ return function (App $app) {
 
 	//---------------------------- VISTAS ------------------------------------------------------
     $app->get('/mascotas', function($request, $response, $args) use ($container){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $args['administrador'] = $sesion;
-                return $this->view->render($response, "mascotas.twig", $args);
-            }
-        }
-        return $this->view->render($response, "index.twig", $args);
-    })->setName('verMascotas');
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $args['administrador'] = $responseSession->session;
+            return $this->view->render($response, "mascotas.twig", $args);
+        }else return $response->withRedirect('iniciar-sesion');
+    })->setName('Mascotas');
 
-    $app->get('/mascotasInactivasPendientes', function($request, $response, $args) use ($container){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $args['administrador'] = $sesion;
-                return $this->view->render($response, "mascotasInactivasPendientes.twig", $args);
-            }
-        }
-        return $this->view->render($response, "index.twig", $args);
-    })->setName('verMascotasInactivasPendientes');
+    $app->get('/nueva-mascota/{idSocio}', function($request, $response, $args) use ($container){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $args['administrador'] = $responseSession->session;
+            $idSocio = $args['idSocio'];
+            $responseGetSocio = ctr_usuarios::getSocio($idSocio);
+            if($responseGetSocio->result == 2)
+                $args['socio'] = $responseGetSocio->socio;
+            return $this->view->render($response, "newMascota.twig", $args);
+        }else return $response->withRedirect('iniciar-sesion');
+    })->setName('NuevaMascota');
 
-    $app->get('/newMascota', function($request, $response, $args) use ($container){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $args['administrador'] = $sesion;
-                return $this->view->render($response, "newMascota.twig", $args);
-            }
-        }
-        return $this->view->render($response, "index.twig", $args);
-    })->setName('nuevaMascota');
+    $app->get('/ver-mascota/{idMascota}', function($request, $response, $args) use ($container){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $args['administrador'] = $responseSession->session;
 
-    $app->get('/verMascota/{idMascota }', function($request, $response, $args) use ($container){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $args['administrador'] = $sesion;
-                $idMascota = $args['idMascota'];
-                $args['info'] = ctr_mascotas::getMascotaCompleto($idMascota);
-                return $this->view->render($response, "verMascota.twig", $args);
-            }
-        }
-        return $this->view->render($response, "index.twig", $args);
+            $idMascota = $args['idMascota'];
+            $args['SocioMascota'] = ctr_mascotas::getMascotaWithSocio($idMascota);
+            $args['responseVacunas'] = ctr_mascotas::getVacunasMascota($idMascota);
+            $args['responseEnfermedades'] = ctr_mascotas::getEnfermedadesMascota($idMascota);
+            $args['responseAnalisis'] = ctr_mascotas::getAnalisisMascota($idMascota);
+            return $this->view->render($response, "verMascota.twig", $args);
+        }else return $response->withRedirect('iniciar-sesion');
     })->setName("verMascota");
 
-    $app->get('/editMascota/{idMascota}', function($request, $response, $args) use($container){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $args['administrador'] = $sesion;
-                $idMascota = $args['idMascota'];
-                $args['mascota'] = ctr_mascotas::getMascota($idMascota);
-                $args['duenio'] = ctr_usuarios::getSocioMascota($idMascota);
-                return $this->view->render($response,"editMascota.twig", $args);
-            }
-        }
-        return $this->view->render($response, "index.twig", $args);
-    })->setName("editarMascota");
-
     $app->get('/vencimientos', function($request, $response, $args) use($container){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $args['administrador'] = $sesion;
-                $args['fechaVencimiento'] = ctr_mascotas::getFechaActual();
-                return $this->view->render($response, "vencimientos.twig", $args);
-            }
-        }
-        return $this->view->render($response, "index.twig", $args);
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $args['administrador'] = $responseSession->session;
+            $args['fechaVencimiento'] = ctr_mascotas::getFechaActual();
+            return $this->view->render($response, "vencimientos.twig", $args);
+        }else return $response->withRedirect('iniciar-sesion');
     })->setName('vencimientos');
 
     //------------------------------------------------------------------------------------------
@@ -108,301 +73,239 @@ return function (App $app) {
         return json_encode($response);
     });
 
+    $app->post('/getMascotaToEdit', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            return json_encode(ctr_mascotas::getMascotaToEdit($idMascota));
+        }else return json_encode($responseSession);
+    });
+
     $app->post('/getMascotasPagina', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $ultimoID = $data['ultimoID'];
-                $estadoMascota = $data['estadoMascota'];
-                return json_encode(ctr_mascotas::getMascotasPagina($ultimoID, $estadoMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
-
-    $app->post('/buscadorDeMascotas', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $nombreMascota = $data['nombreMascota'];
-                $estadoMascota = $data['estadoMascota'];
-                return json_encode(ctr_mascotas::buscadorMascotaNombre($nombreMascota, $estadoMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
-
-    $app->post('/getVacunasPagina', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $ultimoID = $data['ultimoID'];
-                $idMascota = $data['idMascota'];
-                return json_encode(ctr_mascotas::getVacunasPagina($ultimoID, $idMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
-
-    $app->post('/getEnfermedadesPagina', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $ultimoID = $data['ultimoID'];
-                $idMascota = $data['idMascota'];
-                return json_encode(ctr_mascotas::getEnfermedadesPagina($ultimoID, $idMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
-
-    $app->post('/getAnalisisPagina', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $ultimoID = $data['ultimoID'];
-                $idMascota = $data['idMascota'];
-                return json_encode(ctr_mascotas::getAnalisisPagina($ultimoID, $idMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $lastId = $data['lastId'];
+            $textToSearch = $data['textToSearch'];
+            $stateMascota = $data['stateMascota'];
+            return json_encode(ctr_mascotas::getMascotas($lastId, $textToSearch, $stateMascota));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/insertNewMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idSocio = $data['idSocio'];
-                $nombre = $data['nombre'];
-                $especie = $data['especie'];
-                $raza = $data['raza'];
-                $sexo = $data['sexo'];
-                $color = $data['color'];
-                $pedigree  = $data['pedigree'];
-                $fechaNacimiento = $data['nacimiento'];
-                $pelo = $data['pelo'];
-                $chip = $data['chip'];
-                $observaciones = $data['observaciones'];
-                return json_encode(ctr_mascotas::insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idSocio = $data['idSocio'];
+            $nombre = $data['nombre'];
+            $especie = $data['especie'];
+            $raza = $data['raza'];
+            $sexo = $data['sexo'];
+            $color = $data['color'];
+            $pedigree  = $data['pedigree'];
+            $fechaNacimiento = $data['nacimiento'];
+            $pelo = $data['pelo'];
+            $chip = $data['chip'];
+            $observaciones = $data['observaciones'];
+            return json_encode(ctr_mascotas::insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
+        }else return json_encode($responseSession);
     });
 
-    $app->post('/updateMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idSocio = $data['idSocio'];
-                $idMascota = $data['idMascota'];
-                $nombre = $data['nombre'];
-                $especie = $data['especie'];
-                $raza = $data['raza'];
-                $sexo = $data['sexo'];
-                $color = $data['color'];
-                $pedigree = $data['pedigree'];
-                $fechaNacimiento = $data['fechaNacimiento'];
-                $pelo = $data['pelo'];
-                $chip = $data['chip'];
-                $observaciones = $data['observaciones'];
-                return json_encode(ctr_mascotas::updateMascota($idSocio, $idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+    $app->post('/modificarMascota', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            $nombre = $data['nombre'];
+            $especie = $data['especie'];
+            $raza = $data['raza'];
+            $sexo = $data['sexo'];
+            $color = $data['color'];
+            $pedigree = $data['pedigree'];
+            $fechaNacimiento = $data['fechaNacimiento'];
+            $pelo = $data['pelo'];
+            $chip = $data['chip'];
+            $observaciones = $data['observaciones'];
+            return json_encode(ctr_mascotas::modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/activarDesactivarMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idMascota = $data['idMascota'];
-                return json_encode(ctr_mascotas::activarDesactivarMascota($idMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            return json_encode(ctr_mascotas::activarDesactivarMascota($idMascota));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/getVacunaMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idVacunaMascota = $data['idVacunaMascota'];
-                return json_encode(ctr_mascotas::getVacunaMascota($idVacunaMascota));
-            }
-        }
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idVacunaMascota = $data['idVacunaMascota'];
+            return json_encode(ctr_mascotas::getVacunaMascota($idVacunaMascota));
+        }else return json_encode($responseSession);
+    });
 
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+    $app->post('/getVacunaMascotaToShow', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idVacunaMascota = $data['idVacunaMascota'];
+            return json_encode(ctr_mascotas::getVacunaMascotaToShowView($idVacunaMascota));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/updateVacunaMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idVacunaMascota = $data['idVacunaMascota'];
-                $nombre = $data['nombre'];
-                $intervalo = $data['intervalo'];
-                $fechaUltimaDosis = $data['fechaUltimaDosis'];
-                $observaciones = $data['observaciones'];
-                return json_encode(ctr_mascotas::updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $observaciones));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
-
-    $app->post('/aplicarDosisVacuna', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idVacunaMascota = $data['idVacunaMascota'];
-                return json_encode(ctr_mascotas::aplicarDosisVacuna($idVacunaMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idVacunaMascota = $data['idVacunaMascota'];
+            $nombre = $data['nombre'];
+            $intervalo = $data['intervalo'];
+            $fechaUltimaDosis = $data['fechaUltimaDosis'];
+            $observaciones = $data['observaciones'];
+            return json_encode(ctr_mascotas::updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $observaciones));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/aplicarNuevaVacunaMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idMascota = $data['idMascota'];
-                $nombreVacuna = $data['nombreVacuna'];
-                $intervalo = $data['intervalo'];
-                $fechaDosis = $data['fechaDosis'];
-                $observaciones = $data['observaciones'];
-                return json_encode(ctr_mascotas::aplicarNuevaVacunaMascota($idMascota, $nombreVacuna, $intervalo, $fechaDosis, $observaciones));
-            }
-        }
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            $nombreVacuna = $data['nombreVacuna'];
+            $intervalo = $data['intervalo'];
+            $fechaDosis = $data['fechaDosis'];
+            $observaciones = $data['observaciones'];
+            return json_encode(ctr_mascotas::aplicarNuevaVacunaMascota($idMascota, $nombreVacuna, $intervalo, $fechaDosis, $observaciones));
+        }else return json_encode($responseSession);
+    });
 
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+    $app->post('/borrarVacunaMascota', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idVacunaMascota = $data['idVacunaMascota'];
+            return json_encode(ctr_mascotas::borrarVacunaMascota($idVacunaMascota));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/aplicarDosisVacuna', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idVacunaMascota = $data['idVacunaMascota'];
+            $dateDosis = $data['dateDosis'];
+            return json_encode(ctr_mascotas::aplicarDosisVacuna($idVacunaMascota, $dateDosis));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/insertEnfermedadMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idMascota = $data['idMascota'];
-                $nombre = $data['nombreEnfermedad'];
-                $fechaDiagnostico = $data['fechaDiagnosticoEnfermedad'];
-                $observaciones = $data['observacionesEnfermedad'];
-                return json_encode(ctr_mascotas::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            $nombre = $data['nombre'];
+            $fechaDiagnostico = $data['fechaDiagnostico'];
+            $observaciones = $data['observaciones'];
+            return json_encode(ctr_mascotas::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones));
+        }else return json_encode($responseSession);
     });
 
-    $app->post('/getEnfermedadMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idEnfermedad = $data['idEnfermedad'];
-                return json_encode(ctr_mascotas::getEnfermedadMascota($idEnfermedad));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+    $app->post('/deleteEnfermedad', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idEnfermedad = $data['idEnfermedad'];
+            return json_encode(ctr_mascotas::deleteEnfermedad($idEnfermedad));
+        }else return json_encode($responseSession);
     });
 
-    $app->post('/updateEnfermedadMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idEnfermedad = $data['idEnfermedad'];
-                $nombre = $data['nombreEnfermedad'];
-                $fechaDiagnostico = $data['fechaDiagnosticoEnfermedad'];
-                $observaciones = $data['observacionesEnfermedad'];
-                return json_encode(ctr_mascotas::updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+    $app->post('/getEnfermedad', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idEnfermedad = $data['idEnfermedad'];
+            return json_encode(ctr_mascotas::getEnfermedadMascota($idEnfermedad));
+        }else return json_encode($responseSession);
     });
 
+    $app->post('/getEnfermedadToShow', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idEnfermedad = $data['idEnfermedad'];
+            return json_encode(ctr_mascotas::getEnfermedadMascotaToShow($idEnfermedad));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/updateEnfermedad', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idEnfermedad = $data['idEnfermedad'];
+            $nombre = $data['nombre'];
+            $fechaDiagnostico = $data['fechaDiagnostico'];
+            $observaciones = $data['observaciones'];
+            return json_encode(ctr_mascotas::updateEnfermedad($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/insertAnalisis', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            $fechaAnalisis = $data['fecha'];
+            $nombreAnalisis = $data['nombre'];
+            $detalleAnalisis = $data['detalle'];
+            $resultadoAnalisis = $data['resultado'];
+            return json_encode(ctr_mascotas::insertAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/updateAnalisis', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idAnalisis = $data['idAnalisis'];
+            $fechaAnalisis = $data['fecha'];
+            $nombreAnalisis = $data['nombre'];
+            $detalleAnalisis = $data['detalle'];
+            $resultadoAnalisis = $data['resultado'];
+            return json_encode(ctr_mascotas::updateAnalisis($idAnalisis, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/deleteAnalisis', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idAnalisis = $data['idAnalisis'];
+            return json_encode(ctr_mascotas::deleteAnalisis($idAnalisis));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/getAnalisis', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idAnalisis = $data['idAnalisis'];
+            return json_encode(ctr_mascotas::getAnalisis($idAnalisis));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/getAnalisisToShow', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idAnalisis = $data['idAnalisis'];
+            return json_encode(ctr_mascotas::getAnalisisToShow($idAnalisis));
+        }else return json_encode($responseSession);
+    });
 
     $app->post('/vincularSocioMascota', function(Request $request, Response $response){
         if (isset($_SESSION['administrador'])) {
@@ -422,64 +325,6 @@ return function (App $app) {
         return json_encode($response);
     });
 
-    $app->post('/insertNewAnalisis', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idMascota = $data['idMascota'];
-                $fechaAnalisis = $data['fechaAnalisis'];
-                $nombreAnalisis = $data['nombreAnalisis'];
-                $detalleAnalisis = $data['detalleAnalisis'];
-                $resultadoAnalisis = $data['resultadoAnalisis'];
-                return json_encode(ctr_mascotas::insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
-
-    $app->post('/updateAnalisis', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idAnalisis = $data['idAnalisis'];
-                $fechaAnalisis = $data['fechaAnalisis'];
-                $nombreAnalisis = $data['nombreAnalisis'];
-                $detalleAnalisis = $data['detalleAnalisis'];
-                $resultadoAnalisis = $data['resultadoAnalisis'];
-                return json_encode(ctr_mascotas::updateAnalisis($idAnalisis, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
-
-    $app->post('/getAnalisis', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idAnalisis = $data['idAnalisis'];
-                return json_encode(ctr_mascotas::getAnalisis($idAnalisis));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
 
 	//------------------------------------------------------------------------------------------
 

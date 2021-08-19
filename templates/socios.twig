@@ -1,0 +1,59 @@
+{% extends "base.twig" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center">
+	<div class="card border-top-0 rounded-bottom border shadow w-75">
+		<div class="card-header d-flex justify-content-between bg-mycolor">
+			<h5 class="card-title">Socios</h5>
+			<a class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Agregar nuevo socio" href="{{ path_for('NewSocio')}}"><i class="fas fa-user-plus"></i></a>
+		</div>
+		<div class="card-body">
+			<div class="d-flex justify-content-between mb-2">
+				<div class="input-group mb-3 w-50">
+					<input id="textToSearch" type="text" class="form-control shadow-sm" onchange="buscarSocio(this)" onkeyup="this.onchange()" placeholder="Buscar nombre...">
+				</div>
+				<div class="mr-3">
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="flexRadioDefault" onchange="changeSociosState()" id="inputActiveSocio" checked>
+						<label class="form-check-label" for="inputActiveSocio">Activos</label>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="flexRadioDefault" onchange="changeSociosState()" id="inputInactiveSocio">
+						<label class="form-check-label" for="inputInactiveSocio">Inactivos</label>
+					</div>
+				</div>
+			</div>
+			<div id="containerTable">
+				<table class="table">
+					<thead class="bg-mycolor">
+						<tr>
+							<td class="text-center" scope="col">Número</td>
+							<td class="text-center" scope="col">Nombre</td>
+							<td class="text-center" scope="col">Celular</td>
+							<td class="text-center" scope="col">Dirección</td>
+							<td class="text-center" scope="col">Cuota</td>
+							<td class="text-center" scope="col">Acción</td>
+						</tr>
+					</thead>
+					<tbody id="tbodySocios"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/socios.js"></script>
+<script type="text/javascript">
+	cargarTablaSocios();
+	$('#containerTable').on('scroll', function() {
+		if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+			cargarTablaSocios();
+		}
+	});
+</script>
+{% endblock %}
+{% endblock %}

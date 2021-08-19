@@ -14,25 +14,30 @@ class configuracionSistema{
 		return $query->execute();
 	}
 
-	public function getCuota(){
-		$query = DB::conexion()->prepare("SELECT * FROM cuota WHERE id = 1");
-		if($query->execute()){
-			$response = $query->get_result();
-			return $response->fetch_object();
-		}else return null;
+	public function getQuota(){
+		return DataBase::sendQuery("SELECT * FROM cuota WHERE id = 1", null, "OBJECT");
 	}
 
-	public function getCostoCuota($cantMascotas){
-		$tarifa = configuracionSistema::getCuota();
-		if($cantMascotas == 0){
-			return 0;
-		}else if($cantMascotas == 1){
-			return $tarifa->cuotaUno;
-		}else if($cantMascotas == 2){
-			return $tarifa->cuotaDos;
-		}else if($cantMascotas > 2){
-			return ($tarifa->cuotaDos + (($cantMascotas - 2) * $tarifa->cuotaExtra));
-		}
-	}
+	public function getQuotaSocio($cantMascotas){
+		$response = new \stdClass();
 
+		$response->result = 1;
+		$response->quota = 0;
+
+		$responseGetQuota = configuracionSistema::getQuota();
+		if($responseGetQuota->result == 2){
+			if($cantMascotas == 1){
+				$response->result = 2;
+				$response->quota = $responseGetQuota->objectResult->cuotaUno;
+			}else if($cantMascotas == 2){
+				$response->result = 2;
+				$response->quota = $responseGetQuota->objectResult->cuotaDos;
+			}else if($cantMascotas > 2){
+				$response->result = 2;
+				$response->quota = ($responseGetQuota->objectResult->cuotaDos + (($cantMascotas - 2) * $responseGetQuota->objectResult->cuotaExtra));
+			}
+		}else return $responseGetQuota;
+
+		return $response;
+	}
 }

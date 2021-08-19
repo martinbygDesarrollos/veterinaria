@@ -5,13 +5,61 @@
  */
 require_once '../src/clases/usuarios.php';
 require_once '../src/clases/socios.php';
-require_once '../src/clases/fechas.php';
+
 require_once '../src/clases/configuracionSistema.php';
+
+require_once '../src/utils/validate.php';
+require_once '../src/utils/fechas.php';
+
 require_once '../src/controladores/ctr_mascotas.php';
 
 
 class ctr_usuarios{
     //----------------------------------- FUNCIONES DE USUARIO ------------------------------------------
+
+	public function getUserInSession(){
+		$response = new \stdClass();
+
+		if(isset($_SESSION['ADMIN'])){
+			$session = $_SESSION['ADMIN'];
+			$responseGetUser = usuarios::getUser($session['IDENTIFICADOR']);
+			if($responseGetUser->result == 2){
+				$response->result = 2;
+				$response->user = $responseGetUser->objectResult;
+			}else return $responseGetUser;
+		}else{
+			$response->result = 0;
+			$response->message = "No se encontro una sesión activa.";
+		}
+		return $response;
+	}
+
+	public function validateSession(){
+		$response = new \stdClass();
+
+		if(isset($_SESSION['ADMIN'])){
+			$session = $_SESSION['ADMIN'];
+			$responseGetUser = usuarios::getUser($session['IDENTIFICADOR']);
+			if($responseGetUser->result == 2){
+				if(strcmp($responseGetUser->objectResult->token, $session['TOKEN']) == 0){
+					$response->result = 2;
+					$response->session = $session;
+				}else{
+					$response->result = 0;
+					$response->message = "Su sesión caduco, por favor vuelva a ingresar.";
+				}
+			}else return $responseGetUser;
+		}else{
+			$response->result = 0;
+			$response->message = "No se encontro una sesión activa.";
+		}
+
+		if($response->result != 2)
+			session_destroy();
+
+		return $response;
+	}
+
 	public function insertNewUsuario($nombre, $email){
 		$response = new \stdClass();
 		$usuario = usuarios::getUsuarioNombre($nombre);
@@ -40,69 +88,37 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function validarSesionActiva($nombre, $token){
-
-		$result = usuarios::validarSesionActiva($nombre, $token);
-		if($result)
-			return true;
-		else{
-			session_destroy();
-			session_start();
-			$_SESSION['administrador'] = null;
-			return false;
-		}
-	}
-
-	public function signIn($nombreUsuario, $pass){
+	public function signIn($user, $password){
 		$response = new \stdClass();
-		$usuario = usuarios::getUsuarioNombre($nombreUsuario);
 
-		if($usuario){
-			if($usuario->pass == ""){
-				$result = usuarios::updatePasswordUsuario($nombreUsuario, $pass);
-				if($result){
-					$token = usuarios::generarTokenSesion($nombreUsuario);
-					if($token){
-						$usu = new \stdClass();
-						$usu->usuario = $usuario->nombre;
-						$usu->token = $token;
-						session_destroy();
-						session_start();
-						$_SESSION['administrador'] = $usu;
-						$response->retorno = true;
-						$response->mensaje = "Usted inició sesión por primera vez, la contraseña ingresada será su contraseña de ahora en más.";
-						$response->primerSesion = 1;
+		$responseGetUsuario = usuarios::getUserName($user);
+		if($responseGetUsuario->result == 2){
+			if(!is_null($responseGetUsuario->objectResult->pass)){
+				if(strcmp($responseGetUsuario->objectResult->pass, $password) == 0){
+					$responseSignIn = usuarios::signIn($responseGetUsuario->objectResult->idUsuario);
+					if($responseSignIn->result == 2){
+						$response->result = 2;
 					}else{
-						$response->retorno = false;
-						$response->mensajeError = "La contraseña fue asignada, pero un error interno no permitio que usted ingrese sesión, por favor vuelva a intentarlo.";
+						$response->result = 0;
+						$response->message = "Ocurrió un error y no se pudo iniciar sesión, por favor vuelva a intentarlo.";
 					}
 				}else{
-					$response->retorno = false;
-					$response->mensajeError = "Usted intento iniciar sesión por primera vez, el sistema no pudo asociar su contraseña a esta cuenta, vuelva a intentarlo.";
-				}
-			}else if($pass == $usuario->pass){
-				$token = usuarios::generarTokenSesion($nombreUsuario);
-				if($token){
-					$usu = new \stdClass();
-					$usu->usuario = $usuario->nombre;
-					$usu->token = $token;
-					session_destroy();
-					session_start();
-					$_SESSION['administrador'] = $usu;
-					$response->retorno = true;
-					$response->mensaje = "Sesión iniciada.";
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "Ocurrió un error y no pudo iniciarse sesión, por favor vuelva a intentarlo.";
+					$responseUpdatePassword = usuarios::updateUserPassword($responseGetUsuario->objectResult->idUsuario, $password);
+					if($responseUpdatePassword->result == 2){
+						$responseSignIn = usuarios::signIn($responseGetUsuario->objectResult->idUsuario);
+						if($responseSignIn->result == 2){
+							$response->result = 2;
+						}else{
+							$response->result = 0;
+							$response->message = "Ocurrió un error y no se pudo iniciar sesión por primera vez, por favor vuelva a intentarlo.";
+						}
+					}else return $responseUpdatePassword;
 				}
 			}else{
-				$response->retorno = false;
-				$response->mensajeError = "El usuario y la contraseña no coinciden.";
+				$response->result = 0;
+				$response->message = "El usuario y contraseña ingresados no coinciden.";
 			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El usuario ingresado no existe en el sistema.";
-		}
+		}else return $responseGetUsuario;
 
 		return $response;
 	}
@@ -193,134 +209,226 @@ class ctr_usuarios{
     //---------------------------------------------------------------------------------------------------
 
     //----------------------------------- FUNCIONES DE SOCIO --------------------------------------------
-	public function insertNewSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaPago, $lugarPago, $email, $rut, $tipoSocio){
+
+	public function updateQuotaSocio($idSocio, $quota){
+		return socios::updateQuotaSocio($idSocio, $quota);
+	}
+
+	public function actualizarCuotaSocio($idSocio){
 		$response = new \stdClass();
 
-		if(ctr_usuarios::validarCedula($cedula)){
-			$usuario = socios::getSocioCedula($cedula);
-			if($usuario == null){
-				$fechaIngreso = fechas::parceFechaInt(date('Y-m-d'));
+		$responseCalcultateQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
+		if($responseCalcultateQuota->result == 2){
+			$responseUpdateQuota =  socios::updateQuotaSocio($idSocio, $responseCalcultateQuota->quota);
+			if($responseUpdateQuota->result == 2){
+				$response->result = 2;
+				$response->message = "La cuota del socio fue actualizada correctamente.";
+				$response->newQuota = number_format($responseCalcultateQuota->quota, 2, ",", ".");
+			}else{
+				$response->result = 0;
+				$response->message = "La cuota del socio no fue actualizada por un error interno.";
+			}
+		}else return $responseCalcultateQuota;
 
-				if(strlen($rut) > 1){
-					if(!ctr_usuarios::validarRut($rut)){
-						$response->retorno = false;
-						$response->mensajeError = "El rut ingresado para el socio " . $nombre . " no es valido, para continuar ingreselo correctamente o deje el campo sin valor.";
-						return $response;
+		return $response;
+	}
+
+	public function calculateQuotaSocio($idSocio){
+		$response = new \stdClass();
+
+		$responseGetMascotasSocio = ctr_mascotas::getSocioActivePets($idSocio);
+		if($responseGetMascotasSocio->result == 2){
+			$responseGetQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetMascotasSocio->mascotas));
+			if($responseGetQuota->result == 2){
+				$response->result = 2;
+				$response->quota = $responseGetQuota->quota;
+			}else{
+				$response->result = 0;
+				$response->message = "Ocurrió un error y la cuota del socio no pudo ser calculada.";
+			}
+		}else{
+			$response->result = 2;
+			$response->quota = 0;
+		}
+
+		return $response;
+	}
+
+	public function getSocioToShow($idSocio){
+		return socios::getSocioToShow($idSocio);
+	}
+
+	public function getSocioWithMascotaToShow($idSocio){
+		$response = new \stdClass();
+
+		$responseGetSocio = socios::getSocioToShow($idSocio);
+		if($responseGetSocio->result == 2){
+			$response->result = 2;
+			$response->socio = $responseGetSocio->objectResult;
+			$response->mascotas = ctr_mascotas::getMascotasSocio($idSocio);
+		}else return $responseGetSocio;
+
+		return $response;
+	}
+
+	public function insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
+		$response = new \stdClass();
+
+		$responseValidateData = ctr_usuarios::validateInfoSocio($nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax);
+		if($responseValidateData->result == 2){
+			$responseGetSocio = socios::getSocioByCedula($cedula);
+			if($responseGetSocio->result == 1){
+				if(!is_null($fechaIngreso))
+					$fechaIngreso = fechas::getDateToINT($fechaIngreso);
+
+				if(!is_null($fechaPago))
+					$fechaPago = fechas::getDateToINT($fechaPago);
+
+				$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+				if($responseInsertSocio->result == 2){
+					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
+					if($responseInsertHistorial->result == 2){
+						$response->result = 2;
+						$response->message = "El nuevo socio fue creado correctamente y se creo un registro en el historial.";
+					}else{
+						$response->result = 1;
+						$response->message = "El nuevo socio fue creado correctamente, pero no se generó el registro en su historial de usuario por un error interno.";
 					}
-				}else $rut = null;
-
-				$result = socios::insertSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, 1, null, null, $email, $rut, null, null, $tipoSocio);
-				if($result != false){
-					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
-					if($resultInsertOperacionUsuario)
-						$response->enHistorial = "Registrado en el historial del usuario.";
-					else
-						$response->enHistorial = "No ingresado en historial de usuario.";
-					//----------------------------------------------------------------------------------------------------------------
-
-					$response->retorno = true;
-					$response->mensaje = "El socio fue ingresado correctamente, asignele una mascota";
-					$response->idSocio = $result;
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "Ocurrio un error interno y el socio no fue ingresado en el sistema";
-				}
+					$response->newIdSocio = $responseInsertSocio->id;
+				}else return $responseInsertSocio;
 			}else{
-				$response->retorno = false;
-				$response->mensajeError = "La cédula ingresada ya esta registrada para el usuario " . $usuario->nombre . ", modifique el usuario existente para persistir la información ingresada.";
+				$response->result = 0;
+				$response->message = "La cédula ingresada corresponde al socio registrado " . $responseGetSocio->objectResult->nombre;
 			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La cédula ingresada no es valida, para continuar ingrese una correcta.";
-		}
+		}else return $responseValidateData;
 
 		return $response;
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $fechaIngreso, $email, $rut, $telefax, $tipoSocio){
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago){
 		$response = new \stdClass();
 
-		$socio = socios::getSocio($idSocio);
-		if($socio != null){
-			$socioCedula = socios::getSocioCedula($cedula);
-			if($socio->cedula !=  $socio->cedula){
-				$fechaIngresoFormat = fechas::parceFechaInt($fechaIngreso);
-				$cuotaActualizada = ctr_usuarios::calcularCostoCuota($idSocio);
-				$mensajeCuota = ".";
-				if($cuotaActualizada)
-					$mensajeCuota = ", el sistema actualizo la cuota con el costo ingresado en el sistema.";
-				else
-					$mensajeCuota = ", pero el sistema no puedo actualizar la cuota para este socio.";
+		$responseGetSocio = socios::getSocio($idSocio);
+		if($responseGetSocio->result == 2){
+			$responseCedulaNotRepeated = socios::getSocioCedula($cedula, $idSocio);
+			if($responseCedulaNotRepeated->result == 1){
+				$responseValidateData = ctr_usuarios::validateInfoSocio($nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax);
+				if($responseValidateData->result == 2){
 
-				$result = socios::updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngresoFormat, $fechaPago, $lugarPago, $email, $rut, $tipoSocio);
+					if(!is_null($fechaIngreso))
+						$fechaIngreso = fechas::getDateToINT($fechaIngreso);
 
-				if($result){
+					if(!is_null($ultimoMesPago))
+						$ultimoMesPago = fechas::getDateWithMonthYearToINT($ultimoMesPago);
 
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
-					if($resultInsertOperacionUsuario)
-						$response->enHistorial = "Registrado en el historial del usuario.";
-					else
-						$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
+					if(!is_null($ultimoPago))
+						$ultimoPago = fechas::getDateToINT($ultimoPago);
 
-					$response->retorno = true;
-					$response->mensaje = "La información del socio fue actualizada" . $mensajeCuota;
-				}else{
-					$response->retorno = true;
-					$response->mensaje = "La informacion del socio no pudo ser actualizada, por favor vuelva a intentarlo.";
-				}
+					$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
+					if($responseGetQuota->result == 2){
+						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $responseGetQuota->quota);
+						if($responseUpdateSocio->result == 2){
+							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
+							if($responseHistorial->result == 2){
+								$response->result = 2;
+								$response->message = "Se actualizó la información del socio y se generó un registro en el historial de su usuario.";
+								$responseGetSocioUpdated = ctr_usuarios::getSocioToShow($idSocio);
+								if($responseGetSocioUpdated->result == 2)
+									$response->newSocio = $responseGetSocioUpdated->objectResult;
+							}else{
+								$response->result = 1;
+								$response->message = "Se actualizó la información del socio, pero no se generó el registro en su historial de usuario por un error interno.";
+							}
+						}else return $responseUpdateSocio;
+					}else return $responseGetQuota;
+				}else return $responseValidateData;
 			}else{
-				$response->retorno = false;
-				$response->mensajeError = "La cédula ingresada ya pertenece a otro usuario, por favor verifiquela.";
+				$response->result = 0;
+				$response->message = "La cédula ingresada ya pertenece al socio " . $responseCedulaNotRepeated->objectResult->nombre . ".";
 			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El socio que se quiere modificar no fue encontrado en el sistema por favor vuelva a intentarlo.";
+		}else return $responseGetSocio;
+
+		return $response;
+	}
+
+	public function validateInfoSocio($nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax){
+		$response = new \stdClass();
+
+		$response->result = 2;
+
+		if(is_null($nombre)){
+			$response->result = 1;
+			$response->message = "El nombre de usuario no puede ser ingresado vacio.";
+		}else if(strlen($nombre) < 6 || strlen($nombre) > 50){
+			$response->result = 1;
+			$response->message = "El nombre de usuario debe tener una longitud entre los 6 y 50 caracteres.";
+		}else if(preg_match("/[^a-zA-Z ]/", $nombre)){
+			$response->result = 1;
+			$response->message = "El nombre unicamente permite caracteres alfabeticos.";
+		}
+
+		if(is_null($cedula)){
+			$response->result = 1;
+			$response->message = "La cédula no puede ser ingresada nula.";
+		}else if(!ctype_digit($cedula)){
+			$response->result = 1;
+			$response->message = "La cédula solo permite caracteres alfanuméricos.";
+		}else if(strlen($cedula) != 8){
+			$response->result = 1;
+			$response->message = "La cédula del socio debe tener una longitud de 9 caracteres alfanuméricos.";
+		}else if(!validate::validateCI($cedula)){
+			$response->result = 1;
+			$response->message = "La cédula ingresada no es valida.";
+		}
+
+		if(!is_null($direccion) && strlen($direccion) > 1){
+			if(strlen($direccion) < 6 || strlen($direccion) > 100){
+				$response->result = 1;
+				$response->message = "La dirección del socio debe tener una longitud entre los 6 y 100 caracteres.";
+			}
+		}
+
+		if(!is_null($telefono) && strlen($telefono) > 1){
+			if(!ctype_digit($telefono)){
+				$response->result = 1;
+				$response->message = "El teléfono solo puede contener caracteres numéricos.";
+			}else if(strlen($telefono) < 8 && strlen($telefono > 9)){
+				$response->result = 1;
+				$response->message = "El teléfono debe tener una longitud entre los 8 y 9 caracteres.";
+			}
+		}
+
+		if(!is_null($email) && strlen($email) > 1){
+			if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+				$response->result = 0;
+				$response->message = "El email ingresado no es valido.";
+			}
+		}
+
+		if(!is_null($rut) && strlen($rut) > 1)
+			$response = validate::validateRut($rut);
+
+		if(!is_null($telefax) && strlen($telefax) > 1){
+			if(strlen($telefax) > 6 || strlen($telefax) > 100){
+				$response->result = 1;
+				$response->message = "El telefax del socio debete tener una longitud entre los 6 y 100 caracteres.";
+			}
 		}
 
 		return $response;
 	}
 
-	// pasar 0 para socios inactivos
-	public function getSociosActivos($estado){
-		if($estado == 0){
-			$estado = " = 0";
-		}else{
-			$estado = " != 0";
-		}
-		return socios::getSocios($estado);
-	}
+	public function getSociosPagina($lastId, $estado, $textToSearch){
+		$response = new \stdClass;
 
-	public function obtenerBusqueda($busqueda){
-		$socios = socios::obtenerBusqueda($busqueda);
-		$sociosCount = sizeof($socios);
-		return array(
-			"socios" => $socios,
-			"sociosSize" => $sociosCount
-		);
-	}
+		$responseGetSocios = socios::getSociosPagina($lastId, $estado, $textToSearch);
+		if($responseGetSocios->result == 2){
+			$response->result = 2;
+			$response->lastId = $responseGetSocios->lastId;
+			$response->socios = $responseGetSocios->listResult;
+		}else return $responseGetSocios;
 
-	public function getSociosPagina($ultimoId, $estadoSocio){
-		if($ultimoId == 0){
-			$maxId = socios::getSocioMaxId($estadoSocio);
-			$socios = socios::getSociosPagina($maxId->idMaximo, $estadoSocio);
-			$minId = socios::getMin($socios, $maxId->idMaximo);
-			return array(
-				"min" => $minId,
-				"max" => $maxId,
-				"socios" => $socios
-			);
-		}else{
-			$socios = socios::getSociosPagina($ultimoId, $estadoSocio);
-			$minId = socios::getMin($socios, $ultimoId);
-			return array(
-				"min" => $minId,
-				"max" => $ultimoId,
-				"socios" => $socios
-			);
-		}
+		return $response;
 	}
 
 	public function sociosNoVinculados($idMascota){
@@ -328,30 +436,34 @@ class ctr_usuarios{
 	}
 
 	public function getSocio($idSocio){
-		$socio = socios::getSocio($idSocio);
-		if($socio ){
-			$socio->fechaIngreso = fechas::parceFechaFormatDMA($socio->fechaIngreso, "/");
-			if(strlen($socio->fechaUltimoPago) == 8)
-				$socio->fechaUltimoPago = fechas::parceFechaFormatDMA($socio->fechaUltimoPago, "/");
-			else
-				$socio->fechaUltimoPago = "No ingresado";
-			if(strlen($socio->fechaUltimaCuota) == 6)
-				$socio->fechaUltimaCuota = fechas::parceFechaMesFormatDMA($socio->fechaUltimaCuota);
-			else $socio->fechaUltimaCuota = "No pago";
+		$response = new \stdClass();
 
-			$socio->mascotas = ctr_mascotas::getMasctoasSocio($idSocio);
-		}
-		return $socio;
+		$responseGetSocio = socios::getSocio($idSocio);
+		if($responseGetSocio->result == 2){
+			if(!is_null($responseGetSocio->objectResult->fechaIngreso))
+				$responseGetSocio->objectResult->fechaIngreso = fechas::dateToFormatHTML($responseGetSocio->objectResult->fechaIngreso);
+			if(!is_null($responseGetSocio->objectResult->fechaUltimaCuota))
+				$responseGetSocio->objectResult->fechaUltimaCuota = fechas::monthToFormatHTML($responseGetSocio->objectResult->fechaUltimaCuota);
+			if(!is_null($responseGetSocio->objectResult->fechaUltimoPago))
+				$responseGetSocio->objectResult->fechaUltimoPago = fechas::dateToFormatHTML($responseGetSocio->objectResult->fechaUltimoPago);
+
+			$response->result = 2;
+			$response->socio = $responseGetSocio->objectResult;
+		}else return $responseGetSocio;
+		return $response;
 	}
 
+
 	public function getSocioMascota($idMascota){
-		$socio = socios::getSocioMascota($idMascota);
-		if($socio){
-			$socio->fechaIngreso = fechas::parceFechaFormatDMA($socio->fechaIngreso, "/");
-			$socio->fechaUltimoPago = fechas::parceFechaFormatDMA($socio->fechaUltimoPago, "/");
-			$socio->fechaUltimaCuota = fechas::parceFechaMesFormatDMA($socio->fechaUltimaCuota);
-		}
-		return $socio;
+		$response = new \stdClass();
+
+		$responseGetSocio = socios::getSocioMascota($idMascota);
+		if($responseGetSocio->result == 2){
+			$response->result = 2;
+			$response->socio = $responseGetSocio->objectResult;
+		}else return $responseGetSocio;
+
+		return $response;
 	}
 
 	public function notificarSocioCuota($idSocio){
@@ -546,44 +658,4 @@ class ctr_usuarios{
 	public function buscadorSocioNombre($nombreSocio, $estadoSocio){
 		return socios::buscadorSocioNombre($nombreSocio, $estadoSocio);
 	}
-
-    //---------------------------------------------------------------------------------------------------
-
-	//----------------------------------- FUNCIONES COMUNES --------------------------------------------
-	public function calcularCostoCuota($idSocio){
-		$cantMascotas = socios::getCantMascotasSocio($idSocio);
-		if($cantMascotas == 0)
-			return socios::actualizarCuotaSocio($idSocio, $cantMascotas);
-
-		$costoCuota = configuracionSistema::getCostoCuota($cantMascotas);
-		return socios::actualizarCuotaSocio($idSocio, $costoCuota);
-	}
-
-	public function validarRut($rut){
-		return true;
-	}
-
-	public function validarCedula($ci){
-		$ciLimpia = preg_replace( '/\D/', '', $ci );
-		$validationDigit = $ciLimpia[-1];
-		$ciLimpia = preg_replace('/[0-9]$/', '', $ciLimpia );
-		return $validationDigit == copiarDB::validarDigitoVerificador($ci);
-	}
-
-
-	public function validarDigitoVerificador($ci){
-		$ci = preg_replace( '/\D/', '', $ci );
-		$ci = str_pad( $ci, 7, '0', STR_PAD_LEFT );
-		$a = 0;
-
-		$baseNumber = "2987634";
-		for ( $i = 0; $i < 7; $i++ ) {
-			$baseDigit = $baseNumber[ $i ];
-			$ciDigit = $ci[ $i ];
-
-			$a += ( intval($baseDigit ) * intval( $ciDigit ) ) % 10;
-		}
-		return $a % 10 == 0 ? 0 : 10 - $a % 10;
-	}
-	//---------------------------------------------------------------------------------------------------
 }

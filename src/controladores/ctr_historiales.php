@@ -4,7 +4,7 @@
 require_once '../src/clases/configuracionSistema.php';
 require_once '../src/clases/historiales.php';
 require_once '../src/clases/copiarDB.php';
-require_once '../src/clases/fechas.php';
+require_once "../src/utils/fechas.php";
 require_once '../src/controladores/ctr_mascotas.php';
 require_once '../src/controladores/ctr_usuarios.php';
 
@@ -55,63 +55,68 @@ class ctr_historiales {
 
 	//----------------------------------- FUNCIONES DE HISTORIAL CLINICO ------------------------------------------
 
-	public function insertHistoriaMascota($idMascota, $motivoConsulta, $diagnostico, $observaciones){
+	public function agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones){
 		$response = new \stdClass();
 
-		$mascota = ctr_mascotas::getMascota($idMascota);
+		$responseGetMascota = ctr_mascotas::getMascota($idMascota);
+		if($responseGetMascota->result == 2){
+			$fecha = fechas::getDateToINT($fecha);
+			$responseInsertHistoriaClinica = historiales::agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones);
+			if($responseInsertHistoriaClinica->result == 2){
+				$response->result = 2;
+				$response->message = "La historia clínica se agregó correctamente.";
+				$responseGetHistoriaClinica = historiales::getHistoriaClinicaToShow($responseInsertHistoriaClinica->id);
+				if($responseGetHistoriaClinica->result == 2)
+					$response->newHistoria = $responseGetHistoriaClinica->objectResult;
+			}else return $responseInsertHistoriaClinica;
+		}else return $responseGetMascota;
 
-		if($mascota != null){
-			$fechaHistoria = fechas::parceFechaInt(date('Y-m-d'));
-			$result = historiales::insertHistoriaClinica($idMascota, $fechaHistoria, $motivoConsulta, $diagnostico, $observaciones);
+		return $response;
+	}
 
-			if($result){
-				$response->retorno = true;
-				$response->mensaje = "Se realizó un nuevo registro en el historial clínico de " . $mascota->nombre . " puede acceder a él desde Ver historia clínica.";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "No se realizó el registro en la historia clínica de " . $mascota->nombre . " por un error interno, por favor vuelva a intentarlo.";
-			}
+	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones){
+		$response = new \stdClass();
+
+		$responseGetHistoriaClinica = historiales::getHistoriaClinica($idHistoriaClinica);
+		if($responseGetHistoriaClinica->result == 2){
+			$fecha = fechas::getDateToINT($fecha);
+			$responseUpdateHistoriaClinica = historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones);
+			if($responseUpdateHistoriaClinica->result == 2){
+				$response->result = 2;
+				$response->message = "La historia clínica se agregó correctamente.";
+				$responseGetHistoriaClinica = historiales::getHistoriaClinicaToShow($idHistoriaClinica);
+				if($responseGetHistoriaClinica->result == 2)
+					$response->updatedHistoria = $responseGetHistoriaClinica->objectResult;
+			}else return $responseUpdateHistoriaClinica;
+		}else return $responseGetHistoriaClinica;
+
+		return $response;
+	}
+
+	public function borrarHistoriaClinica($idHistoriaClinica){
+		$response = new \stdClass();
+		$responseDeleteHistoriaClinica = historiales::borrarHistoriaClinica($idHistoriaClinica);
+		if($responseDeleteHistoriaClinica->result == 2){
+			$response->result = 2;
+			$response->message = "La historia clínica fue borrada correctamente.";
 		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La mascota seleccionada no fue encontrada en el sistema, por favor vuelva a intentarlo.";
+			$response->result = 0;
+			$response->message = "Ocurrió un erorr y la historia clínica no fue borrada del sistema.";
 		}
 
 		return $response;
 	}
 
-	public function getHistoriaCompleta($idHistoria){
-		$response = new \stdClass();
-		$response->historia = historiales::getOneHistoriaClinica($idHistoria);
-		return $response;
+	public function getHistoriaClinicaToShow($idHistoriaClinica){
+		return historiales::getHistoriaClinicaToShow($idHistoriaClinica);
 	}
 
-	public function getHistoriasClinica($idMascota){
-		return historiales::getOneHistoriaClinicaMascota($idMascota);
+	public function getHistoriaClinicaToEdit($idHistoriaClinica){
+		return historiales::getHistoriaClinicaToEdit($idHistoriaClinica);
 	}
 
-	public function checkHayHistorial($idMascota){
-		return historiales::checkHayHistorialClinico($idMascota);
-	}
-
-	public function getHistoriaClinicaPagina($ultimoID, $idMascota){
-		if($ultimoID == 0){
-			$maxId = historiales::getHistoriaClinicaMaxId($idMascota);
-			$historial = historiales::getHistoriaClinicaPagina($maxId, $idMascota);
-			$minId = historiales::getHistoriaClinicaMinId($historial, $maxId);
-			return array(
-				"min" => $minId,
-				"max" => $maxId,
-				"historial" => $historial
-			);
-		}else{
-			$historial = historiales::getHistoriaClinicaPagina($ultimoID, $idMascota);
-			$minId = historiales::getHistoriaClinicaMinId($historial, $ultimoID);
-			return array(
-				"min" => $minId,
-				"max" => $ultimoID,
-				"historial" => $historial
-			);
-		}
+	public function getHistoriaClinicaMascota($lastId, $idMascota){
+		return historiales::getHistoriaClinicaMascota($lastId, $idMascota);
 	}
 
 
@@ -170,31 +175,21 @@ class ctr_historiales {
 
 	public function insertHistorialUsuario($operacion, $observaciones){
 		$response = new \stdClass();
-		$objectFecha = new DateTime();
-		$objectFecha->setTimezone(new DateTimeZone('America/Montevideo'));
-		$fecha = $objectFecha->format('Y-m-d H:i:s');
-		$fecha = fechas::StringToIntFechaHoraGuion($fecha);
 
-		if(isset( $_SESSION['administrador'])){
-			$usuario = $_SESSION['administrador'];
-			$usuario = ctr_usuarios::getUsuarioNombre($usuario->usuario);
-			if($usuario){
-				$result = historiales::insertHistorialUsuario($usuario->idUsuario, $operacion, $fecha, $observaciones);
-				if($result){
-					$response->retorno = true;
-					$response->mensaje = "Se generó un registro en el historial de usuario.";
-					return $response;
-				}
-			}
-		}
-		$response->retorno = false;
-		$response->mensajeError = "Algo impidió que se genere el registro en el historial.";
+		$responseGetUserInSesion = ctr_usuarios::getUserInSession();
+		if($responseGetUserInSesion->result == 2){
+			$responseInsertHistorial = historiales::insertHistorialUsuario($responseGetUserInSesion->user->idUsuario, $operacion, $observaciones);
+			if($responseInsertHistorial->result == 2){
+				$response->result = 2;
+				$response->message = "Se registró la operación realizada en el historial";
+			}else return $responseInsertHistorial;
+		}else return $responseGetUserInSesion;
+
 		return $response;
 	}
 
-	public function getHistorialUsuario($nombre){
-		$usuario = ctr_usuarios::getUsuarioNombre($nombre);
-		return historiales::getHistorialUsuario($usuario->idUsuario);
+	public function getHistorialUsuario($lastId, $idUsuario){
+		return historiales::getHistorialUsuario($lastId, $idUsuario);
 	}
 
 	public function getHistorialUsuarios(){

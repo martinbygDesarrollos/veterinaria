@@ -5,27 +5,26 @@
 <div class="d-flex justify-content-center">
     <div class="row">
         <div class="col">
-            <div class="card">
+            <div class="card shadow">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <img src="{{path_for('Inicio')}}img/logoEjemplo.png">
                 </div>
                 <div class="card-body">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-default">Usuario</span>
+                    <div class="d-flex justify-content-center">
+                        <div class="form-group w-50">
+                            <label for="inpUsuario">Usuario</label>
+                            <input type="email" class="form-control text-center shadow-sm" id="inpUsuario">
                         </div>
-                        <input id="inpUsuario" type="text" class="form-control text-center" aria-label="Default" aria-describedby="inputGroup-sizing-default" required autofocus>
                     </div>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-default">Contraseña</span>
+                    <div class="d-flex justify-content-center">
+                        <div class="form-group w-50">
+                            <label for="inpPass">Contraseña</label>
+                            <input type="password" class="form-control text-center shadow-sm" id="inpPass">
                         </div>
-                        <input id="inpPass" name="contrasena" type="password" class="form-control text-center" aria-label="Default" aria-describedby="inputGroup-sizing-default" required autofocus>
                     </div>
-
-                    <div class="row">
+                    <div class="d-flex justify-content-center">
                         <div class="col-sm  text-center">
-                            <button onclick="iniciarSesion()" class="btn btn-success">iniciar sesión</button>
+                            <button onclick="iniciarSesion()" class="btn btn-success shadow-sm">iniciar sesión</button>
                         </div>
                     </div>
                 </div>
@@ -34,6 +33,9 @@
     </div>
 </div>
 {%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/iniciarSesion.js"></script>
 {% endblock %}
 {% endblock %}

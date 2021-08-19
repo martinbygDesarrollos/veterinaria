@@ -1,8 +1,22 @@
 <?php
 
+require_once '../src/utils/formats.php';
+
 class socios{
 	//TIPO SOCIO::: SOCIO = 1, NO SOCIO = 0 ONG = 2
 	//activo = 1 inactivo = 0
+
+	public function updateQuotaSocio($idSocio, $cuotaSocio){
+		return DataBase::sendQuery("UPDATE socios SET cuota = ? WHERE idSocio = ?", array('ii', $cuotaSocio, $idSocio), "BOOLE");
+	}
+
+	public function getSocioByCedula($cedula){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE cedula = ?", array('s', $cedula), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "La cédula ingresada no corresponse a un socio en el sistema.";
+
+		return $responseQuery;
+	}
 
 	public function getMin($socios, $maxValor){
 		$valorMinimo = $maxValor;
@@ -13,44 +27,41 @@ class socios{
 		return $valorMinimo;
 	}
 
-	public function getSocioMaxId($estadoSocio){
-		$query = DB::conexion()->prepare("SELECT MAX(idSocio) AS idMaximo FROM socios WHERE estado = ?");
-		$query->bind_param('i', $estadoSocio);
-		if($query->execute()){
-			$result = $query->get_result();
-			return $result->fetch_object();
-		}else return null;
+	public function getSocioMaxId(){
+		return DataBase::sendQuery("SELECT MAX(idSocio) AS idMaximo FROM socios", null, "OBJECT");
 	}
 
-	public function getSociosPagina($idMaximo, $estadoSocio){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = ? AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10");
-		$query->bind_param('ii', $estadoSocio, $idMaximo);
-		if($query->execute()){
-			$result = $query->get_result();
+	public function getSociosPagina($lastId, $estado, $textToSearch){
+		if($lastId == 0){
+			$responseGetMaxID = socios::getSocioMaxId();
+			if($responseGetMaxID->result == 2)
+				$lastId = $responseGetMaxID->objectResult->idMaximo + 1;
+		}
+
+		$sqlToSearch = "";
+		if(!is_null($textToSearch)){
+			$sqlToSearch = " AND nombre LIKE '" . $textToSearch . "%' ";
+		}
+
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = ? AND idSocio <= ? " . $sqlToSearch . " ORDER BY idSocio DESC LIMIT 14", array('ii', $estado, $lastId), "LIST");
+		if($responseQuery->result == 2){
+			$newLastId = $lastId;
 			$arrayResult = array();
-			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+			foreach ($responseQuery->listResult as $key => $row) {
+				if($row['idSocio'] < $newLastId) $newLastId = $row['idSocio'];
+
+				$row['cuota'] = number_format($row['cuota'],2,",",".");
 				$arrayResult[] = $row;
 			}
-			return $arrayResult;
-		}
-		return null;
+			$responseQuery->listResult = $arrayResult;
+			$responseQuery->lastId = $newLastId;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No quedan socios que mostrar en la base de datos.";
+
+		return $responseQuery;
 	}
 
 	public function getTotSocios(){
 		$query = DB::conexion()->prepare("SELECT * FROM socios");
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayResult = array();
-			while($row = $result->fetch_array(MYSQLI_ASSOC)){
-				$arrayResult[] = $row;
-			}
-			return $arrayResult;
-		}
-		return null;
-	}
-
-	public function getSocios($estado){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado" . $estado);
 		if($query->execute()){
 			$result = $query->get_result();
 			$arrayResult = array();
@@ -141,31 +152,92 @@ class socios{
 		}else return null;
 	}
 
-	public function getSocio($idSocio){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE idSocio = ?");
-		$query->bind_param('i', $idSocio);
-		if($query->execute()){
-			$result = $query->get_result();
-			return $result->fetch_object();
-		}else return null;
+	public function getSocioToShow($idSocio){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE idSocio = ?", array('i', $idSocio), "OBJECT");
+		if($responseQuery->result == 2){
+			$socio = $responseQuery->objectResult;
+			$noData = "No especificado.";
+
+			if(is_null($socio->cedula) || strlen($socio->cedula) == 0)
+				$socio->cedula = $noData;
+			else
+				$socio->cedula = formats::formatCI($socio->cedula);
+
+			if(is_null($socio->email) || strlen($socio->email) == 0)
+				$socio->email = $noData;
+
+			if(is_null($socio->nombre) || strlen($socio->nombre) == 0)
+				$socio->nombre = $noData;
+
+			if(is_null($socio->direccion) || strlen($socio->direccion) == 0)
+				$socio->direccion = $noData;
+
+			if(is_null($socio->rut) || strlen($socio->rut) == 0)
+				$socio->rut = $noData;
+
+			if(is_null($socio->telefax) || strlen($socio->telefax) == 0)
+				$socio->telefax = $noData;
+
+			if(!is_null($socio->cuota))
+				$socio->cuota = number_format($socio->cuota, 2, ",", ".");
+			else
+				$socio->cuota = $noData;
+
+			if(is_null($socio->telefono) || strlen($socio->telefono) == 0)
+				$socio->telefono = $noData;
+
+			if(is_null($socio->fechaPago) || $socio->fechaPago == 0)
+				$socio->fechaPago = $noData;
+
+			if(is_null($socio->fechaUltimoPago) || $socio->fechaUltimoPago == 0)
+				$socio->fechaUltimoPago = $noData;
+			else $socio->fechaUltimoPago = fechas::dateToFormatBar($socio->fechaUltimoPago);
+
+			if(is_null($socio->fechaUltimaCuota) || $socio->fechaUltimaCuota == 0)
+				$socio->fechaUltimaCuota = $noData;
+			else $socio->fechaUltimaCuota = fechas::getDayMonthFormatBar($socio->fechaUltimaCuota);
+
+			if(is_null($socio->fechaIngreso) || $socio->fechaIngreso == 0)
+				$socio->fechaIngreso = $noData;
+			else $socio->fechaIngreso = fechas::dateToFormatBar($socio->fechaIngreso);
+
+			if($socio->lugarPago == 0)
+				$socio->lugarPago = "Veterinaria";
+			else $socio->lugarPago = "Cobrador";
+
+			if($socio->tipo == 1)
+				$socio->tipo = "Socio";
+			else if($socio->tipo == 0)
+				$socio->tipo = "No socio";
+			else $socio->tipo = "ONG";
+
+			$responseQuery->objectResult = $socio;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No fue encontrado el socio seleccionado.";
+
+		return $responseQuery;
 	}
 
-	public function getSocioCedula($cedula){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE cedula = ?");
-		$query->bind_param('s', $cedula);
-		if($query->execute()){
-			$result = $query->get_result();
-			return $result->fetch_object();
-		}else return null;
+	public function getSocio($idSocio){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE idSocio = ?", array('i', $idSocio), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No fue encontrado el socio seleccionado.";
+
+		return $responseQuery;
+	}
+
+	public function getSocioCedula($cedula, $idSocio){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE cedula = ? AND idSocio != ?", array('si', $cedula, $idSocio), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se econtro otro socio con la cédula ingresada.";
+		return $responseQuery;
 	}
 
 	public function getSocioMascota($idMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM socios, mascotasocio WHERE socios.idSocio = mascotasocio.idSocio AND mascotasocio.idMascota = ? AND fechaCambio = (SELECT MAX(fechaCambio) FROM mascotasocio WHERE mascotasocio.idMascota = ?)");
-		$query->bind_param('ii', $idMascota, $idMascota);
-		if($query->execute()){
-			$result = $query->get_result();
-			return $result->fetch_object();
-		}else return null;
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE socios.idSocio IN (SELECT MAX(idSocio) FROM mascotasocio WHERE idMascota = ?)", array('i', $idMascota), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontro el socio vinculado a la mascota seleccionada.";
+
+		return $responseQuery;
 	}
 
 	public function obtenerBusqueda($busqueda){
@@ -195,36 +267,12 @@ class socios{
 		return null;
 	}
 
-	public function insertSocio($cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUPago, $fechaUCuota, $tipoSocio){
-		$conexion = DB::conexion();
-		$query = $conexion->prepare("INSERT INTO socios (cedula, nombre, telefono, telefax, direccion, fechaIngreso, fechaPago, lugarPago, estado, motivoBaja, cuota, email, rut, fechaUltimoPago, fechaUltimaCuota, tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-		$query->bind_param('sssssiiiisissiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $cuota, $email, $rut, $fechaUPago, $fechaUCuota, $tipoSocio);
-		if($query->execute()) return $conexion->insert_id;
-		else return false;
+	public function insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
+		return DataBase::sendQuery("INSERT INTO socios (nombre, cedula, direccion, telefono, fechaPago, lugarPago, telefax, fechaIngreso, email, rut, tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('ssssiisissi', $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio), "BOOLE");
 	}
 
-	public function updateSocio($idSocio, $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio){
-		$query = DB::conexion()->prepare("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ? WHERE idSocio = ?");
-		$query->bind_param('sssssiiissii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $idSocio);
-		return $query->execute();
-	}
-
-
-	public function getCantMascotasSocio($idSocio){
-		$query = DB::conexion()->prepare("SELECT COUNT(*) AS cantMascotas FROM mascotas WHERE estado = 1 AND idMascota IN (SELECT idMascota AS cantMascotas FROM mascotasocio WHERE idSocio = ?)");
-		$query->bind_param('i', $idSocio);
-		if($query->execute()){
-			$response = $query->get_result();
-			$response = $response->fetch_object();
-			return $response->cantMascotas;
-		}else return null;
-	}
-
-	public function actualizarCuotaSocio($idSocio, $cuotaSocio){
-		$query = DB::conexion()->prepare("UPDATE socios SET cuota = ? WHERE idSocio = ?");
-		$query->bind_param('ii', $cuotaSocio, $idSocio);
-		if($query->execute()) return true;
-		return false;
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $quota){
+		return DataBase::sendQuery("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ?, fechaUltimaCuota = ?, cuota = ?, fechaUltimoPago = ? WHERE idSocio = ?", array('sssssiiissiiiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $ultimoMesPago, $quota, $ultimoPago, $idSocio), "BOOLE");
 	}
 
 	public function getSociosConPlazoVencido($plazoDeuda){

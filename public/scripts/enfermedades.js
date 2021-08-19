@@ -1,242 +1,110 @@
-function operacionEnfermedad(buttonOp){
-	if(buttonOp.name == "ModificarEnfermedad"){
-		document.getElementById("modalTituloEnfermedad").innerHTML = "Modificar enfermedad";
-		document.getElementById("modalButtonEnfermedad").innerHTML = "Modificar";
-		$("#modalButtonEnfermedad").click(function(){
-			modificarEnfermedad(buttonOp.id);
+function openModalEnfermedad(button){
+	if(button.id == "NUEVAENFERMEDAD"){
+		clearComponentEnfermedad();
+		$('#titleModalEnfermedad').html("Nueva enfermedad");
+		$('#buttonConfirmModalEnfermedad').off('click');
+		$('#buttonConfirmModalEnfermedad').click(function(){
+			createNewEnfermedad(button.name);
 		});
-		precargarInformacionEnfermedad(buttonOp.id);
-	}else if(buttonOp.name == "AgregarEnfermedad"){
-		let date = new Date()
-		let day = date.getDate()
-		let month = date.getMonth() + 1
-		let year = date.getFullYear()
+		$('#modalEnfermedad').modal();
+	}else{
+		let response = sendPost("getEnfermedad", {idEnfermedad: button.name});
+		if(response.result == 2){
+			$('#titleModalEnfermedad').html("Modificar enfermedad");
 
-		if(month < 10) month = "0" + month;
-		if(day < 10) day = "0" + day;
+			$('#inputNombreEnfermedad').val(response.objectResult.nombreEnfermedad);
+			$('#inputFechaDiagnosticoEnfermedad').val(response.objectResult.fechaDiagnostico);
+			$('#inputObservacionesEnfermedad').val(response.objectResult.observaciones);
 
-		document.getElementById("inpNombreEnfermedad").value = null;
-		document.getElementById("inpFechaDiagnosticoEnfermedad").value = `${year}-${month}-${day}`;
-		document.getElementById("inpObservacionesEnfermedad").value = null;
-		document.getElementById("modalTituloEnfermedad").innerHTML = "Agregar enfermedad";
-		document.getElementById("modalButtonEnfermedad").innerHTML = "Agregar";
-		$("#modalButtonEnfermedad").click(function(){
-			agregarEnfermedad(buttonOp.id);
-		});
-		$("#modalNuevaEnfermedad").modal();
-	}
-
-}
-
-function precargarInformacionEnfermedad(idEnfermedad){
-	$.ajax({
-		async: false,
-		url: urlBase + "/getEnfermedadMascota",
-		type: "POST",
-		data: {
-			idEnfermedad: idEnfermedad,
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response){
-				document.getElementById("inpNombreEnfermedad").value = response.nombreEnfermedad;
-				var fechaToset = response.fechaDiagnostico.split('/');
-				document.getElementById("inpFechaDiagnosticoEnfermedad").value = fechaToset[2] + "-" + fechaToset[1] + "-"+ fechaToset[0];
-				document.getElementById("inpObservacionesEnfermedad").value = response.observaciones;
-				$("#modalNuevaEnfermedad").modal();
-			}else{
-				showReplyMessage('danger', response.mensajeError, null, "Obtener enfermedad");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
+			$('#buttonConfirmModalEnfermedad').off('click');
+			$('#buttonConfirmModalEnfermedad').click(function(){
+				updateEnfermedad(button.name);
 			});
-		},
-	});
-}
 
-function modificarEnfermedad(idEnfermedad){
-	$("#modalNuevaEnfermedad").modal('hide');
-
-	var nombreEnfermedad = document.getElementById("inpNombreEnfermedad").value || null;
-	var fechaEnfermedad = document.getElementById("inpFechaDiagnosticoEnfermedad").value;
-	var observacionesEnfermedad = document.getElementById("inpObservacionesEnfermedad").value || null;
-
-	if(!validarDatosEnfermedada(nombreEnfermedad, fechaEnfermedad, observacionesEnfermedad, "Modificar enfermedad")){
-
-		$.ajax({
-			async: false,
-			url: urlBase + "/updateEnfermedadMascota",
-			type: "POST",
-			data: {
-				idEnfermedad: idEnfermedad,
-				nombreEnfermedad: nombreEnfermedad,
-				fechaDiagnosticoEnfermedad: fechaEnfermedad,
-				observacionesEnfermedad: observacionesEnfermedad
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
-				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar enfermedad");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Modificar enfermedad");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
-				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
+			$('#modalEnfermedad').modal();
+		}
 	}
 }
 
-function agregarEnfermedad(idMascota){
-
-	$("#modalNuevaEnfermedad").modal('hide');
-
-	var nombreEnfermedad = document.getElementById("inpNombreEnfermedad").value || null;
-	var fechaEnfermedad = document.getElementById("inpFechaDiagnosticoEnfermedad").value || null;
-	var observacionesEnfermedad = document.getElementById("inpObservacionesEnfermedad").value || null;
-
-	if(!validarDatosEnfermedada(nombreEnfermedad, fechaEnfermedad, observacionesEnfermedad, "Nueva enfermedad")){
-		$.ajax({
-			async: false,
-			url: urlBase + "/insertEnfermedadMascota",
-			type: "POST",
-			data: {
-				idMascota: idMascota,
-				nombreEnfermedad: nombreEnfermedad,
-				fechaDiagnosticoEnfermedad: fechaEnfermedad,
-				observacionesEnfermedad: observacionesEnfermedad
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
-				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Nueva enfermedad");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Nueva enfermedad");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
-				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
-	}
+function clearComponentEnfermedad(){
+	$('#inputNombreEnfermedad').val("");
+	$('#inputFechaDiagnosticoEnfermedad').val(getDateForInput());
+	$('#inputObservacionesEnfermedad').val("");
 }
 
-function validarDatosEnfermedada(nombre, fecha, observaciones, tituloError){
-	var conError = false;
-	var mensajeError = "";
+function createNewEnfermedad(idMascota){
+	let nombre = $('#inputNombreEnfermedad').val() || null;
+	let fechaDiagnostico = $('#inputFechaDiagnosticoEnfermedad').val() || null;
+	let observaciones = $('#inputObservacionesEnfermedad').val() || null;
 
-	if(nombre == null){
-		conError = true;
-		mensajeError = "No puede ingresar una enfermedad sin un nombre.";
-	}else if(nombre.length < 5){
-		conError = true;
-		mensajeError = "El campo nombre en una nueva enfermedad debe contener al menos 5 caracteres para ser considerado valido.";
-	}else if(fecha == null){
-		conError = true;
-		mensajeError = "No puede ingresar una enfermedad sin una fecha de diagnositico, por defecto el sistema proporciona la fecha de hoy.";
-	}
-
-	if(conError){
-		showReplyMessage('warning', mensajeError, null, tituloError);
-		$("#modalButtonRetorno").click(function(){
-			$("#modalRetorno").modal("hide");
-		});
-	}
-	return conError;
-}
-
-let menorIdEnfermedades = 0;
-let maxIdEnfermedades= 0;
-
-function cargarTablaEnfermedades(idMascota){
-	$.ajax({
-		async: false,
-		url: urlBase + "/getEnfermedadesPagina",
-		type: "POST",
-		data: {
-			ultimoID: menorIdEnfermedades,
-			idMascota: idMascota
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			menorIdEnfermedades = response.min;
-			maxIdEnfermedades = response.max;
-			$('#tbodyEnfermedades').empty();
-			var enfermedades = response.enfermedades;
-			if(enfermedades.length == 0){
-				document.getElementById("noHayResultadosEnfermedadesMensaje").style.display = "block";
-				document.getElementById("irAdelantePaginaEnfermedades").style.display = "none";
-				document.getElementById("irAtrasPaginaEnfermedades").style.display = "none";
-			}else{
-				if(enfermedades.length < 5){
-					document.getElementById("irAdelantePaginaEnfermedades").style.display = "none";
-				}else{
-					document.getElementById("irAtrasPaginaEnfermedades").style.display = "block";
-					document.getElementById("irAdelantePaginaEnfermedades").style.display = "block";
-				}
-				document.getElementById("noHayResultadosEnfermedadesMensaje").style.display = "none";
-				for(var i = 0; i < enfermedades.length; i ++ ){
-					var fila = "<tr>" +
-					"<td class='text-center'>" + enfermedades[i].fechaDiagnostico + "</td>" +
-					"<td class='text-center'>" + enfermedades[i].nombreEnfermedad + "</td>" +
-					"<td class='text-center'>" + enfermedades[i].observaciones +"</td>" +
-					"<td class='text-center'> <button class='btn btn-success btn-sm' id='" + enfermedades[i].idEnfermedad + "' name='ModificarEnfermedad' onclick='operacionEnfermedad(this)'><i class='fas fa-edit'></i></button></td></tr>";
-					$('#tbodyEnfermedades').append(fila);
-				}
+	if(nombre){
+		if(fechaDiagnostico){
+			let response = sendPost("insertEnfermedadMascota", {idMascota: idMascota, nombre: nombre, fechaDiagnostico: fechaDiagnostico, observaciones: observaciones});
+			showReplyMessage(response.result, response.message, "Agregar enfermedad", "modalEnfermedad");
+			if(response.result != 0){
+				let enf = response.newEnfermedad;
+				$('#tbodyEnfermedades').prepend(createRowEnfermedad(enf.idEnfermedad, enf.nombreEnfermedad, enf.fechaDiagnostico, enf.observaciones));
 			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
+		}else showReplyMessage(1, "Debe ingresar una fecha de diagnositico para la enfermedad", "Fecha diagnositico requerida", "modalEnfermedad");
+	}else showReplyMessage(1, "Debe ingresar un nombre para la enfermedad", "Nombre requerido", "modalEnfermedad");
+}
+
+function updateEnfermedad(idEnfermedad){
+	let nombre = $('#inputNombreEnfermedad').val() || null;
+	let fechaDiagnostico = $('#inputFechaDiagnosticoEnfermedad').val() || null;
+	let observaciones = $('#inputObservacionesEnfermedad').val() || null;
+
+	if(nombre){
+		if(fechaDiagnostico){
+			let response = sendPost("updateEnfermedad", {idEnfermedad: idEnfermedad, nombre: nombre, fechaDiagnostico: fechaDiagnostico, observaciones: observaciones});
+			showReplyMessage(response.result, response.message, "Modificar enfermedad", "modalEnfermedad");
+			if(response.result != 0){
+				let enf = response.updatedEnfermedad;
+				$('#trE' + idEnfermedad).replaceWith(createRowEnfermedad(enf.idEnfermedad, enf.nombreEnfermedad, enf.fechaDiagnostico, enf.observaciones));
+			}
+		}else showReplyMessage(1, "Debe ingresar una fecha de diagnositico para la enfermedad", "Fecha diagnositico requerida", "modalEnfermedad");
+	}else showReplyMessage(1, "Debe ingresar un nombre para la enfermedad", "Nombre requerido", "modalEnfermedad");
+}
+
+function createRowEnfermedad(idEnfermedad, nombre, fechaDiagnostico, observaciones){
+	let row = "<tr id='trE"+ idEnfermedad +"'>";
+
+	row += "<td class='text-center' onclick='showObservaciones("+ observaciones +")'>"+ fechaDiagnostico +"</td>";
+	row += "<td class='text-center' onclick='showObservaciones("+ observaciones +")'>"+ nombre +"</td>";
+	row += "<td class='text-center' onclick='showObservaciones("+ observaciones +")'>"+ observaciones +"</td>";
+	row += "<td class='text-center' style='min-width: 6 em;'>";
+	row += "<button class='btn btn-link' name='" + idEnfermedad + "' onclick='openModalEnfermedad(this)'><i class='fas fa-edit text-dark'></i></button>";
+	row += "<button class='btn btn-link' onclick='openModalBorrarEnfermedad("+ idEnfermedad + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
+	row += "</td>";
+	row += "</tr>";
+
+	return row;
+}
+
+function openModalBorrarEnfermedad(idEnfermedad){
+	$('#titleModalBorrar').html("Borrar enfermedad")
+	$('#textModalBorrar').html("¿Seguro que desea borrar la enfermedad seleccionada?")
+	$('#modalButtonBorrar').off('click');
+	$('#modalButtonBorrar').click(function(){
+		borrarEnfermedad(idEnfermedad);
 	});
+	$('#modalBorrar').modal();
 }
 
-function paginaPosteriorEnfermedades(){
-	cargarTablaEnfermedades();
+function borrarEnfermedad(idEnfermedad){
+	let response = sendPost("deleteEnfermedad", {idEnfermedad: idEnfermedad});
+	showReplyMessage(response.result, response.message, "Borrar enfermedad", "modalBorrarEnfermedad");
+	if(response.result == 2)
+		$('#trE'+ idEnfermedad).remove();
 }
 
-function paginaAnteriorEnfermedades(){
-	if(menorIdEnfermedades != 0){
-		menorIdEnfermedades= parseInt(maxIdEnfermedades) + 5;
-		cargarTablaEnfermedades();
+function showObservaciones(idEnfermedad){
+	let response = sendPost("getEnfermedadToShow", {idEnfermedad: idEnfermedad});
+	if(response.result == 2){
+		let enfermedad = response.objectResult;
+		$("#titleModalView").html("Enfermedad");
+		$('#dateModalView').html("<b>Diagnositico</b>: " + enfermedad.fechaDiagnostico);
+		$("#textModalView").html("<b>Nombre</b>: " + enfermedad.nombreEnfermedad + "<hr><b>Observaciones: </b>" + enfermedad.observaciones + "<hr>");
+		$('#modalView').modal();
 	}
 }

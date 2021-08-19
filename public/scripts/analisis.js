@@ -1,289 +1,136 @@
+function openModalAnalaisis(button){
+	if(button.id == "NUEVOANALISIS"){
+		$('#titleModalAnalisis').html("Nuevo análisis");
+		clearComponents();
 
-function agregarNuevoAnalisis(idMascota){
-	$("#modalAgregarAnalisisMascota").modal('hide');
-	var nombre = document.getElementById('inpNombreAnalisis').value || null;
-	var fecha = document.getElementById('inpFechaAnalisis').value || null;
-	var detalle = document.getElementById('inpDetalleAnalisis').value || null;
-	var resultado = document.getElementById('inpResultadoAnalisis').value || null;
+		$('#buttonConfirmModalAnalisis').off('click');
+		$('#buttonConfirmModalAnalisis').click(function(){
+			crearAnalisis(button.name);
+		});
+		$('#modalAnalisis').modal();
+	}else{
+		let response = sendPost("getAnalisis", {idAnalisis: button.name});
+		if(response.result == 2){
+			$('#titleModalAnalisis').html("Modificar análisis");
 
-	if(!validarInformacionAnalisis(nombre, fecha, detalle)){
-		$.ajax({
-			async: false,
-			url: urlBase + "/insertNewAnalisis",
-			type: "POST",
-			data: {
-				idMascota: idMascota,
-				nombreAnalisis: nombre,
-				fechaAnalisis: fecha,
-				detalleAnalisis: detalle,
-				resultadoAnalisis: resultado
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
-				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Nuevo análisis");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Nuevo análisis");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
+			$('#inputNombreAnalisis').val(response.objectResult.nombre);
+			$('#inputFechaAnalisis').val(response.objectResult.fecha);
+			$('#inputDetalleAnalisis').val(response.objectResult.detalle);
+			$('#inputResultadoAnalisis').val(response.objectResult.resultado);
+
+			$('#buttonConfirmModalAnalisis').off('click');
+			$('#buttonConfirmModalAnalisis').click(function(){
+				modificarAnalisis(button.name);
+			});
+			$('#modalAnalisis').modal();
+		}
+	}
+}
+
+function clearComponents(){
+	$('#inputNombreAnalisis').val("");
+	$('#inputFechaAnalisis').val(getDateForInput());
+	$('#inputDetalleAnalisis').val("");
+	$('#inputResultadoAnalisis').val("");
+}
+
+
+function crearAnalisis(idMascota){
+	let nombre = $('#inputNombreAnalisis').val() || null;
+	let fecha = $('#inputFechaAnalisis').val() || null;
+	let detalle = $('#inputDetalleAnalisis').val() || null;
+	let resultado = $('#inputResultadoAnalisis').val() || null;
+
+	if(nombre){
+		if(fecha){
+			if(detalle){
+				let data = {
+					idMascota: idMascota,
+					nombre: nombre,
+					fecha: fecha,
+					detalle: detalle,
+					resultado: resultado
+				};
+
+				let response = sendPost("insertAnalisis", data);
+				showReplyMessage(response.result, response.message, "Agregar análisis", "modalAnalisis");
+				if(response.result == 2){
+					let analisis = response.newAnalisis;
+					$('#tbodyAnalisis').prepend(createRowAnalsis(analisis.idAnalisis, analisis.nombre, analisis.fecha,analisis.detalle, analisis.resultado));
 				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
-	}
-}
-
-function validarInformacionAnalisis(nombre, fecha, detalle){
-	var conError = false;
-	var mensajeError = "";
-
-	if(!nombre){
-		conError = true;
-		mensajeError = "El nombre del análisis no puede ser ingresado nulo.";
-	}else if(nombre.length < 5){
-		conError = true;
-		mensajeError = "El nombre del análisis debe tener al menos 5 caracteres para ser considerado valido.";
-	}else if(!fecha){
-		conError = true;
-		mensajeError = "La fecha del análisis no puede ser ingresada nula.";
-	}else if(fecha  >= new Date()){
-		conError= true;
-		mensajeError = "La fecha de realización del análisis no puede superar a la fecha actual.";
-	}
-
-	if(conError){
-		showReplyMessage('warning', mensajeError, null,  "Nuevo análisis");
-		$("#modalButtonRetorno").click(function(){
-			$("#modalRetorno").modal("hide");
-		});
-	}
-	return conError;
-}
-
-function verDetalleAnalsisi(btn){
-	var idAnalisis = btn.id;
-	console.log(btn.id)
-	$.ajax({
-		async: false,
-		url: urlBase + "/getAnalisis",
-		type: "POST",
-		data: {
-			idAnalisis: idAnalisis
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response.retorno == false){
-				showReplyMessage('danger', response.mensajeError, null, "Nuevo análisis");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}else{
-				document.getElementById('nombreVerAnalisis').innerHTML = response.nombre;
-				document.getElementById('fechaVerAnalisis').innerHTML = response.fecha;
-				document.getElementById('detalleVerAnalisis').innerHTML = response.detalle;
-				document.getElementById('resultadoVerAnalisis').innerHTML = response.resultado;
-				$('#modalVerAnalisisMascota').modal();
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
-	});
-}
-
-function operacionAnalisis(buttonOp){
-	if(buttonOp.name == "ModificarAnalisis"){
-		document.getElementById("tituloAgregarAnalisis").innerHTML = "Modificar Análisis";
-		document.getElementById("modalButtonAgregarAnalisisMascota").innerHTML = "Modificar";
-		precargarInformacionAnalisis(buttonOp.id);
-		$("#modalButtonAgregarAnalisisMascota").click(function(){
-			modificarAnalisis(buttonOp.id);
-		});
-	}else if(buttonOp.name == "AgregarAnalisis"){
-		let date = new Date()
-		let day = date.getDate()
-		let month = date.getMonth() + 1
-		let year = date.getFullYear()
-
-		if(month < 10) month = "0" + month;
-		if(day < 10) day = "0" + day;
-
-		var nombre = document.getElementById('inpNombreAnalisis').value = null;
-		var fecha = document.getElementById('inpFechaAnalisis').value = `${year}-${month}-${day}`;
-		var detalle = document.getElementById('inpDetalleAnalisis').value = null;
-		var resultado = document.getElementById('inpResultadoAnalisis').value = null;
-
-		document.getElementById("tituloAgregarAnalisis").innerHTML = "Agregar análisis";
-		document.getElementById("modalButtonAgregarAnalisisMascota").innerHTML = "Agregar";
-		$("#modalButtonAgregarAnalisisMascota").click(function(){
-			agregarNuevoAnalisis(buttonOp.id);
-		});
-	}
-	$("#modalAgregarAnalisisMascota").modal();
-}
-
-function precargarInformacionAnalisis(idAnalisis){
-	$.ajax({
-		async: false,
-		url: urlBase + "/getAnalisis",
-		type: "POST",
-		data: {
-			idAnalisis: idAnalisis
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response.retorno == false){
-				showReplyMessage('danger', response.mensajeError, null, "Obtener Análisis");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}else{
-				document.getElementById('inpNombreAnalisis').value = response.nombre;
-				document.getElementById('inpDetalleAnalisis').value = response.detalle;
-				document.getElementById('inpResultadoAnalisis').value = response.resultado;
-				var fechaToset = response.fecha.split('/');
-				document.getElementById('inpFechaAnalisis').value = fechaToset[2] + "-" + fechaToset[1] + "-"+ fechaToset[0];
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
-	});
+			}else showReplyMessage(1, "Debe ingresar el detalle del análisis que desea ingresar", "Detalle requerido", "modalAnalisis");
+		}else showReplyMessage(1, "Debe ingresar la fecha del análisis que desea ingresar", "Fecha requerida", "modalAnalisis");
+	}else showReplyMessage(1, "Debe ingresar el nombre del análisis que desea ingresar", "Nombre requerido", "modalAnalisis");
 }
 
 function modificarAnalisis(idAnalisis){
-	$("#modalAgregarAnalisisMascota").modal('hide');
+	let nombre = $('#inputNombreAnalisis').val() || null;
+	let fecha = $('#inputFechaAnalisis').val() || null;
+	let detalle = $('#inputDetalleAnalisis').val() || null;
+	let resultado = $('#inputResultadoAnalisis').val() || null;
 
-	var nombre = document.getElementById('inpNombreAnalisis').value || null;
-	var fecha = document.getElementById('inpFechaAnalisis').value || null;
-	var detalle = document.getElementById('inpDetalleAnalisis').value || null;
-	var resultado = document.getElementById('inpResultadoAnalisis').value || null;
-
-	if(!validarInformacionAnalisis(nombre, fecha, detalle)){
-		$.ajax({
-			async: false,
-			url: urlBase + "/updateAnalisis",
-			type: "POST",
-			data: {
-				idAnalisis: idAnalisis,
-				nombreAnalisis: nombre,
-				fechaAnalisis: fecha,
-				detalleAnalisis: detalle,
-				resultadoAnalisis: resultado
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
-				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar análisis");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Modificar análisis");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
+	if(nombre){
+		if(fecha){
+			if(detalle){
+				let data = {
+					idAnalisis: idAnalisis,
+					nombre: nombre,
+					fecha: fecha,
+					detalle: detalle,
+					resultado: resultado
+				};
+				console.log(data);
+				let response = sendPost("updateAnalisis", data);
+				console.log(response)
+				showReplyMessage(response.result, response.message, "Modificar análisis", "modalAnalisis");
+				if(response.result == 2){
+					let analisis = response.newAnalisis;
+					$('#trA' + idAnalisis).replaceWith(createRowAnalsis(analisis.idAnalisis, analisis.nombre, analisis.fecha,analisis.detalle, analisis.resultado));
 				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, porfavor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
+			}else showReplyMessage(1, "Debe ingresar el detalle del análisis que desea ingresar", "Detalle requerido", "modalAnalisis");
+		}else showReplyMessage(1, "Debe ingresar la fecha del análisis que desea ingresar", "Fecha requerida", "modalAnalisis");
+	}else showReplyMessage(1, "Debe ingresar el nombre del análisis que desea ingresar", "Nombre requerido", "modalAnalisis");
+}
+
+function createRowAnalsis(idAnalisis, nombre, fecha, detalle, resultado){
+	let row = "<tr id='trA"+ idAnalisis +"'>";
+	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ fecha +"</td>";
+	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ nombre +"</td>";
+	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ detalle +"</td>";
+	row += "<td class='text-center' style='min-width: 6 em;'>";
+	row += "<button class='btn btn-link' name='" + idAnalisis + "' onclick='openModalAnalaisis(this)'><i class='fas fa-edit text-dark'></i></button>";
+	row += "<button class='btn btn-link' onclick='openModalBorrarAnalisis("+ idAnalisis + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
+	row += "</td>";
+	row += "</tr>";
+
+	return row;
+}
+
+
+function verAnalisis(idAnalisis){
+	let response = sendPost("getAnalisisToShow", {idAnalisis: idAnalisis});
+	if(response.result == 2){
+		let analisis = response.objectResult;
+		$("#titleModalView").html("Análisis");
+		$('#dateModalView').html("<b>Diagnositico:</b> " + analisis.fecha);
+		$("#textModalView").html("<b>Nombre:</b> " + analisis.nombre + "<hr><b>Detalle: </b>" + analisis.detalle + "<hr><b>Resultado: </b>" + analisis.resultado + "<hr>");
+		$('#modalView').modal();
 	}
 }
 
-let menorIdAnalisis = 0;
-let maxIdAnalisis = 0;
-
-function cargarTablaAnalisis(idMascota){
-	$.ajax({
-		async: false,
-		url: urlBase + "/getAnalisisPagina",
-		type: "POST",
-		data: {
-			ultimoID: menorIdAnalisis,
-			idMascota: idMascota
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			menorIdAnalisis = response.min;
-			maxIdAnalisis = response.max;
-			var analisis = response.analisis;
-			$('#tbodyAnalisis').empty();
-			if(analisis.length == 0){
-				document.getElementById("noHayResultadosAnalisisMensaje").style.display = "block";
-				document.getElementById("irAdelantePaginaAnalisis").style.display = "none";
-				document.getElementById("irAtrasPaginaAnalisis").style.display = "none";
-			}else{
-				if(analisis.length < 5){
-					document.getElementById("irAdelantePaginaAnalisis").style.display = "none";
-				}else{
-					document.getElementById("irAtrasPaginaAnalisis").style.display = "block";
-					document.getElementById("irAdelantePaginaAnalisis").style.display = "block";
-				}
-				document.getElementById("noHayResultadosAnalisisMensaje").style.display = "none";
-				for(var i = 0; i < analisis.length; i ++ ){
-					var fila = "<tr><td class='text-center'>" + analisis[i].fecha +"</td>" +
-					"<td class='text-center'>" + analisis[i].nombre +"</td>" +
-					"<td class='text-justify'>" + analisis[i].resultado +"</td>" +
-					"<td class='text-center'>" +
-					"<button class='btn btn-success btn-sm' name='ModificarAnalisis' id='" + analisis[i].idAnalisis + "'  onclick='operacionAnalisis(this)'><i class='fas fa-edit'></i></button></td>" +
-					"<td class='text-center'>" +
-					"<button class='btn btn-info btn-sm' id='" + analisis[i].idAnalisis + "'  onclick='verDetalleAnalsisi(this)'><i class='fas fa-eye'></i></button></td></tr>"
-					$('#tbodyAnalisis').append(fila);
-				}
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
+function openModalBorrarAnalisis(idAnalisis){
+	$('#titleModalBorrar').html("Borrar análisis")
+	$('#textModalBorrar').html("¿Seguro que desea borrar el análisis seleccionado?")
+	$('#modalButtonBorrar').off('click');
+	$('#modalButtonBorrar').click(function(){
+		borrarAnalisis(idAnalisis);
 	});
+	$('#modalBorrar').modal();
 }
 
-function paginaPosteriorAnalisis(){
-	var idMascota = document.getElementById('idMascotaSeleccionada').value;
-	cargarTablaAnalisis(idMascota);
-}
-
-function paginaAnteriorAnalisis(){
-	var idMascota = document.getElementById('idMascotaSeleccionada').value;
-	if(menorIdAnalisis != 0){
-		menorIdAnalisis = parseInt(maxIdAnalisis) + 5;
-		cargarTablaAnalisis(idMascota);
-	}
+function borrarAnalisis(idAnalisis){
+	let response = sendPost("deleteAnalisis", {idAnalisis: idAnalisis});
+	showReplyMessage(response.result, response.message, "Borrar análisis", "modalBorrar");
+	if(response.result == 2)
+		$('#trA' + idAnalisis).remove();
 }

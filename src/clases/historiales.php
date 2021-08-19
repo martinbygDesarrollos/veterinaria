@@ -1,45 +1,65 @@
 <?php
-require_once "../src/clases/fechas.php";
+require_once "../src/utils/fechas.php";
 
 class historiales{
 
 	//============================================================================================================
 	//===========================================HISTORIAL CLINICO================================================
 	//============================================================================================================
-	public function insertHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones){
-		$query = DB::conexion()->prepare("INSERT INTO historiasclinica (idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES(?,?,?,?,?)");
-		$query->bind_param('iisss', $idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones);
-		return $query->execute();
+
+	public function agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones){
+		if(is_null($fecha))
+			$fecha = fechas::getDateNowInt();
+
+		return DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES(?,?,?,?,?)", array('iisss', $idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones), "BOOLE");
 	}
 
-	public function updateHistorialClinico($idHistorialClinico, $clienteMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones){
-		$query = DB::conexion()->prepare("UPDATE historiasclinica SET clienteMascota = ?, fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ? WHERE idHistorialClinico = ?");
-		$query->bind_param('iisssi', $clienteMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $idHistorialClinico);
-		if($query->execute()) return true;
-		else return false;
+	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones){
+		return DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ? WHERE idHistoriaClinica = ?", array('isssi', $fecha, $motivoConsulta, $diagnostico, $observaciones, $idHistoriaClinica), "BOOLE");
 	}
 
-	public function getHistorialClinico(){
-		$query = DB::conexion()->prepare("SELECT * FROM historiasclinica");
-		if($query->execute()){
-			$response = $query->get_result();
-			$arrayResponse = array();
-			while($row = $response->fetch_array(MYSQLI_ASSOC)){
-				$arrayResponse[] = $row;
-			}
-			return $arrayResponse;
-		}else return null;
+	public function borrarHistoriaClinica($idHistoriaClinica){
+		return DataBase::sendQuery("DELETE FROM historiasclinica WHERE idHistoriaClinica = ?", array('i', $idHistoriaClinica), "BOOLE");
 	}
 
-	public function getOneHistoriaClinica($idHistorialClinico){
-		$query = DB::conexion()->prepare("SELECT * FROM historiasclinica WHERE idHistorialClinico = ?");
-		$query->bind_param('i', $idHistorialClinico);
-		if($query->execute()){
-			$response = $query->get_result();
-			$result = $response->fetch_object();
-			$result->fecha = fechas::parceFechaFormatDMA($result->fecha, "/");
-			return $result;
-		}else return null;
+	public function getHistoriaClinicaToShow($idHistoriaClinica){
+		$responseQuery = historiales::getHistoriaClinica($idHistoriaClinica);
+		if($responseQuery->result == 2){
+			$historia = $responseQuery->objectResult;
+
+			if(!is_null($historia->fecha) && strlen($historia->fecha) == 8)
+				$historia->fecha = fechas::dateToFormatBar($historia->fecha);
+
+			if(is_null($historia->observaciones) ||  strlen($historia->observaciones) < 2)
+				$historia->observaciones = "No especificado";
+
+			if(is_null($historia->diagnostico) ||  strlen($historia->diagnostico) < 2)
+				$historia->diagnostico = "No especificado";
+
+			$responseQuery->objectResult = $historia;
+		}
+
+		return $responseQuery;
+	}
+
+	public function getHistoriaClinicaToEdit($idHistoriaClinica){
+		$responseQuery = historiales::getHistoriaClinica($idHistoriaClinica);
+		if($responseQuery->result == 2){
+			$historia = $responseQuery->objectResult;
+
+			if(!is_null($historia->fecha) && strlen($historia->fecha) == 8)
+				$historia->fecha = fechas::dateToFormatHTML($historia->fecha);
+			$responseQuery->objectResult = $historia;
+		}
+
+		return $responseQuery;
+	}
+
+	public function getHistoriaClinica($idHistoriaClinica){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM historiasclinica WHERE idHistoriaClinica = ?", array('i', $idHistoriaClinica), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontro una historia clínica con el identificador seleccionado.";
+		return $responseQuery;
 	}
 
 	public function checkHayHistorialClinico($idMascota){
@@ -53,52 +73,51 @@ class historiales{
 		return false;
 	}
 
-	public function getOneHistoriaClinicaMascota($idMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM historiasclinica WHERE idMascota = ?");
-		$query->bind_param('i', $idMascota);
-		if($query->execute()){
-			$response = $query->get_result();
-			$arrayResponse = array();
-			while($row = $response->fetch_array(MYSQLI_ASSOC)){
-				$row['fecha'] = fechas::parceFechaFormatDMA($row['fecha'],"/");
-				$arrayResponse[] = $row;
-			}
-			return $arrayResponse;
-		}else return null;
+	public function getHistoriaClinicaMascotaMaxID($idMascota){
+		$responseQuery = DataBase::sendQuery("SELECT MAX(idHistoriaClinica) AS idMaximo FROM historiasclinica WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontraron registros en el historial clinico.";
+
+		return $responseQuery;
 	}
 
-	public function getHistoriaClinicaMinId($historial, $maxValor){
-		$valorMinimo = $maxValor;
-		foreach ($historial as $key => $value) {
-			if($value['idHistorialClinico'] < $valorMinimo)
-				$valorMinimo = $value['idHistorialClinico'];
+	public function getHistoriaClinicaMascota($lastId, $idMascota){
+		if($lastId == 0){
+			$responseGetMaxId = historiales::getHistoriaClinicaMascotaMaxID($idMascota);
+			if($responseGetMaxId->result == 2)
+				$lastId = $responseGetMaxId->objectResult->idMaximo + 1;
+			else return $responseGetMaxId;
 		}
-		return $valorMinimo;
-	}
 
-	public function getHistoriaClinicaMaxId($idMascota){
-		$query = DB::conexion()->prepare("SELECT MAX(idHistorialClinico) AS idMaximo FROM historiasclinica WHERE idMascota = ?");
-		$query->bind_param('i', $idMascota);
-		if($query->execute()){
-			$result = $query->get_result();
-			$response = $result->fetch_object();
-			return $response->idMaximo;
-		}else return null;
-	}
-
-	public function getHistoriaClinicaPagina($ultimoID, $idMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM historiasclinica WHERE idMascota=? AND idHistorialClinico<= ? ORDER BY idHistorialClinico DESC LIMIT 10");
-		$query->bind_param('ii', $idMascota, $ultimoID);
-		if($query->execute()){
-			$result = $query->get_result();
+		$responseQuery = DataBase::sendQuery("SELECT * FROM historiasclinica WHERE idMascota=? AND idHistoriaClinica< ? ORDER BY idHistoriaClinica DESC LIMIT 14", array('ii', $idMascota, $lastId), "LIST");
+		if($responseQuery->result == 2){
 			$arrayResult = array();
-			while($row = $result->fetch_array(MYSQLI_ASSOC)){
-				$row['fecha'] = fechas::parceFechaFormatDMA($row['fecha'], "/");
+			$newLastId = $lastId;
+			$noData = "No especificado";
+			foreach ($responseQuery->listResult as $key => $row) {
+				if($newLastId > $row['idHistoriaClinica']) $newLastId = $row['idHistoriaClinica'];
+
+				if(!is_null($row['fecha']) && strlen($row['fecha']) == 8)
+					$row['fecha'] = fechas::dateToFormatBar($row['fecha']);
+				else $row['fecha'] = $noData;
+
+				if(is_null($row['motivoConsulta']) || strlen($row['motivoConsulta']) < 4)
+					$row['motivoConsulta'] = $noData;
+
+				if(is_null($row['diagnostico']) || strlen($row['diagnostico']) < 4)
+					$row['diagnostico'] = $noData;
+
+				if(is_null($row['observaciones']) || strlen($row['observaciones']) < 4)
+					$row['observaciones'] = $noData;
+
 				$arrayResult[] = $row;
 			}
-			return $arrayResult;
-		}
-		return null;
+
+			$responseQuery->listResult = $arrayResult;
+			$responseQuery->lastId = $lastId;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No se obtuvo la lista de registros del historial clinico de esta mascota.";
+
+		return $responseQuery;
 	}
 	//============================================================================================================
 	//============================================================================================================
@@ -149,37 +168,36 @@ class historiales{
 	//==============================================HISTORIAL USUARIO=============================================
 	//============================================================================================================
 
-	public function getHistorialUsuarios(){
-		$query = DB::conexion()->prepare("SELECT HU.funcion, HU.observacion, HU.fecha, US.nombre FROM historialusuarios AS HU, usuarios AS US WHERE US.idUsuario = HU.usuario");
-		if($query->execute()){
-			$response = $query->get_result();
-			$arrayResponse = array();
-			while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-				$row['fecha'] = fechas::parceFechaTimeFormatDMA($row['fecha']);
-				$arrayResponse[] = $row;
+	public function getHistorialUsuarioMaxID($idUsuario){
+		$responseQuery = DataBase::sendQuery("SELECT MAX(idHistorialUsuario) AS maxID FROM historialusuarios WHERE usuario = ?", array('i', $idUsuario), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontraron registros en el historial del usuario.";
+		return $responseQuery;
+	}
+	public function getHistorialUsuario($lastId, $idUsuario){
+		if($lastId == 0){
+			$responseGetMaxId = historiales::getHistorialUsuarioMaxID($idUsuario);
+			if($responseGetMaxId->result == 2)
+				$lastId = $responseGetMaxId->objectResult->maxID;
+			else return $responseGetMaxId;
+		}
+
+		$responseQuery = DataBase::sendQuery("SELECT * FROM historialusuarios WHERE usuario = ? AND idHistorialUsuario < ? ORDER BY idHistorialUsuario DESC LIMIT 14", array('ii', $idUsuario, $lastId), "LIST");
+		if($responseQuery->result == 2){
+			$arrayResult = array();
+			$newLastId = $lastId;
+			foreach ($responseQuery->listResult as $key => $row) {
+				if($newLastId > $row['idHistorialUsuario']) $newLastId = $row['idHistorialUsuario'];
 			}
-			return $arrayResponse;
-		}else return null;
+			$responseQuery->lastId = $newLastId;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No se obtuvieron los registros del historial del usuario.";
+
+		return $responseQuery;
 	}
 
-	public function getHistorialUsuario($usuario){
-		$query = DB::conexion()->prepare("SELECT HU.funcion, HU.observacion, HU.fecha, US.nombre FROM historialusuarios AS HU, usuarios AS US WHERE US.idUsuario = HU.usuario AND usuario = ?");
-		$query->bind_param('i', $usuario);
-		if($query->execute()){
-			$response = $query->get_result();
-			$arrayResponse = array();
-			while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-				$row['fecha'] = fechas::parceFechaTimeFormatDMA($row['fecha']);
-				$arrayResponse[] = $row;
-			}
-			return $arrayResponse;
-		}else return null;
-	}
-
-	public function insertHistorialUsuario($usuario, $funcion, $fecha, $observaciones){
-		$query = DB::conexion()->prepare("INSERT INTO historialusuarios(usuario, funcion, fecha, observacion) VALUES (?,?,?,?)");
-		$query->bind_param('isss', $usuario, $funcion, $fecha, $observaciones);
-		return $query->execute();
+	public function insertHistorialUsuario($usuario, $funcion, $observaciones){
+		$timeStamp = fechas::getDateTimeNowInt();
+		return DataBase::sendQuery("INSERT INTO historialusuarios(usuario, funcion, fecha, observacion) VALUES (?,?,?,?)", array('isss', $usuario, $funcion, $timeStamp, $observaciones), "BOOLE");
 	}
 
 	public function getHistorialUsuariosMaxId(){

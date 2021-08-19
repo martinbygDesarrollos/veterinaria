@@ -1,307 +1,165 @@
-function operacionVacuna(buttonOp){
-
-	if(buttonOp.name == "ModificarVacuna"){
-		document.getElementById("modalTituloVacuna").innerHTML = "Modificar vacuna";
-		document.getElementById("modalButtonVacuna").innerHTML = "Modificar";
-		$("#modalButtonVacuna").click(function(){
-			modificarVacuna(buttonOp.id);
+function openModalVacuna(inputButton){
+	if(inputButton.id == "NUEVAVACUNA"){
+		$('#modalTitleVacuna').html("Nueva vacuna");
+		$('#labelInputDateVacuna').text("Fecha primer dosis");
+		clearModalVacuna();
+		$('#modalButtonVacuna').off('click');
+		$('#modalButtonVacuna').click(function(){
+			createNewVacuna(inputButton.name);
 		});
-		precargarInformacionVacuna(buttonOp.id);
-	}else if(buttonOp.name == "AgregarVacuna"){
-		let date = new Date()
-		let day = date.getDate()
-		let month = date.getMonth() + 1
-		let year = date.getFullYear()
+	}else{
+		$('#modalTitleVacuna').html("Modificar vacuna");
+		let response = sendPost('getVacunaMascota', {idVacunaMascota: inputButton.name});
+		if(response.result == 2){
+			$('#labelInputDateVacuna').text('Fecha ultima dosis');
+			$('#inputNombreVacuna').val(response.objectResult.nombreVacuna);
+			$('#inputIntervaloVacuna').val(response.objectResult.intervaloDosis);
+			$('#inputPrimerDosisVacuna').val(response.objectResult.fechaUltimaDosis);
+			$('#inputObservacionesVacuna').html(response.objectResult.observacion);
 
-		if(month < 10) month = "0" + month;
-		if(day < 10) day = "0" + day;
-
-		document.getElementById('inpNombreVacuna').value = null;
-		document.getElementById('inpIntervaloVacuna').value = null;
-		document.getElementById('inpPrimerDosisVacuna').value = `${year}-${month}-${day}`;
-		document.getElementById('inpObservacionesVacuna').value = null;
-		document.getElementById("modalTituloVacuna").innerHTML = "Agregar Vacuna";
-		document.getElementById("modalButtonVacuna").innerHTML = "Agregar";
-		$("#modalButtonVacuna").click(function(){
-			aplicarNuevaVacunaMascota(buttonOp.id);
-		});
-		$("#modalNuevaVacuna").modal();
-	}
-
-}
-
-function precargarInformacionVacuna(idVacunaMascota){
-	$.ajax({
-		async: false,
-		url: urlBase + "/getVacunaMascota",
-		type: "POST",
-		data: {
-			idVacunaMascota: idVacunaMascota
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ");
-			if(response){
-				document.getElementById('inpNombreVacuna').value = response.nombreVacuna;
-				document.getElementById('inpIntervaloVacuna').value = response.intervaloDosis;
-				var fechaToset = response.fechaUltimaDosis.split('/');
-				document.getElementById('inpPrimerDosisVacuna').value = fechaToset[2] + "-" + fechaToset[1] + "-"+ fechaToset[0];
-				document.getElementById('inpObservacionesVacuna').value = response.observacion;
-				$("#modalNuevaVacuna").modal();
-			}else{
-				showReplyMessage('danger', response.mensajeError, null, "Obtener vacuna");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
+			$('#modalButtonVacuna').off('click');
+			$('#modalButtonVacuna').click(function(){
+				updateVacunaMascota(inputButton.name);
 			});
-		},
-	});
+		}
+	}
 
+	$('#modalVacuna').modal();
 }
 
-function aplicarNuevaVacunaMascota(idMascota){
-	$('#modalNuevaVacuna').modal('hide');
+function createNewVacuna(idMascota){
+	let nombre = $('#inputNombreVacuna').val() || null;
+	let intervalo = $('#inputIntervaloVacuna').val() || null;
+	let primerDosis = $('#inputPrimerDosisVacuna').val() || null;
+	let observaciones = $('#inputObservacionesVacuna').html() || null;
 
-	var nombreVacuna = document.getElementById('inpNombreVacuna').value || null;
-	var intervalo = document.getElementById('inpIntervaloVacuna').value || null;
-	var fechaDosis = document.getElementById('inpPrimerDosisVacuna').value || null;
-	var observaciones = document.getElementById('inpObservacionesVacuna').value || null;
+	if(nombre){
+		if(primerDosis){
+			let data ={idMascota: idMascota, nombreVacuna: nombre, intervalo: intervalo, fechaDosis: primerDosis, observaciones: observaciones};
+			let response = sendPost("aplicarNuevaVacunaMascota", data);
+			showReplyMessage(response.result, response.message, "Agregar vacuna", "modalVacuna");
+			if(response.result == 2){
+				let vacuna = response.newVacuna;
+				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
+			}
+		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");
+	}else showReplyMessage(1, "El nombre de la vacuna no puede ser ingresado vacio.", "Nombre requerido.", "modalVacuna");
+}
 
-	if(!validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaDosis, "Vacunar mascota")){
+function createRowVacuna(idVacunaMascota, fechaProximaDosis, fechaUltimaDosis, nombreVacuna, observaciones, intervalo, numDosis, fechaPrimerDosis){
+	let row = "<tr id='trV"+ idVacunaMascota +"'>";
+	row += "<td class='text-center'><butto class='btn btn-link btn-sm' onclick='modalAplicarDosis("+ idVacunaMascota +")'><i class='fas fa-syringe text-dark'></i></butto></td>"
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + fechaProximaDosis + "</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + fechaUltimaDosis + "</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + nombreVacuna + "</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + intervalo + "</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + numDosis + "</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + fechaPrimerDosis + "</td>";
+	row += "<td class='text-center' style='min-width: 6em;'>";
+	row += "<button class='btn btn-link btn-sm' name='" + idVacunaMascota + "' onclick='openModalVacuna(this)'><i class='fas fa-edit text-dark'></i></button>";
+	row += "<button class='btn btn-link btn-sm' onclick='openModalBorrarVacuna("+ idVacunaMascota + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
+	row += "</tr>";
 
-		$.ajax({
-			async: false,
-			url: urlBase + "/aplicarNuevaVacunaMascota",
-			type: "POST",
-			data: {
-				idMascota: idMascota,
-				nombreVacuna: nombreVacuna,
-				intervalo: intervalo,
-				fechaDosis: fechaDosis,
-				observaciones: observaciones
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ");
-				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Vacunar mascota");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Vacunar mascota");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
-				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
+	return row;
+}
+
+function modalAplicarDosis(idVacunaMascota){
+	let response = sendPost('getVacunaMascota', {idVacunaMascota: idVacunaMascota});
+	if(response.result == 2){
+		$('#aplicarDosisText').html("¿Desea aplicar una dosis de <b>"+ response.objectResult.nombreVacuna +"</b>?");
+		$('#inputDateAplicarDosis').val(getDateForInput());
+		$('#modalAplicarDosis').modal();
+		$('#btnAplicarDosis').off('click');
+		$('#btnAplicarDosis').click(function(){
+			aplicarDosisVacuna(idVacunaMascota);
 		});
+	}else showReplyMessage(response.result, response.message, "Vacuna no encontrada", null);
+}
+
+function aplicarDosisVacuna(idVacunaMascota){
+	let dateDosis = $('#inputDateAplicarDosis').val() || null;
+	if(dateDosis){
+		let response = sendPost("aplicarDosisVacuna", {idVacunaMascota: idVacunaMascota, dateDosis: dateDosis});
+		showReplyMessage(response.result, response.message, "Aplicar dosis", "modalAplicarDosis");
+		if(response.result != 0){
+			let vacuna = response.updatedVacuna;
+			$('#trV' + vacuna.idVacunaMascota).replaceWith(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
+		}
+	}else showReplyMessage(1, "Debe ingresar una fecha para la dosis de la vacuna.", "Fecha requerida", "modalAplicarDosis");
+}
+
+
+function openDescriptionVacuna(idVacunaMascota){
+	let response = sendPost('getVacunaMascotaToShow', {idVacunaMascota: idVacunaMascota});
+	if(response.result == 2){
+		if(response.objectResult.observacion){
+			let vacuna = response.objectResult;
+			$("#titleModalView").html("Vacuna");
+			$('#dateModalView').html("<b>Última dosis</b>: " + vacuna.fechaUltimaDosis);
+			$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Primer dosis:</b> " + vacuna.fechaPrimerDosis + "<hr><b>Proxima dosis:</b> " + vacuna.fechaProximaDosis +"<hr><b>Observaciones: </b>" + vacuna.observacion + "<hr>");
+			$('#modalView').modal();
+		}
 	}
 }
 
-function modificarVacuna(idVacunaMascota){
-	$('#modalNuevaVacuna').modal('hide');
+function clearModalVacuna(){
+	$('#inputNombreVacuna').val("");
+	$('#inputIntervaloVacuna').val(1);
+	$('#inputPrimerDosisVacuna').val(getDateForInput());
+	$('#inputObservacionesVacuna').html("");
+}
 
-	var nombreVacuna = document.getElementById('inpNombreVacuna').value || null;
-	var intervalo = document.getElementById('inpIntervaloVacuna').value || null;
-	var fechaUltimaDosis = document.getElementById('inpPrimerDosisVacuna').value || null;
-	var observaciones = document.getElementById('inpObservacionesVacuna').value || null;
+function updateVacunaMascota(idVacunaMascota){
 
-	if(!validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaUltimaDosis, "Modificar vacuna")){
+	let nombreVacuna = $('#inputNombreVacuna').val() || null;
+	let intervalo = $('#inputIntervaloVacuna').val() || null;
+	let fechaUltimaDosis = $('#inputPrimerDosisVacuna').val() || null;
+	let observaciones = $('#inputObservacionesVacuna').val() || null;
 
-		$.ajax({
-			async: false,
-			url: urlBase + "/updateVacunaMascota",
-			type: "POST",
-			data: {
+	if(nombreVacuna){
+		if(fechaUltimaDosis){
+			let data = {
 				idVacunaMascota: idVacunaMascota,
 				nombre: nombreVacuna,
 				intervalo: intervalo,
 				fechaUltimaDosis: fechaUltimaDosis,
 				observaciones: observaciones
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ");
-				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar mascota");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Modificar mascota");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
-				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
-	}
-}
-
-function validarDatosNuevaVacuna(nombreVacuna, intervalo, fechaDosis, titulo){
-	conError = false;
-	mensajeError = "";
-
-	if(nombreVacuna == null){
-		conError = true;
-		mensajeError = "El nombre de la vacuna no puede ser ingresado vacío.";
-	}else if(nombreVacuna.length < 4 ){
-		conError = true;
-		mensajeError = "El campo nombre vacuna debe tener al menos 4 caracteres para ser considerado valido.";
-	}else if(intervalo == null){
-		conError = true;
-		mensajeError = "El campo intervalo no puede ser ingresado vacío.";
-	}else if(fechaDosis == null){
-		conError = true;
-		mensajeError = "Para aplicar una nueva vacuna debe ingresar una fecha de dosis, por defecto se toma la fecha actual.";
-	}else if(fechaDosis < new Date()){
-		conError = true;
-		mensajeError = "La fecha de la ultima dosis no puede ser menor a la fecha actual.";
-	}
-
-	if(conError){
-		showReplyMessage('warning', mensajeError, null, titulo);
-		$("#modalButtonRetorno").click(function(){
-			$("#modalRetorno").modal("hide");
-		});
-	}
-	return conError;
-}
-
-function abrirModalAplicarDosis(btn){
-	var idVacunaMascota = btn.id;
-	var nombre = btn.name;
-
-	var mensaje = "¿Seguro que desea aplicar una dosis de " + nombre + " en esta mascota?";
-	document.getElementById('mensajeAplicarDosis').innerHTML = mensaje;
-	document.getElementById('btnAplicarDosis').name = idVacunaMascota;
-	$('#modalAplicarDosis').modal();
-}
-
-function aplicarDosisVacuna(btn){
-	var idVacunaMascota = btn.name;
-	$('#modalAplicarDosis').modal('hide');
-	$.ajax({
-		async: false,
-		url: urlBase + "/aplicarDosisVacuna",
-		type: "POST",
-		data: {
-			idVacunaMascota: idVacunaMascota
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response.retorno){
-				showReplyMessage('success', response.mensaje, response.enHistorial, "Aplicar dosis");
-				$("#modalButtonRetorno").click(function(){
-					window.location.reload();
-				});
-			}else{
-				showReplyMessage('danger', response.mensajeError, null, "Aplicar dosis");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
+			};
+			let response = sendPost("updateVacunaMascota", data);
+			showReplyMessage(response.result, response.message, "Modificar vacuna", "modalVacuna");
+			if(response.result == 2){
+				let vacuna = response.updatedVacuna;
+				$('#trV' + vacuna.idVacunaMascota).replaceWith(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
+		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");
+	}else showReplyMessage(1, "El nombre de la vacuna no puede ser ingresado vacio.", "Nombre requerido.", "modalVacuna");
+}
+
+function changeStateMascota(inputCheck){
+	let title = "Activar mascota";
+
+	if(!inputCheck.checked)
+		title = "Desactivar mascota";
+
+	let response = sendPost('activarDesactivarMascota', {idMascota: inputCheck.name});
+	showReplyMessage(response.result, response.message, title, null);
+}
+
+function openModalBorrarVacuna(idVacunaMascota){
+	$('#modalBorrarVacuna').modal();
+	$('#titleModalBorrar').html("Borrar vacuna")
+	$('#textModalBorrar').html("¿Seguro que desea borrar la vacuna seleccionada?")
+	$('#modalButtonBorrar').off('click');
+	$('#modalButtonBorrar').click(function(){
+		removeVacunaMascota(idVacunaMascota);
 	});
+	$('#modalBorrar').modal();
 }
 
-let menorIdVacuna = 0;
-let maxIdVacuna = 0;
+function removeVacunaMascota(idVacunaMascota){
 
-function cargarTablaVacunas(idMascota){
-	$.ajax({
-		async: false,
-		url: urlBase + "/getVacunasPagina",
-		type: "POST",
-		data: {
-			ultimoID: menorIdVacuna,
-			idMascota: idMascota
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			menorIdVacuna = response.min;
-			maxIdVacuna = response.max;
-			var vacunas = response.vacunas;
-			$('#tbodyVacunas').empty();
-			if(vacunas.length == 0){
-				document.getElementById("noHayResultadosVacunasMensaje").style.display = "block";
-				document.getElementById("irAdelantePaginaVacunas").style.display = "none";
-				document.getElementById("irAtrasPaginaVacunas").style.display = "none";
-			}else{
-				if(vacunas.length < 5){
-					document.getElementById("irAdelantePaginaVacunas").style.display = "none";
-				}else{
-					document.getElementById("irAtrasPaginaVacunas").style.display = "block";
-					document.getElementById("irAdelantePaginaVacunas").style.display = "block";
-				}
-				document.getElementById("noHayResultadosVacunasMensaje").style.display = "none";
-				for(var i = 0; i < vacunas.length; i ++ ){
-					var fila = "<tr><td class='text-center'>" + vacunas[i].fechaProximaDosis +"</td>" +
-					"<td class='text-center'>" + vacunas[i].fechaUltimaDosis +"</td>" +
-					"<td class='text-center'>" + vacunas[i].nombreVacuna + "</td>" +
-					"<td class='text-justify'>" + vacunas[i].observacion + "</td>" +
-					"<td class='text-center'>" + vacunas[i].intervaloDosis +"</td>" +
-					"<td class='text-center'>" + vacunas[i].numDosis +"</td>" +
-					"<td class='text-center'> <button id='" + vacunas[i].idVacunaMascota + "' name='" + vacunas[i].nombreVacuna +"' class='btn btn-success btn-sm'  onclick='abrirModalAplicarDosis(this)'><i class='fas fa-syringe'></i></button> </td>" +
-					"<td class='text-center'> <button class='btn btn-success btn-sm' id='" + vacunas[i].idVacunaMascota + "' name='ModificarVacuna' onclick='operacionVacuna(this)'><i class='fas fa-edit'></i></button></td></tr>"
-					$('#tbodyVacunas').append(fila);
-				}
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
-	});
-}
-
-function paginaPosteriorVacunas(){
-	var idMascota = document.getElementById('idMascotaSeleccionada').value;
-	cargarTablaVacunas(idMascota);
-}
-
-function paginaAnteriorVacunas(){
-	var idMascota = document.getElementById('idMascotaSeleccionada').value;
-	if(menorIdVacuna != 0){
-		menorIdVacuna = parseInt(maxIdVacuna) + 5;
-		cargarTablaVacunas(idMascota);
-	}
+	let response = sendPost("borrarVacunaMascota", {idVacunaMascota: idVacunaMascota});
+	showReplyMessage(response.result, response.message, "Borrar vacuna", "modalBorrarVacuna");
+	if(response.result == 2)
+		$('#trV' + idVacunaMascota).remove();
 }

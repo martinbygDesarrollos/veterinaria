@@ -3,91 +3,77 @@
 require_once '../src/controladores/ctr_usuarios.php';
 require_once '../src/controladores/ctr_historiales.php';
 require_once '../src/clases/mascotas.php';
-require_once '../src/clases/fechas.php';
+require_once "../src/utils/fechas.php";
 require_once '../src/clases/serviciosMascota.php';
 
 class ctr_mascotas {
 
-	public function getFechaActual(){
-		$fecha = date('Y-m-d');
-		return fechas::parceFechaFormatDMA(fechas::parceFechaInt($fecha),"/");
-	}
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------FUNCIONES DE MASCOTA --------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 
+	public function getMascotaToEdit($idMascota){
+		return mascotas::getMascotaToEdit($idMascota);
+	}
+
 	public function  insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
 		$response = new \stdClass();
 
-		$fechaNacimientoFormat = fechas::parceFechaInt($fechaNacimiento);
-		$idMascota = mascotas::insertMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimientoFormat, 1, $pelo, $chip, $observaciones);
+		$responseGetSocio = ctr_usuarios::getSocio($idSocio);
+		if($responseGetSocio->result == 2){
+			if(!is_null($fechaNacimiento))
+				$fechaNacimiento = fechas::getDateToINT($fechaNacimiento);
 
-		$socio = ctr_usuarios::getSocio($idSocio);
-		if($socio){
-			if($idMascota != false){
-				$fechaCambio = fechas::parceFechaInt(date('Y-m-d'));
-				$result = mascotas::vincularMascotaSocio($idSocio, $idMascota, $fechaCambio);
-				if($result){
-					$cuotaAsignada = ctr_usuarios::calcularCostoCuota($idSocio);
-					$estadoCuota = "La cuota del socio no fue actualizada verifiquela.";
-					if($cuotaAsignada){
-						$estadoCuota = "Tambien fue actualizada la cuota de este socio.";
-					}
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Agreggar mascota", "Se agregó una nueva mascota de nombre " . $nombre . " y se le asignó al socio " . $socio->nombre . $cuotaAsignada);
-					$response->retorno = true;
-					$response->mensaje = "Se ingresó la mascota correctamente y se vinculó al socio seleccionado. " . $estadoCuota;
-					if($resultInsertOperacionUsuario)
-						$response->enHistorial = "Registrado en el historial del usuario.";
-					else
-						$response->enHistorial = "No ingresado en historial de usuario.";
-				}else{
-					$response->retorno = false;
-					$response->mensaje = "Se ingreso la mascota, por un error interno el sistema no pudo vincularla al socio seleccionado.";
-				}
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Ocurrió un error interno y el sistema no pudo almacenar la mascota ingresada.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El socio al que desea asignarle la mascota no fue encontrado.";
-			return $response;
-		}
+			$responseInsertMascota = mascotas::insertMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, 1, $pelo, $chip, $observaciones);
+			if($responseInsertMascota->result == 2){
+				$responseAsociarMascota = mascotas::vincularMascotaSocio($idSocio, $responseInsertMascota->id, fechas::getCurrentDateInt());
+				if($responseAsociarMascota->result == 2){
+					$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
+					if($responseGetQuota->result == 2){
+						$responseUpdateQuota = ctr_usuarios::updateQuotaSocio($idSocio, $responseGetQuota->quota);
+						if($responseUpdateQuota->result == 2){
+							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Agregar Mascota", "Se le agregó una nueva mascota de nombre" . $nombre . " al socio " . $responseGetSocio->socio->nombre . ". Se actualizó la cuota.");
+							if($responseInsertHistorial->result == 2){
+								$response->result = 2;
+								$response->message = "Se agregó la nueva mascota de " . $responseGetSocio->socio->nombre . ", y se modifico su cuota correctamente, la operación fue registrada en el historail.";
+							}else{
+								$response->result = 1;
+								$response->message = "Se agregó la nueva mascota de " . $responseGetSocio->socio->nombre . ", y se modifico la cuota correctamente, la operación no fue registada en el historial por un error interno.";
+							}
+						}else return $responseUpdateQuota;
+					}else return $responseGetQuota;
+				}else return $responseAsociarMascota;
+			}else return $responseInsertMascota;
+		}else return $responseGetSocio;
+
 		return $response;
 	}
 
-	public function updateMascota($idSocio, $idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
+	public function modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
 		$response = new \stdClass();
 
-		$socio = ctr_usuarios::getSocio($idSocio);
-		if($socio != null){
-			$mascota = mascotas::getMascota($idMascota);
-			if($mascota != null){
-
-				$fechaNacimientoFormat = fechas::parceFechaInt($fechaNacimiento);
-				$result = mascotas::updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimientoFormat, $pelo, $chip, $observaciones);
-				if($result){
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar mascota", "Se modificó la información de la mascota de nombre " . $nombre . " vinculada al socio " . $socio->nombre .".");
-					if($resultInsertOperacionUsuario)
-						$response->enHistorial = "Registrado en el historial del usuario.";
-					else
-						$response->enHistorial = "No ingresado en historial de usuario.";
-					$response->retorno = true;
-					$response->mensaje = "La información de " . $nombre . " fue modificada correctamente.";
+		$responseGetMascota = mascotas::getMascota($idMascota);
+		if($responseGetMascota->result == 2){
+			if(!is_null($fechaNacimiento))
+				$fechaNacimiento = fechas::getDateToINT($fechaNacimiento);
+			$responseUpdateMascota = mascotas::updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones);
+			if($responseUpdateMascota->result == 2){
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar mascota", "Se modificó la información de la mascota de nombre " . $nombre . ".");
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "La mascota fue modificada correctamente y se generó un registro en el historial de usuario.";
 				}else{
-					$response->retorno = false;
-					$response->mensajeError = "La información de la mascota no pudo ser modificada, por favor vuelva a intentarlo.";
+					$response->result = 2;
+					$response->message = "La mascota fue modificada correctamente pero no se generó un registro en el historial de usuario por un error interno.";
 				}
-			}else{
-				$response->retorno = true;
-				$response->mensajeError = "La mascota que desea modificar no fue encontrada en el sistema, por favor vuelva a intentarlo.";
-			}
-		}else{
-			$response->retorno = true;
-			$response->mensajeError = "El socio al que desea vincular la mascota no fue encontrado en el sistema, por favor vuelva a intentarlo.";
-		}
+
+				$responseGetUpdatedMascota = mascotas::getMascotaToShow($idMascota);
+				if($responseGetUpdatedMascota->result == 2)
+					$response->updatedMascota = $responseGetUpdatedMascota->objectResult;
+			}else return $responseUpdateMascota;
+		}else return $responseGetMascota;
 
 		return $response;
 	}
@@ -99,57 +85,40 @@ class ctr_mascotas {
 	public function activarDesactivarMascota($idMascota){
 		$response = new \stdClass();
 
-		$mascota = mascotas::getMascota($idMascota);
-		if($mascota != null){
-			$socio = ctr_usuarios::getSocioMascota($idMascota);
-			if($socio){
-				if($socio->estado != 0){
-					$estado = 0;
-					if($mascota->estado == 0)
-						$estado = 1;
-					$result = mascotas::activarDesactivarMascota($idMascota, $estado);
+		$responseGetMascota = mascotas::getMascota($idMascota);
+		if($responseGetMascota->result == 2){
+			$responseGetSocio = ctr_usuarios::getSocioMascota($idMascota);
+			if($responseGetSocio->result == 2){
+				if($responseGetSocio->socio->estado == 1){
 
-					if($estado == 1)
-						$estado = "Activada";
-					else
-						$estado = "Desactivada";
-
-					if($result){
-				//------------------------ RECALCULAR CUOTA ---------------------
-						$cuotaAsignada = ctr_usuarios::calcularCostoCuota($socio->idSocio);
-						$estadoCuota = "La cuota del socio no fue actualizada verifiquela.";
-						if($cuotaAsignada){
-							$estadoCuota = "Tambien fue actualizada la cuota de este socio.";
-						}
-				//------------------------------------------------------------------
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-						$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Activar Desactivar Mascota", "La mascota de nombre " . $mascota->nombre . " y vinculada al socio " . $socio->nombre . " fue " . $estado . $cuotaAsignada);
-						if($resultInsertOperacionUsuario)
-							$response->enHistorial = "Registrado en el historial del usuario.";
-						else
-							$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-						$response->retorno = true;
-						$response->mensaje = "La mascota fue " . $estado . " correctamente.";
-						$response->titulo = "Mascota " . $estado;
-					}else{
-						$response->retorno = false;
-						$response->mensajeError = "Ocurrió un error, la mascota no pudo ser " . $estado . ", por favor vuelva a intentarlo.";
-						$response->titulo = "Error: Mascota no " . $estado;
+					$newState = 0;
+					$newStateString = "desactivada";
+					if($responseGetMascota->objectResult->estado == 0){
+						$newState = 1;
+						$newStateString = "activada";
 					}
+
+					$responseChangeStateMascota = mascotas::activarDesactivarMascota($idMascota, $newState);
+					if($responseChangeStateMascota->result == 2){
+						$responseGetQuota = ctr_usuarios::calculateQuotaSocio($responseGetSocio->socio->idSocio);
+						if($responseGetQuota->result == 2){
+							$responseUpdateQuota = ctr_usuarios::updateQuotaSocio($responseGetSocio->socio->idSocio, $responseGetQuota->quota);
+							if($responseUpdateQuota->result == 2){
+								$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Mascota " . $newStateString, "La mascota " . $responseGetMascota->objectResult->nombre . " de " . $responseGetSocio->socio->nombre . " fue " . $newStateString . ". Se actualizó su cuota a $ " . number_format($responseGetQuota->quota, 2, ",", "."));
+								$response->result = 2;
+								if($responseInsertHistorial->result == 2)
+									$response->message = "La mascota fue " . $newStateString . ", la cuota del socio actualizada y se generó un registro en el historial de usuario.";
+								else
+									$response->message = "La mascota fue " . $newStateString . ", la cuota actualizada pero no pudo generarse un registro en el historial de usuario por un error interno.";
+							}else return $responseUpdateQuota;
+						}else return $responseGetQuota;
+					}else return $responseChangeStateMascota;
 				}else{
-					$response->retorno = false;
-					$response->mensajeError = "No se puede modificar el estado de una mascota de un socio inactivo, sin activarlo previamente.";
+					$response->result = 0;
+					$response->message = "El estado de la mascota no puede modificarse si su socio esta desactivado.";
 				}
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "No hay información de un responsable por esta mascota, por lo que no puede realizarse este cambio.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La mascota seleccionada no fue encontrada.";
-			$response->titulo = "Error: Mascota no encontrada";
-		}
+			}else return $responseGetSocio;
+		}else return $responseGetMascota;
 
 		return $response;
 	}
@@ -197,48 +166,66 @@ class ctr_mascotas {
 		return $response;
 	}
 
-	public function getMasctoasSocio($idSocio){
-		return mascotas::getMascotasSocios($idSocio);
+	public function getSocioActivePets($idSocio){
+		$response = new \stdClass();
+
+		$responseGetPets = mascotas::getSocioActivePets($idSocio);
+		if($responseGetPets->result == 2){
+			$response->result = 2;
+			$response->mascotas = $responseGetPets->listResult;
+		}else return $responseGetPets;
+
+		return $response;
+	}
+
+	public function getMascotasSocio($idSocio){
+		$response = new \stdClass();
+
+		$responseGetMascotas = mascotas::getMascotasSocio($idSocio);
+		if($responseGetMascotas->result == 2){
+			$response->result = 2;
+			$response->listMascotas = $responseGetMascotas->listResult;
+		}else return $responseGetMascotas;
+
+		return $response;
 	}
 
 	public function getMascota($idMascota){
 		return mascotas::getMascota($idMascota);
 	}
 
-	public function getMascotaCompleto($idMascota){
-		return array(
-			"mascota" =>  mascotas::getMascota($idMascota),
-			"duenio" => ctr_usuarios::getSocioMascota($idMascota),
-			"hayHistorial" => ctr_historiales::checkHayHistorial($idMascota));
+	public function getMascotaWithSocio($idMascota){
+		$response = new \stdClass();
+
+		$responseGetMascota = mascotas::getMascotaToShow($idMascota);
+		if($responseGetMascota->result == 2)
+			$response->mascota = $responseGetMascota->objectResult;
+
+		$responseGetIDSocio = mascotas::getSocioIdByMascota($idMascota);
+		if($responseGetIDSocio->result == 2){
+			$responseGetSocio = ctr_usuarios::getSocioToShow($responseGetIDSocio->objectResult->idSocio);
+			if($responseGetSocio->result == 2)
+				$response->socio = $responseGetSocio->objectResult;
+		}
+
+		return $response;
 	}
 
-	public function getMascotas(){
-		return mascotas::getMascotas();
+	public function getMascotas($lastId, $textToSearch, $stateMascota){
+		$response = new \stdClass();
+
+		$responseGetMascotas = mascotas::getMascotas($lastId, $textToSearch, $stateMascota);
+		if($responseGetMascotas->result == 2){
+			$response->result = 2;
+			$response->lastId = $responseGetMascotas->lastId;
+			$response->listMascotas = $responseGetMascotas->listResult;
+		}else return $responseGetMascotas;
+
+		return $response;
 	}
 
 	public function getMascotasInactivasPendientes(){
 		return mascotas::getMascotasInactivasPendientes();
-	}
-
-	public function getMascotasPagina($ultimoID, $estadoMascota){
-		if($ultimoID == 0){
-			$maxId = mascotas::getMascotaMaxId($estadoMascota);
-			$mascotas = mascotas::getMascotasPagina($maxId->idMaximo, $estadoMascota);
-			$minId = mascotas::getMin($mascotas, $maxId->idMaximo);
-			return array(
-				"min" => $minId,
-				"max" => $maxId,
-				"mascotas" => $mascotas
-			);
-		}else{
-			$mascotas = mascotas::getMascotasPagina($ultimoID, $estadoMascota);
-			$minId = mascotas::getMin($mascotas, $ultimoID);
-			return array(
-				"min" => $minId,
-				"max" => $ultimoID,
-				"mascotas" => $mascotas
-			);
-		}
 	}
 
 	public function buscadorMascotaNombre($nombreMascota, $estadoMascota){
@@ -266,132 +253,107 @@ class ctr_mascotas {
 	public function aplicarNuevaVacunaMascota($idMascota, $nombreVacuna, $intervalo, $fechaDosis, $observaciones){
 		$response = new \stdClass();
 
-		$mascota = mascotas::getMascota($idMascota);
-		if($mascota){
-			$socio = ctr_usuarios::getSocioMascota($idMascota);
-			$conSocio = "sin socio vinculado";
-			if($socio != null)
-				$conSocio = "vinculada al socio " . $socio->nombre;
-			$fechaDosisFormat = fechas::parceFechaInt($fechaDosis);
-			$fechaProximaDosis = 0;
-			if($intervalo != 1)
-				$fechaProximaDosis = fechas::parceFechaInt(fechas::calcularFechaProximaDosis($fechaDosis, $intervalo));
-
-			$result = serviciosMascota::insertVacunaMascota($nombreVacuna, $idMascota, $intervalo, 1, $fechaDosisFormat, $fechaDosisFormat,$fechaProximaDosis, $observaciones);
-			if($result){
-				$resultInsertHistoria = ctr_historiales::insertHistoriaMascota($idMascota, "Se aplicó primer dosis de la vacuna " . $nombreVacuna , "" , "");
-				$enHistoriaClinica = "";
-				if($resultInsertHistoria)
-					$enHistoriaClinica = "Se generó un registro en la historia clínica de la mascota.";
-
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Aplicar nueva vacuna", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le aplicó una vacuna de nombre " . $nombreVacuna . ". " . $enHistoriaClinica);
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
+		$responseGetMascota = mascotas::getMascota($idMascota);
+		if($responseGetMascota->result == 2){
+			$fechaDosis = fechas::getDateToINT($fechaDosis);
+			$fechaProximaDosis = null;
+			if($intervalo !=  1)
+				$fechaProximaDosis = fechas::getDateToINT(fechas::calcularFechaProximaDosis($fechaDosis, $intervalo));
+			$responseInsertVacuna = serviciosMascota::insertVacunaMascota($nombreVacuna, $idMascota, $intervalo, 1, $fechaDosis, $fechaDosis, $fechaProximaDosis, $observaciones);
+			if($responseInsertVacuna->result == 2){
+				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se aplicó la primer dosis de la vacuna " . $nombreVacuna, null, null);
+				$response->result = 2;
+				if($responseInsertHistorial->result == 2)
+					$response->message = "La vacuna fue insertada correctamente, se creo un registro en el historial de la mascota.";
 				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
+					$response->message = "La vacuna fue insertada correctamente, pero el registro en el historial de la mascota no fue creado por un error interno.";
+				$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($responseInsertVacuna->id);
+				if($responseGetVacuna->result == 2)
+					$response->newVacuna = $responseGetVacuna->objectResult;
+			}else return $responseInsertVacuna;
+		}else return $responseGetMascota;
 
-				$response->retorno = true;
-				$response->mensaje = "La vacuna fue vinculada correctamente a la mascota. " . $enHistoriaClinica;
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "La vacuna no pudo ser ingresada correctamente, verifique la información y vuelva a intentarlo.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La mascota a la que se le quiere aplicar la vacuna no fue encontrada por un error, por favor vuelva a intentarlo.";
-		}
 		return $response;
 	}
 
 	public function updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $observaciones){
 		$response = new \stdClass();
 
-		$vacunaMascota = serviciosMascota::getVacunaMascota($idVacunaMascota);
-		if($vacunaMascota){
-			$mascota = mascotas::getMascota($vacunaMascota->idMascota);
-
-			$socio = ctr_usuarios::getSocioMascota($mascota->idMascota);
-			$nombreSocio = "Sin socio";
-			if($socio) $nombreSocio = $socio->nombre;
-
-			$fechaProximaDosis = fechas::parceFechaInt(fechas::calcularFechaProximaDosis($fechaUltimaDosis, $intervalo));
-			$fechaProximaDosisFormat =  fechas::parceFechaInt($fechaProximaDosis);
-			$fechaUltimaDosisFormat = fechas::parceFechaInt($fechaUltimaDosis);
-			$result = serviciosMascota::updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosisFormat, $fechaProximaDosisFormat, $observaciones);
-			if($result){
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar vacuna", "Se actualizó la información de la vacuna " . $nombre ." que se le fue aplicada a " . $mascota->nombre . " de " . $nombreSocio . ".");
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
+		$responseGetVacunaMascota = serviciosMascota::getVacunaMascota($idVacunaMascota);
+		if($responseGetVacunaMascota->result == 2){
+			$fechaProximaDosis = fechas::getDateToINT(fechas::calcularFechaProximaDosis($fechaUltimaDosis, $intervalo));
+			$fechaUltimaDosis = fechas::getDateToINT($fechaUltimaDosis);
+			$responseUpdateVacuna = serviciosMascota::updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones);
+			if($responseUpdateVacuna->result == 2){
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar vacuna", "Se actualizó la información de la vacuna " . $nombre . ".");
+				$response->result = 2;
+				if($responseInsertHistorial->result == 2)
+					$response->message = "La vacuna fue modificada correctamente, se agregó un registro en el historial del usuario.";
 				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-				$response->retorno = true;
-				$response->mensaje = "La información de la vacuna fue modificada correctamente.";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Ocurrió un error y la vacuna seleccionada no fue modificada, por favor vuelva a intentarlo.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La vacuna que quiere modificar no fue encontrada por favor vuelva a intentarlo.";
-		}
+					$response->message = "La vacuna fue modificada correctamente, no se agregóun registro en el historial debido a un error interno.";
+
+				$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
+				if($responseGetVacuna->result == 2)
+					$response->updatedVacuna = $responseGetVacuna->objectResult;
+			}else return $responseUpdateVacuna;
+		}else return $responseGetVacunaMascota;
+
 		return $response;
 	}
 
-	public function aplicarDosisVacuna($idVacunaMascota){
+	public function borrarVacunaMascota($idVacunaMascota){
 		$response = new \stdClass();
 
-		$vacunaMascota = serviciosMascota::getVacunaMascota($idVacunaMascota);
-		if($vacunaMascota){
-			$mascota = mascotas::getMascota($vacunaMascota->idMascota);
-			if($mascota){
-				$socio = ctr_usuarios::getSocioMascota($mascota->idMascota);
-				$conSocio = "sin socio vinculado";
-				if($socio != null)
-					$conSocio = "vinculada al socio " . $socio->nombre;
-
-				$fechaUltimaDosis = fechas::parceFechaInt(date('Y-m-d'));
-				$fechaProximaDosis = 0;
-				if($vacunaMascota->intervaloDosis != 1)
-					$fechaProximaDosis = fechas::parceFechaInt(fechas::calcularFechaProximaDosis(date('Y-m-d'), $vacunaMascota->intervaloDosis));
-
-				$result = serviciosMascota::aplicarDosisVacunaMascota($idVacunaMascota, $fechaUltimaDosis, ($vacunaMascota->numDosis + 1), $fechaProximaDosis);
-				if($result){
-					$resultInsertHistoria = ctr_historiales::insertHistoriaMascota($vacunaMascota->idMascota, "Se aplicó dosis N° " . ($vacunaMascota->numDosis + 1) . " de la vacuna " . $vacunaMascota->nombreVacuna, "" , "");
-					$enHistoriaClinica = "";
-					if($resultInsertHistoria)
-						$enHistoriaClinica = "Se generó un registro en la historia clínica de la mascota.";
-
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Aplicar dosis vacuna", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le fue aplicada una dosis de " . $vacunaMascota->nombreVacuna . ". " . $enHistoriaClinica);
-					if($resultInsertOperacionUsuario)
-						$response->enHistorial = "Registrado en el historial del usuario.";
-					else
-						$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-					$response->retorno = true;
-					$response->mensaje = "La dosis de la vacuna aplicada fue almacenada correctamente. " . $enHistoriaClinica;
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "La dosis de la vacuna aplicada no pudo ser registrada por favor vuelva a intentarlo.";
-				}
+		$responseGetVacunaMascota = serviciosMascota::getVacunaMascota($idVacunaMascota);
+		if($responseGetVacunaMascota->result == 2){
+			$responseDelete = serviciosMascota::borrarVacunaMascota($idVacunaMascota);
+			if($responseDelete->result == 2){
+				$response->result = 2;
+				$response->message = "La vacuna fue borrada correctamente.";
 			}else{
-				$response->retorno = false;
-				$response->mensajeError = "La vacuna que esta intentando aplicar no tiene una mascota vinculada. por favor vuelva a intentarlo.";
+				$response->result = 0;
+				$response->message = "Ocurrió un error y la vacuna no fue borrada.";
 			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "No se pudo encontrar la vacuna para registrar la dosis, por favor intentelo nuevamente.";
-		}
+		}else return $responseGetVacunaMascota;
 
 		return $response;
 	}
 
-	public function getVacunasMascotas(){
-		return serviciosMascota::getVacunasMascotas();
+	public function aplicarDosisVacuna($idVacunaMascota, $dateDosis){
+		$response = new \stdClass();
+
+		$responseGetVacunaMascota = serviciosMascota::getVacunaMascota($idVacunaMascota);
+		if($responseGetVacunaMascota->result == 2){
+			$responseGetMascota = mascotas::getMascota($responseGetVacunaMascota->objectResult->idMascota);
+			if($responseGetMascota->result == 2){
+				$fechaProximaDosis = null;
+				if($responseGetVacunaMascota->objectResult->intervaloDosis != 1)
+					$fechaProximaDosis = fechas::getDateToINT(fechas::calcularFechaProximaDosis($dateDosis, $responseGetVacunaMascota->objectResult->intervaloDosis));
+
+				$dateDosis = fechas::getDateToINT($dateDosis);
+				$responseUpdateVacuna = serviciosMascota::aplicarDosisVacunaMascota($idVacunaMascota, $dateDosis, $responseGetVacunaMascota->objectResult->numDosis + 1, $fechaProximaDosis);
+				if($responseUpdateVacuna->result == 2){
+					$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($responseGetMascota->objectResult->idMascota, null, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".", null, null);
+					if($responseInsertHistorial->result == 2){
+						$response->result = 2;
+						$response->message = "Se registró la dosis de la vacuna aplicada y se creo un registro en el historial de la mascota.";
+					}else{
+						$response->result = 1;
+						$response->message = "Se registró la dosis de la vacuna aplicada pero no se generó un registro en el historial de la mascota por un error interno.";
+					}
+
+					$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
+					if($responseGetVacuna->result == 2)
+						$response->updatedVacuna = $responseGetVacuna->objectResult;
+				}else return $responseUpdateVacuna;
+			}else return $responseGetMascota;
+		}else return $responseGetVacunaMascota;
+
+		return $response;
+	}
+
+	public function getVacunasMascota($idMascota){
+		return serviciosMascota::getVacunasMascotas($idMascota);
 	}
 
 	public function getVacunasVencidasMascota($idMascota){
@@ -403,152 +365,97 @@ class ctr_mascotas {
 		return serviciosMascota::getVacunaMascota($idVacunaMascota);
 	}
 
-	public function getVacunasPagina($ultimoID, $idMascota){
-		if($ultimoID == 0){
-			$maxId = serviciosMascota::getVacunaMaxId($idMascota);
-			$vacunas = serviciosMascota::getVacunasPagina($maxId, $idMascota);
-			$minId = serviciosMascota::getVacunasMinId($vacunas, $maxId);
-			return array(
-				"min" => $minId,
-				"max" => $maxId,
-				"vacunas" => $vacunas
-			);
-		}else{
-			$vacunas = serviciosMascota::getVacunasPagina($ultimoID, $idMascota);
-			$minId = serviciosMascota::getVacunasMinId($vacunas, $ultimoID);
-			return array(
-				"min" => $minId,
-				"max" => $ultimoID,
-				"vacunas" => $vacunas
-			);
-		}
+	public function getVacunaMascotaToShowView($idVacunaMascota){
+		return serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
 	}
 
-	public function getVencimientosVacunaPagina($ultimoID){
-		$fechaActual = date('Y-m-d');
-		$fecha = date("Y-m-d", strtotime("$fechaActual + 3 day"));
-		$fecha = fechas::parceFechaInt($fecha);
-
-		if($ultimoID == 0){
-			$ultimoID = serviciosMascota::getVacunasVencidasMaxId($fecha);
-		}
-
-		$vacunasVencidas = serviciosMascota::getVacunasVencidasPagina($ultimoID, $fecha);
-		$minId = serviciosMascota::getVacunasVencidasMinId($vacunasVencidas, $ultimoID);
-		if(sizeof($vacunasVencidas) == 0) return null;
-		else return array(
-			"min" => $minId,
-			"max" => $ultimoID,
-			"vencimientos" => $vacunasVencidas
-		);
-	}
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//-------------------------------------------------------FUNCIONES ANALISIS-------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 
-	public function insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis){
+	public function getAnalisisMascota($idMascota){
+		return serviciosMascota::getAnalisisMascota($idMascota);
+	}
+
+	public function insertAnalisis($idMascota, $nombre, $fecha, $detalle, $resultado){
 		$response = new \stdClass();
 
-		$mascota = mascotas::getMascota($idMascota);
-		if($mascota){
-			$fechaAnalisisFormat = fechas::parceFechaInt($fechaAnalisis);
-			$result = serviciosMascota::insertNewAnalisis($idMascota, $nombreAnalisis, $fechaAnalisisFormat, $detalleAnalisis, $resultadoAnalisis);
+		$responseGetMascota = mascotas::getMascota($idMascota);
+		if($responseGetMascota->result == 2){
+			$fecha = fechas::getDateToINT($fecha);
+			$responseInsertAnalisis = serviciosMascota::insertAnalisis($idMascota, $nombre, $fecha, $detalle, $resultado);
+			if($responseInsertAnalisis->result == 2){
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo Análisis ingresado", "La mascota de nombre " . $responseGetMascota->objectResult->nombre . " se le fue ingresado un análisis de " . $nombre . ".");
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "El análisis fue ingresado correctamente y se creo un registro en el historial del usuario.";
+				}else{
+					$response->result = 1;
+					$response->message = "El análisis fue ingresado correctamente pero no se registro en el historial del usuario la operación.";
+				}
 
-			if($result){
-				$socio = ctr_usuarios::getSocioMascota($idMascota);
-				$conSocio = "sin socio vinculado";
-				if($socio != null)
-					$conSocio = "vinculada al socio " . $socio->nombre;
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Nuevo Análisis ingresado", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le fue ingresado un análisis de " . $nombreAnalisis . ".");
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
-				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-				$response->retorno = true;
-				$response->mensaje = "EL análisis de " . $mascota->nombre . " se ingresó correctamente.";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Ocurrió un error y el análisis que se intento agregar no pudo ser guardado, por favor vuelva a intentarlo.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La mascota a la que se le quiere ingresar un análisis no fue encontrada en el sisitema.";
-		}
+				$responseGetInserted = serviciosMascota::getAnalisisToShow($responseInsertAnalisis->id);
+				if($responseInsertAnalisis->result == 2)
+					$response->newAnalisis = $responseGetInserted->objectResult;
+			}else return $responseInsertAnalisis;
+		}else return $responseGetMascota;
 
 		return $response;
 	}
 
-	public function updateAnalisis($idAnalisis, $nombreAnalisis, $fechaAnalisis, $detalleAnalisis, $resultadoAnalisis){
+	public function updateAnalisis($idAnalisis, $nombre, $fecha, $detalle, $resultado){
 		$response = new \stdClass();
 
-		$analisis = serviciosMascota::getAnalisis($idAnalisis);
-		if($analisis){
-			$mascota = mascotas::getMascota($analisis->idMascota);
-			$socio =  ctr_usuarios::getSocioMascota($mascota->idMascota);
-			$conSocio = "sin socio vinculado";
-			if($socio != null)
-				$conSocio = "vinculada al socio " . $socio->nombre;
-			$fechaAnalisisFormat = fechas::parceFechaInt($fechaAnalisis);
-			$result = serviciosMascota::updateAnalisisMascota($idAnalisis, $nombreAnalisis, $fechaAnalisisFormat, $detalleAnalisis, $resultadoAnalisis);
-			if($result){
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar Análisis", "El análisis de " . $nombreAnalisis ." perteneciente a la mascota " . $mascota->nombre . " " . $conSocio . " fue modificado.");
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
-				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-				$response->retorno = true;
-				$response->mensaje = "EL análisis fue modificado correctamente.";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Ocurrió un error y el análisis no pudo ser modificado, por favor vuelva a intentarlo.";
-			}
+		$responseGetAnalisis = serviciosMascota::getAnalisis($idAnalisis);
+		if($responseGetAnalisis->result == 2){
+			$responseGetMascota = mascotas::getMascota($responseGetAnalisis->objectResult->idMascota);
+			$fecha = fechas::getDateToINT($fecha);
+			$responseUpdateAnalisis = serviciosMascota::updateAnalisisMascota($idAnalisis, $nombre, $fecha, $detalle, $resultado);
+			if($responseUpdateAnalisis->result == 2){
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar Análisis", "El análisis de " . $nombre ." perteneciente a la mascota " . $responseGetMascota->objectResult->nombre . " fue modificado.");
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "El análisis fue modificado correctamente y se creo un registro en el historial del usuario.";
+				}else{
+					$response->result = 1;
+					$response->message = "El análisis fue modificado correctamente pero no se registro en el historial del usuario la operación.";
+				}
 
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El análisis que intenta modificar no fue encontrado en el sistema por favor vuelva a intentarlo.";
-		}
+				$responseGetInserted = serviciosMascota::getAnalisisToShow($idAnalisis);
+				if($responseGetInserted->result == 2)
+					$response->newAnalisis = $responseGetInserted->objectResult;
+			}else return $responseUpdateAnalisis;
+		}else return $responseGetAnalisis;
+
+		return $response;
+	}
+
+	public function deleteAnalisis($idAnalisis){
+		$response = new \stdClass();
+
+		$responseGetAnalisis = serviciosMascota::getAnalisis($idAnalisis);
+		if($responseGetAnalisis->result == 2){
+			$responseDeleteAnalisis = serviciosMascota::deleteAnalisis($idAnalisis);
+			if($responseDeleteAnalisis->result == 2){
+				$response->result = 2;
+				$response->message = "El análisis fue borrado correctamente.";
+			}else {
+				$response->result = 0;
+				$response->message = "El análisis no fue borrado por un error interno.";
+			}
+		}else return $responseGetAnalisis;
 
 		return $response;
 	}
 
 	public function getAnalisis($idAnalisis){
-		$response = new \stdClass();
-		$analisis = serviciosMascota::getAnalisis($idAnalisis);
-		if($analisis){
-			$analisis->fecha = fechas::parceFechaFormatDMA($analisis->fecha, "/");
-			return $analisis;
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El análisis que intenta seleccionar no se encontro en el sistema, por favor vuelva a intentarlo.";
-			return $response;
-		}
+		return serviciosMascota::getAnalisis($idAnalisis);
 	}
 
-	public function getAnalisisPagina($ultimoID, $idMascota){
-		if($ultimoID == 0){
-			$maxId = serviciosMascota::getAnalisisMaxId($idMascota);
-			$analisis = serviciosMascota::getAnalisisPagina($maxId, $idMascota);
-			$minId = serviciosMascota::getAnalisisMinId($analisis, $maxId);
-			return array(
-				"min" => $minId,
-				"max" => $maxId,
-				"analisis" => $analisis
-			);
-		}else{
-			$analisis = serviciosMascota::getAnalisisPagina($ultimoID, $idMascota);
-			$minId = serviciosMascota::getAnalisisMinId($analisis, $ultimoID);
-			return array(
-				"min" => $minId,
-				"max" => $ultimoID,
-				"analisis" => $analisis
-			);
-		}
+	public function getAnalisisToShow($idAnalisis){
+		return serviciosMascota::getAnalisisToShow($idAnalisis);
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------------------------
@@ -557,104 +464,90 @@ class ctr_mascotas {
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 
-	public function insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones){
+	public function updateEnfermedad($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones){
 		$response = new \stdClass();
 
-		$mascota = mascotas::getMascota($idMascota);
+		$responseGetEnfermedad = serviciosMascota::getEnfermedadMascota($idEnfermedad);
+		if($responseGetEnfermedad->result == 2){
+			$responseGetMascota = mascotas::getMascota($responseGetEnfermedad->objectResult->idMascota);
+			if($responseGetMascota->result == 2){
+				$fechaDiagnostico = fechas::getDateToINT($fechaDiagnostico);
+				$responseUpdateEnfermedad = serviciosMascota::updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones);
+				if($responseUpdateEnfermedad->result == 2){
+					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Enfermedad actualizada", "La mascota de nombre " . $responseGetMascota->objectResult->nombre . " modificó la información de la enfermedad " . $nombre . ".");
+					if($responseInsertHistorial->result == 2){
+						$response->result = 2;
+						$response->message = "La enfermedad fue modificada correctamente y se generó un registro en el historial de usuario.";
+					}else{
+						$response->result = 1;
+						$response->message = "La enfermedad fue modificada correctamente pero no se pudo generar un registro en el historial de usuario.";
+					}
 
-		if($mascota != null){
-			$fechaDiagnosticoFormat = fechas::parceFechaInt($fechaDiagnostico);
-			$socio = ctr_usuarios::getSocioMascota($idMascota);
-			$conSocio = "sin socio vinculado";
-			if($socio != null)
-				$conSocio = "vinculada al socio " . $socio->nombre;
-			$result = serviciosMascota::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnosticoFormat, $observaciones);
-			if($result){
-				$resultInsertHistoria = ctr_historiales::insertHistoriaMascota($idMascota, "Se diagnóstico enfermedad a ". $mascota->nombre, "Se diagnóstico a la mascota de " . $nombre, "");
-				$enHistoriaClinica = "";
-				if($resultInsertHistoria)
-					$enHistoriaClinica = "Se generó un registro en la historia clínica de la mascota.";
-
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Enfermedad mascota", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le fue diagnósticada la enfermedad " . $nombre . ". " . $enHistoriaClinica);
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
-				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-				$response->retorno = true;
-				$response->mensaje = "La enfermdad de " . $mascota->nombre . " fue agregada correctamente. ";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "La enfermdad de " . $mascota->nombre . " no pudo ingresarse, por favor vuelva a intentarlo.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La mascota no fue encontrada en el sistema, por favor vuelva a intentarlo.";
-		}
+					$repsonseGetUpdatedEnfermedad = serviciosMascota::getEnfermedadMascota($idEnfermedad);
+					if($repsonseGetUpdatedEnfermedad->result == 2){
+						$repsonseGetUpdatedEnfermedad->objectResult->fechaDiagnostico = fechas::dateToFormatBar(fechas::getDateToINT($repsonseGetUpdatedEnfermedad->objectResult->fechaDiagnostico));
+						$response->updatedEnfermedad = $repsonseGetUpdatedEnfermedad->objectResult;
+					}
+				}else return $responseUpdateEnfermedad;
+			}else return $responseGetMascota;
+		}else return $responseGetEnfermedad;
 
 		return $response;
 	}
 
-	public function updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones){
+	public function deleteEnfermedad($idEnfermedad){
 		$response = new \stdClass();
 
-		$enfermedad = serviciosMascota::getEnfermedadMascota($idEnfermedad);
+		$responseGetEnfermedad = serviciosMascota::getEnfermedadMascota($idEnfermedad);
+		if($responseGetEnfermedad->result == 2){
+			$responseGetMascota = mascotas::getMascota($responseGetEnfermedad->objectResult->idMascota);
+			if($responseGetMascota->result == 2){
+				$responseDeleteEnfermedad = serviciosMascota::deleteEnfermedad($idEnfermedad);
+				if($responseDeleteEnfermedad->result == 2){
+					$response->result = 2;
+					$response->message = "La enfermedad fue borrada correctamente.";
+				}else return $responseDeleteEnfermedad;
+			}else return $responseGetMascota;
+		}else return $responseGetEnfermedad;
 
-		if($enfermedad != null){
-			$mascota = mascotas::getMascota($enfermedad->idMascota);
-			$socio = ctr_usuarios::getSocioMascota($mascota->idMascota);
-			$conSocio = "sin socio vinculado";
-			if($socio != null)
-				$conSocio = "vinculada al socio " . $socio->nombre;
-
-			$fechaDiagnostico = fechas::parceFechaInt($fechaDiagnostico);
-			$result = serviciosMascota::updateEnfermedadMascota($idEnfermedad, $nombre, $fechaDiagnostico, $observaciones);
-			if($result){
-
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Enfermedad actualizada", "La mascota de nombre " . $mascota->nombre . " " . $conSocio . " se le actualizó la información de la enfermedad " . $nombre . ".");
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
-				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-
-				$response->retorno = true;
-				$response->mensaje = "La enfermedad fue modificada correctamente.";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Ocurrió un error y la enfermedad no pudo modificarse, por favor vuelva a intentarlo.";
-			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "La enfermedad que se desea modificar no fue encontrada en el sistema, por favor vuelva a intentarlo.";
-		}
 		return $response;
+	}
+
+	public function insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones){
+		$response = new \stdClass();
+
+		$responseGetMascota = mascotas::getMascota($idMascota);
+		if($responseGetMascota->result == 2){
+			$fechaDiagnostico = fechas::getDateToINT($fechaDiagnostico);
+			$responseInsertEnfermedad = serviciosMascota::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones);
+			if($responseInsertEnfermedad->result == 2){
+				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre, null, null);
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "Se agregó correctamente la nueva enfermedad y se creo un registro en el historial de la mascota.";
+				}else{
+					$response->result = 1;
+					$response->message = "Se agregó correctamente la nueva enfermedad pero no se pudo generar el registro en el historial de la mascota.";
+				}
+				$responseGetEnfermedadFormat = serviciosMascota::getEnfermedadMascotaToShow($responseInsertEnfermedad->id);
+				if($responseGetEnfermedadFormat->result == 2)
+					$response->newEnfermedad = $responseGetEnfermedadFormat->objectResult;
+
+			}else return $responseInsertEnfermedad;
+		}else return $responseGetMascota;
+
+		return $response;
+	}
+
+	public function getEnfermedadesMascota($idMascota){
+		return serviciosMascota::getEnfermedadesMascota($idMascota);
 	}
 
 	public function getEnfermedadMascota($idEnfermedad){
 		return serviciosMascota::getEnfermedadMascota($idEnfermedad);
 	}
 
-	public function getEnfermedadesPagina($ultimoID, $idMascota){
-		if($ultimoID == 0){
-			$maxId = serviciosMascota::getEnfermedadesMaxId($idMascota);
-			$enfermedades = serviciosMascota::getEnfermedadesPagina($maxId, $idMascota);
-			$minId = serviciosMascota::getEnfermedadesMinId($enfermedades, $maxId);
-			return array(
-				"min" => $minId,
-				"max" => $maxId,
-				"enfermedades" => $enfermedades
-			);
-		}else{
-			$enfermedades = serviciosMascota::getEnfermedadesPagina($ultimoID, $idMascota);
-			$minId = serviciosMascota::getEnfermedadesMinId($enfermedades, $ultimoID);
-			return array(
-				"min" => $minId,
-				"max" => $ultimoID,
-				"enfermedades" => $enfermedades
-			);
-		}
+	public function getEnfermedadMascotaToShow($idEnfermedad){
+		return serviciosMascota::getEnfermedadMascotaToShow($idEnfermedad);
 	}
 }

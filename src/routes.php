@@ -4,6 +4,7 @@ use Slim\App;
 use Slim\Http\Response;
 
 require_once '../src/controladores/ctr_mascotas.php';
+require_once '../src/controladores/ctr_usuarios.php';
 
 return function (App $app) {
 
@@ -19,14 +20,11 @@ return function (App $app) {
     $routesM($app);
 
     $app->get('/', function ($request, $response, $args) use ($container) {
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $args['administrador'] = $sesion;
-                $args['hayVencimientos'] = ctr_mascotas::getVencimientosVacunaPagina(0);
-                $args['hayVencimientoSocio'] = ctr_usuarios::haySociosConCuotasVencidas();
-            }
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $args['administrador'] = $responseSession->session;
+            // $args['hayVencimientos'] = ctr_mascotas::getVencimientosVacunaPagina(0);
+            // $args['hayVencimientoSocio'] = ctr_usuarios::haySociosConCuotasVencidas();
         }
         return $this->view->render($response, "index.twig", $args);
     })->setName("Inicio");
