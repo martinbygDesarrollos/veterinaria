@@ -16,10 +16,24 @@ function cargarHistorialUsuario(){
 function createRow(fecha, idSocio, socio, idMascota, mascota, funcion, observacion){
 	let row = "<tr>";
 	row += "<td class='text-center'>"+ fecha +"</td>";
-	row += "<td class='text-center'>"+ socio +"</td>";
-	row += "<td class='text-center'>"+ mascota +"</td>";
+	if(socio == "No corresponde")
+		row += "<td class='text-center'>"+ socio +"</td>";
+	else
+		row += "<td class='text-center'><button class='btn btn-link' onclick='goToVerSocio("+ idSocio +")'>"+ socio +"</td>";
+	if(mascota == "No corresponde")
+		row += "<td class='text-center'>"+ mascota +"</td>";
+	else
+		row += "<td class='text-center'><button class='btn btn-link' onclick='goToVerMascota("+ idMascota +")'>"+ mascota +"</td>";
 	row += "<td class='text-center'>"+ funcion +"</td>";
-	row += "<td class='text-center'>"+ observacion +"</td>";
+	row += "<td class='text-right'>"+ observacion +"</td>";
 	row += "</tr>";
 	return row;
+}
+
+function goToVerMascota(idMascota){
+	window.location.href = getSiteURL() + "/ver-mascota/" + idMascota;
+}
+
+function goToVerSocio(idSocio){
+	window.location.href = getSiteURL() + "/ver-socio/" + idSocio;
 }

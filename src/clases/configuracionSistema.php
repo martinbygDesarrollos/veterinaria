@@ -2,16 +2,8 @@
 
 class configuracionSistema{
 
-	public function updatePlazoDeuda($plazoDeuda){
-		$query = DB::conexion()->prepare("UPDATE cuota SET plazoDeuda = ? WHERE id = 1");
-		$query->bind_param('i', $plazoDeuda);
-		return $query->execute();
-	}
-
-	public function setNuevaCuota($cuotaUna, $cuotaDos, $cuotaExtra){
-		$query = DB::conexion()->prepare("UPDATE cuota SET cuotaUno = ?, cuotaDos = ?, cuotaExtra = ? WHERE id = 1");
-		$query->bind_param('iii', $cuotaUna, $cuotaDos, $cuotaExtra);
-		return $query->execute();
+	public function updateQuotaSistema($cuotaUna, $cuotaDos, $cuotaExtra, $plazoDeuda){
+		return DataBase::sendQuery("UPDATE cuota SET cuotaUno = ?, cuotaDos = ?, cuotaExtra = ?, plazoDeuda = ? WHERE id = 1", array('iiii', $cuotaUna, $cuotaDos, $cuotaExtra, $plazoDeuda), "BOOLE");
 	}
 
 	public function getQuota(){

@@ -123,39 +123,26 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function updateUsuario($idUsuario, $nombre, $email){
+	public function modificarUsuario($idUsuario, $usuario, $correo){
 		$response = new \stdClass();
 
-		$usuario = usuarios::getUsuario($idUsuario);
-
-		if($usuario){
-			$usuarioNombre = usuarios::getUsuarioNombre($nombre);
-			if($usuarioNombre->idUsuario == $usuario->idUsuario){
-				$result = usuarios::updateUsuario($idUsuario, $nombre, $email);
-				if($result){
-
-					//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-					$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificación de usuario", "La información del usuario " . $nombre . " fue actualizada en el sistema.");
-					if($resultInsertOperacionUsuario)
-						$response->enHistorial = "Registrado en el historial del usuario.";
-					else
-						$response->enHistorial = "No ingresado en historial de usuario.";
-					//----------------------------------------------------------------------------------------------------------------
-
-					$response->retorno = true;
-					$response->mensaje = "El usuario " . $nombre . " fue modificado correctamente.";
-				}else{
-					$response->retorno = false;
-					$response->mensajeError = "El usuario " . $nombre . " no pudo ser modificado, por favor vuelva a intentarlo.";
-				}
+		$responseGetUsuario = usuarios::getUsuario($idUsuario);
+		if($responseGetUsuario->result == 2){
+			$responseGetUsuarioName = usuarios::getUsuarioNombre($usuario, $idUsuario);
+			if($responseGetUsuarioName->result != 2){
+				$responseUpdateUsuario = usuarios::updateUsuario($idUsuario, $usuario, $correo);
+				if($responseUpdateUsuario->result == 2){
+					$response->result = 2;
+					$response->message = "El usuario fue modificado correctamente.";
+					$responseUpdatedUser = usuarios::getUsuario($idUsuario);
+					if($responseUpdatedUser->result == 2)
+						$response->user = $responseUpdatedUser->objectResult;
+				}else return $responseUpdateUsuario;
 			}else{
-				$response->retorno = false;
-				$response->mensajeError = "El nombre de usuario que desea asignar ya fue vinculado a otro usuario, ingrese uno distinto.";
+				$response->result = 0;
+				$response->message = "El nombre ingresado corresponde a otro usuario.";
 			}
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El usuario que desea modificar no fue encontrado en el sistema, por favor vuelva a intentarlo.";
-		}
+		}else return $responseGetUsuario;
 
 		return $response;
 	}
@@ -199,16 +186,65 @@ class ctr_usuarios{
 		return usuarios::getUsuario($idUsuario);
 	}
 
-	public function getUsuarioNombre($nombre){
-		return usuarios::getUsuarioNombre($nombre);
-	}
-
 	public function getUsuarios(){
 		return usuarios::getUsuarios();
 	}
     //---------------------------------------------------------------------------------------------------
 
     //----------------------------------- FUNCIONES DE SOCIO --------------------------------------------
+
+	public function updateAllQuotaSocio($cuotaUno, $cuotaDos, $cuotaExtra, $plazoDeuda){
+		$response = new \stdClass();
+
+		$responseUpdateQuota = configuracionSistema::updateQuotaSistema($cuotaUno, $cuotaDos, $cuotaExtra, $plazoDeuda);
+		if($responseUpdateQuota->result == 2){
+			$responseGetNewQuota = configuracionSistema::getQuota();
+			if($responseGetNewQuota->result == 2)
+				$response->quota = $responseGetNewQuota->objectResult;
+			$fechaVencimiento = fechas::getYearMonthINT($plazoDeuda);
+			$responseSetInactive = socios::setInactiveStateSocio($fechaVencimiento);
+			if($responseSetInactive->result  == 2){
+				$responseSetActive = socios::setActiveStateSocio($fechaVencimiento);
+				if($responseSetActive->result == 2){
+					$responseGetSociosActives = socios::getSociosWithMascotas();
+					$actualizados = array();
+					$noActualizados = array();
+					foreach ($responseGetSociosActives->listResult as $key => $socio) {
+						$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas']);
+						if($responseGetQuota->result == 2){
+							$responseUpdateQuota = socios:: updateQuotaSocio($socio['idSocio'], $responseGetQuota->quota);
+							if($responseUpdateQuota->result == 2)
+								$actualizados[] = $socio['idSocio'];
+							else
+								$noActualizados[] = $socio['idSocio'];
+						}else return $responseGetQuota;
+					}
+
+					if(sizeof($responseGetSociosActives->listResult) == sizeof($actualizados)){
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron todas las cuotas de los socios.");
+						if($responseInsertHistorial->result ==  2){
+							$response->result = 2;
+							$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, se generó un registro en el historial de usuario.";
+						}else{
+							$response->result = 2;
+							$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, pero un error no permitió crear un registro en el historial de usuario.";
+						}
+					}else if(sizeof($responseGetSociosActives->listResult) < sizeof($actualizados)){
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron las cuotas de los socios, para los socios " . implode(",", $noActualizados) . " las cuotas no fueron actualizadas por un error.");
+						if($responseInsertHistorial->result ==  2){
+							$response->result = 1;
+							$response->message = "Los estados y cuotas de los socios fueron actualizadas, por algun error " . sizeof($noActualizados) . " socios no actualizaron su cuota. se generó un registro en el historial de usuario.";
+						}else{
+							$response->result = 1;
+							$response->message = "No todos los estados y cuotas de los socios fueron actualizados por un error, " . sizeof($noActualizados) . " socios no actualizaron su cuota. No se generó un registro en el historial de usuario.";
+						}
+					}
+				}else return $responseSetActive;
+			}else return $responseSetInactive;
+		}else return $responseUpdateQuota;
+
+		return $response;
+	}
 
 	public function updateQuotaSocio($idSocio, $quota){
 		return socios::updateQuotaSocio($idSocio, $quota);

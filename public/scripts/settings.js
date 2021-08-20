@@ -1,358 +1,91 @@
-const urlBase = '/veterinarianan/public';
-
 function fijarCostoCuota(){
-	$("#modalFijarCuota").modal('hide');
-	var cuotaUno = document.getElementById("inpCuotaUna").value || null;
-	var cuotaDos = document.getElementById("inpCuotaDos").value || null;
-	var cuotaExtra = document.getElementById("inpCuotaExtra").value || null;
-
-	if(!validarDatosCuota(cuotaUno, cuotaDos, cuotaExtra)){
-		$.ajax({
-			async: false,
-			url: urlBase + "/updateCuotaSocio",
-			type: "POST",
-			data: {
-				cuotaUna: cuotaUno,
-				cuotaDos: cuotaDos,
-				cuotaExtra: cuotaExtra
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
-				if(response.retorno){
-					showReplyMessage('sucess', response.mensaje, response.enHistorial, "Modificar cuota");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Modificar cuota");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
-				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
-	}
-
+	$('#modalFijarCuota').modal('hide')
+	let cuotaUno = $("#inputCuotaUno").val() || null;
+	let cuotaDos = $("#inputCuotaDos").val() || null;
+	let cuotaExtra = $("#inputCuotaExtra").val() || null;
+	let plazoDeuda = $('#inputPlazoDeuda').val() || null;
+	if(cuotaUno){
+		if(cuotaDos){
+			if(cuotaExtra){
+				if(plazoDeuda){
+					let response = sendPost('updateAllQuotaSocio', {cuotaUno: cuotaUno, cuotaDos: cuotaDos, cuotaExtra: cuotaExtra, plazoDeuda: plazoDeuda});
+					showReplyMessage(response.result, response.message, "Modificar cuota", null);
+					if(response.result == 2){
+						$("#inputCuotaUno").val(response.quota.cuotaUno);
+						$("#inputCuotaDos").val(response.quota.cuotaDos);
+						$("#inputCuotaExtra").val(response.quota.cuotaExtra);
+						$('#inputPlazoDeuda').val(response.quota.plazoDeuda);
+					}
+				}else showReplyMessage(1, "Debe ingresar el plazo para desactivar el socio para modificar los estados de los socios.", "Plazo deuda requerido", null);
+			}else showReplyMessage(1, "Debe ingresar el monto extra por mascota para modificar las cuotas de los socios.", "Cuota extra requerida", null);
+		}else showReplyMessage(1, "Debe ingresar el monto por dos mascotas para modificar las cuotas de los socios.", "Cuota dos requerida", null);
+	}else showReplyMessage(1, "Debe ingresar el monto por una mascota para modificar las cuotas de los socios.", "Cuota uno requerida", null);
 }
 
-function validarDatosCuota(cuotaUno, cuotaDos, cuotaExtra){
-	var conError  = false;
-	var mensajeError = "";
-	var uno = parseInt(cuotaUno);
-	var dos = parseInt(cuotaDos);
-	var extra = parseInt(cuotaExtra);
-
-	if(uno == null){
-		conError = true;
-		mensajeError = "No puede fijar las nuevas cuotas sin especificar la cuota para socios con una mascota.";
-	}else if(dos == null ){
-		conError = true;
-		mensajeError = "No puede fijar las nuevas cuotas sin especificar la cuota para socios con dos mascota.";
-	}else if(extra == null){
-		conError = true;
-		mensajeError = "No puede fijar las nuevas cuotas sin especificar la cuota para socios con más de dos mascota.";
-	}else if(uno >= dos){
-		conError = true;
-		mensajeError = "Esta fijando una cuota por mascota única mayor a la cuota por dos mascotas.";
-	}else if(extra > uno){
-		conError = true;
-		mensajeError = "El valor para la cuota extra no puede superar el valor de la cuota para una mascota";
-	}else if(extra > dos){
-		conError = true;
-		mensajeError = "El valor para la cuota extra no puede superar el valor de la cuota para dos mascotas";
-	}
-
-	if(conError){
-		showReplyMessage('warning', mensajeError, null, "Modificar cuota");
-		$("#modalButtonRetorno").click(function(){
-			$("#modalRetorno").modal("hide");
-		});
-	}
-	return conError;
-}
-
-function fijarPassAdministrador(){
-	$('#modalModificarPass').modal('hide');
-
-	var passActual = document.getElementById('inpPassActual').value || null;
-	var pass1 = document.getElementById('inpPass1').value || null;
-	var pass2 = document.getElementById('inpPass2').value || null;
-
-	if(!validarDatosPassAdministrador(passActual, pass1, pass2)){
-		$.ajax({
-			async: false,
-			url: urlBase + "/updatePassAdministrador",
-			type: "POST",
-			data: {
-				passActual: passActual,
-				pass1: pass1,
-				pass2: pass2
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
-				if(response.retorno){
-					showReplyMessage('sucess', response.mensaje,  response.enHistorial, "Modificar contraseña");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Modificar contraseña");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
-				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
-	}
-}
-
-function validarDatosPassAdministrador(passActual, pass1, pass2){
-	var conError = false;
-	var mensajeError = "";
-
-	if(passActual == null){
-		conError = true;
-		mensajeError = "Para modificar la contraseña de administrador debe ingresar la contraseña actual.";
-	}else if(pass1 == null){
-		conError = true;
-		mensajeError = "Para modificar la contraseña actual debe ingresar una nueva contraseña.";
-	}else if(pass2 == null){
-		conError = true;
-		mensajeError = "Para modificar la contraseña actual debe repetir la nueva contraseña.";
-	}else if(pass2.length < 5 || pass1.length < 5 || passActual.length < 5 ){
-		conError = true;
-		mensajeError = "El sistema no admite contraseñas con menos de 5 caracteres.";
-	}else if(pass1 != pass2){
-		conError = true;
-		mensajeError = "La nueva contraseña y su confirmación deben coincidir para modificar la contraseña actual.";
-	}else if(pass1 == passActual){
-		conError = true;
-		mensajeError = "Esta intentando asignar la contraseña actual como la nueva contraseña, esta operación no se realizará.";
-	}
-
-	if(conError){
-		showReplyMessage('warning', mensajeError, null, "Modificar contraseña");
-		$("#modalButtonRetorno").click(function(){
-			$("#modalRetorno").modal("hide");
-		});
-	}
-	return conError;
-}
-
-function selectUsuarioModificar(btn){
-	var idUsuario = btn.id;
-
-	$.ajax({
-		async: false,
-		url: urlBase + "/getUsuario",
-		type: "POST",
-		data: {
-			idUsuario: idUsuario
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response){
-				document.getElementById('cuentaUsuario').value = response.nombre;
-				document.getElementById('emailUsuario').value = response.email;
-				document.getElementById('titleNuevoUsuario').innerHTML = "Modificar usuario";
-				document.getElementById('btnNuevoUsuario').innerHTML = "Modificar usuario";
-				document.getElementById('btnCancelarUsuario').style.display = "block";
-				document.getElementById('btnNuevoUsuario').name = response.idUsuario;
-
-				$("#contenedorButtons").removeClass('justify-content-center');
-				$("#contenedorButtons").addClass('justify-content-between');
-				$("#btnCancelarUsuario").click(function(){
-					document.getElementById('cuentaUsuario').value = null;
-					document.getElementById('titleNuevoUsuario').innerHTML = "Agregar nuevo usuario";
-					document.getElementById('btnNuevoUsuario').innerHTML = "Agregar usuario";
-					$("#contenedorButtons").removeClass('justify-content-between');
-					$("#contenedorButtons").addClass('justify-content-center');
-					document.getElementById('btnCancelarUsuario').style.display = "none";
-				});
-			}else{
-				showReplyMessage('danger', response.mensajeError, null, "Seleccionar usuario");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
+function selectUsuarioModificar(idUsuario, nombre, email){
+	$('#inputUsuario').val(nombre);
+	$('#inputCorreo').val(email);
+	$('#btnNuevoUsuario').html("Modificar")
+	$('#btnNuevoUsuario').off('click');
+	$('#btnNuevoUsuario').click(function(){
+		modificarUsuario(idUsuario);
 	});
 }
 
-function filtrarOperacion(btn){
-	var emailExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3,4})+$/;
-	var operacion = btn.innerHTML;
+function clearForm(){
+	$('#inputUsuario').val("");
+	$('#inputCorreo').val("");
+	$('#btnNuevoUsuario').html("Agregar");
+	$('#btnNuevoUsuario').off('click');
+	$('#btnNuevoUsuario').click(function(){
+		crearUsuario()
+	});
+}
 
-	var cuenta = document.getElementById('cuentaUsuario').value || null;
-	var email = document.getElementById('emailUsuario').value || null;
+function crearUsuario(){
+	let usuario = $('#inputUsuario').val();
+	let correo = $('#inputCorreo').val();
 
-	var conErro = false;
-	var mensajeError = "";
-	if(cuenta == null){
-		conErro = true;
-		mensajeError = operacion + " requiere que ingrese un nombre para su cuenta de usuario";
-	}else if(cuenta.length < 4){
-		conErro = true;
-		mensajeError = operacion + " requiere que el nombre de la cuenta de usuario tenga 4 caracteres o más.";
-	}
-
-	if(email != null){
-		if(emailExp.test(email)){
-			conError = true;
-			mensajeError = "El email ingresado no es valido porfavor verifiquelo.";
+	if(usuario){
+		if(correo){
+			if(!validateEmail(correo)){
+				showReplyMessage(1, "En caso de ingresar un correo, este debe ser valido.", "Correo no valido", null);
+				return;
+			}
 		}
-	}
-	if(conErro){
-		showReplyMessage('warning', mensajeError, null, operacion);
-		$("#modalButtonRetorno").click(function(){
-			$("#modalRetorno").modal("hide");
-		});
-	}else{
-		if(operacion == "Agregar usuario"){
-			agregarUsuario(cuenta, email);
-		}else if(operacion == "Modificar usuario"){
-			modificarUsuario(btn.name , cuenta, email);
+		let response = sendPost("crearUsuario", {usuario: usuario, correo: correo});
+		showReplyMessage(response.result, response.message, "Crear usuario", null);
+		if(response.result == 2)
+			clearForm();
+	}else showReplyMessage(1, "El usuario no puede ser modificado con el nombre vacio", "Usuario requerido", null);
+}
+
+function modificarUsuario(idUsuario){
+	let usuario = $('#inputUsuario').val();
+	let correo = $('#inputCorreo').val();
+
+	if(usuario){
+		if(correo){
+			if(!validateEmail(correo)){
+				showReplyMessage(1, "En caso de ingresar un correo, este debe ser valido.", "Correo no valido", null);
+				return;
+			}
 		}
-	}
+		let response = sendPost("modificarUsuario", {idUsuario: idUsuario, usuario: usuario, correo: correo});
+		showReplyMessage(response.result, response.message, "Modificar usuario", null);
+		if(response.result == 2){
+			$('#' + idUsuario).replaceWith(createRow(response.user.idUsuario, response.user.nombre, response.user.email));
+			clearForm();
+		}
+	}else showReplyMessage(1, "El usuario no puede ser modificado con el nombre de usuario vacio", "Usuario requerido", null);
 }
 
-function agregarUsuario(cuenta, email){
-	$.ajax({
-		async: false,
-		url: urlBase + "/insertNewUsuario",
-		type: "POST",
-		data: {
-			nombre: cuenta,
-			email: email
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response.retorno){
-				showReplyMessage('success', response.mensaje, response.enHistorial, "Agregar usuario");
-				$("#modalButtonRetorno").click(function(){
-					window.location.reload();
-				});
-			}else{
-				showReplyMessage('danger', response.mensajeError, null, "Agregar usuario");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
-	});
-}
+function createRow(idUsuario, nombre, email){
+	let row = "<tr id='"+ idUsuario +"'>";
+	row += "<td class='text-center'>" + nombre + "</td>";
+	row += "<td class='text-center col-5'><button class='btn btn-link btn-sm' onclick='selectUsuarioModificar('"+ idUsuario + "','" + nombre + "','"+ email +"')' data-toggle='tooltip' data-placement='top' title='Modificar'><i class='fas fa-edit text-dark'></i></button>";
+	row += "<button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='top' title='Borrar'><i class='fas fa-trash-alt text-dark'></i></button>";
+	row += "<button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='top' title='Restaurar contraseña'><i class='fas fa-eraser text-dark'></i></button></td></tr>";
 
-function modificarUsuario(idUsuario, cuenta, email){
-	console.log(idUsuario)
-	$.ajax({
-		async: false,
-		url: urlBase + "/updateUsuario",
-		type: "POST",
-		data: {
-			idUsuario: idUsuario,
-			nombre: cuenta,
-			email: email
-		},
-		success: function (response) {
-			response = response.trim();
-			response = jQuery.parseJSON(response);
-			console.log("response SUCCESS: ",response);
-			if(response.retorno){
-				showReplyMessage('success', response.mensaje, response.enHistorial, "Modificar usuario");
-				$("#modalButtonRetorno").click(function(){
-					window.location.reload();
-				});
-			}else{
-				showReplyMessage('danger', response.mensajeError, null, "Modificar usuario");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal('hide');
-				});
-			}
-		},
-		error: function (response) {
-			console.log("response ERROR:" + eval(response));
-			showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-			$("#modalButtonRetorno").click(function(){
-				$("#modalRetorno").modal("hide");
-			});
-		},
-	});
-}
-
-function fijarPlazoDeuda(){
-	var plazoDeuda = document.getElementById('inpPlazoDeuda').value || null;
-
-	if(plazoDeuda == null){
-		showReplyMessage('warning', "Debe ingresar un plazo para poder modificar este dato, no puede mantenerse este campo vacío.", null,"Plazo deuda");
-	}else if(plazoDeuda < 31){
-		showReplyMessage('warning', "El plazo de deuda no puede ser menor a un 31 días.",null, "Plazo deuda");
-	}else{
-		$.ajax({
-			async: false,
-			url: urlBase + "/updatePlazoDeuda",
-			type: "POST",
-			data: {
-				plazoDeuda: plazoDeuda
-			},
-			success: function (response) {
-				response = response.trim();
-				response = jQuery.parseJSON(response);
-				console.log("response SUCCESS: ",response);
-				if(response.retorno){
-					showReplyMessage('success', response.mensaje, response.enHistorial, "Plazo deuda");
-					$("#modalButtonRetorno").click(function(){
-						window.location.reload();
-					});
-				}else{
-					showReplyMessage('danger', response.mensajeError, null, "Plazo deuda");
-					$("#modalButtonRetorno").click(function(){
-						$("#modalRetorno").modal('hide');
-					});
-				}
-			},
-			error: function (response) {
-				console.log("response ERROR:" + eval(response));
-				showReplyMessage('danger', "Ocurrió un error y no se pudo establecer la conexíon con el servidor, por favor vuelva a intentarlo", null, "Conexión");
-				$("#modalButtonRetorno").click(function(){
-					$("#modalRetorno").modal("hide");
-				});
-			},
-		});
-	}
+	return row;
 }

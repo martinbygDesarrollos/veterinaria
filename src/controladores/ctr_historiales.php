@@ -145,7 +145,7 @@ class ctr_historiales {
 	}
 
 	public function getMontoCuotas(){
-		return configuracionSistema::getCuota();
+		return configuracionSistema::getQuota();
 	}
 
 	public function updatePlazoDeuda($plazoDeuda){
@@ -173,12 +173,18 @@ class ctr_historiales {
 	//-------------------------------------------------------------------------------------------------------------
     //----------------------------------- FUNCIONES DE HISTORIAL USUARIO ------------------------------------------
 
-	public function insertHistorialUsuario($operacion, $observaciones){
+	public function insertHistorialUsuario($operacion, $idSocio, $idMascota, $observaciones){
 		$response = new \stdClass();
 
 		$responseGetUserInSesion = ctr_usuarios::getUserInSession();
 		if($responseGetUserInSesion->result == 2){
-			$responseInsertHistorial = historiales::insertHistorialUsuario($responseGetUserInSesion->user->idUsuario, $operacion, $observaciones);
+			if(!is_null($idMascota) && is_null($idSocio)){
+				$responseGetSocio = ctr_usuarios::getSocioMascota($idMascota);
+				if($responseGetSocio->result == 2)
+					$idSocio = $responseGetSocio->socio->idSocio;
+			}
+
+			$responseInsertHistorial = historiales::insertHistorialUsuario($responseGetUserInSesion->user->idUsuario, $operacion, $idSocio, $idMascota, $observaciones);
 			if($responseInsertHistorial->result == 2){
 				$response->result = 2;
 				$response->message = "Se registró la operación realizada en el historial";
@@ -189,7 +195,30 @@ class ctr_historiales {
 	}
 
 	public function getHistorialUsuario($lastId, $idUsuario){
-		return historiales::getHistorialUsuario($lastId, $idUsuario);
+		$responseListHistorial = historiales::getHistorialUsuario($lastId, $idUsuario);
+
+		if($responseListHistorial->result == 2){
+			$arrayResult = array();
+			foreach ($responseListHistorial->listResult as $key => $value) {
+				if(!is_null($value['idSocio'])){
+					$responseGetSocio = ctr_usuarios::getSocio($value['idSocio']);
+					if($responseGetSocio->result == 2)
+						$value['socio'] = $responseGetSocio->socio->nombre;
+				}else $value['socio'] = "No corresponde";
+
+				if(!is_null($value['idMascota'])){
+					$responseGetMascota = ctr_mascotas::getMascota($value['idMascota']);
+					if( $responseGetMascota->result == 2){
+						$value['mascota'] = $responseGetMascota->objectResult->nombre;
+					}
+				}else $value['mascota'] = "No corresponde";
+
+				$arrayResult[] = $value;
+			}
+			$responseListHistorial->listResult = $arrayResult;
+		}
+
+		return $responseListHistorial;
 	}
 
 	public function getHistorialUsuarios(){

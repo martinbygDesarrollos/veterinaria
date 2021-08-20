@@ -8,18 +8,20 @@
 			<h5 class="card-title">Historial de {{ administrador.USUARIO }}</h5>
 		</div>
 		<div class="card-body">
-			<table class="table">
-				<thead class="bg-mycolor">
-					<tr>
-						<td class="text-center" scope="col">Fecha</td>
-						<td class="text-center" scope="col">Socio</td>
-						<td class="text-center" scope="col">Mascota</td>
-						<td class="text-center" scope="col">Operación</td>
-						<td class="text-center" scope="col">Detalle</td>
-					</tr>
-				</thead>
-				<tbody id="tbodyHistorialUsuario"></tbody>
-			</table>
+			<div id="containerTable">
+				<table class="table">
+					<thead class="bg-mycolor">
+						<tr>
+							<td class="text-center col-md-2" scope="col">Fecha</td>
+							<td class="text-center col-md-2" scope="col">Socio</td>
+							<td class="text-center col-md-2" scope="col">Mascota</td>
+							<td class="text-center col-md-2" scope="col">Operación</td>
+							<td class="text-center" scope="col">Detalle</td>
+						</tr>
+					</thead>
+					<tbody id="tbodyHistorialUsuario"></tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>

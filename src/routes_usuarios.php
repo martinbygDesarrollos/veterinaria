@@ -122,24 +122,24 @@ return function (App $app) {
         return json_encode(ctr_usuarios::signIn($usuario, sha1($pass)));
     });
 
-    $app->post('/insertNewUsuario', function(Request $request, Response $response){
+    $app->post('/crearUsuario', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $data = $request->getParams();
-            $nombre = $data['nombre'];
-            $email = $data['email'];
-            return json_encode(ctr_usuarios::insertNewUsuario($nombre, $email));
+            $usuario = $data['usuario'];
+            $correo = $data['correo'];
+            return json_encode(ctr_usuarios::crearUsuario($usuario, $correo));
         }
     });
 
-    $app->post('/updateUsuario', function(Request $request, Response $response){
+    $app->post('/modificarUsuario', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $data = $request->getParams();
             $idUsuario = $data['idUsuario'];
-            $nombre = $data['nombre'];
-            $email = $data['email'];
-            return json_encode(ctr_usuarios::updateUsuario($idUsuario, $nombre, $email));
+            $usuario = $data['usuario'];
+            $correo = $data['correo'];
+            return json_encode(ctr_usuarios::modificarUsuario($idUsuario, $usuario, $correo));
         }
     });
 
@@ -229,6 +229,18 @@ return function (App $app) {
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::actualizarCuotaSocio($idSocio));
+        }
+    });
+
+    $app->post('/updateAllQuotaSocio', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $cuotaUno = $data['cuotaUno'];
+            $cuotaDos = $data['cuotaDos'];
+            $cuotaExtra = $data['cuotaExtra'];
+            $plazoDeuda = $data['plazoDeuda'];
+            return json_encode(ctr_usuarios::updateAllQuotaSocio($cuotaUno, $cuotaDos, $cuotaExtra, $plazoDeuda));
         }
     });
 

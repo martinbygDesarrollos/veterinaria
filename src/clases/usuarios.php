@@ -36,27 +36,15 @@ class usuarios{
 	}
 
 	public function getUsuarios(){
-
-		$query = DB::conexion()->prepare("SELECT idUsuario, nombre FROM usuarios WHERE nombre != 'admin'");
-		if($query->execute()){
-			$response = $query->get_result();
-			$arrayResponse = array();
-			while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-				$arrayResponse[] = $row;
-			}
-			return $arrayResponse;
-		}
-		return null;
+		return DataBase::sendQuery("SELECT idUsuario, nombre, email FROM usuarios WHERE nombre != 'admin'", null, "LIST");
 	}
 
 	public function getUsuario($idUsuario){
+		return DataBase::sendQuery("SELECT * FROM usuarios WHERE idUsuario = ? ", array('i', $idUsuario), "OBJECT");
+	}
 
-		$query = DB::conexion()->prepare("SELECT * FROM usuarios WHERE idUsuario = ? ");
-		$query->bind_param('i', $idUsuario);
-		if($query->execute()){
-			$response = $query->get_result();
-			return $response->fetch_object();
-		}else return null;
+	public function getUsuarioNombre($nombre, $idUsuario){
+		return DataBase::sendQuery("SELECT * FROM usuarios WHERE nombre = ? AND idUsuario != ?", array('si', $nombre, $idUsuario), "OBJECT");
 	}
 
 	public function getUsuarioEstado($idUsuario, $estado){
@@ -85,10 +73,7 @@ class usuarios{
 	}
 
 	public function updateUsuario($idUsuario, $nombre, $email){
-
-		$query = DB::conexion()->prepare("UPDATE usuarios SET nombre = ?, email = ? WHERE idUsuario = ?");
-		$query->bind_param('ssi', $nombre, $email, $idUsuario);
-		return $query->execute();
+		return DataBase::sendQuery("UPDATE usuarios SET nombre = ?, email = ? WHERE idUsuario = ?", array('ssi', $nombre, $email, $idUsuario), "BOOLE");
 	}
 
 	public function validarSesionActiva($nomUsuario, $token){

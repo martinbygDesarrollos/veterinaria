@@ -72,9 +72,9 @@ class fechas{
 		return  substr($intDate, 4, 2) . "/" .  substr($intDate, 0, 4);
 	}
 
-	public function getDateForVoucherService(){
-		$date = date('Y-m-d', strtotime("+ 1 month", strtotime(date('Y-m-d'))));
-		return substr($date, 0, 4) . "-" . substr($date, 5, 2) . "-01";
+	public function getYearMonthINT($months){
+		$date = date('Y-m-d', strtotime("- " . $months. " month", strtotime(date('Y-m-d'))));
+		return substr($date, 0, 4) . substr($date, 5, 2);
 	}
 
 	public function obtenerDiferenciaDias($fechaProxDosis, $fechaLimite){

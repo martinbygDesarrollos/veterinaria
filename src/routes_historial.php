@@ -27,19 +27,18 @@ return function (App $app) {
     //-------------------------- VISTAS ------------------------------------------
 
 	$app->get('/settings', function($request, $response, $args) use ($container){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$args['administrador'] = $sesion;
-				if($_SESSION['administrador']->usuario == "admin"){
-					$args['usuarios'] = ctr_usuarios::getUsuarios();
-				}
-				$args['cuotas'] =  ctr_historiales::getMontoCuotas();
-				return $this->view->render($response, "settings.twig", $args);
-			}
-		}
-		return $this->view->render($response, "index.twig", $args);
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$args['administrador'] = $responseSession->session;
+			$responseGetQuota = ctr_historiales::getMontoCuotas();
+			if($responseGetQuota->result == 2)
+				$args['cuotas'] = $responseGetQuota->objectResult;
+
+			$responseGetUsers = ctr_usuarios::getUsuarios();
+			if($responseGetUsers->result == 2)
+				$args['listUsuarios'] = $responseGetUsers->listResult;
+			return $this->view->render($response, "settings.twig", $args);
+		}else return $response->withRedirect('iniciar-sesion');
 	})->setName("settings");
 
 	$app->get('/historialUsuario', function($request, $response, $args) use ($container){

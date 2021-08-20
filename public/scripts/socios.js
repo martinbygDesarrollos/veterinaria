@@ -1,6 +1,6 @@
 let lastId = 0;
 let textToSearch = null;
-let estado = 1;
+let estado = 0;
 
 function cargarTablaSocios(){
 
@@ -54,9 +54,9 @@ function buscarSocio(){
 
 function changeSociosState(){
 	if($('#inputActiveSocio').is(':checked'))
-		estado = 1;
-	else
 		estado = 0;
+	else
+		estado = 1;
 
 	textToSearch = null;
 	lastId = 0;

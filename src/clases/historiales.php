@@ -178,7 +178,7 @@ class historiales{
 		if($lastId == 0){
 			$responseGetMaxId = historiales::getHistorialUsuarioMaxID($idUsuario);
 			if($responseGetMaxId->result == 2)
-				$lastId = $responseGetMaxId->objectResult->maxID;
+				$lastId = $responseGetMaxId->objectResult->maxID + 1;
 			else return $responseGetMaxId;
 		}
 
@@ -188,16 +188,20 @@ class historiales{
 			$newLastId = $lastId;
 			foreach ($responseQuery->listResult as $key => $row) {
 				if($newLastId > $row['idHistorialUsuario']) $newLastId = $row['idHistorialUsuario'];
+				$row['fecha'] = fechas::dateTimeToFormatBar($row['fecha']);
+				$arrayResult[] = $row;
 			}
+
+			$responseQuery->listResult = $arrayResult;
 			$responseQuery->lastId = $newLastId;
 		}else if($responseQuery->result == 1) $responseQuery->message = "No se obtuvieron los registros del historial del usuario.";
 
 		return $responseQuery;
 	}
 
-	public function insertHistorialUsuario($usuario, $funcion, $observaciones){
+	public function insertHistorialUsuario($usuario, $funcion, $idSocio, $idMascota, $observaciones){
 		$timeStamp = fechas::getDateTimeNowInt();
-		return DataBase::sendQuery("INSERT INTO historialusuarios(usuario, funcion, fecha, observacion) VALUES (?,?,?,?)", array('isss', $usuario, $funcion, $timeStamp, $observaciones), "BOOLE");
+		return DataBase::sendQuery("INSERT INTO historialusuarios(usuario, funcion, idSocio, idMascota, fecha, observacion) VALUES (?,?,?,?,?,?)", array('isiiss', $usuario, $funcion, $idSocio, $idMascota, $timeStamp, $observaciones), "BOOLE");
 	}
 
 	public function getHistorialUsuariosMaxId(){
