@@ -136,13 +136,20 @@ function updateVacunaMascota(idVacunaMascota){
 }
 
 function changeStateMascota(inputCheck){
+	let currentValue = inputCheck.checked;
 	let title = "Activar mascota";
 
-	if(!inputCheck.checked)
+	if(!currentValue)
 		title = "Desactivar mascota";
 
 	let response = sendPost('activarDesactivarMascota', {idMascota: inputCheck.name});
 	showReplyMessage(response.result, response.message, title, null);
+	if(response.result == 0){
+		if(currentValue)
+			$('#stateMascota').prop('checked', false);
+		else
+			$('#stateMascota').prop('checked', true);
+	}
 }
 
 function openModalBorrarVacuna(idVacunaMascota){

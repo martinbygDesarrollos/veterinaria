@@ -48,30 +48,13 @@ return function (App $app) {
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
-            $args['fechaVencimiento'] = ctr_mascotas::getFechaActual();
+            $args['responseVencimientos'] = ctr_mascotas::getFechasVacunasVencimiento();
             return $this->view->render($response, "vencimientos.twig", $args);
         }else return $response->withRedirect('iniciar-sesion');
-    })->setName('vencimientos');
+    })->setName('VacunasVencidas');
 
     //------------------------------------------------------------------------------------------
 	//----------------------------- POST -------------------------------------------------------
-
-    $app->post('/getVencimientosVacunaPagina', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $ultimoID = $data['ultimoID'];
-                return json_encode(ctr_mascotas::getVencimientosVacunaPagina($ultimoID));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
-    });
 
     $app->post('/getMascotaToEdit', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
@@ -307,23 +290,21 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
-    $app->post('/vincularSocioMascota', function(Request $request, Response $response){
-        if (isset($_SESSION['administrador'])) {
-            $sesion = $_SESSION['administrador'];
-            $result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-            if($result){
-                $data = $request->getParams();
-                $idSocio = $data['idSocio'];
-                $idMascota = $data['idMascota'];
-                return json_encode(ctr_mascotas::vincularSocioMascota($idSocio, $idMascota));
-            }
-        }
-
-        $response = new \stdClass();
-        $response->retorno = false;
-        $response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-        return json_encode($response);
+    $app->post('/getMascotasNoSocio', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $textToSearch = $data['textToSearch'];
+            return json_encode(ctr_mascotas::getMascotasNoSocio($textToSearch));
+        }else return json_encode($responseSession);
     });
+
+    $app->post('/getVacunasVencidas', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $dateVencimiento = $data['dateVencimiento'];
+        return json_encode(ctr_mascotas::getVacunasVencidas($dateVencimiento));
+    });
+
 
 
 	//------------------------------------------------------------------------------------------

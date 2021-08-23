@@ -1,6 +1,6 @@
 let lastId = 0;
 let textToSearch = null;
-let estado = 0;
+let estado = 1;
 
 function cargarTablaSocios(){
 
@@ -10,20 +10,22 @@ function cargarTablaSocios(){
 			lastId = response.lastId;
 			let list = response.socios;
 			for(let i = 0; i < list.length ; i ++){
-				let row = createRow(list[i].idSocio, list[i].nombre, list[i].telefono, list[i].cuota, list[i].direccion);
+				let row = createRow(list[i].idSocio, list[i].nombre, list[i].telefono, list[i].cantMascotas, list[i].cuota, list[i].fechaUltimaCuota, list[i].direccion);
 				$('#tbodySocios').append(row);
 			}
 		}
 	}
 }
 
-function createRow(idSocio, nombre, telefono, cuota, direccion){
+function createRow(idSocio, nombre, telefono, cantMascotas, cuota, fechaUltimaCuota, direccion){
 	let row = "<tr>";
 	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>"+ idSocio +"</td>";
 	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>"+ nombre +"</td>";
 	row += "<td onclick='redirectToSocio("+ idSocio +")'class='text-center'>"+ telefono +"</td>";
 	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>"+ direccion +"</td>";
+	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>" + cantMascotas + "</td>";
 	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>" + cuota + "</td>";
+	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>" + fechaUltimaCuota + "</td>";
 	row += "<td class='text-center'><a class='text-dark' data-toggle='tooltip' data-placement='top' title='Agregar nueva mascota' href='" + getSiteURL() + "nueva-mascota/" + idSocio +"'><i class='fas fa-paw'></i></a></td>";
 	row += "</tr>";
 
@@ -54,9 +56,9 @@ function buscarSocio(){
 
 function changeSociosState(){
 	if($('#inputActiveSocio').is(':checked'))
-		estado = 0;
-	else
 		estado = 1;
+	else
+		estado = 0;
 
 	textToSearch = null;
 	lastId = 0;

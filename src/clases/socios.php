@@ -42,6 +42,11 @@ class socios{
 				if($row['idSocio'] < $newLastId) $newLastId = $row['idSocio'];
 
 				$row['cuota'] = number_format($row['cuota'],2,",",".");
+				if(!is_null($row['fechaUltimaCuota']) && strlen($row['fechaUltimaCuota']) == 6)
+					$row['fechaUltimaCuota'] = fechas::getDayMonthFormatBar($row['fechaUltimaCuota']);
+				else
+					$row['fechaUltimaCuota'] = "No especificado";
+
 				$arrayResult[] = $row;
 			}
 			$responseQuery->listResult = $arrayResult;
@@ -52,11 +57,11 @@ class socios{
 	}
 
 	public function setInactiveStateSocio($dateVencimiento){
-		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE (fechaUltimaCuota <= ? OR fechaUltimaCuota IS NULL) AND tipo != 2 ", array('ii', 1, $dateVencimiento), "BOOLE");
+		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE (fechaUltimaCuota <= ? OR fechaUltimaCuota IS NULL) AND tipo != 2 ", array('ii', 0, $dateVencimiento), "BOOLE");
 	}
 
 	public function setActiveStateSocio($dateVencimiento){
-		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE fechaUltimaCuota > ? AND tipo != 2 ", array('ii', 0, $dateVencimiento), "BOOLE");
+		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE fechaUltimaCuota > ? AND tipo != 2 ", array('ii', 1, $dateVencimiento), "BOOLE");
 	}
 
 	public function getSociosWithMascotas(){

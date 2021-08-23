@@ -118,9 +118,11 @@
 				</div>
 			</div>
 			{% endif %}
-			{% if responseSocio.mascotas.result == 2%}
 			<hr>
-			<h6 class="card-subtitle mb-3 text-muted">Mascotas</h6>
+			<div class="d-flex justify-content-between mb-1">
+				<h6 class="card-subtitle mb-3 text-muted mt-2">Mascotas</h6>
+				<button class="btn btn-dark" data-toggle="modal" data-target="#modalSetNewMascota"><i class="fas fa-paw"></i></button>
+			</div>
 			<div class="d-flex justify-content-center">
 				<table class="table table-sm">
 					<thead class="bg-mycolor">
@@ -131,21 +133,22 @@
 							<td class="text-center" scope="col">Sexo</td>
 							<td class="text-center" scope="col">Nacimiento</td>
 							<td class="text-center" scope="col">Estado</td>
+							<td class="text-center" scope="col">Desvincular</td>
 						</tr>
 					</thead>
 					<tbody id="tbodyMascotasSocio">
 						{% for mascota in responseSocio.mascotas.listMascotas %}
-						<tr href="{{ path_for('verMascota', {idMascota: mascota.idMascota, desde: 'VerSocio'}) }}">
-							<td class="text-center">{{ mascota.nombre }}</td>
-							<td class="text-center">{{ mascota.raza }}</td>
-							<td class="text-center">{{ mascota.especie }}</td>
+						<tr id="trM2{{mascota.idMascota}}">
+							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.nombre }}</td>
+							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.raza }}</td>
+							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.especie }}</td>
 							{% if mascota.sexo == 0 %}
-							<td class="text-center">Hembra</td>
+							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">Hembra</td>
 							{% else %}
-							<td class="text-center">Macho</td>
+							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">Macho</td>
 							{% endif %}
-							<td class="text-center">{{ mascota.fechaNacimiento }}</td>
-							<td class="text-center">
+							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.fechaNacimiento }}</td>
+							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">
 								{% if mascota.estado == 0 %}
 								Inactiva
 								{% elseif mascota.estado == 1 %}
@@ -154,12 +157,47 @@
 								Pendiente
 								{% endif %}
 							</td>
+							<td class="text-center"><button class="btn btn-link" onclick="desvincularMascota('{{ mascota.idMascota }}')"><i class="fas fa-trash-alt text-dark"></i></button></td>
 						</tr>
 						{% endfor %}
 					</tbody>
 				</table>
 			</div>
-			{% endif %}
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalSetNewMascota" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-mycolor">
+				<h5 class="modal-title" id="exampleModalLongTitle">Asignar mascota</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" style="height: 350px;">
+				<div class="form-group w-50">
+					<input type="text" class="form-control shadow-sm" id="inputTextToSearch" onchange="buscarMascotasSinSocio(this, '{{ responseSocio.socio.idSocio }}')" onkeyup="this.onchange()" placeholder="Buscar mascota...">
+				</div>
+				<div>
+					<table class="table table-sm">
+						<thead class="bg-mycolor">
+							<tr>
+								<td class="text-center" scope="col">Nombre</td>
+								<td class="text-center" scope="col">Especie</td>
+								<td class="text-center" scope="col">Raza</td>
+								<td class="text-center" scope="col">Sexo</td>
+								<td class="text-center" scope="col">Nacimiento</td>
+								<td class="text-center" scope="col">Estado</td>
+								<td class="text-center" scope="col">Seleccionar</td>
+
+							</tr>
+						</thead>
+						<tbody id="tbodyMascotasNoSocio"></tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -288,13 +326,5 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/verSocio.js"></script>
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('table tr').click(function(){
-			window.location = $(this).attr('href');
-			return false;
-		});
-	});
-</script>
 {% endblock %}
 {% endblock %}

@@ -14,6 +14,27 @@ class ctr_mascotas {
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 
+	public function getCantMascotas($idSocio){
+		return mascotas::getCantMascotas($idSocio);
+	}
+
+	public function deleteVinculoMascota($idMascota){
+		return mascotas::deleteVinculoMascota($idMascota);
+	}
+
+	public function getMascotaVinculadaToShow($idMascota){
+		return mascotas::getMascotaToShow($idMascota);
+	}
+
+	public function mascotaIsVinculada($idMascota){
+		return mascotas::mascotaIsVinculada($idMascota);
+	}
+
+	public function vincularMascotaSocio($idSocio, $idMascota){
+		$currentDate = fechas::getCurrentDateInt();
+		return mascotas::vincularMascotaSocio($idSocio, $idMascota, $currentDate);
+	}
+
 	public function getMascotaToEdit($idMascota){
 		return mascotas::getMascotaToEdit($idMascota);
 	}
@@ -82,42 +103,56 @@ class ctr_mascotas {
 		return mascotas::modificarEstadoSociosCuotas($estadoNuevo, $estadoActual);
 	}
 
+	public function updateStateMascotas($state){
+		return mascotas::updateStateMascotas($state);
+	}
+
 	public function activarDesactivarMascota($idMascota){
 		$response = new \stdClass();
 
 		$responseGetMascota = mascotas::getMascota($idMascota);
 		if($responseGetMascota->result == 2){
+			$idSocio = null;
 			$responseGetSocio = ctr_usuarios::getSocioMascota($idMascota);
 			if($responseGetSocio->result == 2){
-				if($responseGetSocio->socio->estado == 1){
-
-					$newState = 0;
-					$newStateString = "desactivada";
-					if($responseGetMascota->objectResult->estado == 0){
-						$newState = 1;
-						$newStateString = "activada";
-					}
-
-					$responseChangeStateMascota = mascotas::activarDesactivarMascota($idMascota, $newState);
-					if($responseChangeStateMascota->result == 2){
-						$responseGetQuota = ctr_usuarios::calculateQuotaSocio($responseGetSocio->socio->idSocio);
-						if($responseGetQuota->result == 2){
-							$responseUpdateQuota = ctr_usuarios::updateQuotaSocio($responseGetSocio->socio->idSocio, $responseGetQuota->quota);
-							if($responseUpdateQuota->result == 2){
-								$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Mascota " . $newStateString, $responseGetSocio->objectResult->idSocio, $idMascota, "Se actualizó el estado de la mascota  y su respectiva cuota a $ " . number_format($responseGetQuota->quota, 2, ",", "."));
-								$response->result = 2;
-								if($responseInsertHistorial->result == 2)
-									$response->message = "La mascota fue " . $newStateString . ", la cuota del socio actualizada y se generó un registro en el historial de usuario.";
-								else
-									$response->message = "La mascota fue " . $newStateString . ", la cuota actualizada pero no pudo generarse un registro en el historial de usuario por un error interno.";
-							}else return $responseUpdateQuota;
-						}else return $responseGetQuota;
-					}else return $responseChangeStateMascota;
-				}else{
+				$idSocio = $responseGetSocio->socio->idSocio;
+				if($responseGetSocio->socio->estado == 0){
 					$response->result = 0;
-					$response->message = "El estado de la mascota no puede modificarse si su socio esta desactivado.";
+					$response->message = "La mascota no se puede activar porque el socio al que esta vinculada se encuentra inactivo.";
+					return $response;
 				}
-			}else return $responseGetSocio;
+			}
+
+			$newState = 0;
+			$newStateString = "desactivada";
+			if($responseGetMascota->objectResult->estado == 0){
+				$newState = 1;
+				$newStateString = "activada";
+			}
+
+			$responseChangeStateMascota = mascotas::activarDesactivarMascota($idMascota, $newState);
+			if($responseChangeStateMascota->result == 2){
+				$resultUpdateQuota = ".";
+				if(!is_null($idSocio)){
+					$responseGetQuota = ctr_usuarios::calculateQuotaSocio($responseGetSocio->socio->idSocio);
+					if($responseGetQuota->result == 2){
+						$responseUpdateQuota = ctr_usuarios::updateQuotaSocio($responseGetSocio->socio->idSocio, $responseGetQuota->quota);
+						if($responseUpdateQuota->result == 2){
+							$resultUpdateQuota = " y la cuota del socio se modificó a $ " . number_format($responseGetQuota->quota, 2, ",", ".") . ".";
+						}else return $responseUpdateQuota;
+					}else return $responseGetQuota;
+				}
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Mascota " . $newStateString, $idSocio, $idMascota, "Se actualizó el estado de la mascota" . $resultUpdateQuota);
+
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "La mascota fue " . $newStateString . $resultUpdateQuota . " Se generó un registro en el historial de usuario.";
+				}else{
+					$response->result = 1;
+					$response->message = "La mascota fue " . $newStateString . $resultUpdateQuota . " No pudo generarse un registro en el historial de usuario por un error interno.";
+				}
+
+			}else return $responseChangeStateMascota;
 		}else return $responseGetMascota;
 
 		return $response;
@@ -178,6 +213,10 @@ class ctr_mascotas {
 		return $response;
 	}
 
+	public function getMascotaSocio($idMascota){
+		return mascotas::getMascotaSocio($idMascota);
+	}
+
 	public function getMascotasSocio($idSocio){
 		$response = new \stdClass();
 
@@ -224,8 +263,8 @@ class ctr_mascotas {
 		return $response;
 	}
 
-	public function getMascotasInactivasPendientes(){
-		return mascotas::getMascotasInactivasPendientes();
+	public function getMascotasNoSocio($textToSearch){
+		return mascotas::getMascotasNoSocio($textToSearch);
 	}
 
 	public function buscadorMascotaNombre($nombreMascota, $estadoMascota){
@@ -249,6 +288,35 @@ class ctr_mascotas {
 	//---------------------------------------------------------FUNCIONES VACUNAS------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
+
+	public function getFechasVacunasVencimiento(){
+		$currentDate = fechas::getCurrentDateInt();
+		return serviciosMascota::getFechasVacunasVencimiento($currentDate);
+	}
+
+	public function getVacunasVencidas($dateVencimiento){
+		$responseGetVencimientos = serviciosMascota::getVacunasVencidas($dateVencimiento);
+		if($responseGetVencimientos->result == 2){
+			$arrayResult = array();
+			foreach ($responseGetVencimientos->listResult as $key => $value) {
+				$responseGetSocioMascota = ctr_usuarios::getSocioMascota($value['idMascota']);
+				if($responseGetSocioMascota->result == 2){
+					$value['nombreSocio'] = $responseGetSocioMascota->socio->nombre;
+					$value['idSocio'] = $responseGetSocioMascota->socio->idSocio;
+					$value['telefono'] = $responseGetSocioMascota->socio->telefono;
+					$value['email'] = $responseGetSocioMascota->socio->email;
+				}else{
+					$value['nombreSocio'] = "Sin socio";
+					$value['telefono'] = "No corresponde";
+					$value['email'] = "No corresponde";
+				}
+				$arrayResult[] = $value;
+			}
+			$responseGetVencimientos->listResult = $arrayResult;
+		}
+
+		return $responseGetVencimientos;
+	}
 
 	public function aplicarNuevaVacunaMascota($idMascota, $nombreVacuna, $intervalo, $fechaDosis, $observaciones){
 		$response = new \stdClass();

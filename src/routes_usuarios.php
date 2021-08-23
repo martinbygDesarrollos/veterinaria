@@ -88,13 +88,33 @@ return function (App $app) {
 
     //------------------------------ POST ------------------------------------------------------
 
+    $app->post('/asignarMascotaSocio', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idSocio = $data['idSocio'];
+            $idMascota = $data['idMascota'];
+            return json_encode(ctr_usuarios::asignarMascotaSocio($idSocio, $idMascota));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/desvincularMascota', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            return json_encode(ctr_usuarios::desvincularMascota($idMascota));
+        }else return json_encode($responseSession);
+    });
+
+
     $app->post('/getSocio', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::getSocio($idSocio));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/buscadorDeSociosVencimientoCuota', function(Request $request, Response $response){
@@ -103,7 +123,7 @@ return function (App $app) {
             $data = $request->getParams();
             $nombreSocio = $data['nombreSocio'];
             return json_encode(ctr_usuarios::buscadorDeSociosVencimientoCuota($nombreSocio));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/getVencimientosCuotaPagina', function(Request $request, Response $response){
@@ -112,7 +132,7 @@ return function (App $app) {
             $data = $request->getParams();
             $ultimoID = $data['ultimoID'];
             return json_encode(ctr_usuarios::getVencimientosCuotaPagina($ultimoID));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/iniciarSesion', function(Request $request, Response $response){
@@ -129,7 +149,7 @@ return function (App $app) {
             $usuario = $data['usuario'];
             $correo = $data['correo'];
             return json_encode(ctr_usuarios::crearUsuario($usuario, $correo));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/modificarUsuario', function(Request $request, Response $response){
@@ -140,7 +160,7 @@ return function (App $app) {
             $usuario = $data['usuario'];
             $correo = $data['correo'];
             return json_encode(ctr_usuarios::modificarUsuario($idUsuario, $usuario, $correo));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/getUsuario', function(Request $request, Response $response){
@@ -149,7 +169,7 @@ return function (App $app) {
             $data = $request->getParams();
             $idUsuario = $data['idUsuario'];
             return json_encode(ctr_usuarios::getUsuario($idUsuario));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/updatePassAdministrador',function(Request $request, Response $response){
@@ -160,7 +180,7 @@ return function (App $app) {
             $passActual = $data['passActual'];
             $pass1 = $data['pass1'];
             return json_encode(ctr_usuarios::updatePassAdministrador($nombre, sha1($passActual), sha1($pass1)));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/insertNewSocio', function(Request $request, Response $response){
@@ -210,7 +230,7 @@ return function (App $app) {
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::activarDesactivarSocio($idSocio));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/notificarSocioVacuna', function(Request $request, Response $response){
@@ -220,7 +240,7 @@ return function (App $app) {
             $idSocio = $data['idSocio'];
             $idMascota = $data['idMascota'];
             return json_encode(ctr_usuarios::notificarSocioVacuna($idSocio, $idMascota));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/actualizarCuotaSocio', function(Request $request, Response $response){
@@ -229,7 +249,7 @@ return function (App $app) {
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::actualizarCuotaSocio($idSocio));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/updateAllQuotaSocio', function(Request $request, Response $response){
@@ -241,7 +261,7 @@ return function (App $app) {
             $cuotaExtra = $data['cuotaExtra'];
             $plazoDeuda = $data['plazoDeuda'];
             return json_encode(ctr_usuarios::updateAllQuotaSocio($cuotaUno, $cuotaDos, $cuotaExtra, $plazoDeuda));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/notificarSocioCuota', function(Request $request, Response $response){
@@ -250,7 +270,7 @@ return function (App $app) {
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::notificarSocioCuota($idSocio));
-        }
+        }else return json_encode($responseSession);
     });
 
     $app->post('/getSociosPagina', function(Request $request, Response $response){
@@ -261,7 +281,7 @@ return function (App $app) {
             $estado= $data['estado'];
             $textToSearch = $data['textToSearch'];
             return json_encode(ctr_usuarios::getSociosPagina($lastId, $estado, $textToSearch));
-        }
+        }else return json_encode($responseSession);
     });
 
 }

@@ -23,7 +23,7 @@ return function (App $app) {
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
-            // $args['hayVencimientos'] = ctr_mascotas::getVencimientosVacunaPagina(0);
+            $args['hayVencimientos'] = ctr_mascotas::getFechasVacunasVencimiento();
             // $args['hayVencimientoSocio'] = ctr_usuarios::haySociosConCuotasVencidas();
         }
         return $this->view->render($response, "index.twig", $args);

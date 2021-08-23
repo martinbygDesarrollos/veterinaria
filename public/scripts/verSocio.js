@@ -10,8 +10,90 @@ function openModalUpdateSocio(btnShowModal){
 function calculateQuotaSocio(idSocio){
 	let response = sendPost("actualizarCuotaSocio", {idSocio: idSocio});
 	showReplyMessage(response.result, response.message, "Actualizar cuota", null);
-	if(response.result == 2)
+	if(response.result != 0)
 		$('#inputCuota').val(response.newQuota);
+}
+
+
+function buscarMascotasSinSocio(inputToSearch, idSocio){
+	let textToSearch = inputToSearch.value || null;
+	$('#tbodyMascotasNoSocio').empty();
+	if(textToSearch){
+		let response = sendPost("getMascotasNoSocio", {textToSearch: textToSearch});
+		if(response.result == 2){
+			let list = response.listResult;
+			for (var i = 0; i <list.length; i++) {
+				let row = createRowMascotasNoSocio(idSocio, list[i].idMascota, list[i].nombre, list[i].especie, list[i].raza, list[i].sexo, list[i].fechaNacimiento, list[i].estado);
+				$('#tbodyMascotasNoSocio').append(row);
+			}
+		}
+	}
+}
+
+function createRowMascotasNoSocio(idSocio, idMascota, nombre, especie, raza, sexo, fechaNacimiento, estado){
+	let row = "<tr id='trM"+ idMascota +"'>";
+	row += "<td class='text-center'>"+ nombre +"</td>";
+	row += "<td class='text-center'>"+ especie +"</td>";
+	row += "<td class='text-center'>"+ raza +"</td>";
+	row += "<td class='text-center'>"+ sexo +"</td>";
+	row += "<td class='text-center'>"+ fechaNacimiento +"</td>";
+	if(estado == 1)
+		row += "<td class='text-center'>Activa</td>";
+	else
+		row += "<td class='text-center'>Inactiva</td>";
+	row += "<td class='text-center'><button id='"+ idSocio +"' name='"+ idMascota +"' class='btn btn-dark btn-sm' onclick='asignarMascota(this)'><i class='fas fa-plus'></i></button></td>";
+	row += "</tr>";
+
+	return row;
+}
+
+function asignarMascota(buttonAsignar){
+	let idSocio = buttonAsignar.id;
+	let idMascota = buttonAsignar.name;
+
+	let response = sendPost("asignarMascotaSocio", {idSocio: idSocio, idMascota: idMascota});
+	showReplyMessage(response.result, response.message, "Asignar mascota", "modalSetNewMascota");
+	if(response.result != 0){
+		$('#trM' +  idMascota).remove();
+		let newMascota = response.newMascota;
+		let row = createRowMascotasSocio(newMascota.idMascota, newMascota.nombre, newMascota.raza, newMascota.especie, newMascota.sexo, newMascota.fechaNacimiento, newMascota.estado);
+		$('#tbodyMascotasSocio').prepend(row);
+		$('#tbodyMascotasNoSocio').empty();
+		$('#inputTextToSearch').val("");
+		$('#inputCuota').val(response.newQuota);
+	}
+}
+
+function createRowMascotasSocio(idMascota, nombre, raza, especie, sexo, nacimiento, estado){
+	let row = "<tr id='trM2"+ idMascota +"'>";
+	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + nombre + "</td>";
+	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + raza + "</td>";
+	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + especie + "</td>";
+	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + sexo + "</td>";
+	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>"+ nacimiento + "</td>";
+	if(estado == 1)
+		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>Activa</td>";
+	else
+		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>Inactiva</td>";
+	row += "<td class='text-center'><button class='btn btn-link' onclick='desvincularMascota("+ idMascota + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
+
+	row += "</tr>";
+
+	return row;
+}
+
+function verMascota(idMascota){
+	window.location.href = getSiteURL() + "ver-mascota/" + idMascota;
+}
+
+function desvincularMascota(idMascota){
+	let response = sendPost("desvincularMascota", {idMascota: idMascota});
+	showReplyMessage(response.result, response.message, "Desvincular mascota", null);
+	console.log(response)
+	if(response.result != 0){
+		$('#inputCuota').val(response.newQuota);
+		$('#trM2' + idMascota).remove();
+	}
 }
 
 function saveChangeSocio(buttonConfirm){

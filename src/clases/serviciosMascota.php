@@ -88,6 +88,27 @@ class serviciosMascota {
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
 
+    public function getFechasVacunasVencimiento($currentDate){
+        $responseQuery = DataBase::sendQuery("SELECT VM.fechaProximaDosis FROM vacunasmascota AS VM, mascotas AS M WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis <= ? GROUP BY VM.fechaProximaDosis ORDER BY VM.fechaProximaDosis DESC", array('i', $currentDate), "LIST");
+        if($responseQuery->result ==2 ){
+            $arrayResult = array();
+            foreach ($responseQuery->listResult as $key => $row) {
+                $row['fechaProximaDosisFormat'] = fechas::dateToFormatBar($row['fechaProximaDosis']);
+                $arrayResult[] = $row;
+            }
+            $responseQuery->listResult = $arrayResult;
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas en la base de datos.";
+
+        return $responseQuery;
+    }
+
+    public function getVacunasVencidas($dateVacuna){
+        $responseQuery = DataBase::sendQuery("SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, M.idMascota, M.nombre, M.raza FROM vacunasmascota AS VM, mascotas AS M WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis = ? ORDER BY VM.idVacunaMascota DESC", array('i', $dateVacuna), "LIST");
+        if($responseQuery->result == 1)
+            $responseQuery->message = "No se encontraron vacunas vencidas para la fecha seleccionada.";
+        return $responseQuery;
+    }
+
     public function borrarVacunaMascota($idVacunaMascota){
         return DataBase::sendQuery("DELETE FROM vacunasmascota WHERE idVacunaMascota = ?", array('i', $idVacunaMascota), "BOOLE");
     }

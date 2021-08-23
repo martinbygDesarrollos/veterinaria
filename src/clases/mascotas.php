@@ -6,6 +6,64 @@ class mascotas{
  //0 INACTIVA 1 ACTIVA 2 PENDIENTE
 	//MACHO 1 HEMBRA 0
 
+	public function getCantMascotas($idSocio){
+		return DataBase::sendQuery("SELECT COUNT(*) AS cantMascotas FROM mascotasocio WHERE idSocio = ?", array('i', $idSocio), "OBJECT");
+	}
+
+	public function deleteVinculoMascota($idMascota){
+		return DataBase::sendQuery("DELETE FROM mascotasocio WHERE idMascota = ?", array('i', $idMascota), "BOOLE");
+	}
+
+	public function getMascotaSocio($idMascota){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotasocio WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontró un socio vinculado a la mascota seleccionada.";
+
+		return $responseQuery;
+	}
+
+	public function updateStateMascotas($state){
+		return DataBase::sendQuery("UPDATE mascotas SET estado = ? WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio IN (SELECT idSocio FROM socios WHERE estado = ?))", array('ii', $state, $state), "BOOLE");
+	}
+
+	public function mascotaIsVinculada($idMascota){
+		$responseQuery =  DataBase::sendQuery("SELECT * FROM mascotasocio WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "La mascota no tiene un socio vinculado.";
+
+		return $responseQuery;
+	}
+
+	public function getMascotasNoSocio($textToSearch){
+		$responseQuery  = DataBase::sendQuery("SELECT * FROM mascotas WHERE nombre LIKE '" . $textToSearch . "%' AND idMascota NOT IN (SELECT idMascota FROM mascotasocio) LIMIT 5", null, "LIST");
+		if($responseQuery->result == 2){
+			$arrayResult = array();
+			$noData = "No especificado";
+			foreach ($responseQuery->listResult as $key => $row) {
+				if(is_null($row['especie']) || strlen($row['especie']) < 2)
+					$row['especie'] = $noData;
+
+				if(is_null($row['raza']) || strlen($row['raza']) < 2)
+					$row['raza'] = $noData;
+
+				if($row['sexo'] == 0 )
+					$row['sexo'] = "Hembra";
+				else
+					$row['sexo'] = "Macho";
+
+				if(!is_null($row['fechaNacimiento']) && strlen($row['fechaNacimiento']) == 8)
+					$row['fechaNacimiento'] = fechas::dateToFormatBar($row['fechaNacimiento']);
+				else
+					$row['fechaNacimiento'] = $noData;
+
+				$arrayResult[] = $row;
+			}
+			$responseQuery->listResult = $arrayResult;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron mascotas con la sugerencia de texto ingresada.";
+
+		return $responseQuery;
+	}
+
 	public function getSocioIdByMascota($idMascota){
 		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotasocio WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
 		if($responseQuery->result == 1)
@@ -175,12 +233,6 @@ class mascotas{
 		return DataBase::sendQuery("INSERT INTO mascotasocio (idSocio, idMascota, fechaCambio) VALUES (?,?,?)", array('iii', $idSocio, $idMascota, $fechaCambio), "BOOLE");
 	}
 
-	public function modificarEstadoSociosCuotas($estadoNuevo, $estadoSocio){
-		$query = DB::conexion()->prepare("UPDATE mascotas SET estado = ? WHERE idMascota IN (SELECT idMascota FROM mascotasocio AS MS, socios AS S WHERE MS.idSocio = S.idSocio AND S.estado = ?)");
-		$query->bind_param('ii', $estadoNuevo, $estadoActual);
-		return $query->execute();
-	}
-
 	public function activarDesactivarMascota($idMascota, $estado){
 		return DataBase::sendQuery("UPDATE mascotas SET estado = ? WHERE idMascota = ?", array('ii', $estado, $idMascota), "BOOLE");
 	}
@@ -197,19 +249,5 @@ class mascotas{
 		}else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron mascotas para el socio seleccionado.";
 
 		return $responseQuery;
-	}
-
-	public function desactivarMascotasSocio($idSocio){
-		$query = DB::conexion()->prepare("SELECT M.idMascota FROM mascotas AS M, mascotasocio AS MS WHERE M.idMascota = MS.idMascota AND MS.idSocio = ?");
-		$query->bind_param('i', $idSocio);
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayMascotas = array();
-			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-				$arrayMascotas[] = $row;
-			}
-			return $arrayMascotas;
-		}
-		return null;
 	}
 }

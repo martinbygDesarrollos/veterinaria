@@ -1,8 +1,5 @@
 <?php
 
-/**
- *
- */
 require_once '../src/clases/usuarios.php';
 require_once '../src/clases/socios.php';
 
@@ -193,6 +190,76 @@ class ctr_usuarios{
 
     //----------------------------------- FUNCIONES DE SOCIO --------------------------------------------
 
+	public function desvincularMascota($idMascota){
+		$response = new \stdClass();
+
+		$responseGetMascota = ctr_mascotas::getMascota($idMascota);
+		if($responseGetMascota->result == 2){
+			$responseGetMascotaSocio = ctr_mascotas::getMascotaSocio($idMascota);
+			if($responseGetMascotaSocio->result == 2){
+				$responseDeleteVinculo = ctr_mascotas::deleteVinculoMascota($idMascota);
+				if($responseDeleteVinculo->result == 2){
+					$responseCalcultateQuota = ctr_usuarios::calculateQuotaSocio($responseGetMascotaSocio->objectResult->idSocio);
+					if($responseCalcultateQuota->result == 2){
+						$responseUpdateQuota =  socios::updateQuotaSocio($responseGetMascotaSocio->objectResult->idSocio, $responseCalcultateQuota->quota);
+						if($responseUpdateQuota->result == 2){
+							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Desvincular mascota", $responseGetMascotaSocio->objectResult->idSocio, $idMascota, "Se desvinculo la mascota y se actualizó la cuota del socio.");
+							if($responseInsertHistorial->result == 2){
+								$response->result = 2;
+								$response->message = "Se desvinculó la mascota " . $responseGetMascota->objectResult->nombre . " del socio seleccionado y su cuota fue actualizada. Se generó un registro en el historial.";
+							}else{
+								$response->result = 1;
+								$response->message = "Se desvinculó la mascota " . $responseGetMascota->objectResult->nombre . " del socio seleccionado y su cuota fue actualizada. Por un error interno no se generó un registro en el historial de usuario.";
+							}
+							$response->newQuota = number_format($responseCalcultateQuota->quota, 2, ",", ".");
+						}else return $responseUpdateQuota;
+					}else return $responseCalcultateQuota;
+				}else return $responseDeleteVinculo;
+			}else return $responseGetMascotaSocio;
+		}else return $responseGetMascota;
+
+		return $response;
+	}
+
+	public function asignarMascotaSocio($idSocio, $idMascota){
+		$response = new \stdClass();
+
+		$responseGetSocio = socios::getSocio($idSocio);
+		if($responseGetSocio->result == 2){
+			$responseGetMascota = ctr_mascotas::getMascota($idMascota);
+			if($responseGetMascota->result == 2){
+				$responseGetMascotaSocio = ctr_mascotas::mascotaIsVinculada($idMascota);
+				if($responseGetMascotaSocio->result == 1){
+					$responseInsertMascotaSocio = ctr_mascotas::vincularMascotaSocio($idSocio, $idMascota);
+					if($responseInsertMascotaSocio->result == 2){
+						$resultQuota = "";
+						$responseUpdateQuota = ctr_usuarios::actualizarCuotaSocio($idSocio);
+						if($responseUpdateQuota->result == 2){
+							$response->newQuota = $responseUpdateQuota->newQuota;
+							$resultQuota = " y su cuota fue actualizada ";
+						}
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Vincular mascota", $idSocio, $idMascota, "Se vinculó la mascota ". $responseGetMascota->objectResult->nombre ." al socio seleccionado.");
+						if($responseInsertHistorial->result == 2){
+							$response->result = 2;
+							$response->message = "Se vinculó la mascota " . $responseGetMascota->objectResult->nombre . " al socio seleccionado ". $resultQuota .", se creo un registro en el historial de usuario.";
+						}else{
+							$response->result = 1;
+							$response->message = "Se vinculó la mascota " . $responseGetMascota->objectResult->nombre . " al socio seleccionado ". $resultQuota .", por un error interno no se pudo generar un registro en el historial de usuario.";
+						}
+						$responseGetMascotaResult = ctr_mascotas::getMascotaVinculadaToShow($idMascota);
+						if($responseGetMascotaResult->result == 2)
+							$response->newMascota = $responseGetMascotaResult->objectResult;
+					}else return $responseInsertMascotaSocio;
+				}else{
+					$response->result = 0;
+					$response->message = "La mascota seleccionada ya cuenta con un socio vinculado.";
+				}
+			}else return $responseGetMascota;
+		}else return $responseGetSocio;
+
+		return $response;
+	}
+
 	public function updateAllQuotaSocio($cuotaUno, $cuotaDos, $cuotaExtra, $plazoDeuda){
 		$response = new \stdClass();
 
@@ -206,38 +273,44 @@ class ctr_usuarios{
 			if($responseSetInactive->result  == 2){
 				$responseSetActive = socios::setActiveStateSocio($fechaVencimiento);
 				if($responseSetActive->result == 2){
-					$responseGetSociosActives = socios::getSociosWithMascotas();
-					$actualizados = array();
-					$noActualizados = array();
-					foreach ($responseGetSociosActives->listResult as $key => $socio) {
-						$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas']);
-						if($responseGetQuota->result == 2){
-							$responseUpdateQuota = socios:: updateQuotaSocio($socio['idSocio'], $responseGetQuota->quota);
-							if($responseUpdateQuota->result == 2)
-								$actualizados[] = $socio['idSocio'];
-							else
-								$noActualizados[] = $socio['idSocio'];
-						}else return $responseGetQuota;
-					}
+					$responseDesactivarMascotas = ctr_mascotas::updateStateMascotas(1);
+					if($responseDesactivarMascotas->result == 2){
+						$responseGetSociosActives = socios::getSociosWithMascotas();
+						$actualizados = array();
+						$noActualizados = array();
+						foreach ($responseGetSociosActives->listResult as $key => $socio) {
+							$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas']);
+							if($responseGetQuota->result == 2){
+								$responseUpdateQuota = socios:: updateQuotaSocio($socio['idSocio'], $responseGetQuota->quota);
+								if($responseUpdateQuota->result == 2)
+									$actualizados[] = $socio['idSocio'];
+								else
+									$noActualizados[] = $socio['idSocio'];
+							}else return $responseGetQuota;
+						}
 
-					if(sizeof($responseGetSociosActives->listResult) == sizeof($actualizados)){
-						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron todas las cuotas de los socios.");
-						if($responseInsertHistorial->result ==  2){
-							$response->result = 2;
-							$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, se generó un registro en el historial de usuario.";
-						}else{
-							$response->result = 2;
-							$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, pero un error no permitió crear un registro en el historial de usuario.";
+						if(sizeof($responseGetSociosActives->listResult) == sizeof($actualizados)){
+							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron todas las cuotas de los socios.");
+							if($responseInsertHistorial->result ==  2){
+								$response->result = 2;
+								$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, se generó un registro en el historial de usuario.";
+							}else{
+								$response->result = 2;
+								$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, pero un error no permitió crear un registro en el historial de usuario.";
+							}
+						}else if(sizeof($responseGetSociosActives->listResult) < sizeof($actualizados)){
+							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron las cuotas de los socios, para los socios " . implode(",", $noActualizados) . " las cuotas no fueron actualizadas por un error.");
+							if($responseInsertHistorial->result ==  2){
+								$response->result = 1;
+								$response->message = "Los estados y cuotas de los socios fueron actualizadas, por algun error " . sizeof($noActualizados) . " socios no actualizaron su cuota. se generó un registro en el historial de usuario.";
+							}else{
+								$response->result = 1;
+								$response->message = "No todos los estados y cuotas de los socios fueron actualizados por un error, " . sizeof($noActualizados) . " socios no actualizaron su cuota. No se generó un registro en el historial de usuario.";
+							}
 						}
-					}else if(sizeof($responseGetSociosActives->listResult) < sizeof($actualizados)){
-						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron las cuotas de los socios, para los socios " . implode(",", $noActualizados) . " las cuotas no fueron actualizadas por un error.");
-						if($responseInsertHistorial->result ==  2){
-							$response->result = 1;
-							$response->message = "Los estados y cuotas de los socios fueron actualizadas, por algun error " . sizeof($noActualizados) . " socios no actualizaron su cuota. se generó un registro en el historial de usuario.";
-						}else{
-							$response->result = 1;
-							$response->message = "No todos los estados y cuotas de los socios fueron actualizados por un error, " . sizeof($noActualizados) . " socios no actualizaron su cuota. No se generó un registro en el historial de usuario.";
-						}
+					}else {
+						$response->result = 0;
+						$response->message = "Los estados de las mascotas no fueron actualizados por un error interno, por favor vuelva a intentarlo.";
 					}
 				}else return $responseSetActive;
 			}else return $responseSetInactive;
@@ -257,8 +330,14 @@ class ctr_usuarios{
 		if($responseCalcultateQuota->result == 2){
 			$responseUpdateQuota =  socios::updateQuotaSocio($idSocio, $responseCalcultateQuota->quota);
 			if($responseUpdateQuota->result == 2){
-				$response->result = 2;
-				$response->message = "La cuota del socio fue actualizada correctamente.";
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actulizar cuota", $idSocio, null, "Se actualizo la cuota del socio seleccionado.");
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "La cuota del socio fue actualizada correctamente y se creo un registro en el historial de usuario.";
+				}else{
+					$response->result = 1;
+					$response->message = "La cuota del socio fue actualizada correctamente, pero un error interno no permitió crear un registro en el historial de usaurio.";
+				}
 				$response->newQuota = number_format($responseCalcultateQuota->quota, 2, ",", ".");
 			}else{
 				$response->result = 0;
@@ -322,7 +401,7 @@ class ctr_usuarios{
 
 				$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
 				if($responseInsertSocio->result == 2){
-					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
+					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", $responseInsertSocio->id, null, "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
 					if($responseInsertHistorial->result == 2){
 						$response->result = 2;
 						$response->message = "El nuevo socio fue creado correctamente y se creo un registro en el historial.";
@@ -461,7 +540,16 @@ class ctr_usuarios{
 		if($responseGetSocios->result == 2){
 			$response->result = 2;
 			$response->lastId = $responseGetSocios->lastId;
-			$response->socios = $responseGetSocios->listResult;
+			$arrayResult = array();
+			foreach ($responseGetSocios->listResult as $key => $value) {
+				$responseGetCantMascotas = ctr_mascotas::getCantMascotas($value['idSocio']);
+				if($responseGetCantMascotas->result == 2)
+					$value['cantMascotas'] = $responseGetCantMascotas->objectResult->cantMascotas;
+				else
+					$value['cantMascotas'] = "Sin mascotas";
+				$arrayResult[] = $value;
+			}
+			$response->socios = $arrayResult;
 		}else return $responseGetSocios;
 
 		return $response;
