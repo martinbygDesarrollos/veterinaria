@@ -14,6 +14,10 @@ class ctr_mascotas {
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 
+	public function changeStateMascotas($idSocio){
+		return mascotas::changeStateMascotas($idSocio);
+	}
+
 	public function getCantMascotas($idSocio){
 		return mascotas::getCantMascotas($idSocio);
 	}
@@ -304,7 +308,10 @@ class ctr_mascotas {
 					$value['nombreSocio'] = $responseGetSocioMascota->socio->nombre;
 					$value['idSocio'] = $responseGetSocioMascota->socio->idSocio;
 					$value['telefono'] = $responseGetSocioMascota->socio->telefono;
-					$value['email'] = $responseGetSocioMascota->socio->email;
+					if (!filter_var($responseGetSocioMascota->socio->email, FILTER_VALIDATE_EMAIL))
+						$value['email'] = "No especificado";
+					else if(strlen($responseGetSocioMascota->socio->email) > 7)
+						$value['email'] = $responseGetSocioMascota->socio->email;
 				}else{
 					$value['nombreSocio'] = "Sin socio";
 					$value['telefono'] = "No corresponde";
@@ -443,7 +450,7 @@ class ctr_mascotas {
 	}
 
 	public function getVacunasVencidasMascota($idMascota){
-		$fechaActual = fechas::parceFechaInt(date('Y-m-d'));
+		$fechaActual = fechas::getDateToINT(date('Y-m-d'));
 		return serviciosMascota::getVacunasVencidasMascota($idMascota, $fechaActual);
 	}
 

@@ -31,9 +31,9 @@ function createRow(fecha, idSocio, socio, idMascota, mascota, funcion, observaci
 }
 
 function goToVerMascota(idMascota){
-	window.location.href = getSiteURL() + "/ver-mascota/" + idMascota;
+	window.location.href = getSiteURL() + "ver-mascota/" + idMascota;
 }
 
 function goToVerSocio(idSocio){
-	window.location.href = getSiteURL() + "/ver-socio/" + idSocio;
+	window.location.href = getSiteURL() + "ver-socio/" + idSocio;
 }

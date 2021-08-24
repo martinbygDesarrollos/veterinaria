@@ -31,15 +31,13 @@ function insertarNuevoSocio(){
 						};
 
 						let response = sendPost("insertNewSocio", data);
-						showReplyMessage(response.result, response.message, "Agregar socio", "modalUpdateSocio");
 						if(response.result == 2){
-							$('#modalButtonResposne').click(function(){
-								$('#modalResultNewSocio').modal();
-								$('#modalButtonNewSocio').click(function(){
-									window.location.href = getSiteURL() + "/";
-								});
+							$('#modalResultNewSocio').modal();
+							$('#modalResultNewSocio').modal();
+							$('#modalButtonNewSocio').click(function(){
+								window.location.href = getSiteURL() + "nueva-mascota/" + response.newIdSocio;
 							});
-						}
+						}else showReplyMessage(response.result, response.message, "Agregar socio", null);
 					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido.", "Email incorrecto", "modalUpdateSocio");
 				}else showReplyMessage(1, "El nombre del socio debe tener al menos 6 caracteres para ser considerado valido.", "Nombre incorrecto", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del socio para agregarlo", "Nombre requerido", "modalUpdateSocio");

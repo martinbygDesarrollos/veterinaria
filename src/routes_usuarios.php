@@ -79,10 +79,9 @@ return function (App $app) {
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
-            $args['fechaVencimiento'] = ctr_mascotas::getFechaActual();
             return $this->view->render($response, "vencimientosCuota.twig", $args);
         }else return $response->withRedirect('iniciar-sesion');
-    })->setName("cuotasVencidas");
+    })->setName("CuotasVencidas");
 
     //------------------------------------------------------------------------------------------
 
@@ -107,31 +106,12 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
-
     $app->post('/getSocio', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::getSocio($idSocio));
-        }else return json_encode($responseSession);
-    });
-
-    $app->post('/buscadorDeSociosVencimientoCuota', function(Request $request, Response $response){
-        $responseSession = ctr_usuarios::validateSession();
-        if($responseSession->result == 2){
-            $data = $request->getParams();
-            $nombreSocio = $data['nombreSocio'];
-            return json_encode(ctr_usuarios::buscadorDeSociosVencimientoCuota($nombreSocio));
-        }else return json_encode($responseSession);
-    });
-
-    $app->post('/getVencimientosCuotaPagina', function(Request $request, Response $response){
-        $responseSession = ctr_usuarios::validateSession();
-        if($responseSession->result == 2){
-            $data = $request->getParams();
-            $ultimoID = $data['ultimoID'];
-            return json_encode(ctr_usuarios::getVencimientosCuotaPagina($ultimoID));
         }else return json_encode($responseSession);
     });
 
@@ -226,20 +206,19 @@ return function (App $app) {
 
     $app->post('/activarDesactivarSocio', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
-        if($responseSession->result == 2){
+        if($responseSession->result == 0){
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::activarDesactivarSocio($idSocio));
         }else return json_encode($responseSession);
     });
 
-    $app->post('/notificarSocioVacuna', function(Request $request, Response $response){
+    $app->post('/notificarVacunaMascota', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $data = $request->getParams();
-            $idSocio = $data['idSocio'];
             $idMascota = $data['idMascota'];
-            return json_encode(ctr_usuarios::notificarSocioVacuna($idSocio, $idMascota));
+            return json_encode(ctr_usuarios::notificarVacunaMascota($idMascota));
         }else return json_encode($responseSession);
     });
 
@@ -284,5 +263,14 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
+    $app->post('/getCuotasVencidas', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $lastId = $data['lastId'];
+            $textToSearch = $data['textToSearch'];
+            return json_encode(ctr_usuarios::getCuotasVencidas($lastId, $textToSearch));
+        }else return json_encode($responseSession);
+    });
 }
 ?>

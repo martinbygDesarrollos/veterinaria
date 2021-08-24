@@ -7,7 +7,10 @@ class configuracionSistema{
 	}
 
 	public function getQuota(){
-		return DataBase::sendQuery("SELECT * FROM cuota WHERE id = 1", null, "OBJECT");
+		$responseQuery =  DataBase::sendQuery("SELECT * FROM cuota WHERE id = 1", null, "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "La información de la cuota y el plazo de deuda no fueron obtenidas.";
+		return $responseQuery;
 	}
 
 	public function getQuotaSocio($cantMascotas){

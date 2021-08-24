@@ -42,8 +42,8 @@
 			<div class="row">
 				<div class="col-3">
 					<div class="form-group">
-						<label for="selectTipoSocio">Tipo socio</label>
-						<select class="form-select form-control shadow-sm" id="selectTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
+						<label for="inputTipoSocio">Tipo socio</label>
+						<select class="form-select form-control shadow-sm" id="inputTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
 							<option value="0">No socio</option>
 							<option selected value="1">Socio</option>
 							<option value="2">ONG</option>
@@ -72,8 +72,8 @@
 				</div>
 				<div class="col-4">
 					<div class="form-group">
-						<label for="selectTipoSocio">Lugar de pago</label>
-						<select class="form-select form-control shadow-sm" id="selectTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
+						<label for="inputLugarPagoSocio">Lugar de pago</label>
+						<select class="form-select form-control shadow-sm" id="inputLugarPagoSocio" onkeypress="return keyEnterPress(event, null, null)">
 							<option selected value="0">Veterinaria</option>
 							<option value="1">Cobrador</option>
 						</select>
@@ -104,7 +104,7 @@
 <div id="modalResultNewSocio" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header bg-success">
+			<div class="modal-header bg-mycolor">
 				<span class="modal-title">Socio agregado</span>
 				<button type="button" class="close" data-dismiss="modal" accesskey="x" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
@@ -115,13 +115,19 @@
 				<p class="text-center">¿Desea asignarle su primer mascota?</p>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
-				<button type="button" class="btn btn-danger shadow-sm">Cancelar</button>
+				<a type="button" href="{{ path_for('Socios')}}" class="btn btn-danger shadow-sm">Cancelar</a>
 				<button id="modalButtonNewSocio" type="button" class="btn btn-success shadow-sm">Agregar</button>
 			</div>
 		</div>
 	</div>
 </div>
 {%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/newSocio.js"></script>
+<script type="text/javascript">
+	$('#inputFechaIngresoSocio').val(getDateForInput());
+</script>
 {% endblock %}
 {% endblock %}

@@ -43,7 +43,7 @@ class socios{
 
 				$row['cuota'] = number_format($row['cuota'],2,",",".");
 				if(!is_null($row['fechaUltimaCuota']) && strlen($row['fechaUltimaCuota']) == 6)
-					$row['fechaUltimaCuota'] = fechas::getDayMonthFormatBar($row['fechaUltimaCuota']);
+					$row['fechaUltimaCuota'] = fechas::getYearMonthFormatBar($row['fechaUltimaCuota']);
 				else
 					$row['fechaUltimaCuota'] = "No especificado";
 
@@ -56,6 +56,63 @@ class socios{
 		return $responseQuery;
 	}
 
+	public function getCuotasVencidas($lastId, $textToSearch, $plazoDeuda){
+		if($lastId == 0){
+			$responseGetMaxID = socios::getSocioMaxId();
+			if($responseGetMaxID->result == 2)
+				$lastId = $responseGetMaxID->objectResult->idMaximo + 1;
+		}
+
+		$fechaVencimiento = fechas::getYearMonthINT($plazoDeuda);
+		$fechaActual = fechas::getYearMonthINT(0);
+
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota >= ? AND fechaUltimaCuota < ? AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10", array('iii', $fechaVencimiento, $fechaActual, $lastId), "LIST");
+		if($responseQuery->result == 2){
+			$newLastId = $lastId;
+			$arrayResult = array();
+			foreach ($responseQuery->listResult as $key => $row) {
+				if($newLastId > $row['idSocio']) $newLastId = $row['idSocio'];
+
+				$newRow = socios::getSocioToShowArray($row);
+
+				if (!filter_var($newRow['email'], FILTER_VALIDATE_EMAIL))
+					$newRow['email'] = null;
+
+				$arrayResult[] = $newRow;
+			}
+
+			$responseQuery->listResult = $arrayResult;
+			$responseQuery->lastId = $newLastId;
+			array_multisort(array_map(function($element) {
+				return $element['fechaUltimaCuota'];
+			}, $responseQuery->listResult), SORT_DESC, $responseQuery->listResult);
+		}else if($responseQuery->result == 1){
+			$responseQuery->message = "No se encontraron cuotas vencidas en la base de datos.";
+		}
+
+		return $responseQuery;
+	}
+
+	public function getSocioToShowArray($socio){
+
+		$socio['cuota'] = number_format($socio['cuota'],2,",",".");
+		if(!is_null($socio['fechaUltimaCuota']) && strlen($socio['fechaUltimaCuota']) == 6)
+			$socio['fechaUltimaCuota'] = fechas::getYearMonthFormatBar($socio['fechaUltimaCuota']);
+		else
+			$socio['fechaUltimaCuota'] = "No especificado";
+
+		if($socio['lugarPago'] == 0)
+			$socio['lugarPago'] = "Veterinaria";
+		else
+			$socio['lugarPago'] = "Cobrador";
+
+		return $socio;
+	}
+
+	public function changeStateSocio($idSocio, $newState){
+		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE idSocio = ?", array('ii', $newState, $idSocio), "BOOLE");
+	}
+
 	public function setInactiveStateSocio($dateVencimiento){
 		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE (fechaUltimaCuota <= ? OR fechaUltimaCuota IS NULL) AND tipo != 2 ", array('ii', 0, $dateVencimiento), "BOOLE");
 	}
@@ -66,41 +123,6 @@ class socios{
 
 	public function getSociosWithMascotas(){
 		return DataBase::sendQuery("SELECT S.idSocio, S.estado , COUNT(MS.idMascota) AS cantMascotas FROM socios AS S, mascotasocio AS MS WHERE S.idSocio = MS.idSocio AND S.estado = 0 GROUP BY MS.idSocio", null, "LIST");
-	}
-
-	public function getVencimientosCuotaPagina($maxID){
-		$fecha = date('Y-m-d');
-		$fecha = substr($fecha, 0, 4) . substr($fecha, 5, 2);
-
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota <= ? AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10");
-		$query->bind_param('ii', $fecha, $maxID);
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayResult = array();
-			while($row = $result->fetch_array(MYSQLI_ASSOC)){
-				if(strlen($row['fechaUltimaCuota']) == 6){
-					$resultFecha = fechas::esUnaCuotaVencida($row['fechaUltimaCuota'], $row['fechaPago']);
-					if($resultFecha){
-						$row['fechaUltimaCuota'] = fechas::parceFechaFormatDMANoDay($row['fechaUltimaCuota'], "/");
-						$arrayResult[] = $row;
-					}
-				}
-			}
-			return $arrayResult;
-		}else return null;
-	}
-
-	public function getSociosNoVinculados($idMascota){
-		$query = DB::conexion()->prepare("SELECT * FROM socios WHERE idSocio NOT IN (SELECT idSocio FROM mascotasocio WHERE idMascota = ?)");
-		$query->bind_param('i', $idMascota);
-		if($query->execute()){
-			$result = $query->get_result();
-			$arrayResult = array();
-			while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-				$arrayResult[] = $row;
-			}
-			return $arrayResult;
-		}else return null;
 	}
 
 	public function getSocioToShow($idSocio){
@@ -146,7 +168,7 @@ class socios{
 
 			if(is_null($socio->fechaUltimaCuota) || $socio->fechaUltimaCuota == 0)
 				$socio->fechaUltimaCuota = $noData;
-			else $socio->fechaUltimaCuota = fechas::getDayMonthFormatBar($socio->fechaUltimaCuota);
+			else $socio->fechaUltimaCuota = fechas::getYearMonthFormatBar($socio->fechaUltimaCuota);
 
 			if(is_null($socio->fechaIngreso) || $socio->fechaIngreso == 0)
 				$socio->fechaIngreso = $noData;

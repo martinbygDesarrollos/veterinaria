@@ -89,7 +89,6 @@ function verMascota(idMascota){
 function desvincularMascota(idMascota){
 	let response = sendPost("desvincularMascota", {idMascota: idMascota});
 	showReplyMessage(response.result, response.message, "Desvincular mascota", null);
-	console.log(response)
 	if(response.result != 0){
 		$('#inputCuota').val(response.newQuota);
 		$('#trM2' + idMascota).remove();
@@ -191,4 +190,13 @@ function keyEnterPress(eventEnter, value, size){
 	}else if(value != null && value.length == size) {
 		return false;
 	}
+}
+
+function activarDesactivarSocio(idSocio, estadoSocio){
+	let nuevoEstado = "Activar socio";
+	if(estado == 1)
+		nuevoEstado = "Desactivar socio";
+
+	let response = sendPost("activarDesactivarSocio", {idSocio: idSocio});
+	showReplyMessage(response.result, response.message, nuevoEstado, null);
 }

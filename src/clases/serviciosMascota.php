@@ -213,17 +213,19 @@ class serviciosMascota {
     }
 
     public function getVacunasVencidasMascota($idMascota, $fechaActual){
-        $query = DB::conexion()->prepare("SELECT nombreVacuna, fechaProximaDosis FROM `vacunasmascota` WHERE idMascota = ? AND fechaProximaDosis != 0 AND fechaProximaDosis <= ?");
-        $query->bind_param('ii', $idMascota, $fechaActual);
-        if($query->execute()){
-            $response = $query->get_result();
-            $arrayResponse = array();
-            while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-                $row['fechaProximaDosis'] = fechas::parceFechaFormatDMA($row['fechaProximaDosis'],"/");
-                $arrayResponse[] = $row;
+        $responseQuery = DataBase::sendQuery("SELECT VM.nombreVacuna, VM.fechaUltimaDosis, VM.fechaProximaDosis, M.nombre FROM vacunasmascota AS VM, mascotas AS M WHERE VM.idMascota = M.idMascota AND M.idMascota = ? AND VM.fechaProximaDosis <= ? AND M.estado = 1", array('ii', $idMascota, $fechaActual), "LIST");
+        if($responseQuery->result == 2){
+            $arrayResult = array();
+            foreach ($responseQuery->listResult as $key => $row) {
+                $row['fechaUltimaDosis'] = fechas::dateToFormatBar($row['fechaUltimaDosis']);
+                $row['fechaProximaDosis'] = fechas::dateToFormatBar($row['fechaProximaDosis']);
+
+                $arrayResult[] = $row;
             }
-            return $arrayResponse;
-        }else return null;
+            $responseQuery->listResult = $arrayResult;
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas vencidas de la mascota seleccionada.";
+
+        return $responseQuery;
     }
 
     public function getVacunaMascotaToShow($idVacunaMascota){

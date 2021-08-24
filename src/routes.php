@@ -24,7 +24,7 @@ return function (App $app) {
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
             $args['hayVencimientos'] = ctr_mascotas::getFechasVacunasVencimiento();
-            // $args['hayVencimientoSocio'] = ctr_usuarios::haySociosConCuotasVencidas();
+            $args['responseVencimientosSocio'] = ctr_usuarios::getCuotasVencidas(0, null);
         }
         return $this->view->render($response, "index.twig", $args);
     })->setName("Inicio");

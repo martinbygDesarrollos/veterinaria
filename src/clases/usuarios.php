@@ -85,7 +85,7 @@ class usuarios{
 		}else return null;
 	}
 
-	public function enviarNotificacionVacunas($mensaje, $email, $vacunas){
+	public function enviarNotificacionVacunas($nombreSocio, $vacunas, $email){
 		$header  = 'MIME-Version: 1.0' . "\r\n";
 		$header .= 'Content-type:text/html; charset=UTF-8' . "\r\n";
 		$header .= "From: Veterinaria Nan <veterinariaNan@byg.uy>" . "\r\n";
@@ -94,7 +94,10 @@ class usuarios{
 		$tableBody = '';
 
 		foreach ($vacunas as $key => $value) {
-			$tableBody .= '<tr style="background-color: "><th>'. $value['nombreVacuna'] .'</th><th>'. $value['fechaProximaDosis'] .'</th></tr>';
+			$tableBody .= '<tr style="background-color: "><th>'. $value['nombreVacuna'] .'</th>';
+			$tableBody .= '<th>'. $value['fechaUltimaDosis'] .'</th>';
+			$tableBody .= '<th>'. $value['fechaProximaDosis'] .'</th>';
+			$tableBody .= '<th>'. $value['nombre'] .'</th></tr>';
 		}
 
 		$subtitulo = "Veterinaria Nan";
@@ -125,12 +128,14 @@ class usuarios{
 		</style>' .
 		'</head>' .
 		'<body class="fondo"><h1 style="color: white; font-size:35px; text-align: center;">' . $subtitulo . '</h1>' .
-		'<p class="message">' . $mensaje . '</p>' .
+		'<p class="message">' . $nombreSocio . ' Su mascota  registra las siguientes vacunas vencidas o próximas a vencer.</p>' .
 		'<div align="center">
 		<table style="width:70%">
 		<tr>
-		<th>Nombre vacuna</th>
-		<th>Fecha Dosis</th>
+		<th>Vacuna</th>
+		<th>Última dosis</th>
+		<th>Próxima Dosis</th>
+		<th>Mascota</th>
 		</tr>
 		'. $tableBody . '
 		</table>
@@ -141,11 +146,10 @@ class usuarios{
 		return mail($email, $subtitulo, $mensaje, $header);
 	}
 
-	public function enviarNotificacionCuota($mensaje, $email){
+	public function enviarNotificacionCuota($nombreSocio, $fechaUltimaCuota, $email){
 		$header  = 'MIME-Version: 1.0' . "\r\n";
 		$header .= 'Content-type:text/html; charset=UTF-8' . "\r\n";
 		$header .= "From: Veterinaria Nan <veterinariaNan@byg.uy>" . "\r\n";
-
 
 		$subtitulo = "Veterinaria Nan";
 		$mensaje = '<html>' .
@@ -175,7 +179,7 @@ class usuarios{
 		</style>' .
 		'</head>' .
 		'<body class="fondo"><h1 style="color: white; font-size:35px; text-align: center;">' . $subtitulo . '</h1>' .
-		'<p class="message">' . $mensaje . '</p>' .
+		'<p class="message">' . $nombreSocio . ' se le informa que su último pago registrado es el correspondiente al mes de ' . $fechaUltimaCuota . ' se le solicita que realize el abono correspondiente.</p>'.
 		'</body>' .
 		'</html>';
 

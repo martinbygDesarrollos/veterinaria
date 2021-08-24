@@ -237,6 +237,10 @@ class mascotas{
 		return DataBase::sendQuery("UPDATE mascotas SET estado = ? WHERE idMascota = ?", array('ii', $estado, $idMascota), "BOOLE");
 	}
 
+	public function changeStateMascotas($idSocio){
+		return DataBase::sendQuery("UPDATE mascotas SET estado = ? WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio = ? )", array('ii', 0, $idSocio), "BOOLE");
+	}
+
 	public function getMascotasSocio($idSocio){
 		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio = ? )", array('i', $idSocio), "LIST");
 		if($responseQuery->result == 2){

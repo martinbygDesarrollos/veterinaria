@@ -27,7 +27,6 @@ function insertNewMascota(inputButton){
 					idSocio: idSocio,
 					pedigree: pedigree
 				};
-				console.log(data)
 				let response = sendPost("insertNewMascota", data);
 				showReplyMessage(response.result, response.message, "Agregar mascota", null);
 				if(response.result == 2)
