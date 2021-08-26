@@ -80,18 +80,6 @@ class mascotas{
 		return $responseQuery;
 	}
 
-	public function getMascotaIds(){
-		$query = DB::conexion()->prepare("SELECT MS.idMascotaSocio, S.numSocio, M.nombre, MS.idMascota, MS.idSocio FROM mascotasocio AS MS, socios AS S, mascotas AS M WHERE MS.idSocio = S.idSocio AND MS.idMascota = M.idMascota"); // AND MS.idMascota > 13688
-		if($query->execute()){
-			$response = $query->get_result();
-			$arrayResult = array();
-			while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-				$arrayResult[] = $row;
-			}
-			return $arrayResult;
-		}
-	}
-
 	public function getTotMascotas(){
 		$query = DB::conexion()->prepare("SELECT * FROM mascotas");
 		if($query->execute()){
@@ -253,5 +241,9 @@ class mascotas{
 		}else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron mascotas para el socio seleccionado.";
 
 		return $responseQuery;
+	}
+
+	public function getMascotaId($nombreMascota, $numSocio){
+		return DataBase::sendQuery("SELECT MS.idMascota FROM socios AS S, mascotasocio AS MS, mascotas AS M WHERE S.idSocio = MS.idSocio AND S.numSocio = ? AND M.nombre = ? LIMIT 1", array('is', $numSocio, $nombreMascota), "OBJECT");
 	}
 }

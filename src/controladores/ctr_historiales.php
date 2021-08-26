@@ -3,7 +3,7 @@
 
 require_once '../src/clases/configuracionSistema.php';
 require_once '../src/clases/historiales.php';
-require_once '../src/clases/copiarDB.php';
+require_once '../src/clases/migrateDB.php';
 require_once "../src/utils/fechas.php";
 require_once '../src/controladores/ctr_mascotas.php';
 require_once '../src/controladores/ctr_usuarios.php';
@@ -11,25 +11,24 @@ require_once '../src/controladores/ctr_usuarios.php';
 class ctr_historiales {
 
 	public function insertarSociosOriginales(){
-		copiarDB::seleccionarInsertarSocios();
+		return migrateDB::getSocios();
 	}
 
 	public function insertarMascotasOriginales(){
-		$sociosSeleccionados = socios::getTotSocios();
-		foreach ($sociosSeleccionados as $key => $socio) {
-			copiarDB::seleccionarInsertarMascota($socio['idSocio'], $socio['numSocio']);
+		$responseGetSocios = socios::getAllSocios();
+		if($responseGetSocios->result == 2){
+			foreach ($responseGetSocios->listResult as $key => $socio) {
+				migrateDB::getMascotasSocio($socio['idSocio'], $socio['numSocio'], $socio['estado']);
+			}
 		}
 	}
 
 	public function insertarMascotasSinSociosOriginales(){
-		copiarDB::seleccionarInsertarMascotaSinSocio();
+		migrateDB::getMascotasSinSocio();
 	}
 
 	public function insertarVacunasOriginales(){
-		$mascotasSocio = mascotas::getMascotaIds();
-		foreach ($mascotasSocio as $key => $mascotaSocio) {
-			copiarDB::seleccionarInsertarVacunasMascotas($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $mascotaSocio['numSocio']);
-		}
+		return migrateDB::getVacunasMascotas();
 	}
 
 	public function insertarHistorialClinicoOriginales(){

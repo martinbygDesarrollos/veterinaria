@@ -206,7 +206,7 @@ return function (App $app) {
 
     $app->post('/activarDesactivarSocio', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
-        if($responseSession->result == 0){
+        if($responseSession->result == 2){
             $data = $request->getParams();
             $idSocio = $data['idSocio'];
             return json_encode(ctr_usuarios::activarDesactivarSocio($idSocio));

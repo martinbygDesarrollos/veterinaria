@@ -192,11 +192,35 @@ function keyEnterPress(eventEnter, value, size){
 	}
 }
 
-function activarDesactivarSocio(idSocio, estadoSocio){
+function openModalChangeState(idSocio){
+	let responseGetSocio = sendPost("getSocio", {idSocio: idSocio});
+	if(responseGetSocio.result == 2){
+		if(responseGetSocio.socio.estado == 0){
+			$('#tittleModalState').html("Desactivar socio");
+			$('#messageModalState').html("¿Desea desactivar el socio seleccionado?<br>Esta operación desactivara todas las mascotas del socio y dejara su cuota en 0");
+		}else{
+			$('#tittleModalState').html("Activar socio");
+			$('#messageModalState').html("¿Desea activar el socio seleccionado?");
+		}
+		$('#buttonModalState').off('click');
+		$('#buttonModalState').click(function(){
+			activarDesactivarSocio(idSocio, responseGetSocio.socio.estado)
+		});
+		$('#modalChangeState').modal();
+	}
+}
+
+function activarDesactivarSocio(idSocio, estado){
 	let nuevoEstado = "Activar socio";
 	if(estado == 1)
 		nuevoEstado = "Desactivar socio";
 
 	let response = sendPost("activarDesactivarSocio", {idSocio: idSocio});
-	showReplyMessage(response.result, response.message, nuevoEstado, null);
+	showReplyMessage(response.result, response.message, nuevoEstado, "modalChangeState");
+	if(response.result != 0){
+		if(response.newState == 0){
+			$('#iconButtonState').removeClass("fa-user-check").addClass("fa-user-times");
+			$('#inputCuota').val('0.00');
+		}else $('#iconButtonState').removeClass("fa-user-times").addClass("fa-user-check");
+	}
 }

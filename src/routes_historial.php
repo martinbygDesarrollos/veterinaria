@@ -13,11 +13,10 @@ return function (App $app) {
 
 	$app->post('/prueba', function(Request $request, Response $response){
 		$data = $request->getParams();
-
 		// return json_encode(ctr_historiales::insertarSociosOriginales());
 		// return json_encode(ctr_historiales::insertarMascotasOriginales());
-		 // return json_encode(ctr_historiales::insertarMascotasSinSociosOriginales());
-		// return json_encode(ctr_historiales::insertarVacunasOriginales());
+		// return json_encode(ctr_historiales::insertarMascotasSinSociosOriginales());
+		return json_encode(ctr_historiales::insertarVacunasOriginales());
 		// return json_encode(ctr_historiales::insertarHistorialClinicoOriginales());
 		// return json_encode(ctr_historiales::insertarEnfermedadesOriginales());
 		// return json_encode(ctr_historiales::insertarFechaDeCambioOriginales());

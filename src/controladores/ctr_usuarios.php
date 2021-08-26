@@ -660,10 +660,10 @@ class ctr_usuarios{
 		$responseGetSocio = socios::getSocio($idSocio);
 		if($responseGetSocio->result == 2){
 			$nuevoEstado = 0;
-			$nuevoTextEstado = "Desactivar";
+			$nuevoTextEstado = "Socio desactivado";
 			if($responseGetSocio->objectResult->estado == 0){
 				$nuevoEstado = 1;
-				$nuevoTextEstado = "Activar";
+				$nuevoTextEstado = "Socio activado";
 			}
 
 			$responseUpdateStateSocio = socios::changeStateSocio($idSocio, $nuevoEstado);
@@ -672,15 +672,20 @@ class ctr_usuarios{
 					$responseUpdateStateMascota = ctr_mascotas::changeStateMascotas($idSocio);
 					if($responseUpdateStateMascota->result != 2)
 						return $responseUpdateStateMascota;
+
+					$responseUpdateQuota = socios::updateQuotaSocio($idSocio, 0);
+					if($responseUpdateQuota->result != 2)
+						return $responseUpdateQuota;
 				}
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario($nuevoTextEstado . " socio", $idSocio, null, "Se cambio el estadod el socio y el de sus mascotas en caso de tenerlas.");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "";
+					$response->message = $nuevoTextEstado . " correctamente y se creo un registro en el historial de usuario.";
 				}else{
 					$response->result = 1;
-					$response->message = "";
+					$response->message = $nuevoTextEstado . " correctamente pero un error interno no permitio crear un registro en el historial de usuario.";
 				}
+				$response->newState = $nuevoEstado;
 			}else return $responseUpdateStateSocio;
 		}else return $responseGetSocio;
 

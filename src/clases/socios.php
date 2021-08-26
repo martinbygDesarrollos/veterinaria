@@ -220,4 +220,8 @@ class socios{
 	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $quota){
 		return DataBase::sendQuery("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ?, fechaUltimaCuota = ?, cuota = ?, fechaUltimoPago = ? WHERE idSocio = ?", array('sssssiiissiiiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $ultimoMesPago, $quota, $ultimoPago, $idSocio), "BOOLE");
 	}
+
+	public function getAllSocios(){
+		return DataBase::sendQuery("SELECT * FROM socios", null, "LIST");
+	}
 }
