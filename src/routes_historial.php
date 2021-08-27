@@ -12,15 +12,10 @@ return function (App $app) {
 	$container = $app->getContainer();
 
 	$app->post('/prueba', function(Request $request, Response $response){
-		$data = $request->getParams();
-		// return json_encode(ctr_historiales::insertarSociosOriginales());
-		// return json_encode(ctr_historiales::insertarMascotasOriginales());
-		// return json_encode(ctr_historiales::insertarMascotasSinSociosOriginales());
-		return json_encode(ctr_historiales::insertarVacunasOriginales());
-		// return json_encode(ctr_historiales::insertarHistorialClinicoOriginales());
-		// return json_encode(ctr_historiales::insertarEnfermedadesOriginales());
-		// return json_encode(ctr_historiales::insertarFechaDeCambioOriginales());
-		// return json_encode(ctr_usuarios::actualizarEstadosSocios(1500));
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			return json_encode(ctr_historiales::executeMigrateDB($responseSession->session));
+		}else return json_encode($responseSession);
 	});
 
     //-------------------------- VISTAS ------------------------------------------
@@ -51,6 +46,39 @@ return function (App $app) {
     //-----------------------------------------------------------------------------
 
     //--------------------------------POST-----------------------------------------
+
+	$app->post('/getFileVistaFactura', function(Request $request, Response $response){
+		// $responseSession = ctr_usuarios::validateSession();
+		// if($responseSession->result == 2){
+			$data = $request->getParams();
+			return json_encode(ctr_historiales::getFileVistaFactura());
+		// }else return json_encode($responseSession);
+	});
+
+	$app->post('/getListHistorialSocio', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$lastId = $data['lastId'];
+			$idSocio = $data['idSocio'];
+			return json_encode(ctr_historiales::getListHistorialSocio($lastId, $idSocio));
+		}else return json_encode($responseSession);
+	});
+
+	$app->post('/crearHistorialSocio', function(Request $request, Response $response){
+		$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+			$data = $request->getParams();
+			$idSocio = $data['idSocio'];
+			$idMascota = $data['idMascota'];
+			$fecha = $data['fecha'];
+			$asunto = $data['asunto'];
+			$importe  = $data['importe'];
+			$observaciones = $data['observaciones'];
+
+			return json_encode(ctr_historiales::crearHistorialSocio($idSocio, $idMascota, $fecha, $asunto, $importe, $observaciones));
+		}else return json_encode($responseSession);
+	});
 
 	$app->post('/getHistorialUsuario', function(Request $request, Response $response){
 		$responseSession = ctr_usuarios::validateSession();

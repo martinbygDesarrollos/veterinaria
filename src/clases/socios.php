@@ -6,6 +6,10 @@ class socios{
 	//TIPO SOCIO::: SOCIO = 1, NO SOCIO = 0 ONG = 2
 	//activo = 1 inactivo = 0
 
+	public function getSociosVistaFactura(){
+		return DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND idSocio IN (SELECT idSocio FROM mascotasocio) GROUP BY idSocio", null, "LIST");
+	}
+
 	public function updateQuotaSocio($idSocio, $cuotaSocio){
 		return DataBase::sendQuery("UPDATE socios SET cuota = ? WHERE idSocio = ?", array('ii', $cuotaSocio, $idSocio), "BOOLE");
 	}
@@ -114,7 +118,7 @@ class socios{
 	}
 
 	public function setInactiveStateSocio($dateVencimiento){
-		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE (fechaUltimaCuota <= ? OR fechaUltimaCuota IS NULL) AND tipo != 2 ", array('ii', 0, $dateVencimiento), "BOOLE");
+		return DataBase::sendQuery("UPDATE socios SET estado = ?, cuota = 0 WHERE (fechaUltimaCuota <= ? OR fechaUltimaCuota IS NULL) AND tipo != 2 ", array('ii', 0, $dateVencimiento), "BOOLE");
 	}
 
 	public function setActiveStateSocio($dateVencimiento){
@@ -122,7 +126,7 @@ class socios{
 	}
 
 	public function getSociosWithMascotas(){
-		return DataBase::sendQuery("SELECT S.idSocio, S.estado , COUNT(MS.idMascota) AS cantMascotas FROM socios AS S, mascotasocio AS MS WHERE S.idSocio = MS.idSocio AND S.estado = 0 GROUP BY MS.idSocio", null, "LIST");
+		return DataBase::sendQuery("SELECT S.idSocio, S.estado , COUNT(MS.idMascota) AS cantMascotas FROM socios AS S, mascotasocio AS MS WHERE S.idSocio = MS.idSocio AND S.estado = 1 GROUP BY MS.idSocio", null, "LIST");
 	}
 
 	public function getSocioToShow($idSocio){

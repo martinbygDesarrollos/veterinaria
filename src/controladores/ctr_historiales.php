@@ -10,46 +10,105 @@ require_once '../src/controladores/ctr_usuarios.php';
 
 class ctr_historiales {
 
-	public function insertarSociosOriginales(){
-		return migrateDB::getSocios();
-	}
+	public function getFileVistaFactura(){
+		$response = new \stdClass();
 
-	public function insertarMascotasOriginales(){
-		$responseGetSocios = socios::getAllSocios();
+		$responseGetSocios = ctr_usuarios::getSociosVistaFactura();
 		if($responseGetSocios->result == 2){
-			foreach ($responseGetSocios->listResult as $key => $socio) {
-				migrateDB::getMascotasSocio($socio['idSocio'], $socio['numSocio'], $socio['estado']);
+			$arrayResult = array();
+			foreach ($responseGetSocios->listResult as $key => $socio){
+				$newArray = array();
+
+				$newArray['numero'] = $socio['idSocio'];
+				$newArray['proximavacuna'] = null;
+				$newArray['mascota'] = null;
+				$newArray['socio'] = $socio['nombre'];
+				$newArray['direccion'] = $socio['direccion'];
+				$newArray['casa'] = null;
+				$newArray['apto'] = null;
+
+				$responseGetCantMascotas = ctr_mascotas::getSocioActivePets($socio['idSocio']);
+				if($responseGetCantMascotas->result == 2){
+					$newArray['cantidadmascotas'] = sizeof($responseGetCantMascotas->mascotas);
+					$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas));
+					if($responseCalculateQuota->result == 2)
+						$socio['cuota'] = $responseCalculateQuota->quota;
+				}
+
+				if($socio['lugarPago'] == 1)
+					$newArray['lugarpago'] = "Cobrador";
+				else
+					$newArray['lugarpago'] = "Veterinaria";
+
+				$newArray['rut'] = $socio['rut'];
+				$newArray['cuota'] = $socio['cuota'];
+				$newArray['fechaingreso'] = fechas::dateToFormatBar($socio['fechaIngreso']) . " 12:13:00";
+
+				$arrayResult[] = $newArray;
 			}
+			ctr_historiales::creteFile($arrayResult);
+			$response->listResult = $arrayResult;
+		}
+
+		return $response;
+	}
+
+	public function creteFile($arrayResult){
+		if(is_array($arrayResult) && sizeof($arrayResult) > 0){
+			$file = fopen('C:\Users\Usuario\Desktop\archivo\FACTURA.txt','w+');
+
+			foreach ($arrayResult as $key => $value) {
+				fwrite($file, $value['numero'] .",");
+				fwrite($file, $value['socio'] .",");
+				fwrite($file, $value['direccion'] .",");
+				fwrite($file, $value['casa'] .",");
+				fwrite($file, $value['apto'] .",");
+				fwrite($file, $value['rut'] .",");
+				fwrite($file, $value['cantidadmascotas'] .",");
+				fwrite($file, $value['cuota'] .",");
+				fwrite($file, $value['lugarpago'] .",");
+				fwrite($file, $value['proximavacuna'] .",");
+				fwrite($file, $value['mascota'] .",");
+				fwrite($file, $value['fechaingreso'] . ",");
+
+				fwrite($file,chr(13).chr(10));
+			}
+			fclose($file);
 		}
 	}
 
-	public function insertarMascotasSinSociosOriginales(){
-		migrateDB::getMascotasSinSocio();
-	}
+	public function executeMigrateDB($session){
+		$response = new \stdClass();
 
-	public function insertarVacunasOriginales(){
-		return migrateDB::getVacunasMascotas();
-	}
+		if(strcmp($session['USUARIO'], "martin") == 0){
+			$arraySocios = migrateDB::getSocios();
+			if(is_array($arraySocios) && sizeof($arraySocios) > 2){
+				foreach ($arraySocios as $key => $socio){
+					$arrayMascotaSocio = migrateDB::getMascotasSocio($socio['idSocio'], $socio['numSocio'], $socio['estado']);
+					if(is_array($arrayMascotaSocio) && sizeof($arrayMascotaSocio) != 0){
+						foreach ($arrayMascotaSocio as $key => $mascotaSocio){
+							migrateDB::getFechaCambio($mascotaSocio['nombre'], $socio['numSocio'], $mascotaSocio['idMascotaSocio']);
+							migrateDB::getHistoriaClinica($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $socio['numSocio']);
+						}
+					}
+				}
+			}
 
-	public function insertarHistorialClinicoOriginales(){
-		$mascotasSocio = mascotas::getMascotaIds();
-		foreach ($mascotasSocio as $key => $mascotaSocio) {
-			copiarDB::seleccionarInsertarHistorialClinico($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $mascotaSocio['numSocio']);
+			migrateDB::getMascotasSinSocio();
+			migrateDB::getVacunasMascotas();
+			migrateDB::getEnfermedades();
+
+			$response->result = 2;
+			$response->message = "Se analizaron e ingresaron los registros del sistema anterior.";
+		}else{
+			$response->result = 0;
+			$response->message = "Usted no es un usuarios con privilegios para ejecutar esta operación";
 		}
+		return $response;
 	}
 
-	public function insertarEnfermedadesOriginales(){
-		$mascotasSocio = mascotas::getMascotaIds();
-		foreach ($mascotasSocio as $key => $mascotaSocio) {
-			copiarDB::seleccionarInsertarEnfermedadesMascota($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $mascotaSocio['numSocio']);
-		}
-	}
-
-	public function insertarFechaDeCambioOriginales(){
-		$mascotasSocio = mascotas::getMascotaIds();
-		foreach ($mascotasSocio as $key => $mascotaSocio) {
-			copiarDB::seleccionarInsertarFechaDeCambio($mascotaSocio['nombre'], $mascotaSocio['numSocio'], $mascotaSocio['idMascotaSocio']);
-		}
+	public function getMontoCuotas(){
+		return configuracionSistema::getQuota();
 	}
 
 	//----------------------------------- FUNCIONES DE HISTORIAL CLINICO ------------------------------------------
@@ -118,58 +177,73 @@ class ctr_historiales {
 		return historiales::getHistoriaClinicaMascota($lastId, $idMascota);
 	}
 
-
-    //-------------------------------------------------------------------------------------------------------------
     //----------------------------------- FUNCIONES DE HISTORIAL SOCIO --------------------------------------------
 
-    //-------------------------------------------------------------------------------------------------------------
+	public function getListHistorialSocio($lastId, $idSocio){
+		$responseGetHistorialSocio = historiales::getListHistorialSocio($lastId, $idSocio);
+		if($responseGetHistorialSocio->result == 2){
+			$arrayResult = array();
+			foreach ($responseGetHistorialSocio->listResult as $key => $historial) {
 
-  	//-------------------------------------------------------------------------------------------------------------
-    //------------------------------------------ACTUALIZAR CUOTA---------------------------------------------------
+				if(!is_null($historial['idMascota'])){
+					$responseGetMascota = ctr_mascotas::getMascota($historial['idMascota']);
+					if($responseGetMascota->result == 2)
+						$historial['mascota'] = $responseGetMascota->objectResult->nombre;
+				}
+				$arrayResult[] = $historial;
+			}
+			$responseGetHistorialSocio->listResult = $arrayResult;
+		}
 
-	public function updateCuotaSocio($cuotaUna, $cuotaDos, $cuotaExtra){
+		return $responseGetHistorialSocio;
+	}
+
+	public function crearHistorialSocio($idSocio, $idMascota, $fecha, $asunto, $importe, $observaciones){
 		$response = new \stdClass();
 
-		$result = configuracionSistema::setNuevaCuota($cuotaUna, $cuotaDos, $cuotaExtra);
+		$responseGetSocio = ctr_usuarios::getSocio($idSocio);
+		if($responseGetSocio->result == 2){
+			if($idMascota != 0){
+				$responseGetMascota = ctr_mascotas::getMascota($idMascota);
+				if($responseGetMascota->result != 2)
+					return $responseGetMascota;
+			}else $idMascota = null;
 
-		if($result){
-			$response->retorno = true;
-			$response->mensaje = "Los nuevos montos de las cuotas fueron ingresados correctamente.";
-		}else{
-			$response->retorno = false;
-			$response->mensaje = "Ocurrió un error y la cuota no pudo ser actualizada, por favor vuelva a intentarlo.";
-		}
+			$fecha = fechas::getDateToINT($fecha);
+			$fechaEmision = fechas::getDateTimeNowInt();
+			$responseInsertHistorialSocio = historiales::insertHistorialSocio($idSocio, $idMascota, $asunto, $importe, $observaciones, $fecha, $fechaEmision);
+			if($responseInsertHistorialSocio->result == 2){
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Agregar Historial Socio", $idSocio, $idMascota, "Se creo un registro en el historial del socio con motivo: " . $asunto);
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "Se creó un nuevo registro en el historial de socio, la operación fue guardada en el historial de usuario.";
+				}else{
+					$response->result = 1;
+					$response->message = "Se creó un nuevo registro en el historial de socio, por un error interno la operación no fue guardada en el historial de usuario.";
+				}
+
+				$responseGetInserted = ctr_historiales::getHistorialSocioToShow($responseInsertHistorialSocio->id);
+				if($responseGetInserted->result == 2)
+					$response->newHistorial = $responseGetInserted->objectResult;
+			}else return $responseInsertHistorialSocio;
+		}else return $responseGetSocio;
 
 		return $response;
 	}
 
-	public function getMontoCuotas(){
-		return configuracionSistema::getQuota();
-	}
-
-	public function updatePlazoDeuda($plazoDeuda){
-		$response = new \stdClass();
-
-		$result = configuracionSistema::updatePlazoDeuda($plazoDeuda);
-		if($result){
-			$resultActualizacionPlazo = ctr_usuarios::actualizarEstadosSocios($plazoDeuda);
-			//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-			$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Modificar plazo deuda", "Se modificó el plazo de deuda para los socios (". $plazoDeuda ." días). " . $resultActualizacionPlazo->mensaje);
-			if($resultInsertOperacionUsuario)
-				$response->enHistorial = "Registrado en el historial del usuario.";
-			else
-				$response->enHistorial = "No ingresado en historial de usuario.";
-			//----------------------------------------------------------------------------------------------------------------
-			$response->retorno = true;
-			$response->mensaje = "EL plazo de vencimiento de deuda fue modificado correctamente. " . $resultActualizacionPlazo->mensaje;
-		}else{
-			$response->retorno = false;
-			$response->mensajeError = "Ocurrió un error y la cuota no pudo modificarse correctamente, por favor vuelva a intentarlo.";
+	public function getHistorialSocioToShow($idHistorialSocio){
+		$responseGetHistorialSocio = historiales::getHistorialSocioToShow($idHistorialSocio);
+		if($responseGetHistorialSocio->result == 2){
+			if(!is_null($responseGetHistorialSocio->objectResult->idMascota)){
+				$responseGetMascota = ctr_mascotas::getMascota($responseGetHistorialSocio->objectResult->idMascota);
+				if($responseGetMascota->result == 2)
+					$responseGetHistorialSocio->objectResult->mascota = $responseGetMascota->objectResult->nombre;
+			}
 		}
 
-		return $response;
+		return $responseGetHistorialSocio;
 	}
-	//-------------------------------------------------------------------------------------------------------------
+
     //----------------------------------- FUNCIONES DE HISTORIAL USUARIO ------------------------------------------
 
 	public function insertHistorialUsuario($operacion, $idSocio, $idMascota, $observaciones){
@@ -195,7 +269,6 @@ class ctr_historiales {
 
 	public function getHistorialUsuario($lastId, $idUsuario){
 		$responseListHistorial = historiales::getHistorialUsuario($lastId, $idUsuario);
-
 		if($responseListHistorial->result == 2){
 			$arrayResult = array();
 			foreach ($responseListHistorial->listResult as $key => $value) {
@@ -220,34 +293,7 @@ class ctr_historiales {
 		return $responseListHistorial;
 	}
 
-	public function getHistorialUsuarios(){
-		return historiales::getHistorialUsuarios();
-	}
-
-	public function getHistorialUsuariosPagina($ultimoID){
-		if($ultimoID == 0){
-			$maxId = historiales::getHistorialUsuariosMaxId();
-			$historial = historiales::getHistorialUsuariosPagina($maxId);
-			$minId = historiales::getHistorialUsuariosMinId($historial, $maxId);
-			return array(
-				"min" => $minId,
-				"max" => $maxId,
-				"historial" => $historial
-			);
-		}else{
-			$historial = historiales::getHistorialUsuariosPagina($ultimoID);
-			$minId = historiales::getHistorialUsuariosMinId($historial, $ultimoID);
-			return array(
-				"min" => $minId,
-				"max" => $ultimoID,
-				"historial" => $historial
-			);
-		}
-	}
-
     //-------------------------------------------------------------------------------------------------------------
-
-
 }
 
 ?>

@@ -22,155 +22,236 @@
 			{% endif %}
 		</div>
 		<div class="card-body">
-			{% if responseSocio.result == 2 %}
-			<h6 class="card-subtitle mb-3 text-muted">Información del socio</h6>
-			<div class="row">
-				<div class="col">
-					<div class="form-group">
-						<label for="inputNombre">Nombre</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputNombre" value="{{ responseSocio.socio.nombre }}">
+			<nav>
+				<div class="nav nav-tabs" id="nav-tab" role="tablist">
+					<a class="nav-item nav-link text-dark active" id="nav-home-tab" data-toggle="tab" href="#nav-informacion" role="tab">Información</a>
+					<a class="nav-item nav-link text-dark" id="nav-home-tab" data-toggle="tab" href="#nav-historialSocio" role="tab">Historial</a>
+				</div>
+			</nav>
+			<div class="tab-content mb-1" id="nav-tabContent">
+				<div class="tab-pane fade show active border boder-2 border-top-0 p-2" id="nav-informacion" role="tabpanel" aria-labelledby="nav-home-tab">
+					{% if responseSocio.result == 2 %}
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<label for="inputNombre">Nombre</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputNombre" value="{{ responseSocio.socio.nombre }}">
+							</div>
+						</div>
+						<div class="col-2">
+							<div class="form-group">
+								<label for="inputCedula">Cédula</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputCedula" value="{{ responseSocio.socio.cedula }}">
+							</div>
+						</div>
+						<div class="col-2">
+							<div class="form-group">
+								<label for="inputTelefono">Teléfono</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputTelefono" value="{{ responseSocio.socio.telefono }}">
+							</div>
+						</div>
+						<div class="col-2">
+							<div class="form-group">
+								<label for="selectTipoSocio">Tipo de socio</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="selectTipoSocio" value="{{ responseSocio.socio.tipo }}">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<label for="inputDireccion">Dirección</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputDireccion" value="{{ responseSocio.socio.direccion }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputEmail">Email</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputEmail" value="{{ responseSocio.socio.email }}">
+							</div>
+						</div>
+					</div>
+					<hr>
+					<h6 class="card-subtitle mb-3 text-muted">Información de pago</h6>
+					<div class="row">
+						<div class="col">
+							<label for="inputCuota">Cuota</label>
+							<div class="input-group">
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputCuota" value="{{ responseSocio.socio.cuota }}">
+								<div class="input-group-prepend">
+									<button class="btn btn-success shadow-sm" data-toggle="tooltip" data-placement="top" title="Actualizar cuota" onclick="calculateQuotaSocio('{{ responseSocio.socio.idSocio }}')"><i class="fas fa-sync-alt"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputFechaPago">Fecha pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaPago" value="{{ responseSocio.socio.fechaPago }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputUltimoPago">Último pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoPago" value="{{ responseSocio.socio.fechaUltimoPago }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputUltimoMesPago">Último mes pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoMesPago" value="{{ responseSocio.socio.fechaUltimaCuota }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputLugarPago">Lugar de pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputLugarPago" value="{{ responseSocio.socio.lugarPago }}">
+							</div>
+						</div>
+					</div>
+					<hr>
+					<h6 class="card-subtitle mb-3 text-muted">Información adicional</h6>
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<label for="inputFechaIngreso">Fecha ingreso</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaIngreso" value="{{ responseSocio.socio.fechaIngreso }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputRut">RUT</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputRut" value="{{ responseSocio.socio.rut }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputTelefax">Telefax</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputTelefax" value="{{ responseSocio.socio.telefax }}">
+							</div>
+						</div>
+					</div>
+					{% endif %}
+					<div class="d-flex justify-content-between mb-1">
+						<h6 class="card-subtitle mb-3 text-muted mt-2">Mascotas</h6>
+						<button class="btn btn-dark" data-toggle="modal" type="button" data-target="#modalSetNewMascota" data-toggle="tooltip" data-placement="top" title="Asignar mascota sin socio"><i class="fas fa-paw"></i></button>
+					</div>
+					<div class="d-flex justify-content-center">
+						<table class="table table-sm">
+							<thead class="bg-mycolor">
+								<tr>
+									<td class="text-center" scope="col">Nombre</td>
+									<td class="text-center"abbr="" scope="col">Raza</td>
+									<td class="text-center" scope="col">Especie</td>
+									<td class="text-center" scope="col">Sexo</td>
+									<td class="text-center" scope="col">Nacimiento</td>
+									<td class="text-center" scope="col">Estado</td>
+									<td class="text-center" scope="col">Desvincular</td>
+								</tr>
+							</thead>
+							<tbody id="tbodyMascotasSocio">
+								{% for mascota in responseSocio.mascotas.listMascotas %}
+								<tr id="trM2{{mascota.idMascota}}">
+									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.nombre }}</td>
+									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.raza }}</td>
+									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.especie }}</td>
+									{% if mascota.sexo == 0 %}
+									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">Hembra</td>
+									{% else %}
+									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">Macho</td>
+									{% endif %}
+									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.fechaNacimiento }}</td>
+									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">
+										{% if mascota.estado == 0 %}
+										Inactiva
+										{% elseif mascota.estado == 1 %}
+										Activa
+										{% else %}
+										Pendiente
+										{% endif %}
+									</td>
+									<td class="text-center"><button class="btn btn-link" onclick="desvincularMascota('{{ mascota.idMascota }}')"><i class="fas fa-trash-alt text-dark"></i></button></td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
 					</div>
 				</div>
-				<div class="col-2">
-					<div class="form-group">
-						<label for="inputCedula">Cédula</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputCedula" value="{{ responseSocio.socio.cedula }}">
+				<div class="tab-pane fade show  border boder-2 border-top-0 p-3" id="nav-historialSocio" role="tabpanel" aria-labelledby="nav-home-tab" style="min-height: 300px;">
+					<div class="d-flex flex-row-reverse mb-1">
+						<button class="btn btn-dark btn-sm" onclick="openNuevoHistorialSocio('{{ responseSocio.socio.idSocio }}')" data-toggle="tooltip" data-placement="top" title="Nuevo registro en historial socio">
+							<i class="fas fa-file-medical"></i>
+						</button>
 					</div>
-				</div>
-				<div class="col-2">
-					<div class="form-group">
-						<label for="inputTelefono">Teléfono</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputTelefono" value="{{ responseSocio.socio.telefono }}">
-					</div>
-				</div>
-				<div class="col-2">
-					<div class="form-group">
-						<label for="selectTipoSocio">Tipo de socio</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="selectTipoSocio" value="{{ responseSocio.socio.tipo }}">
+					<div id="containerTable">
+						<table class="table table-sm">
+							<thead class="bg-mycolor">
+								<tr>
+									<td class="text-center" scope="col">Emisión</td>
+									<td class="text-center" scope="col">Operación</td>
+									<td class="text-center" scope="col">Mascota</td>
+									<td class="text-center" scope="col">importe</td>
+									<td class="text-center" scope="col">Fecha</td>
+									<td class="text-center" scope="col">Observacion</td>
+								</tr>
+							</thead>
+							<tbody id="tbodyHistorialSocio"></tbody>
+						</table>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col">
-					<div class="form-group">
-						<label for="inputDireccion">Dirección</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputDireccion" value="{{ responseSocio.socio.direccion }}">
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputEmail">Email</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputEmail" value="{{ responseSocio.socio.email }}">
-					</div>
-				</div>
-			</div>
-			<hr>
-			<div class="col-md-4 mb-3">
+		</div>
+	</div>
+</div>
 
+<div class="modal fade" id="modalHistorialSocio" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-mycolor">
+				<span class="modal-title" id="titleModalHistorialSocio"></span>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
 			</div>
-			<h6 class="card-subtitle mb-3 text-muted">Información de pago</h6>
-			<div class="row">
-				<div class="col">
-					<label for="inputCuota">Cuota</label>
-					<div class="input-group">
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputCuota" value="{{ responseSocio.socio.cuota }}">
-						<div class="input-group-prepend">
-							<button class="btn btn-success shadow-sm" data-toggle="tooltip" data-placement="top" title="Actualizar cuota" onclick="calculateQuotaSocio('{{ responseSocio.socio.idSocio }}')"><i class="fas fa-sync-alt"></i></button>
+			<div class="modal-body">
+				<div class="d-flex flex-row-reverse">
+					<div class="form-group">
+						<input type="date" class="form-control text-center shadow-sm" id="inputFechaHistorial">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6">
+						<div class="form-group">
+							<select class="form-select form-control shadow-sm" id="selectMascotaHistorial">
+								<option value="0">Seleccionar mascota</option>
+								{% for mascota in responseSocio.mascotas.listMascotas %}
+								<option value="{{ mascota.idMascota }}">{{ mascota.nombre }}</option>
+								{% endfor %}
+							</select>
 						</div>
 					</div>
 				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputFechaPago">Fecha pago</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaPago" value="{{ responseSocio.socio.fechaPago }}">
+				<div class="row">
+					<div class="col form-group">
+						<label for="inputAsuntoHistorial">Asunto</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputAsuntoHistorial">
+					</div>
+					<div class="col-4 form-group">
+						<label for="inputImporteHistorial">Importe</label>
+						<input type="number" class="form-control text-center shadow-sm" id="inputImporteHistorial">
 					</div>
 				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputUltimoPago">Último pago</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoPago" value="{{ responseSocio.socio.fechaUltimoPago }}">
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputUltimoMesPago">Último mes pago</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoMesPago" value="{{ responseSocio.socio.fechaUltimaCuota }}">
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputLugarPago">Lugar de pago</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputLugarPago" value="{{ responseSocio.socio.lugarPago }}">
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="textAreaObservacionesHistorial">Observaciones</label>
+							<textarea id="textAreaObservacionesHistorial" class="form-control rounded-0 shadow-sm" maxlength="200" rows="3"></textarea>
+						</div>
 					</div>
 				</div>
 			</div>
-			<hr>
-			<h6 class="card-subtitle mb-3 text-muted">Información adicional</h6>
-			<div class="row">
-				<div class="col">
-					<div class="form-group">
-						<label for="inputFechaIngreso">Fecha ingreso</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaIngreso" value="{{ responseSocio.socio.fechaIngreso }}">
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputRut">RUT</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputRut" value="{{ responseSocio.socio.rut }}">
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputTelefax">Telefax</label>
-						<input type="text" class="form-control text-center shadow-sm" readonly id="inputTelefax" value="{{ responseSocio.socio.telefax }}">
-					</div>
-				</div>
-			</div>
-			{% endif %}
-			<hr>
-			<div class="d-flex justify-content-between mb-1">
-				<h6 class="card-subtitle mb-3 text-muted mt-2">Mascotas</h6>
-				<button class="btn btn-dark" data-toggle="modal" type="button" data-target="#modalSetNewMascota" data-toggle="tooltip" data-placement="top" title="Asignar mascota sin socio"><i class="fas fa-paw"></i></button>
-			</div>
-			<div class="d-flex justify-content-center">
-				<table class="table table-sm">
-					<thead class="bg-mycolor">
-						<tr>
-							<td class="text-center" scope="col">Nombre</td>
-							<td class="text-center"abbr="" scope="col">Raza</td>
-							<td class="text-center" scope="col">Especie</td>
-							<td class="text-center" scope="col">Sexo</td>
-							<td class="text-center" scope="col">Nacimiento</td>
-							<td class="text-center" scope="col">Estado</td>
-							<td class="text-center" scope="col">Desvincular</td>
-						</tr>
-					</thead>
-					<tbody id="tbodyMascotasSocio">
-						{% for mascota in responseSocio.mascotas.listMascotas %}
-						<tr id="trM2{{mascota.idMascota}}">
-							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.nombre }}</td>
-							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.raza }}</td>
-							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.especie }}</td>
-							{% if mascota.sexo == 0 %}
-							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">Hembra</td>
-							{% else %}
-							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">Macho</td>
-							{% endif %}
-							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.fechaNacimiento }}</td>
-							<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">
-								{% if mascota.estado == 0 %}
-								Inactiva
-								{% elseif mascota.estado == 1 %}
-								Activa
-								{% else %}
-								Pendiente
-								{% endif %}
-							</td>
-							<td class="text-center"><button class="btn btn-link" onclick="desvincularMascota('{{ mascota.idMascota }}')"><i class="fas fa-trash-alt text-dark"></i></button></td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
+			<div class="modal-footer d-flex justify-content-between">
+				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+				<button id="buttonModalHistorialSocio" type="button" class="btn btn-success shadow-sm">Confirmar</button>
 			</div>
 		</div>
 	</div>
@@ -355,5 +436,14 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/verSocio.js"></script>
+<script type="text/javascript">
+
+	cargarTablaHistorialSocios('{{ responseSocio.socio.idSocio }}');
+	$('#containerTable').on('scroll', function() {
+		if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+			cargarTablaHistorialSocios('{{ responseSocio.socio.idSocio }}');
+		}
+	});
+</script>
 {% endblock %}
 {% endblock %}

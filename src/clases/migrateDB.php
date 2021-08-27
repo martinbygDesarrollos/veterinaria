@@ -10,6 +10,59 @@ class migrateDB{
         ini_set('memory_limit','-1');
     }
 
+    public function getFechaCambio($nombre, $duenio, $idMascotaSocio){
+        $responseQueryCambio = migrateDB::sendQueryExternalDB("SELECT MAX(fechacambio) AS fecha FROM historial_mascota WHERE nombre = ? AND duenio = ?", array('ss', $nombre, $duenio), "OBJECT");
+        if($responseQueryCambio->result == 2){
+            $fecha = fechas::getDateToINT($responseQueryCambio->objectResult->fecha);
+            if(strlen($fecha) == 8)
+                DataBase::sendQuery("UPDATE mascotasocio SET fechaCambio= ? WHERE idMascotaSocio = ?", array('ii', $fecha, $idMascotaSocio),"BOOLE");
+        }
+    }
+
+    public function getHistoriaClinica($idMascota, $nombre, $duenio){
+        $responseGetHistoriaClinica = migrateDB::sendQueryExternalDB("SELECT * FROM historial_clinico WHERE socio = ? AND mascota = ?", array('is', $duenio, $nombre), "LIST");
+        if($responseGetHistoriaClinica->result == 2){
+            foreach ($responseGetHistoriaClinica->listResult as $key => $row) {
+                $fecha = fechas::getDateToINT($row['fecha']);
+
+                $diagnostico = migrateDB::clearEspecialCharacters($row['diagnostico']);
+                if(strlen($diagnostico) < 4)
+                    $diagnostico = null;
+
+                $motivoConsulta = migrateDB::clearEspecialCharacters($row['motivoconsulta']);
+                if(strlen($motivoConsulta) < 5)
+                    $motivoConsulta = null;
+
+                $observaciones = $row['descripcion'];
+                if(strlen($observaciones) < 3)
+                    $observaciones =  null;
+
+                if(!is_null($motivoConsulta) || !is_null($diagnostico) || !is_null($observaciones)){
+                    DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES (?,?,?,?,?)", array('iisss', $idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones), "BOOLE");
+                }
+            }
+        }
+    }
+
+    function getEnfermedades(){
+        $responseQueryGetEnfermedades = migrateDB::sendQueryExternalDB("SELECT * FROM enfermedades", null, "LIST");
+        if($responseQueryGetEnfermedades->result == 2){
+            foreach ($responseQueryGetEnfermedades->listResult as $key => $row) {
+                $nombreEnfermedad = migrateDB::clearEspecialCharacters($row['enfermedad']);
+                if(strlen($nombreEnfermedad) > 2){
+                    if($row['mes'] < 10)
+                        $row['mes'] = "0" . $row['mes'];
+
+                    $fechaDiagnostico = $row['anio'] . $row['mes'] . "01";
+                    $responseGetMascota = ctr_mascotas::getMascotaId($row['mascota'], $row['socio']);
+                    if($responseGetMascota->result == 2){
+                        DataBase::sendQuery("INSERT INTO enfermedadesmascota(idMascota, fechaDiagnostico, nombreEnfermedad) VALUES (?,?,?)", array('iis',$responseGetMascota->objectResult->idMascota, $fechaDiagnostico, $nombreEnfermedad), "BOOLE");
+                    }
+                }
+            }
+        }
+    }
+
     function getVacunasMascotas(){
         $responseQueryGetVacunas = migrateDB::sendQueryExternalDB("SELECT COUNT(VA.mascota) AS cantDosis, VA.mascota, VA.nombre, VA.socio, VA.fecha, VA.docis, VA.proximavacuna FROM vacuna_asignada AS VA, socio AS S, mascota AS M WHERE VA.socio = S.numero AND M.nombre = VA.mascota GROUP BY VA.mascota, VA.socio, VA.nombre", null, "LIST");
         if($responseQueryGetVacunas->result == 2){
@@ -92,6 +145,7 @@ class migrateDB{
     public function getMascotasSocio($idSocio, $numSocio, $estado){
         $responseQueryGetMascota = migrateDB::sendQueryExternalDB("SELECT * FROM mascota WHERE duenio = ?", array('i', $numSocio), "LIST");
         if($responseQueryGetMascota->result == 2){
+            $arrayResult = array();
             foreach ($responseQueryGetMascota->listResult as $key => $row) {
                 if(!ctype_digit($row['nombre'])){
                     $estadoMascota = migrateDB::getEstadoMascota($row['estado']);
@@ -129,10 +183,14 @@ class migrateDB{
                         $observaciones = $row['observaciones'];
 
                     $responseQuery = DataBase::sendQuery("INSERT INTO mascotas (nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('sssissiisss', $row['nombre'], $row['especie'], $row['raza'], $sexo, $row['color'], $pedigree, $fecha, $estadoMascota, $row['pelo'], $row['chip'], $observaciones), "BOOLE");
-                    if($responseQuery->result == 2)
-                        DataBase::sendQuery("INSERT INTO mascotasocio(idSocio, idMascota) VALUES (?,?)", array('ii', $idSocio, $responseQuery->id), "BOOLE");
+                    if($responseQuery->result == 2){
+                        $responseQueryInsert = DataBase::sendQuery("INSERT INTO mascotasocio(idSocio, idMascota) VALUES (?,?)", array('ii', $idSocio, $responseQuery->id), "BOOLE");
+                        if($responseQueryInsert->result == 2)
+                            $arrayResult[] = array("idMascotaSocio" => $responseQueryInsert->id, "nombre" => $row['nombre'], "idMascota" => $responseQuery->id);
+                    }
                 }
             }
+            return $arrayResult;
         }
     }
 
@@ -332,63 +390,6 @@ class migrateDB{
         }
         return $response;
     }
-
-    function seleccionarInsertarEnfermedadesMascota($idMascota, $nombre, $duenio){
-        $conexion = migrateDB::getConexion();
-        $query = $conexion->prepare("SELECT * FROM enfermedades WHERE socio = ? AND mascota = ?");
-        $query->bind_param('is', $duenio, $nombre);
-        if($query->execute()){
-            $result = $query->get_result();
-            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-                migrateDB::insertEnfermedadMascota($idMascota, $row['enfermedad'], fechas::parceFechaInt($row['anio'] . "-" . $row['mes']) . "-01");
-            }
-        }
-    }
-
-    function insertEnfermedadMascota($idMascota, $enfermedad, $fecha){
-        return DataBase::sendQuery("INSERT INTO enfermedadesmascota(idMascota, fechaDiagnostico, nombreEnfermedad) VALUES (?,?,?)", array('iis',$idMascota, $fecha, $enfermedad), "BOOLE");
-    }
-
-    public function seleccionarInsertarHistorialClinico($idMascota, $nombre, $duenio){
-        $conexion = migrateDB::getConexion();
-        $sql = $conexion->prepare("SELECT * FROM historial_clinico WHERE socio = ? AND mascota = ?");
-        $sql->bind_param('is', $duenio, $nombre);
-        if($sql->execute()){
-            $response = $sql->get_result();
-            while($row = $response->fetch_array(MYSQLI_ASSOC)){
-                $fecha = fechas::parceFechaInt($row['fecha']);
-                migrateDB::insertarHistoriaClinica($idMascota, $fecha, $row['motivoconsulta'], $row['diagnostico'], $row['descripcion']);
-            }
-        }
-    }
-
-    public function insertarHistoriaClinica($idRelacion, $fecha, $motivoConsulta, $diagnostico, $observaciones){
-        $sql = DB::conexion()->prepare("INSERT INTO historiasclinica(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES (?,?,?,?,?)");
-        $sql->bind_param('iisss', $idRelacion, $fecha, $observaciones, $motivoConsulta, $diagnostico);
-        $sql->execute();
-    }
-
-    public function seleccionarInsertarFechaDeCambio($nombre, $duenio, $idMascotaSocio){
-        $conexion = migrateDB::getConexion();
-        $query = $conexion->prepare("SELECT fechacambio FROM historial_mascota WHERE nombre = ? AND duenio = ?");
-        $query->bind_param('ss', $nombre, $duenio);
-        if($query->execute()){
-            $result = $query->get_result();
-            $arrayResult = array();
-            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-                $row['fechacambio'] = fechas::parceFechaInt($row['fechacambio']);
-                migrateDB::actualizarMascotaSocio($idMascotaSocio, $row['fechacambio']);
-            }
-        }
-    }
-
-    public function actualizarMascotaSocio($idMascotaSocio, $fechacambio){
-        $query = DB::conexion()->prepare("UPDATE mascotasocio SET fechaCambio= ? WHERE idMascotaSocio = ?");
-        $query->bind_param('ii', $fechacambio, $idMascotaSocio);
-        return  $query->execute();
-    }
-
-
 
     public function validarCedula($ci){
         $ciLimpia = preg_replace( '/\D/', '', $ci );

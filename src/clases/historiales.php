@@ -126,40 +126,80 @@ class historiales{
 	//============================================================================================================
 	//===============================================HISTORIAL SOCIO==============================================
 	//============================================================================================================
-	public function getHistorialSocios(){
-		$query = DB::conexion()->prepare("SELECT * FROM historialsocios");
-		if($query->execute()){
-			$response = $query->get_result();
-			$arrayResponse = array();
-			while ($row = $response->fetch_array(MYSQLI_ASSOC)) {
-				$arrayResponse[] = $row;
+
+	public function getMaxIdHistorialSocios(){
+		$responseQuery = DataBase::sendQuery("SELECT MAX(idHistorialSocio) AS maxID FROM historialsocios", null, "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontraron registros en el historial de socios.";
+
+		return $responseQuery;
+	}
+
+	public function getListHistorialSocio($lastId, $idSocio){
+		if($lastId == 0){
+			$responseGetMaxId = historiales::getMaxIdHistorialSocios();
+			if($responseGetMaxId->result == 2)
+				$lastId = $responseGetMaxId->objectResult->maxID + 1;
+			else return $responseGetMaxId;
+		}
+
+		$responseQuery = DataBase::sendQuery("SELECT * FROM historialsocios WHERE idSocio = ? AND idHistorialSocio < ? ORDER BY idHistorialSocio DESC LIMIT 18", array('ii', $idSocio, $lastId), "LIST");
+		if($responseQuery->result == 2){
+			$arrayResult = array();
+			$newLastId = $lastId;
+			foreach ($responseQuery->listResult as $key => $row) {
+				if($newLastId > $row['idHistorialSocio'])
+					$newLastId = $row['idHistorialSocio'];
+
+				$row['fecha'] = fechas::dateToFormatBar($row['fecha']);
+				$row['fechaEmision'] = fechas::dateTimeToFormatBar($row['fechaEmision']);
+
+				if(!is_null($row['importe']))
+					$row['importe'] = number_format($row['importe'],2, ",", ".");
+				else
+					$row['importe'] = "No especificado";
+
+				if(is_null($row['observaciones']))
+					$row['observaciones'] = "No especificado";
+
+				$arrayResult[] = $row;
 			}
-			return $arrayResponse;
-		}else return null;
+			$responseQuery->lastId = $newLastId;
+			$responseQuery->listResult = $arrayResult;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron registros en el historial para el socio seleccionado.";
+
+		return $responseQuery;
 	}
 
 	public function getHistorialSocio($idHistorialSocio){
-		$query = DB::conexion()->prepare("SELECT * FROM historialsocios WHERE idHistorialSocio = ?");
-		$query->bind_param('i', $idHistorialSocio);
-		if($query->execute()){
-			$response = $query->get_result();
-			return $response->fetch_object();
-		}else return null;
+		$responseQuery = DataBase::sendQuery("SELECT * FROM historialsocios WHERE idHistorialSocio = ?", array('i', $idHistorialSocio),"OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "El identificador seleccionado no corresponde a un registro del historial.";
+
+		return $responseQuery;
 	}
 
-	public function insertHistorialSocio($clienteMascota, $observaciones, $fecha){
-		$query = DB::conexion()->prepare("INSERT INTO historialsocios (clienteMascota, observaciones, fecha) VALUES(?,?,?)");
-		$query->bind_param('isi',$clienteMascota, $observaciones, $fecha);
-		if($query->execute()) return true;
-		else return false;
+	public function getHistorialSocioToShow($idHistorialSocio){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM historialsocios WHERE idHistorialSocio = ?", array('i', $idHistorialSocio),"OBJECT");
+		if($responseQuery->result == 2){
+			$responseQuery->objectResult->fecha = fechas::dateToFormatBar($responseQuery->objectResult->fecha);
+			$responseQuery->objectResult->fechaEmision = fechas::dateTimeToFormatBar($responseQuery->objectResult->fechaEmision);
+			$responseQuery->objectResult->importe = number_format($responseQuery->objectResult->importe,2, ",", ".");
+			if(is_null($responseQuery->objectResult->observaciones) || strlen($responseQuery->objectResult->observaciones) == 0)
+				$responseQuery->objectResult->observaciones = "No especificado";
+		}else if($responseQuery->result == 1) $responseQuery->message = "El identificador seleccionado no corresponde a un registro del historial.";
+
+		return $responseQuery;
 	}
 
-	public function updateHistorialSocio($idHistorialSocio, $clienteMascota, $observaciones, $fecha){
-		$query = DB::conexion()->prepare("UPDATE historialsocios SET clienteMascota = ?, observaciones = ?, fecha = ? WHERE idHistorialSocio = ?");
-		$query->bind_param('isii', $clienteMascota, $observaciones, $fecha, $idHistorialSocio);
-		if($query->execute()) return true;
-		else return false;
+	public function insertHistorialSocio($idSocio, $idMascota, $asunto, $importe, $observaciones, $fecha, $fechaEmision){
+		return DataBase::sendQuery("INSERT INTO historialsocios (idSocio, idMascota, asunto, importe, observaciones, fecha, fechaEmision) VALUES(?,?,?,?,?,?,?)", array('iisdsis', $idSocio, $idMascota, $asunto, $importe, $observaciones, $fecha, $fechaEmision), "BOOLE");
 	}
+
+	public function updateHistorialSocio($idHistorialSocio, $asunto, $observaciones, $importe, $fecha){
+		return DataBase::sendQuery("UPDATE historialsocios SET asunto = ? , observaciones = ? , importe = ? , fecha = ? WHERE idHistorialSocio = ?", array('ssdi', $asunto, $observaciones, $importe, $fecha, $idHistorialSocio), "BOOLE");
+	}
+
 	//============================================================================================================
 	//============================================================================================================
 	//============================================================================================================

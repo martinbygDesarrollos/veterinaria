@@ -1,3 +1,95 @@
+let lastId = 0;
+
+function cargarTablaHistorialSocios(idSocio){
+	let response = sendPost('getListHistorialSocio', {lastId: lastId, idSocio: idSocio});
+	if(response.result == 2){
+		if(response.lastId != lastId)
+			lastId = response.lastId;
+		let list = response.listResult;
+		for (var i = 0; i < list.length; i++) {
+			let row = createRowHistorial(list[i].idHistorialSocio, list[i].idSocio, list[i].idMascota, list[i].mascota, list[i].fechaEmision, list[i].asunto, list[i].importe, list[i].fecha, list[i].observaciones);
+			$('#tbodyHistorialSocio').append(row);
+		}
+	}
+}
+
+function createRowHistorial(idHistorialSocio, idSocio, idMascota, mascota, fechaEmision, asunto, importe, fecha, observaciones){
+	let row = "<tr id='"+ idHistorialSocio +"'>";
+	row += "<td class='text-center' >"+ fechaEmision +"</td>";
+	row += "<td class='text-center' >"+ asunto +"</td>";
+	if(mascota)
+		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>"+ mascota +"</td>";
+	else
+		row += "<td class='text-center'>No especificado</td>";
+	row += "<td class='text-center' >"+ importe +"</td>";
+	row += "<td class='text-center' >"+ fecha +"</td>";
+	row += "<td class='text-center' >"+ observaciones +"</td></tr>";
+
+	return row;
+}
+
+function openModificarHistorialSocio(idHistorialSocio){
+	if(idHistorialSocio){
+		$('#titleModalHistorialSocio').html("Modificar historia");
+		$('#buttonModalHistorialSocio').off('click');
+		$('#buttonModalHistorialSocio').click(function(){
+
+		});
+		$('#modalHistorialSocio').modal();
+	}
+}
+
+function openNuevoHistorialSocio(idSocio){
+	clearModalHistorial();
+	$('#titleModalHistorialSocio').html("Agregar historia");
+	$('#buttonModalHistorialSocio').off('click');
+	$('#buttonModalHistorialSocio').click(function(){
+		createHistorialSocio(idSocio);
+	});
+	$('#modalHistorialSocio').modal();
+}
+
+function clearModalHistorial(){
+	$('#inputFechaHistorial').val(getDateForInput());
+	$('#selectMascotaHistorial').val(0);
+	$('#inputAsuntoHistorial').val("");
+	$('#inputImporteHistorial').val("");
+	$('#textAreaObservacionesHistorial').val("");
+}
+
+function createHistorialSocio(idSocio){
+	let fecha = $('#inputFechaHistorial').val() || null;
+	let mascota = $('#selectMascotaHistorial').val();
+	let asunto = $('#inputAsuntoHistorial').val() || null;
+	let importe = $('#inputImporteHistorial').val() || null;
+	let observaciones = $('#textAreaObservacionesHistorial').val() || null;
+
+	if(fecha){
+		if(asunto){
+			if(mascota == 0)
+				mascota = null;
+
+			let data = {
+				idSocio:idSocio,
+				idMascota: mascota,
+				fecha: fecha,
+				asunto: asunto,
+				importe: importe,
+				observaciones: observaciones
+			};
+			let response = sendPost('crearHistorialSocio', data);
+			showReplyMessage(response.result, response.message, "Agregar historia", "modalHistorialSocio");
+			if(response.result == 2){
+				let newRow = response.newHistorial;
+				let row = createRowHistorial(newRow.idHistorialSocio, newRow.idSocio, newRow.idMascota, newRow.mascota, newRow.fechaEmision, newRow.asunto, newRow.importe, newRow.fecha, newRow.observaciones);
+				$('#tbodyHistorialSocio').prepend(row);
+				clearModalHistorial();
+			}
+		}else showReplyMessage(1, "Debe ingresar un asunto para crear un registro en el historial", "Asunto requerido", "modalHistorialSocio");
+	}else showReplyMessage(1, "Debe ingresar una fecha para crear un registro en el historial", "Fecha requeridda", "modalHistorialSocio");
+
+}
+
 function openModalUpdateSocio(btnShowModal){
 	let idSocio = btnShowModal.id;
 	let response = sendPost('getSocio', {idSocio: idSocio});
