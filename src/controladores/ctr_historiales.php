@@ -80,7 +80,7 @@ class ctr_historiales {
 	public function executeMigrateDB($session){
 		$response = new \stdClass();
 
-		if(strcmp($session['USUARIO'], "martin") == 0){
+		if(strcmp($session['USUARIO'], "admin") == 0){
 			$arraySocios = migrateDB::getSocios();
 			if(is_array($arraySocios) && sizeof($arraySocios) > 2){
 				foreach ($arraySocios as $key => $socio){

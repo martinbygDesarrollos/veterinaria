@@ -23,6 +23,16 @@ function fijarCostoCuota(){
 }
 
 function selectUsuarioModificar(idUsuario, nombre, email){
+
+	if(!nombre){
+		let response = sendPost("getUsuario", {idUsuario: idUsuario});
+		if(response.result == 2){
+			nombre = response.objectResult.nombre;
+			email = response.objectResult.email;
+		}
+	}
+
+
 	$('#inputUsuario').val(nombre);
 	$('#inputCorreo').val(email);
 	$('#btnNuevoUsuario').html("Modificar")
@@ -43,21 +53,18 @@ function clearForm(){
 }
 
 function crearUsuario(){
-	let usuario = $('#inputUsuario').val();
-	let correo = $('#inputCorreo').val();
+	let usuario = $('#inputUsuario').val() || null;
+	let correo = $('#inputCorreo').val() || null;
 
 	if(usuario){
-		if(correo){
-			if(!validateEmail(correo)){
-				showReplyMessage(1, "En caso de ingresar un correo, este debe ser valido.", "Correo no valido", null);
-				return;
-			}
-		}
 		let response = sendPost("crearUsuario", {usuario: usuario, correo: correo});
 		showReplyMessage(response.result, response.message, "Crear usuario", null);
-		if(response.result == 2)
+		if(response.result == 2){
+			let row = createRow(response.newUser.idUsuario, response.newUser.nombre, response.newUser.email);
+			$('#tbodyUsers').append(row);
 			clearForm();
-	}else showReplyMessage(1, "El usuario no puede ser modificado con el nombre vacio", "Usuario requerido", null);
+		}
+	}else showReplyMessage(1, "El usuario no puede ser ingresado con el nombre vacio", "Usuario requerido", null);
 }
 
 function modificarUsuario(idUsuario){
@@ -80,12 +87,25 @@ function modificarUsuario(idUsuario){
 	}else showReplyMessage(1, "El usuario no puede ser modificado con el nombre de usuario vacio", "Usuario requerido", null);
 }
 
+function deleteUser(idUser){
+	let response = sendPost("deleteUser", {idUser: idUser});
+	showReplyMessage(response.result, response.message, "Borrar usuario", null);
+	if(response.result == 2)
+		$('#' + idUser).remove();
+}
+
+function cleanPassword(idUser){
+	let response = sendPost('cleanPassword', {idUser: idUser});
+	showReplyMessage(response.result, response.message, "Borrar usuario", null);
+}
+
 function createRow(idUsuario, nombre, email){
 	let row = "<tr id='"+ idUsuario +"'>";
 	row += "<td class='text-center'>" + nombre + "</td>";
-	row += "<td class='text-center col-5'><button class='btn btn-link btn-sm' onclick='selectUsuarioModificar('"+ idUsuario + "','" + nombre + "','"+ email +"')' data-toggle='tooltip' data-placement='top' title='Modificar'><i class='fas fa-edit text-dark'></i></button>";
-	row += "<button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='top' title='Borrar'><i class='fas fa-trash-alt text-dark'></i></button>";
-	row += "<button class='btn btn-link btn-sm' data-toggle='tooltip' data-placement='top' title='Restaurar contraseña'><i class='fas fa-eraser text-dark'></i></button></td></tr>";
+	row += "<td class='text-center col-5'>";
+	row += "<button class='btn btn-link btn-sm' onclick='selectUsuarioModificar("+ idUsuario + ")' data-toggle='tooltip' data-placement='top' title='Modificar'><i class='fas fa-edit text-dark'></i></button>";
+	row += "<button class='btn btn-link btn-sm' onclick='deleteUser("+ idUsuario + ")' data-toggle='tooltip' data-placement='top' title='Borrar'><i class='fas fa-trash-alt text-dark'></i></button>";
+	row += "<button class='btn btn-link btn-sm' onclick='cleanPassword("+ idUsuario + ")'data-toggle='tooltip' data-placement='top' title='Restaurar contraseña'><i class='fas fa-eraser text-dark'></i></button></td></tr>";
 
 	return row;
 }

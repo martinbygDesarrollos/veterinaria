@@ -77,7 +77,7 @@
 										<td class="text-center" scope="col">Acción</td>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody id="tbodyUsers">
 									{% for usuario in listUsuarios %}
 									<tr id="{{ usuario.idUsuario }}">
 										<td class="text-center">{{ usuario.nombre }}</td>
@@ -85,10 +85,10 @@
 											<button class="btn btn-link btn-sm" onclick="selectUsuarioModificar('{{ usuario.idUsuario }}','{{ usuario.nombre }}', '{{ usuario.email }}')" data-toggle="tooltip" data-placement="top" title="Modificar">
 												<i class="fas fa-edit text-dark"></i>
 											</button>
-											<button class="btn btn-link btn-sm" onclick="" data-toggle="tooltip" data-placement="top" title="Borrar">
+											<button class="btn btn-link btn-sm" onclick="deleteUser('{{usuario.idUsuario}}')" data-toggle="tooltip" data-placement="top" title="Borrar">
 												<i class="fas fa-trash-alt text-dark"></i>
 											</button>
-											<button class="btn btn-link btn-sm" onclick="" data-toggle="tooltip" data-placement="top" title="Restaurar contraseña">
+											<button class="btn btn-link btn-sm" onclick="cleanPassword('{{usuario.idUsuario}}')" data-toggle="tooltip" data-placement="top" title="Restaurar contraseña">
 												<i class="fas fa-eraser text-dark"></i>
 											</button>
 										</td>
@@ -109,7 +109,7 @@
 							</div>
 							<div id="contenedorButtons" class="d-flex justify-content-between">
 								<button class="btn btn-danger" onclick="clearForm()">Cancelar</button>
-								<button id="btnNuevoUsuario" class="btn btn-success">Agregar</button>
+								<button id="btnNuevoUsuario" onclick="crearUsuario()" class="btn btn-success">Agregar</button>
 							</div>
 						</div>
 					</div>

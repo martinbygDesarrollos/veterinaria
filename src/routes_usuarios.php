@@ -128,7 +128,7 @@ return function (App $app) {
             $data = $request->getParams();
             $usuario = $data['usuario'];
             $correo = $data['correo'];
-            return json_encode(ctr_usuarios::crearUsuario($usuario, $correo));
+            return json_encode(ctr_usuarios::insertNewUsuario($usuario, $correo));
         }else return json_encode($responseSession);
     });
 
@@ -160,6 +160,24 @@ return function (App $app) {
             $passActual = $data['passActual'];
             $pass1 = $data['pass1'];
             return json_encode(ctr_usuarios::updatePassAdministrador($nombre, sha1($passActual), sha1($pass1)));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/deleteUser',function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idUser = $data['idUser'];
+            return json_encode(ctr_usuarios::deleteUser($idUser));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/cleanPassword',function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idUser = $data['idUser'];
+            return json_encode(ctr_usuarios::cleanPassword($idUser));
         }else return json_encode($responseSession);
     });
 

@@ -19,6 +19,63 @@ class ctr_usuarios{
 
     //----------------------------------- FUNCIONES DE USUARIO ------------------------------------------
 
+	public function deleteUser($idUser){
+		$response = new \stdClass();
+
+		$responseGetUser = usuarios::getUser($idUser);
+		if($responseGetUser->result == 2){
+			$responseGetUserInSesion = ctr_usuarios::getUserInSession();
+			if($responseGetUserInSesion->result == 2){
+				if($responseGetUserInSesion->user->idUsuario != $responseGetUser->objectResult->idUsuario){
+					$responseDeleteUser = usuarios::deleteUser($idUser);
+					if($responseDeleteUser->result == 2){
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue borrado del sistema.");
+						if($responseInsertHistorial->result == 2){
+							$response->result = 2;
+							$response->message = "El usuario fue borrado del sistema y se generó un registro en el historial.";
+						}else{
+							$response->result = 1;
+							$response->message = "El usaurio fue borrado del sistema pero un error no permitió crear un registro en el historial.";
+						}
+					}else return $responseDeleteUser;
+				}else{
+					$response->result = 0;
+					$response->message = "No se puede borrar el usuario con el que mantiene una sesión activa.";
+				}
+			}else return $responseGetUserInSesion;
+		}else return $responseGetUser;
+
+		return $response;
+	}
+
+	public function cleanPassword($idUser){
+		$response = new \stdClass();
+		$responseGetUser = usuarios::getUser($idUser);
+		if($responseGetUser->result == 2){
+			$responseGetUserInSesion = ctr_usuarios::getUserInSession();
+			if($responseGetUserInSesion->result == 2){
+				if($responseGetUserInSesion->user->idUsuario != $responseGetUser->objectResult->idUsuario){
+					$responseCleanPassword = usuarios::cleanPassword($idUser, "", "");
+					if($responseCleanPassword->result == 2){
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue borrado del sistema.");
+						if($responseInsertHistorial->result == 2){
+							$response->result = 2;
+							$response->message = "La contraseña del usuario fue borrada, la nueva contraseña se fijará al inciar sesión. Se generó un registro en el historial.";
+						}else{
+							$response->result = 1;
+							$response->message = "La contraseña del usuario fue borrada, la nueva contraseña se fijará al inciar sesión. Un error no permitió crear un registro en el historial.";
+						}
+					}else return $responseCleanPassword;
+				}else{
+					$response->result = 0;
+					$response->message = "No se puede borrar la contraseña del usuario con el que mantiene una sesión activa.";
+				}
+			}else return $responseGetUserInSesion;
+		}else return $responseGetUser;
+
+		return $response;
+	}
+
 	public function getUserInSession(){
 		$response = new \stdClass();
 
@@ -62,29 +119,36 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function insertNewUsuario($nombre, $email){
+	public function insertNewUsuario($name, $email){
 		$response = new \stdClass();
-		$usuario = usuarios::getUsuarioNombre($nombre);
 
-		if(!$usuario){
-			$result = usuarios::insertUsuario($nombre, $email);
-			if($result){
-				//----------------------------INSERTAR REGISTRO HISTORIAL USUARIO------------------------------------------------
-				$resultInsertOperacionUsuario = ctr_historiales::insertHistorialUsuario("Usuario agregado", "fue agregado el usuario " . $nombre . " y email " . $email . " por el administrador del sistema.");
-				if($resultInsertOperacionUsuario)
-					$response->enHistorial = "Registrado en el historial del usuario.";
-				else
-					$response->enHistorial = "No ingresado en historial de usuario.";
-				//----------------------------------------------------------------------------------------------------------------
-				$response->retorno = true;
-				$response->mensaje = "El usuario fue ingresado correctamente, al iniciar sesión por primera vez se fijará la contraseña ingresada.";
-			}else{
-				$response->retorno = false;
-				$response->mensajeError = "Ocurrió un error interno y el usuario no pudo ser ingresado correctamente, por favor vuelva a intentarlo.";
-			}
+		$responseGetUserName = usuarios::getUserName($name);
+		if($responseGetUserName->result != 2){
+			if(strlen($email) > 6){
+				if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+					$response->result = 0;
+					$response->message = "El correo ingresado no es valido.";
+					return $response;
+				}
+			}else $email = null;
+
+			$responseInsertNewUser = usuarios::insertUser($name, $email);
+			if($responseInsertNewUser->result == 2){
+				$responseGetUserInserted = usuarios::getUser($responseInsertNewUser->id);
+				if($responseGetUserInserted->result == 2)
+					$response->newUser = $responseGetUserInserted->objectResult;
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Usuario agregado", null ,null, "Se agrego el usuario " . $name .  " con email " .  $email . " por el administrador.");
+				if($responseInsertHistorial->result == 2){
+					$response->result = 2;
+					$response->message = "El usuario fue agregado correctamente y se generó un registro en el historial.";
+				}else{
+					$response->result = 1;
+					$response->message = "El usuario fue agregado correctamente pero no se pudo generar un registro en el historial.";
+				}
+			}else return $responseInsertNewUser;
 		}else{
-			$response->retorno = false;
-			$response->mensajeError = "El usuario que se esta intentando ingresar ya existe en el sistema.";
+			$response->result = 0;
+			$response->message = "El nombreo de usuario ingresado ya fue registrado.";
 		}
 
 		return $response;
@@ -105,20 +169,20 @@ class ctr_usuarios{
 						$response->message = "Ocurrió un error y no se pudo iniciar sesión, por favor vuelva a intentarlo.";
 					}
 				}else{
-					$responseUpdatePassword = usuarios::updateUserPassword($responseGetUsuario->objectResult->idUsuario, $password);
-					if($responseUpdatePassword->result == 2){
-						$responseSignIn = usuarios::signIn($responseGetUsuario->objectResult->idUsuario);
-						if($responseSignIn->result == 2){
-							$response->result = 2;
-						}else{
-							$response->result = 0;
-							$response->message = "Ocurrió un error y no se pudo iniciar sesión por primera vez, por favor vuelva a intentarlo.";
-						}
-					}else return $responseUpdatePassword;
+					$response->result = 0;
+					$response->message = "El usuario y contraseña ingresados no coinciden.";
 				}
 			}else{
-				$response->result = 0;
-				$response->message = "El usuario y contraseña ingresados no coinciden.";
+				$responseUpdatePassword = usuarios::updateUserPassword($responseGetUsuario->objectResult->idUsuario, $password);
+				if($responseUpdatePassword->result == 2){
+					$responseSignIn = usuarios::signIn($responseGetUsuario->objectResult->idUsuario);
+					if($responseSignIn->result == 2){
+						$response->result = 2;
+					}else{
+						$response->result = 0;
+						$response->message = "Ocurrió un error y no se pudo iniciar sesión por primera vez, por favor vuelva a intentarlo.";
+					}
+				}else return $responseUpdatePassword;
 			}
 		}else return $responseGetUsuario;
 

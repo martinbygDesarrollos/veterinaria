@@ -1,6 +1,14 @@
 <?php
 class usuarios{
 
+	public function cleanPassword($idUser, $password, $token){
+		return DataBase::sendQuery("UPDATE usuarios SET pass = ?, token = ? WHERE idUsuario = ? " , array('ssi', $password, $token, $idUser), "BOOLE");
+	}
+
+	public function deleteUser($idUser){
+		return DataBase::sendQuery("DELETE FROM usuarios WHERE idUsuario = ?", array('i', $idUser), "BOOLE");
+	}
+
 	public function updateUserPassword($idUser, $password){
 		return DataBase::sendQuery("UPDATE usuarios SET pass = ? WHERE idUsuario = ?", array('si', $password, $idUser), "BOOLE");
 	}
@@ -13,7 +21,7 @@ class usuarios{
 	public function getUser($idUser){
 		$responseQuery = DataBase::sendQuery("SELECT * FROM usuarios WHERE idUsuario = ? ", array('i', $idUser), "OBJECT");
 		if($responseQuery->result == 1)
-			$responseQuery->message = "EL identificador ingresado no corresponde a un usuario del sistema.";
+			$responseQuery->message = "El identificador ingresado no corresponde a un usuario del sistema.";
 
 		return $responseQuery;
 	}
@@ -65,11 +73,8 @@ class usuarios{
 		return $responseQuery;
 	}
 
-	public function insertUsuario($nombre, $pass){
-
-		$query = DB::conexion()->prepare("INSERT INTO usuarios(nombre, pass) VALUES (?,?)");
-		$query->bind_param('ss', $nombre, $pass);
-		return $query->execute();
+	public function insertUser($nombre, $pass){
+		return DataBase::sendQuery("INSERT INTO usuarios(nombre, email) VALUES (?,?)", array('ss', $nombre, $pass), "BOOLE");
 	}
 
 	public function updateUsuario($idUsuario, $nombre, $email){
