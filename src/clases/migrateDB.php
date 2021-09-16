@@ -142,15 +142,13 @@ class migrateDB{
         }
     }
 
-    public function getMascotasSocio($idSocio, $numSocio, $estado){
-        $responseQueryGetMascota = migrateDB::sendQueryExternalDB("SELECT * FROM mascota WHERE duenio = ?", array('i', $numSocio), "LIST");
+    public function getMascotasSocio(){
+        $responseQueryGetMascota = migrateDB::sendQueryExternalDB("SELECT * FROM mascota", null, "LIST");
         if($responseQueryGetMascota->result == 2){
             $arrayResult = array();
             foreach ($responseQueryGetMascota->listResult as $key => $row) {
                 if(!ctype_digit($row['nombre'])){
                     $estadoMascota = migrateDB::getEstadoMascota($row['estado']);
-                    if($estado == 0)
-                        $estadoMascota = 0;
 
                     $fecha = fechas::getDateToINT($row['nacimiento']);
 
@@ -184,9 +182,9 @@ class migrateDB{
 
                     $responseQuery = DataBase::sendQuery("INSERT INTO mascotas (nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('sssissiisss', $row['nombre'], $row['especie'], $row['raza'], $sexo, $row['color'], $pedigree, $fecha, $estadoMascota, $row['pelo'], $row['chip'], $observaciones), "BOOLE");
                     if($responseQuery->result == 2){
-                        $responseQueryInsert = DataBase::sendQuery("INSERT INTO mascotasocio(idSocio, idMascota) VALUES (?,?)", array('ii', $idSocio, $responseQuery->id), "BOOLE");
+                        $responseQueryInsert = DataBase::sendQuery("INSERT INTO mascotasocio(idSocio, idMascota) VALUES (?,?)", array('ii', $row['duenio'], $responseQuery->id), "BOOLE");
                         if($responseQueryInsert->result == 2)
-                            $arrayResult[] = array("idMascotaSocio" => $responseQueryInsert->id, "nombre" => $row['nombre'], "idMascota" => $responseQuery->id);
+                            $arrayResult[] = array("idMascotaSocio"=> $responseQueryInsert->id, "idSocio"=> $row['duenio'], "nombre" => $row['nombre'], "idMascota" => $responseQuery->id);
                     }
                 }
             }
@@ -270,10 +268,7 @@ class migrateDB{
                 if(!is_null($row['telfax']) & strlen($row['telfax']) > 5)
                     $telefax = $row['telfax'];
 
-                $responseQuery = DataBase::sendQuery("INSERT INTO socios(cedula, nombre, numSocio, telefono, telefax, direccion, fechaIngreso, fechaPago, lugarPago, estado, motivoBaja, cuota, email, rut, fechaUltimoPago, fechaUltimaCuota, tipo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", array('ssisssiisisissiii',$cedula, $row['nombre'], $row['numero'], $telefono, $telefax, $row['calle'] . " " . $row['numerocasa'] ." ". $row['apto'], $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $row['cuota'], $email, $rut, $fechaUltimoPago, $fechaUltimaCuota, $tipoSocio), "BOOLE");
-                if($responseQuery->result == 2)
-                    $arraySocios[] = array("idSocio" => $responseQuery->id, "estado" => $estado, "numSocio" => $row['numero']);
-                else return $responseQuery;
+                $responseQuery = DataBase::sendQuery("INSERT INTO socios(idSocio, cedula, nombre, telefono, telefax, direccion, fechaIngreso, fechaPago, lugarPago, estado, motivoBaja, cuota, email, rut, fechaUltimoPago, fechaUltimaCuota, tipo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", array('isssssiisisissiii', $row['numero'], $cedula, $row['nombre'], $telefono, $telefax, $row['calle'] . " " . $row['numerocasa'] ." ". $row['apto'], $fechaIngreso, $fechaPago, $lugarPago, $estado, $motivoBaja, $row['cuota'], $email, $rut, $fechaUltimoPago, $fechaUltimaCuota, $tipoSocio), "BOOLE");
             }
             return $arraySocios;
         }

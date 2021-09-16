@@ -87,6 +87,21 @@ return function (App $app) {
 
     //------------------------------ POST ------------------------------------------------------
 
+    $app->post('/gestcom-rest-cuotas', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $ultimaCuota = $data['ultimaCuota'];
+        $ultimoPago = $data['ultimoPago'];
+        $idSocio = $data['numSocio'];
+        $token = $data['token'];
+        return json_encode(ctr_usuarios::gestComRestCuotas($idSocio, $ultimoPago, $ultimaCuota, $token));
+    });
+
+    $app->post('/gestcom-rest-facturas', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $token = $data['token'];
+        return json_encode(ctr_usuarios::getFileVistaFactura($token));
+    });
+
     $app->post('/asignarMascotaSocio', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
@@ -258,6 +273,14 @@ return function (App $app) {
             $cuotaExtra = $data['cuotaExtra'];
             $plazoDeuda = $data['plazoDeuda'];
             return json_encode(ctr_usuarios::updateAllQuotaSocio($cuotaUno, $cuotaDos, $cuotaExtra, $plazoDeuda));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/updateStateSocio', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            return json_encode(ctr_usuarios::updateStateSocio());
         }else return json_encode($responseSession);
     });
 

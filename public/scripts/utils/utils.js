@@ -30,7 +30,7 @@ function validateEmail(email) {
 }
 
 function getSiteURL(){
-	return '/veterinarianan/public/';
+	return '/';
 }
 
 function getDateForInput(){

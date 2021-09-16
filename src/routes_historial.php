@@ -47,14 +47,6 @@ return function (App $app) {
 
     //--------------------------------POST-----------------------------------------
 
-	$app->post('/getFileVistaFactura', function(Request $request, Response $response){
-		// $responseSession = ctr_usuarios::validateSession();
-		// if($responseSession->result == 2){
-			$data = $request->getParams();
-			return json_encode(ctr_historiales::getFileVistaFactura());
-		// }else return json_encode($responseSession);
-	});
-
 	$app->post('/getListHistorialSocio', function(Request $request, Response $response){
 		$responseSession = ctr_usuarios::validateSession();
 		if($responseSession->result == 2){

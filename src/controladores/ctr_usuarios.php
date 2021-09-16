@@ -17,6 +17,135 @@ class ctr_usuarios{
 		return socios::getSociosVistaFactura();
 	}
 
+	public function gestComRestCuotas($idSocio, $ultimoPago, $ultimaCuota, $token){
+		$response = new \stdClass();
+
+		$currentDate = fechas::getCurrentDateInt();
+		$myToken = base64_encode($currentDate . "gestcom1213");
+		if(strcmp($token, $myToken) == 0){
+			if(is_null($idSocio) || is_null($ultimoPago) || is_null($ultimaCuota)){
+				$response->result = 0;
+				$response->message = "Se espera recibir los campos: 'ultimoCuota', 'ultimoPago', 'numSocio' para procesar la consulta.";
+			}else{
+				$responseGetSocio = socios::getSocio($idSocio);
+				if($responseGetSocio->result == 2){
+					if(!ctype_digit($ultimoPago) || strlen($ultimoPago) != 8){
+						$response->result = 0;
+						$response->message = "La fecha 'ultimoPago' debe ser numérica y con formato yyyymmdd.";
+					}else if(!ctype_digit($ultimaCuota) || strlen($ultimaCuota) !=  6){
+						$response->result = 0;
+						$response->message = "La fecha 'ultimaCuota' debe ser numérica y con formato yyyymm.";
+					}else{
+						$responseUpdateSocio = socios::updateGestcomSocio($idSocio, $ultimoPago, $ultimaCuota);
+						if($responseUpdateSocio->result == 2){
+							$response->result = 2;
+							$response->message = "Socio actualizado!.";
+						}else return $responseUpdateSocio;
+					}
+				}else{
+					$response->result = 0;
+					$response->message = "El 'numSocio' ingresado no corresponde a un socio en la base de datos.";
+				}
+			}
+		}else{
+			$response->result = 0;
+			$response->message = "El Token de validación no es correcto.";
+		}
+
+		return $response;
+	}
+
+	public function getFileVistaFactura($token){
+		$response = new \stdClass();
+
+		$currentDate = fechas::getCurrentDateInt();
+		$myToken = base64_encode($currentDate . "gestcom1213");
+		if(!is_null($token)){
+			if(strcmp($token, $myToken) == 0){
+				$responseGetSocios = ctr_usuarios::getSociosVistaFactura();
+				if($responseGetSocios->result == 2){
+					$stringList = "";
+					foreach ($responseGetSocios->listResult as $key => $socio){
+						$newArray = array();
+						//numero 1, proximavacuna 10, mascota 11, socio 2, direccion 3, casa 4, apto 5, cantidadmascotas 7, lugarpago 9, rut 6, cuota 8, fechaIngreso 12
+
+						if(is_null($socio['idSocio'])) $stringList .= ",";
+						else $stringList .= $socio['idSocio'] . ",";
+
+						if(is_null($socio['nombre'])) $stringList .= ",";
+						else $stringList .= $socio['nombre']. ",";
+
+						if(is_null($socio['direccion'])) $stringList .= ",";
+						else $stringList .= $socio['direccion'] . ",";
+
+						$stringList .= ",";
+						$stringList .= ",";
+
+						if(is_null($socio['rut'])) $stringList .= ",";
+						else $stringList .= $socio['rut'];
+
+						$cantMascotas = "";
+						$cuota = "";
+						$responseGetCantMascotas = ctr_mascotas::getSocioActivePets($socio['idSocio']);
+						if($responseGetCantMascotas->result == 2){
+							$cantMascotas = sizeof($responseGetCantMascotas->mascotas);
+							$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas));
+							if($responseCalculateQuota->result == 2)
+								$cuota = $responseCalculateQuota->quota;
+						}else
+
+						$stringList .= $cantMascotas . ",";
+						$stringList .= $cuota . ",";
+
+						if($socio['lugarPago'] == 1)
+							$stringList .= "Cobrador";
+						else
+							$stringList .= "Veterinaria";
+
+						$stringList .= ",";
+						$stringList .= ",";
+
+						if(is_null($socio['fechaIngreso'])) $stringList .= ",".chr(13).chr(10);
+						else $stringList .= fechas::dateToFormatBar($socio['fechaIngreso']) . " 12:13:00,".chr(13).chr(10);
+					}
+					$response->result = 2;
+					$response->string = base64_encode($stringList);
+				}
+			}else{
+				$response->result = 0;
+				$response->message = "El token de validación no es correcto.";
+			}
+		}else{
+			$response->result = 0;
+			$response->message = "Es necesario el token de validación.";
+		}
+
+		return $response;
+	}
+
+	public function creteFile($arrayResult){
+		if(is_array($arrayResult) && sizeof($arrayResult) > 0){
+			$file = fopen('C:\Users\Usuario\Desktop\archivo\FACTURA.txt','w+');
+			foreach ($arrayResult as $key => $value) {
+				fwrite($file, $value['numero'] .",");
+				fwrite($file, $value['socio'] .",");
+				fwrite($file, $value['direccion'] .",");
+				fwrite($file, $value['casa'] .",");
+				fwrite($file, $value['apto'] .",");
+				fwrite($file, $value['rut'] .",");
+				fwrite($file, $value['cantidadmascotas'] .",");
+				fwrite($file, $value['cuota'] .",");
+				fwrite($file, $value['lugarpago'] .",");
+				fwrite($file, $value['proximavacuna'] .",");
+				fwrite($file, $value['mascota'] .",");
+				fwrite($file, $value['fechaingreso'] . ",");
+
+				fwrite($file,chr(13).chr(10));
+			}
+			fclose($file);
+		}
+	}
+
     //----------------------------------- FUNCIONES DE USUARIO ------------------------------------------
 
 	public function deleteUser($idUser){
@@ -329,6 +458,39 @@ class ctr_usuarios{
 		return $response;
 	}
 
+	public function updateStateSocio(){
+		$response = new \stdClass();
+
+		$responseGetQuota = configuracionSistema::getQuota();
+		if($responseGetQuota->result == 2){
+
+			$fechaVencimiento = fechas::getYearMonthINT($responseGetQuota->objectResult->plazoDeuda);
+			$responseGetSociosToInactive = socios::getSociosToInactive($fechaVencimiento);
+			$responseSetInactive = socios::setInactiveStateSocio($fechaVencimiento);
+			if($responseSetInactive->result  == 2){
+				$responseDesactivarMascotas = ctr_mascotas::updateStateMascotas(1);
+				if($responseDesactivarMascotas->result == 2){//$idSocio, $idMascota, $fecha, $asunto, $importe, $observaciones
+					if($responseGetSociosToInactive->result == 2){
+						foreach ($responseGetSociosToInactive->listResult as $key => $socioInactive) {
+							ctr_historiales::crearHistorialSocio($socioInactive['idSocio'], null, fechas::getCurrentDateInt(), "Desactivación automática por morosidad.", null, null);
+						}
+					}
+
+					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualizar estados de socio", null, null, "Se actualizaron los estados de todos los socios.");
+					if($responseInsertHistorial->result == 2){
+						$response->result = 2;
+						$response->message = "Los estados de los socios fueron actualizados y se generó un registro en el historial de usuario.";
+					}else{
+						$response->result = 0;
+						$response->message = "Los estados de los socios fueron actualizados, pero un error interno no permitió generar un registro en el historial de usuario.";
+					}
+				}else return $responseDesactivarMascotas;
+			}else return $responseSetInactive;
+		}else return $responseGetQuota;
+
+		return $response;
+	}
+
 	public function updateAllQuotaSocio($cuotaUno, $cuotaDos, $cuotaExtra, $plazoDeuda){
 		$response = new \stdClass();
 
@@ -337,54 +499,42 @@ class ctr_usuarios{
 			$responseGetNewQuota = configuracionSistema::getQuota();
 			if($responseGetNewQuota->result == 2)
 				$response->quota = $responseGetNewQuota->objectResult;
-			$fechaVencimiento = fechas::getYearMonthINT($plazoDeuda);
-			$responseSetInactive = socios::setInactiveStateSocio($fechaVencimiento);
-			if($responseSetInactive->result  == 2){
-				$responseSetActive = socios::setActiveStateSocio($fechaVencimiento);
-				if($responseSetActive->result == 2){
-					$responseDesactivarMascotas = ctr_mascotas::updateStateMascotas(1);
-					if($responseDesactivarMascotas->result == 2){
-						$responseGetSociosActives = socios::getSociosWithMascotas();
-						if($responseGetSociosActives->result == 2){
-							$actualizados = array();
-							$noActualizados = array();
-							foreach ($responseGetSociosActives->listResult as $key => $socio) {
-								$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas']);
-								if($responseGetQuota->result == 2){
-									$responseUpdateQuota = socios::updateQuotaSocio($socio['idSocio'], $responseGetQuota->quota);
-									if($responseUpdateQuota->result == 2)
-										$actualizados[] = $socio['idSocio'];
-									else
-										$noActualizados[] = $socio['idSocio'];
-								}else return $responseGetQuota;
-							}
 
-							if(sizeof($responseGetSociosActives->listResult) == sizeof($actualizados)){
-								$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron todas las cuotas de los socios.");
-								if($responseInsertHistorial->result ==  2){
-									$response->result = 2;
-									$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, se generó un registro en el historial de usuario.";
-								}else{
-									$response->result = 2;
-									$response->message = "Los estados y las cuotas de los socios fueron actualizadas correctamente, pero un error no permitió crear un registro en el historial de usuario.";
-								}
-							}else if(sizeof($responseGetSociosActives->listResult) < sizeof($actualizados)){
-								$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron las cuotas de los socios, para los socios " . implode(",", $noActualizados) . " las cuotas no fueron actualizadas por un error.");
-								if($responseInsertHistorial->result ==  2){
-									$response->result = 1;
-									$response->message = "Los estados y cuotas de los socios fueron actualizadas, por algun error " . sizeof($noActualizados) . " socios no actualizaron su cuota. se generó un registro en el historial de usuario.";
-								}else{
-									$response->result = 1;
-									$response->message = "No todos los estados y cuotas de los socios fueron actualizados por un error, " . sizeof($noActualizados) . " socios no actualizaron su cuota. No se generó un registro en el historial de usuario.";
-								}
-							}
-						}else return $responseGetSociosActives;
-					}else {
-						$response->result = 0;
-						$response->message = "Los estados de las mascotas no fueron actualizados por un error interno, por favor vuelva a intentarlo.";
+			$responseGetSociosActives = socios::getSociosWithMascotas();
+			if($responseGetSociosActives->result == 2){
+				$actualizados = array();
+				$noActualizados = array();
+				foreach ($responseGetSociosActives->listResult as $key => $socio) {
+					$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas']);
+					if($responseGetQuota->result == 2){
+						$responseUpdateQuota = socios::updateQuotaSocio($socio['idSocio'], $responseGetQuota->quota);
+						if($responseUpdateQuota->result == 2)
+							$actualizados[] = $socio['idSocio'];
+						else
+							$noActualizados[] = $socio['idSocio'];
+					}else return $responseGetQuota;
+				}
+
+				if(sizeof($responseGetSociosActives->listResult) == sizeof($actualizados)){
+					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron todas las cuotas de los socios.");
+					if($responseInsertHistorial->result ==  2){
+						$response->result = 2;
+						$response->message = "Las cuotas de los socios fueron actualizadas correctamente, se generó un registro en el historial de usuario.";
+					}else{
+						$response->result = 2;
+						$response->message = "Las cuotas de los socios fueron actualizadas correctamente, pero un error no permitió crear un registro en el historial de usuario.";
 					}
-				}else return $responseSetActive;
-			}else return $responseSetInactive;
+				}else if(sizeof($responseGetSociosActives->listResult) < sizeof($actualizados)){
+					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron las cuotas de los socios, para los socios " . implode(",", $noActualizados) . " las cuotas no fueron actualizadas por un error.");
+					if($responseInsertHistorial->result ==  2){
+						$response->result = 1;
+						$response->message = "Las cuotas de los socios fueron actualizadas, por algun error " . sizeof($noActualizados) . " socios no actualizaron su cuota. se generó un registro en el historial de usuario.";
+					}else{
+						$response->result = 1;
+						$response->message = "No todas las cuotas de los socios fueron actualizados por un error, " . sizeof($noActualizados) . " socios no actualizaron su cuota. No se generó un registro en el historial de usuario.";
+					}
+				}
+			}else return $responseGetSociosActives;
 		}else return $responseUpdateQuota;
 
 		return $response;

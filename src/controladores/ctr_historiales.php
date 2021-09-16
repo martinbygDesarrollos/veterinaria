@@ -10,90 +10,19 @@ require_once '../src/controladores/ctr_usuarios.php';
 
 class ctr_historiales {
 
-	public function getFileVistaFactura(){
-		$response = new \stdClass();
-
-		$responseGetSocios = ctr_usuarios::getSociosVistaFactura();
-		if($responseGetSocios->result == 2){
-			$arrayResult = array();
-			foreach ($responseGetSocios->listResult as $key => $socio){
-				$newArray = array();
-
-				$newArray['numero'] = $socio['idSocio'];
-				$newArray['proximavacuna'] = null;
-				$newArray['mascota'] = null;
-				$newArray['socio'] = $socio['nombre'];
-				$newArray['direccion'] = $socio['direccion'];
-				$newArray['casa'] = null;
-				$newArray['apto'] = null;
-
-				$responseGetCantMascotas = ctr_mascotas::getSocioActivePets($socio['idSocio']);
-				if($responseGetCantMascotas->result == 2){
-					$newArray['cantidadmascotas'] = sizeof($responseGetCantMascotas->mascotas);
-					$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas));
-					if($responseCalculateQuota->result == 2)
-						$socio['cuota'] = $responseCalculateQuota->quota;
-				}
-
-				if($socio['lugarPago'] == 1)
-					$newArray['lugarpago'] = "Cobrador";
-				else
-					$newArray['lugarpago'] = "Veterinaria";
-
-				$newArray['rut'] = $socio['rut'];
-				$newArray['cuota'] = $socio['cuota'];
-				$newArray['fechaingreso'] = fechas::dateToFormatBar($socio['fechaIngreso']) . " 12:13:00";
-
-				$arrayResult[] = $newArray;
-			}
-			ctr_historiales::creteFile($arrayResult);
-			$response->listResult = $arrayResult;
-		}
-
-		return $response;
-	}
-
-	public function creteFile($arrayResult){
-		if(is_array($arrayResult) && sizeof($arrayResult) > 0){
-			$file = fopen('C:\Users\Usuario\Desktop\archivo\FACTURA.txt','w+');
-
-			foreach ($arrayResult as $key => $value) {
-				fwrite($file, $value['numero'] .",");
-				fwrite($file, $value['socio'] .",");
-				fwrite($file, $value['direccion'] .",");
-				fwrite($file, $value['casa'] .",");
-				fwrite($file, $value['apto'] .",");
-				fwrite($file, $value['rut'] .",");
-				fwrite($file, $value['cantidadmascotas'] .",");
-				fwrite($file, $value['cuota'] .",");
-				fwrite($file, $value['lugarpago'] .",");
-				fwrite($file, $value['proximavacuna'] .",");
-				fwrite($file, $value['mascota'] .",");
-				fwrite($file, $value['fechaingreso'] . ",");
-
-				fwrite($file,chr(13).chr(10));
-			}
-			fclose($file);
-		}
-	}
 
 	public function executeMigrateDB($session){
 		$response = new \stdClass();
 
 		if(strcmp($session['USUARIO'], "admin") == 0){
-			$arraySocios = migrateDB::getSocios();
-			if(is_array($arraySocios) && sizeof($arraySocios) > 2){
-				foreach ($arraySocios as $key => $socio){
-					$arrayMascotaSocio = migrateDB::getMascotasSocio($socio['idSocio'], $socio['numSocio'], $socio['estado']);
-					if(is_array($arrayMascotaSocio) && sizeof($arrayMascotaSocio) != 0){
-						foreach ($arrayMascotaSocio as $key => $mascotaSocio){
-							migrateDB::getFechaCambio($mascotaSocio['nombre'], $socio['numSocio'], $mascotaSocio['idMascotaSocio']);
-							migrateDB::getHistoriaClinica($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $socio['numSocio']);
-						}
-					}
+			migrateDB::getSocios();
+			$arrayMascotaSocio = migrateDB::getMascotasSocio();
+			if(is_array($arrayMascotaSocio) && sizeof($arrayMascotaSocio) != 0){
+				foreach ($arrayMascotaSocio as $key => $mascotaSocio){
+					migrateDB::getFechaCambio($mascotaSocio['nombre'], $mascotaSocio['idSocio'], $mascotaSocio['idMascotaSocio']);
+					migrateDB::getHistoriaClinica($mascotaSocio['idMascota'], $mascotaSocio['nombre'], $mascotaSocio['idSocio']);
 				}
 			}
-
 			migrateDB::getMascotasSinSocio();
 			migrateDB::getVacunasMascotas();
 			migrateDB::getEnfermedades();

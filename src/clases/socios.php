@@ -6,6 +6,10 @@ class socios{
 	//TIPO SOCIO::: SOCIO = 1, NO SOCIO = 0 ONG = 2
 	//activo = 1 inactivo = 0
 
+	public function updateGestcomSocio($idSocio, $ultimoPago, $ultimaCuota){
+		return DataBase::sendQuery("UPDATE socios SET fechaUltimoPago = ?, fechaUltimaCuota = ? WHERE idSocio = ?", array('iii', $ultimoPago, $ultimaCuota, $idSocio), "BOOLE");
+	}
+
 	public function getSociosVistaFactura(){
 		return DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND idSocio IN (SELECT idSocio FROM mascotasocio) GROUP BY idSocio", null, "LIST");
 	}
@@ -68,9 +72,8 @@ class socios{
 		}
 
 		$fechaVencimiento = fechas::getYearMonthINT($plazoDeuda);
-		$fechaActual = fechas::getYearMonthINT(0);
 
-		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota >= ? AND fechaUltimaCuota < ? AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10", array('iii', $fechaVencimiento, $fechaActual, $lastId), "LIST");
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND fechaUltimaCuota < ? AND idSocio <= ? ORDER BY idSocio DESC LIMIT 10", array('ii', $fechaVencimiento, $lastId), "LIST");
 		if($responseQuery->result == 2){
 			$newLastId = $lastId;
 			$arrayResult = array();
@@ -100,10 +103,17 @@ class socios{
 	public function getSocioToShowArray($socio){
 
 		$socio['cuota'] = number_format($socio['cuota'],2,",",".");
+
+		if(is_null($socio['fechaPago']))
+			$socio['fechaPago'] = "No especificado";
+
 		if(!is_null($socio['fechaUltimaCuota']) && strlen($socio['fechaUltimaCuota']) == 6)
 			$socio['fechaUltimaCuota'] = fechas::getYearMonthFormatBar($socio['fechaUltimaCuota']);
 		else
 			$socio['fechaUltimaCuota'] = "No especificado";
+
+		if(is_null($socio['telefono']))
+			$socio['telefono'] = "No especificado";
 
 		if($socio['lugarPago'] == 0)
 			$socio['lugarPago'] = "Veterinaria";
@@ -117,8 +127,24 @@ class socios{
 		return DataBase::sendQuery("UPDATE socios SET estado = ? WHERE idSocio = ?", array('ii', $newState, $idSocio), "BOOLE");
 	}
 
+	public function getSociosToInactive($dateVencimiento){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND (fechaUltimaCuota < ? OR fechaUltimaCuota IS NULL) AND tipo != 2", array('i', $dateVencimiento), "LIST");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontraron socios con incumplimiento en el pago de sus cuotas.";
+
+		return $responseQuery;
+	}
+
 	public function setInactiveStateSocio($dateVencimiento){
-		return DataBase::sendQuery("UPDATE socios SET estado = ?, cuota = 0 WHERE (fechaUltimaCuota <= ? OR fechaUltimaCuota IS NULL) AND tipo != 2 ", array('ii', 0, $dateVencimiento), "BOOLE");
+		return DataBase::sendQuery("UPDATE socios SET estado = ?, cuota = 0 WHERE (fechaUltimaCuota < ? OR fechaUltimaCuota IS NULL) AND tipo != 2 ", array('ii', 0, $dateVencimiento), "BOOLE");
+	}
+
+	public function getSociosToActive($dateVencimiento){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = 0 AND fechaUltimaCuota > ? AND tipo != 2", array('i', $dateVencimiento), "LIST");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontraron socios con incumplimiento en el pago de sus cuotas.";
+
+		return $responseQuery;
 	}
 
 	public function setActiveStateSocio($dateVencimiento){

@@ -244,7 +244,7 @@ class mascotas{
 	}
 
 	public function getMascotaId($nombreMascota, $numSocio){
-		return DataBase::sendQuery("SELECT MS.idMascota FROM socios AS S, mascotasocio AS MS, mascotas AS M WHERE S.idSocio = MS.idSocio AND MS.idMascota = M.idMascota AND S.numSocio = ? AND M.nombre = ? LIMIT 1", array('is', $numSocio, $nombreMascota), "OBJECT");
+		return DataBase::sendQuery("SELECT MS.idMascota FROM socios AS S, mascotasocio AS MS, mascotas AS M WHERE S.idSocio = MS.idSocio AND MS.idMascota = M.idMascota AND S.idSocio = ? AND M.nombre = ? LIMIT 1", array('is', $numSocio, $nombreMascota), "OBJECT");
 	}
 
 	public function getMascotasIds(){
