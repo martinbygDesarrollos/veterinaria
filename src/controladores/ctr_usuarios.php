@@ -62,6 +62,7 @@ class ctr_usuarios{
 		$myToken = base64_encode($currentDate . "gestcom1213");
 		if(!is_null($token)){
 			if(strcmp($token, $myToken) == 0){
+				ctr_usuarios::updateStateSocio();
 				$responseGetSocios = ctr_usuarios::getSociosVistaFactura();
 				if($responseGetSocios->result == 2){
 					$stringList = "";

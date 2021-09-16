@@ -276,13 +276,13 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
-    $app->post('/updateStateSocio', function(Request $request, Response $response){
-        $responseSession = ctr_usuarios::validateSession();
-        if($responseSession->result == 2){
-            $data = $request->getParams();
-            return json_encode(ctr_usuarios::updateStateSocio());
-        }else return json_encode($responseSession);
-    });
+    // $app->post('/updateStateSocio', function(Request $request, Response $response){
+    //     $responseSession = ctr_usuarios::validateSession();
+    //     if($responseSession->result == 2){
+    //         $data = $request->getParams();
+    //         return json_encode(ctr_usuarios::updateStateSocio());
+    //     }else return json_encode($responseSession);
+    // });
 
     $app->post('/notificarSocioCuota', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
