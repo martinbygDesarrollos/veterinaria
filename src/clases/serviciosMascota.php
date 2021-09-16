@@ -104,8 +104,18 @@ class serviciosMascota {
 
     public function getVacunasVencidas($dateVacuna){
         $responseQuery = DataBase::sendQuery("SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, M.idMascota, M.nombre, M.raza FROM vacunasmascota AS VM, mascotas AS M WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis = ? ORDER BY VM.idVacunaMascota DESC", array('i', $dateVacuna), "LIST");
-        if($responseQuery->result == 1)
-            $responseQuery->message = "No se encontraron vacunas vencidas para la fecha seleccionada.";
+        if($responseQuery->result == 2){
+            $arrayResult = array();
+            foreach ($responseQuery->listResult as $key => $row) {
+                if(is_null($row['raza']))
+                    $row['raza'] = "No especificada";
+                $row['fechaProximaDosis'] = fechas::dateToFormatBar($row['fechaProximaDosis']);
+                $row['intervaloDosis'] = serviciosMascota::getInterval($row['intervaloDosis']);
+
+                $arrayResult[] = $row;
+            }
+            $responseQuery->listResult = $arrayResult;
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas vencidas para la fecha seleccionada.";
         return $responseQuery;
     }
 
@@ -213,7 +223,7 @@ class serviciosMascota {
     }
 
     public function getVacunasVencidasMascota($idMascota, $fechaActual){
-        $responseQuery = DataBase::sendQuery("SELECT VM.nombreVacuna, VM.fechaUltimaDosis, VM.fechaProximaDosis, M.nombre FROM vacunasmascota AS VM, mascotas AS M WHERE VM.idMascota = M.idMascota AND M.idMascota = ? AND VM.fechaProximaDosis <= ? AND M.estado = 1", array('ii', $idMascota, $fechaActual), "LIST");
+        $responseQuery = DataBase::sendQuery("SELECT VM.nombreVacuna, VM.fechaUltimaDosis, VM.fechaProximaDosis, M.nombre, VM.intervaloDosis FROM vacunasmascota AS VM, mascotas AS M WHERE VM.idMascota = M.idMascota AND M.idMascota = ? AND VM.fechaProximaDosis <= ? AND M.estado = 1", array('ii', $idMascota, $fechaActual), "LIST");
         if($responseQuery->result == 2){
             $arrayResult = array();
             foreach ($responseQuery->listResult as $key => $row) {
@@ -268,6 +278,19 @@ class serviciosMascota {
             $vacuna->intervaloDosis = "Anual";
 
         return $vacuna;
+    }
+
+    public function getInterval($value){
+        if($value == 1)
+            return "Única dosis";
+        if($value == 30)
+            return "Mensual";
+        if($value == 60)
+            return "Bimestral";
+        if($value == 180)
+            return "Semestral";
+        if($value == 360)
+            return "Anual";
     }
 
     public function getVacunaMascota($idVacunaMascota){
