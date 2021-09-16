@@ -11,12 +11,12 @@ require_once 'controladores/ctr_usuarios.php';
 return function (App $app) {
 	$container = $app->getContainer();
 
-	$app->post('/prueba', function(Request $request, Response $response){
-		$responseSession = ctr_usuarios::validateSession();
-		if($responseSession->result == 2){
-			return json_encode(ctr_historiales::executeMigrateDB($responseSession->session));
-		}else return json_encode($responseSession);
-	});
+	// $app->post('/prueba', function(Request $request, Response $response){
+	// 	$responseSession = ctr_usuarios::validateSession();
+	// 	if($responseSession->result == 2){
+	// 		return json_encode(ctr_historiales::executeMigrateDB($responseSession->session));
+	// 	}else return json_encode($responseSession);
+	// });
 
     //-------------------------- VISTAS ------------------------------------------
 
@@ -142,23 +142,6 @@ return function (App $app) {
 			$idHistoriaClinica = $data['idHistoriaClinica'];
 			return json_encode(ctr_historiales::borrarHistoriaClinica($idHistoriaClinica));
 		}else return json_encode($responseSession);
-	});
-
-	$app->post('/updatePlazoDeuda', function(Request $request, Response $response){
-		if (isset($_SESSION['administrador'])) {
-			$sesion = $_SESSION['administrador'];
-			$result = usuarios::validarSesionActiva($sesion->usuario, $sesion->token);
-			if($result){
-				$data = $request->getParams();
-				$plazoDeuda = $data['plazoDeuda'];
-				return json_encode(ctr_historiales::updatePlazoDeuda($plazoDeuda));
-			}
-		}
-
-		$response = new \stdClass();
-		$response->retorno = false;
-		$response->mensajeError = "Su sesión a caducado porfavor vuelva a ingresar para continuar.";
-		return json_encode($response);
 	});
 
     //-----------------------------------------------------------------------------
