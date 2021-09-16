@@ -287,7 +287,7 @@ function keyEnterPress(eventEnter, value, size){
 function openModalChangeState(idSocio){
 	let responseGetSocio = sendPost("getSocio", {idSocio: idSocio});
 	if(responseGetSocio.result == 2){
-		if(responseGetSocio.socio.estado == 0){
+		if(responseGetSocio.socio.estado == 1){
 			$('#tittleModalState').html("Desactivar socio");
 			$('#messageModalState').html("¿Desea desactivar el socio seleccionado?<br>Esta operación desactivara todas las mascotas del socio y dejara su cuota en 0");
 		}else{

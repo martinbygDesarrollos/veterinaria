@@ -21,9 +21,10 @@ return function (App $app) {
 
     $app->get('/cerrar-sesion', function ($request, $response, $args) use ($container) {
         $responseSession = ctr_usuarios::validateSession();
-        if($responseSession->result == 2){
+        if($responseSession->result == 2)
             session_destroy();
-        }else return $response->withRedirect('iniciar-sesion');
+
+        return $response->withRedirect('iniciar-sesion');
     })->setName("LogOut");
 
     $app->get('/agregar-socio', function($request, $response, $args) use ($container){

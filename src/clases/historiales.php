@@ -33,6 +33,9 @@ class historiales{
 			if(is_null($historia->observaciones) ||  strlen($historia->observaciones) < 2)
 				$historia->observaciones = "No especificado";
 
+			if(is_null($historia->motivoConsulta) || strlen($historia->motivoConsulta) < 2)
+				$historia->motivoConsulta = "No especificado";
+
 			if(is_null($historia->diagnostico) ||  strlen($historia->diagnostico) < 2)
 				$historia->diagnostico = "No especificado";
 

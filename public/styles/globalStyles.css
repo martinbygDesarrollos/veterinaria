@@ -157,6 +157,9 @@ input[type=number] {
 }
 
 #tbodyVacunas tr:hover,
+#tbodyEnfermedades tr:hover,
+#tbodyAnalisis tr:hover,
+#tbodyHistoriaClinica tr:hover,
 #tbodyMascotas tr:hover,
 #tbodyMascotasSocio tr:hover,
 #tbodySocios tr:hover {
