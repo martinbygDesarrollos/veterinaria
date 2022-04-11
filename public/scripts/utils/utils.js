@@ -30,7 +30,11 @@ function validateEmail(email) {
 }
 
 function getSiteURL(){
-	return '/';
+	let url = window.location.href;
+	if(url.includes("localhost") || url.includes("intranet.gargano.com.uy") )
+		return '/veterinarianan/public/';
+	else
+		return '/';
 }
 
 function getDateForInput(){
