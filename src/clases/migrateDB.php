@@ -217,6 +217,10 @@ class migrateDB{
                 if(strlen($row['ultimacuota']) > 10)
                     $fechaUltimaCuota = migrateDB::getMonthYearInt($row['ultimacuota']);
 
+                //fechaUltimaCuota tiene formato yyyymm
+                if ( $fechaUltimaCuota > date("Ym") )
+                    $fechaUltimaCuota = null;
+
                 $fechaIngreso = null;
                 if(strlen($row['fechaingreo']) > 9)
                     $fechaIngreso = fechas::getDateToINT($row['fechaingreo']);
@@ -328,7 +332,8 @@ class migrateDB{
     public function sendQueryExternalDB($sql, $params, $tipoRetorno){
         $response = new \stdClass();
 
-        $connection = new mysqli("127.0.0.1", "root", "", "veterinaria");
+        //$connection = new mysqli("127.0.0.1", "root", "", "veterinaria");
+        $connection = new mysqli("127.0.0.1", DB_USR, DB_PASS, "veterinaria");
         $connection->set_charset("utf8");
         if($connection){
             $query = $connection->prepare($sql);
