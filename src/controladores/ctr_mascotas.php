@@ -636,7 +636,7 @@ class ctr_mascotas {
 			if($responseInsertEnfermedad->result == 2){
 				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre, null, null);
 				if($responseInsertHistorial->result == 2){
-					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario();
+					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nueva enfermedad mascota", null, $idMascota, "Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre);
 					$response->result = 2;
 					$response->message = "Se agregó correctamente la nueva enfermedad y se creo un registro en el historial de la mascota.";
 				}else{
