@@ -31,9 +31,9 @@ function insertNewMascota(inputButton){
 				showReplyMessage(response.result, response.message, "Agregar mascota", null);
 				if(response.result == 2)
 					clearComponents();
-			}else showReplyMessage(1, "Debe ingresar de la mascota para agregarla", "Raza campo requerido", null);
-		}else showReplyMessage(1, "Debe ingresar de la mascota para agregarla", "Especie campo requerido", null);
-	}else showReplyMessage(1, "Debe ingresar de la mascota para agregarla", "Nombre campo requerido", null);
+			}else showReplyMessage(1, "Debe ingresar raza de la mascota para agregarla", "Raza campo requerido", null);
+		}else showReplyMessage(1, "Debe ingresar especie de la mascota para agregarla", "Especie campo requerido", null);
+	}else showReplyMessage(1, "Debe ingresar nombre de la mascota para agregarla", "Nombre campo requerido", null);
 }
 
 function clearComponents(){
