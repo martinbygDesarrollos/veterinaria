@@ -93,7 +93,7 @@ class ctr_usuarios{
 							$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas));
 							if($responseCalculateQuota->result == 2)
 								$cuota = $responseCalculateQuota->quota;
-						}else
+						}
 
 						$stringList .= $cantMascotas . ",";
 						$stringList .= $cuota . ",";
