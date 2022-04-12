@@ -344,7 +344,7 @@ class ctr_mascotas {
 				$fechaProximaDosis = fechas::getDateToINT(fechas::calcularFechaProximaDosis($fechaDosis, $intervalo));
 			$responseInsertVacuna = serviciosMascota::insertVacunaMascota($nombreVacuna, $idMascota, $intervalo, 1, $fechaDosis, $fechaDosis, $fechaProximaDosis, $observaciones);
 			if($responseInsertVacuna->result == 2){
-				$responseInsertHistoriaClinica = ctr_historiales::
+				//$responseInsertHistoriaClinica = ctr_historiales::
 				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se aplicó la primer dosis de la vacuna " . $nombreVacuna, null, null);
 				$response->result = 2;
 				if($responseInsertHistorial->result == 2)
