@@ -4,11 +4,11 @@
 {% block content %}
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border w-75 shadow">
-		<div class="card-header d-flex justify-content-between bg-mycolor">
+		<div class="card-header d-flex bg-mycolor">
 			<div class="row">
 				<div class="row ml-2">
 					{% if SocioMascota.socio %}
-					<h5 class="card-title mt-2">Mascota de  {{ SocioMascota.socio.nombre }}</h5>
+					<h5 class="card-title mt-2">Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>
 					{% if BackTo != "VerSocio" %}
 					<a class="btn btn-link mt-1" href="{{ path_for('VerSocio', {idSocio: SocioMascota.socio.idSocio }) }}"><i class="far fa-eye text-dark h5"></i></a>
 					{% endif %}
