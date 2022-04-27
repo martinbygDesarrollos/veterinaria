@@ -563,7 +563,7 @@
             "require": {
                 "php": ">=5.5.0",
                 "psr/http-message": "^1.0",
-                "twig/twig": "^1.38|^2.7"
+                "twig/twig": "2.14.11"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.8|^5.7",
@@ -767,7 +767,7 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.9.0",
+            "version": "2.14.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
