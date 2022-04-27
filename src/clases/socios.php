@@ -39,7 +39,7 @@ class socios{
 
 		$sqlToSearch = "";
 		if(!is_null($textToSearch)){
-			$sqlToSearch = " AND nombre LIKE '" . $textToSearch . "%' ";
+			$sqlToSearch = " AND nombre LIKE '%" . $textToSearch . "%' ";
 		}
 
 		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = ? AND idSocio <= ? " . $sqlToSearch . " ORDER BY idSocio DESC LIMIT 14", array('ii', $estado, $lastId), "LIST");
