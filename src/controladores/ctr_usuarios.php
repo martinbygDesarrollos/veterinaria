@@ -656,7 +656,7 @@ class ctr_usuarios{
 						$fechaIngreso = fechas::getDateToINT($fechaIngreso);
 
 					if(!is_null($ultimoMesPago))
-						$ultimoMesPago = fechas::getDateWithMonthYearToINT($ultimoMesPago);
+						$ultimoMesPago = str_replace("-","",$ultimoMesPago);
 
 					if(!is_null($ultimoPago))
 						$ultimoPago = fechas::getDateToINT($ultimoPago);
@@ -665,7 +665,8 @@ class ctr_usuarios{
 					if($responseGetQuota->result == 2){
 						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $responseGetQuota->quota);
 						if($responseUpdateSocio->result == 2){
-							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
+							//$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
+							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", $idSocio, null, "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 							if($responseHistorial->result == 2){
 								$response->result = 2;
 								$response->message = "Se actualizó la información del socio y se generó un registro en el historial de su usuario.";
