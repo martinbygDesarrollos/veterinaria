@@ -89,8 +89,8 @@ class ctr_usuarios{
 						$stringList .= "'',";
 
 						//"rut","C",12,0
-						if(is_null($socio['rut'])) $stringList .= "'',";
-						else $stringList .= $socio['rut'];
+						if($socio['rut']>0) $stringList .= $socio['rut'].",";
+						else $stringList .= "'',";
 
 
 
