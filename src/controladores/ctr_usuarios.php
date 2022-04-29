@@ -59,8 +59,7 @@ class ctr_usuarios{
 		$response = new \stdClass();
 
 		$currentDate = fechas::getCurrentDateInt();
-		//$myToken = base64_encode($currentDate . "gestcom1213");
-		$myToken = "gestcom1213";
+		$myToken = base64_encode($currentDate . "gestcom1213");
 		if(!is_null($token)){
 			if(strcmp($token, $myToken) == 0){
 				//ctr_usuarios::updateStateSocio();
