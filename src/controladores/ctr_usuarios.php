@@ -59,34 +59,45 @@ class ctr_usuarios{
 		$response = new \stdClass();
 
 		$currentDate = fechas::getCurrentDateInt();
-		$myToken = base64_encode($currentDate . "gestcom1213");
+		//$myToken = base64_encode($currentDate . "gestcom1213");
+		$myToken = "gestcom1213";
 		if(!is_null($token)){
 			if(strcmp($token, $myToken) == 0){
-				ctr_usuarios::updateStateSocio();
+				//ctr_usuarios::updateStateSocio();
 				$responseGetSocios = ctr_usuarios::getSociosVistaFactura();
 				if($responseGetSocios->result == 2){
 					$stringList = "";
 					foreach ($responseGetSocios->listResult as $key => $socio){
 						$newArray = array();
-						//numero 1, proximavacuna 10, mascota 11, socio 2, direccion 3, casa 4, apto 5, cantidadmascotas 7, lugarpago 9, rut 6, cuota 8, fechaIngreso 12
 
-						if(is_null($socio['idSocio'])) $stringList .= ",";
+						//"nro_deu","N",7,0
+						if(is_null($socio['idSocio'])) $stringList .= "'',";
 						else $stringList .= $socio['idSocio'] . ",";
 
-						if(is_null($socio['nombre'])) $stringList .= ",";
+						//"nombre","C",30,0
+						if(is_null($socio['nombre'])) $stringList .= "'',";
 						else $stringList .= $socio['nombre']. ",";
 
-						if(is_null($socio['direccion'])) $stringList .= ",";
+
+						//"calle","C",55,0
+						if(is_null($socio['direccion'])) $stringList .= "'',";
 						else $stringList .= $socio['direccion'] . ",";
 
-						$stringList .= ",";
-						$stringList .= ",";
+						//"casa","N",5,0
+						$stringList .= "'',";
 
-						if(is_null($socio['rut'])) $stringList .= ",";
+						//"apto","N",4,0
+						$stringList .= "'',";
+
+						//"rut","C",12,0
+						if(is_null($socio['rut'])) $stringList .= "'',";
 						else $stringList .= $socio['rut'];
 
-						$cantMascotas = "";
-						$cuota = "";
+
+
+						//"cant","N",2,0
+						$cantMascotas = "''";
+						$cuota = "''";
 						$responseGetCantMascotas = ctr_mascotas::getSocioActivePets($socio['idSocio']);
 						if($responseGetCantMascotas->result == 2){
 							$cantMascotas = sizeof($responseGetCantMascotas->mascotas);
@@ -96,16 +107,28 @@ class ctr_usuarios{
 						}
 
 						$stringList .= $cantMascotas . ",";
+
+
+						//"imp","N",13,2
 						$stringList .= $cuota . ",";
 
+
+
+						//"lugar","C",15,0
 						if($socio['lugarPago'] == 1)
-							$stringList .= "Cobrador";
+							$stringList .= "Cobrador". ",";
 						else
-							$stringList .= "Veterinaria";
+							$stringList .= "Veterinaria". ",";
 
-						$stringList .= ",";
-						$stringList .= ",";
 
+						//"prox_vacu","C",11,0
+						$stringList .= "'',";
+
+
+						//"mascota","C",20,0
+						$stringList .= "'',";
+
+						//"fec_ingr","C",19,0
 						if(is_null($socio['fechaIngreso'])) $stringList .= ",".chr(13).chr(10);
 						else $stringList .= fechas::dateToFormatBar($socio['fechaIngreso']) . " 12:13:00,".chr(13).chr(10);
 					}
