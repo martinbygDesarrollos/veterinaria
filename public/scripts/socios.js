@@ -18,6 +18,15 @@ function cargarTablaSocios(){
 }
 
 function createRow(idSocio, nombre, telefono, cantMascotas, cuota, fechaUltimaCuota, direccion){
+
+	if ( !telefono ){
+		telefono = "";
+	}
+
+	if ( !direccion ){
+		direccion = "";
+	}
+
 	let row = "<tr>";
 	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>"+ idSocio +"</td>";
 	row += "<td onclick='redirectToSocio("+ idSocio +")' class='text-center'>"+ nombre +"</td>";
