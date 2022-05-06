@@ -11,7 +11,7 @@ class socios{
 	}
 
 	public function getSociosVistaFactura(){
-		return DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND idSocio IN (SELECT idSocio FROM mascotasocio) GROUP BY idSocio", null, "LIST");
+		return DataBase::sendQuery("SELECT * FROM socios WHERE estado = 1 AND tipo = 1 AND idSocio IN (SELECT idSocio FROM mascotasocio) GROUP BY idSocio", null, "LIST");
 	}
 
 	public function updateQuotaSocio($idSocio, $cuotaSocio){

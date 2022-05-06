@@ -218,15 +218,20 @@ class migrateDB{
                     $fechaUltimaCuota = migrateDB::getMonthYearInt($row['ultimacuota']);
 
                 //fechaUltimaCuota tiene formato yyyymm
-                if ( $fechaUltimaCuota > date("Ym") )
+                //if ( $fechaUltimaCuota > date("Ym") )
+                if ( $fechaUltimaCuota > date( "Ym", strtotime( date("Ym")." +12 month" ) ) )
                     $fechaUltimaCuota = null;
 
                 $fechaIngreso = null;
                 if(strlen($row['fechaingreo']) > 9)
                     $fechaIngreso = fechas::getDateToINT($row['fechaingreo']);
 
-                $estado = 1;
+                /*$estado = 1;
                 if($fechaVencimiento >= $fechaUltimaCuota)
+                    $estado = 0;*/
+
+                $estado = 1;
+                if(strcmp($row['estado'], "Inactivo") == 0)
                     $estado = 0;
 
                 $cedula = null;
