@@ -48,13 +48,29 @@ class socios{
 			$arrayResult = array();
 			foreach ($responseQuery->listResult as $key => $row) {
 				if($row['idSocio'] < $newLastId) $newLastId = $row['idSocio'];
-
+				$row['deudorFecha'] = "";
 				$row['cuota'] = number_format($row['cuota'],2,",",".");
 				if(!is_null($row['fechaUltimaCuota']) && strlen($row['fechaUltimaCuota']) == 6)
 					$row['fechaUltimaCuota'] = fechas::getYearMonthFormatBar($row['fechaUltimaCuota']);
 				else
-					$row['fechaUltimaCuota'] = "No especificado";
+					$row['fechaUltimaCuota'] = "";//"No especificado";
 
+				if ( $row['fechaUltimaCuota'] != "" ){
+					$dateToCompare = date('Ym', strtotime(date('Ym')." -3 month"));
+					$date = substr($row['fechaUltimaCuota'], 3, 4) . substr($row['fechaUltimaCuota'], 0, 2);
+					if ( $date <= $dateToCompare ){
+						$row['deudor'] = true;
+					}else{
+						$row['deudor'] = false;
+					}
+				}else{
+					$row['deudorFecha'] = "";
+					$row['deudor'] = false;
+				}
+
+				if ( $row['fechaUltimoPago'] != "" && $row['fechaUltimoPago'] != null ){
+					$row['deudorFecha'] = substr($row['fechaUltimoPago'], 6, 2)."/".substr($row['fechaUltimoPago'], 4, 2)."/".substr($row['fechaUltimoPago'], 0, 4);
+				}
 				$arrayResult[] = $row;
 			}
 			$responseQuery->listResult = $arrayResult;
