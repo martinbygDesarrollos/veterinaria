@@ -58,7 +58,7 @@ class socios{
 				if ( $row['fechaUltimaCuota'] != "" ){
 					$dateToCompare = date('Ym', strtotime(date('Ym')." -3 month"));
 					$date = substr($row['fechaUltimaCuota'], 3, 4) . substr($row['fechaUltimaCuota'], 0, 2);
-					if ( $date <= $dateToCompare ){
+					if ( $date < $dateToCompare ){
 						$row['deudor'] = true;
 					}else{
 						$row['deudor'] = false;
@@ -175,7 +175,8 @@ class socios{
 		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE idSocio = ?", array('i', $idSocio), "OBJECT");
 		if($responseQuery->result == 2){
 			$socio = $responseQuery->objectResult;
-			$noData = "No especificado.";
+			//$noData = "No especificado.";
+			$noData = "";
 
 			if(is_null($socio->cedula) || strlen($socio->cedula) == 0)
 				$socio->cedula = $noData;
@@ -230,6 +231,23 @@ class socios{
 				$socio->tipo = "No socio";
 			else $socio->tipo = "ONG";
 
+			$socio->deudorFecha = "";
+			if ( $socio->fechaUltimaCuota != "" ){
+				$dateToCompare = date('Ym', strtotime(date('Ym')." -3 month"));
+				$date = substr($socio->fechaUltimaCuota, 3, 4) . substr($socio->fechaUltimaCuota,0, 2);
+				if ( $date < $dateToCompare ){
+					$socio->deudor = true;
+				}else{
+					$socio->deudor = false;
+				}
+			}else{
+				$socio->deudorFecha = "";
+				$socio->deudor = false;
+			}
+
+			if ( $socio->fechaUltimoPago != "" && $socio->fechaUltimoPago != null ){
+				$socio->deudorFecha = $socio->fechaUltimoPago;
+			}
 			$responseQuery->objectResult = $socio;
 		}else if($responseQuery->result == 1) $responseQuery->message = "No fue encontrado el socio seleccionado.";
 
@@ -269,5 +287,31 @@ class socios{
 
 	public function getAllSocios(){
 		return DataBase::sendQuery("SELECT * FROM socios", null, "LIST");
+	}
+
+	//funcion que devuelve true o false si el socio es deudor o no (debe mas de tres meses)
+	public function socioDeudor($fechaUltimaCuota){
+		$deudorFecha = "";
+		if(!is_null($fechaUltimaCuota) && strlen($fechaUltimaCuota) == 6)
+			$fechaUltimaCuota = fechas::getYearMonthFormatBar($fechaUltimaCuota);
+		else
+			$fechaUltimaCuota = "";//"No especificado";
+
+		if ( $fechaUltimaCuota != "" ){
+			$dateToCompare = date('Ym', strtotime(date('Ym')." -3 month"));
+			$date = substr($fechaUltimaCuota, 3, 4) . substr($fechaUltimaCuota, 0, 2);
+			if ( $date < $dateToCompare ){
+				$deudor = true;
+			}else{
+				$deudor = false;
+			}
+		}else{
+			$deudorFecha = "";
+			$deudor = false;
+		}
+
+		$response->deudor = $deudor;
+
+		return $response;
 	}
 }
