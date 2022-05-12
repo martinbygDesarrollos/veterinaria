@@ -788,8 +788,16 @@ class ctr_usuarios{
 			$arrayResult = array();
 			foreach ($responseGetSocios->listResult as $key => $value) {
 				$responseGetCantMascotas = ctr_mascotas::getCantMascotas($value['idSocio']);
-				if($responseGetCantMascotas->result == 2)
+				if($responseGetCantMascotas->result == 2){
 					$value['cantMascotas'] = $responseGetCantMascotas->objectResult->cantMascotas;
+					$value['mascotas'] = array();
+					if ( $value['cantMascotas'] > 0 ){
+						$mascotasSocio = ctr_mascotas::getMascotasSocio($value['idSocio']);
+						if ( $mascotasSocio->result == 2 ){
+							$value['mascotas'] = $mascotasSocio->listMascotas;
+						}else return $mascotasSocio;
+					}
+				}
 				else
 					$value['cantMascotas'] = "Sin mascotas";
 				$arrayResult[] = $value;

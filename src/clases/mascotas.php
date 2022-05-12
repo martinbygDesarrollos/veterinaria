@@ -113,9 +113,15 @@ class mascotas{
 
 		$sqlToSearch = "";
 		if(!is_null($textToSearch))
-			$sqlToSearch = " AND nombre LIKE '". $textToSearch ."%' ";
+			$sqlToSearch = " AND m.nombre LIKE '". $textToSearch ."%' ";
 
-		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE estado = ? AND idMascota < ? " . $sqlToSearch ." ORDER BY idMascota DESC LIMIT 14", array('ii', $stateMascota, $lastId), "LIST");
+		$select = "SELECT m.*, ms.idSocio, s.nombre AS nombreSocio, s.fechaUltimoPago, s.fechaUltimaCuota FROM mascotas AS m ";
+		$join = " LEFT JOIN mascotasocio AS ms ON m.idMascota = ms.idMascota
+				LEFT JOIN socios AS s ON s.idSocio = ms.idSocio ";
+		$where = " WHERE m.estado = ? AND m.idMascota < ? ";
+		$orderAndList = " ORDER BY m.idMascota DESC LIMIT 14 ";
+
+		$responseQuery = DataBase::sendQuery($select . $join . $where . $sqlToSearch . $orderAndList, array('ii', $stateMascota, $lastId), "LIST");
 		if($responseQuery->result == 2){
 			$newLastID = $lastId;
 			$arrayResult = array();
@@ -138,6 +144,11 @@ class mascotas{
 					$row['fechaNacimiento'] = fechas::dateToFormatBar($row['fechaNacimiento']);
 				else
 					$row['fechaNacimiento'] = $noData;
+
+
+				//socio deudor
+				$responseDeudor = socios::socioDeudor($row['fechaUltimaCuota']);
+				$row['socioDeudor'] = $responseDeudor->deudor;
 
 				$arrayResult[] = $row;
 			}

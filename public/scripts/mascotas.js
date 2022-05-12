@@ -10,18 +10,56 @@ function cargarTablaMascotas(){
 			lastId = response.lastId;
 		let list = response.listMascotas;
 		for (var i = 0; i < list.length; i++) {
-			let row = createRow(list[i].idMascota, list[i].nombre, list[i].especie, list[i].raza, list[i].sexo, list[i].fechaNacimiento);
+			let row = createRow(list[i]);
 			$('#tbodyMascotas').append(row);
 		}
 	}
 }
 
-function createRow(idMascota, nombre, especie, raza, sexo, fechaNacimiento){
-	let row = "<tr onclick='redirectToMascota("+ idMascota +")'>";
+function createRow(obj){
+	//console.log(obj);
+	idMascota = obj.idMascota
+	nombre = obj.nombre
+	especie	 = obj.especie
+	sexo = obj.sexo
+	fechaNacimiento = obj.fechaNacimiento
+
+	socioNombre = obj.nombreSocio;
+	if (socioNombre == null)
+		socioNombre = "";
+
+	fechaUltimaCuota = obj.fechaUltimaCuota
+	fechaUltimoPago = obj.fechaUltimoPago
+	socioDeudor = obj.socioDeudor
+
+
+	let row = "<tr onclick='redirectToMascota("+ idMascota +")'";
+	if ( socioDeudor )
+		row += "class='rowWarning' >";
+	else
+		row += " > ";
 
 	row += "<td class='text-center'>" + nombre +"</td>";
+	row += "<td class='text-center'"
+
+	//>" + socioNombre +"</td>";
+
+
+
+	if ( fechaUltimaCuota != "" ){
+		if ( socioDeudor && fechaUltimoPago != "" )
+			row += ' title="Último mes pago '+ fechaUltimaCuota +' el día '+ fechaUltimoPago +'" >'+socioNombre+' <i class="fas fa-exclamation-triangle"></i></td>';
+		else if (socioDeudor && fechaUltimoPago == "" )
+			row += ' title="No se encontró fecha del último pago" >'+socioNombre+' <i class="fas fa-exclamation-triangle"></i></td>';
+		else if ( !socioDeudor )
+			row += ">"+socioNombre+'</td>';
+	}
+	else
+		row+= ">"+socioNombre + "</td>";
+
+
 	row += "<td class='text-center'>" + especie +"</td>";
-	row += "<td class='text-center'>" + raza + "</td>";
+	//row += "<td class='text-center'>" + raza + "</td>";
 	row += "<td class='text-center'>" + sexo +"</td>";
 	row += "<td class='text-center'>" + fechaNacimiento +"</td>";
 	row += "</tr>";

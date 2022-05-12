@@ -4,16 +4,26 @@
 {% block content %}
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border w-75 shadow">
+		{% if SocioMascota.socio.deudor == false %}
 		<div class="card-header d-flex bg-mycolor">
+		{% else %}
+		<div class="card-header d-flex rowWarning">
+		{% endif %}
 			<div class="row">
 				<div class="row ml-2">
 					{% if SocioMascota.socio %}
-					<h5 class="card-title mt-2">Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>
 					{% if BackTo != "VerSocio" %}
-					<a class="btn btn-link mt-1" href="{{ path_for('VerSocio', {idSocio: SocioMascota.socio.idSocio }) }}"><i class="far fa-eye text-dark h5"></i></a>
+					<h5 class="card-title mt-2">Mascota de&nbsp;
+					<a href="{{ path_for('VerSocio', {idSocio: SocioMascota.socio.idSocio }) }}" style="color:black; ">{{SocioMascota.socio.nombre}}</a>&nbsp;
+					</h5>
+					{% else %}
+					<h5 >Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>&nbsp;
 					{% endif %}
 					{% else %}
 					<h5 class="card-title mt-2">Mascota sin socio</h5>
+					{% endif %}
+					{% if SocioMascota.socio.deudor == true %}
+					<h5 class="card-title mt-2" style="float: right !important;"><i class="fas fa-exclamation-triangle" title="Último mes pago {{SocioMascota.socio.fechaUltimaCuota}} el día {{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
 					{% endif %}
 				</div>
 			</div>
