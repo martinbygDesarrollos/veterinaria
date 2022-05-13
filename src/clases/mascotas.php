@@ -125,7 +125,8 @@ class mascotas{
 		if($responseQuery->result == 2){
 			$newLastID = $lastId;
 			$arrayResult = array();
-			$noData = "No especificado";
+			//$noData = "No especificado";
+			$noData = "";
 			foreach ($responseQuery->listResult as $key => $row) {
 				if($newLastID > $row['idMascota']) $newLastID = $row['idMascota'];
 
@@ -145,6 +146,10 @@ class mascotas{
 				else
 					$row['fechaNacimiento'] = $noData;
 
+				if(!is_null($row['fechaFallecimiento']) && strlen($row['fechaFallecimiento']) == 8)
+					$row['fechaFallecimiento'] = fechas::dateToFormatBar($row['fechaFallecimiento']);
+				else
+					$row['fechaFallecimiento'] = $noData;
 
 				//socio deudor
 				$responseDeudor = socios::socioDeudor($row['fechaUltimaCuota']);
@@ -187,7 +192,8 @@ class mascotas{
 	}
 
 	public function getFormatMascota($mascota){
-		$noData = "No especificado";
+		//$noData = "No especificado";
+		$noData = "";
 
 		if(is_null($mascota->raza) || strlen($mascota->raza) < 1)
 			$mascota->raza = $noData;
@@ -216,6 +222,10 @@ class mascotas{
 		if(!is_null($mascota->fechaNacimiento) && strlen($mascota->fechaNacimiento) == 8)
 			$mascota->fechaNacimiento = fechas::dateToFormatBar($mascota->fechaNacimiento);
 		else $mascota->fechaNacimiento = $noData;
+
+		if(!is_null($mascota->fechaFallecimiento) && strlen($mascota->fechaFallecimiento) == 8)
+			$mascota->fechaFallecimiento = fechas::dateToFormatBar($mascota->fechaFallecimiento);
+		else $mascota->fechaFallecimiento = $noData;
 
 		return $mascota;
 	}

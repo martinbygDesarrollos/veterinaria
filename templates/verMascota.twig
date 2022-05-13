@@ -43,16 +43,6 @@
 					<div class="d-flex justify-content-center mb-2">
 						<button id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>Historia<br>Clínica</button>
 					</div>
-					<div class="d-flex justify-content-center">
-						<button class="btn btn-dark w-100">
-							<p id="textActivarDesactivar">Estado</p>
-							{% if SocioMascota.mascota.estado == 1 %}
-							<label class="switch"><input id="stateMascota" name="{{ SocioMascota.mascota.idMascota }}" type="checkbox" checked onchange="changeStateMascota(this)"><span class="slider round"></span></label>
-							{% else %}
-							<label class="switch"><input id="stateMascota" name="{{ SocioMascota.mascota.idMascota }}" type="checkbox" onchange="changeStateMascota(this)"><span class="slider round"></span></label>
-							{% endif %}
-						</button>
-					</div>
 				</div>
 				<div class="col">
 					<nav>
@@ -78,6 +68,9 @@
 										<input type="text" class="form-control text-center shadow-sm" id="inputNombre" readonly value="{{ SocioMascota.mascota.nombre }}" onkeypress="return keyEnterPress(event, this.value, 50)">
 									</div>
 								</div>
+							</div>
+							<hr>
+							<div class="row d-flex justify-content-center m-3">
 								<div class="col">
 									<div class="form-group">
 										<label for="inputEspecie">Especie</label>
@@ -124,10 +117,19 @@
 										<input type="text" class="form-control text-center shadow-sm" id="inputChip" readonly value="{{ SocioMascota.mascota.chip }}" onkeypress="return keyEnterPress(event, this.value, 50)">
 									</div>
 								</div>
+							</div>
+							<hr>
+							<div class="row d-flex justify-content-center m-3">
 								<div class="col">
 									<div class="form-group">
 										<label for="inputNacimiento">Nacimiento</label>
 										<input type="text" class="form-control text-center shadow-sm" id="inputNacimiento" readonly value="{{ SocioMascota.mascota.fechaNacimiento }}">
+									</div>
+								</div>
+								<div class="col">
+									<div class="form-group">
+										<label for="inputFallecimiento">Fallecimiento</label>
+										<input type="text" class="form-control text-center shadow-sm" id="inputFallecimiento" readonly value="{{ SocioMascota.mascota.fechaFallecimiento }}">
 									</div>
 								</div>
 							</div>
@@ -138,9 +140,6 @@
 										<textarea id="inputObservaciones" class="form-control shadow-sm rounded-0" maxlength="200" readonly style="resize: none;" rows="3" disabled>{{ SocioMascota.mascota.observaciones }}</textarea>
 									</div>
 								</div>
-							</div>
-							<div class="row d-flex justify-content-between m-3">
-
 							</div>
 						</div>
 						<div class="tab-pane fade show  border boder-2 border-top-0 p-3" id="nav-vacunas" role="tabpanel" aria-labelledby="nav-home-tab">
