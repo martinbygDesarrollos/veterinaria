@@ -50,10 +50,10 @@
 	</div>
 </div>
 {%block script%}
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vencimientos.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vencimientos.js?{{version}}"></script>
 <script type="text/javascript">
 	cargarVencimientoCuota();
 </script>

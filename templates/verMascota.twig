@@ -612,13 +612,13 @@
 	</div>
 </div>
 {%block script%}
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vacunas.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/enfermedades.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/analisis.js"></script>
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/historiaClinica.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vacunas.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/enfermedades.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/analisis.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/historiaClinica.js?{{version}}"></script>
 <script type="text/javascript">
 	$('#inputPrimerDosisVacuna').val(getDateForInput());
 	$('#inputFechaDiagnostico').val(getDateForInput());

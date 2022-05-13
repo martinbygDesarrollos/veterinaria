@@ -11,6 +11,7 @@ return function (App $app) {
 
 	//---------------------------- VISTAS ------------------------------------------------------
     $app->get('/mascotas', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -19,6 +20,7 @@ return function (App $app) {
     })->setName('Mascotas');
 
     $app->get('/nueva-mascota/{idSocio}', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -31,6 +33,7 @@ return function (App $app) {
     })->setName('NuevaMascota');
 
     $app->get('/ver-mascota/{idMascota}', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -45,6 +48,7 @@ return function (App $app) {
     })->setName("verMascota");
 
     $app->get('/vencimientos', function($request, $response, $args) use($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;

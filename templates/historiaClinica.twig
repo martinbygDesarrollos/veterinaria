@@ -54,7 +54,7 @@
 	</div>
 </div>
 {%block script%}
-<script type="text/javascript" src="{{path_for('Inicio')}}scripts/verHistoriaClinica.js"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/verHistoriaClinica.js?{{version}}"></script>
 <script type="text/javascript">
 	var idMascota = document.getElementById('idMascotaSeleccionada').value;
 	cargarHistoriaClinica(idMascota);

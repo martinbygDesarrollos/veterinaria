@@ -21,6 +21,7 @@ return function (App $app) {
     //-------------------------- VISTAS ------------------------------------------
 
 	$app->get('/settings', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
 		$responseSession = ctr_usuarios::validateSession();
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;
@@ -36,6 +37,7 @@ return function (App $app) {
 	})->setName("settings");
 
 	$app->get('/historialUsuario', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
 		$responseSession = ctr_usuarios::validateSession();
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;

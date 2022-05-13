@@ -12,6 +12,7 @@ return function (App $app) {
 
     //---------------------------- VISTAS ------------------------------------------------------
     $app->get('/iniciar-sesion', function ($request, $response, $args) use ($container) {
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result != 2)
             return $this->view->render($response, "login.twig");
@@ -20,6 +21,7 @@ return function (App $app) {
     })->setName("Login");
 
     $app->get('/cerrar-sesion', function ($request, $response, $args) use ($container) {
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2)
             session_destroy();
@@ -28,6 +30,7 @@ return function (App $app) {
     })->setName("LogOut");
 
     $app->get('/agregar-socio', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -36,6 +39,7 @@ return function (App $app) {
     })->setName("NewSocio");
 
     $app->get('/socios', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -44,6 +48,7 @@ return function (App $app) {
     })->setName("Socios");
 
     $app->get('/asignarSocioMascota/{idMascota}', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -54,6 +59,7 @@ return function (App $app) {
     })->setName("asignarSocioMascota");
 
     $app->get('/ver-socio/{idSocio}', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -67,6 +73,7 @@ return function (App $app) {
     })->setName("VerSocio");
 
     $app->get('/modificar-socio/{idSocio}', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
@@ -77,6 +84,7 @@ return function (App $app) {
     })->setName("EditarSocio");
 
     $app->get('/cuotasVencidas', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
