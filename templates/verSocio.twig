@@ -152,7 +152,7 @@
 									<td class="text-center" scope="col">Especie</td>
 									<td class="text-center" scope="col">Sexo</td>
 									<td class="text-center" scope="col">Nacimiento</td>
-									<td class="text-center" scope="col">Estado</td>
+									<td class="text-center" scope="col">Vivo</td>
 									<td class="text-center" scope="col">Desvincular</td>
 								</tr>
 							</thead>
@@ -169,12 +169,10 @@
 									{% endif %}
 									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.fechaNacimiento }}</td>
 									<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">
-										{% if mascota.estado == 0 %}
-										Inactiva
-										{% elseif mascota.estado == 1 %}
-										Activa
+										{% if mascota.fechaFallecimiento == "" %}
+										Si
 										{% else %}
-										Pendiente
+										No
 										{% endif %}
 									</td>
 									<td class="text-center"><button class="btn btn-link" onclick="desvincularMascota('{{ mascota.idMascota }}')"><i class="fas fa-trash-alt text-dark"></i></button></td>
