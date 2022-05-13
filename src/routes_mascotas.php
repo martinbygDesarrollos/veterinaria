@@ -309,7 +309,14 @@ return function (App $app) {
         return json_encode(ctr_mascotas::getVacunasVencidas($dateVencimiento));
     });
 
-
+    $app->post('/saveFile', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            var_dump("ruta para agregar documentos a la historia de la mascota");exit;
+            //return json_encode(ctr_mascotas::saveFile());
+        }
+        else return json_encode($responseSession);
+    });
 
 	//------------------------------------------------------------------------------------------
 

@@ -32,16 +32,16 @@
 			<div class="row">
 				<div class="col-2" style="min-width: 10em;">
 					<div class="d-flex justify-content-center mb-2">
-						<button id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna</button>
+						<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna</button>
 					</div>
 					<div class="d-flex justify-content-center mb-2">
-						<button id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)">Nueva <br>enfermedad</button>
+						<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)">Nueva <br>enfermedad</button>
 					</div>
 					<div class="d-flex justify-content-center mb-2">
-						<button id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)">Nuevo<br>analisis</button>
+						<button type="button" id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)">Nuevo<br>analisis</button>
 					</div>
 					<div class="d-flex justify-content-center mb-2">
-						<button id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>Historia<br>Clínica</button>
+						<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>Historia<br>Clínica</button>
 					</div>
 				</div>
 				<div class="col">
@@ -57,7 +57,7 @@
 					<div class="tab-content " id="nav-tabContent">
 						<div class="tab-pane fade show active border boder-2 border-top-0" id="nav-informacion" role="tabpanel" aria-labelledby="nav-home-tab">
 							<div class="d-flex flex-row-reverse">
-								<button class="btn btn-link mr-2 mt-2 mb-2" onclick="openModalModificarMascota('{{ SocioMascota.mascota.idMascota }}')">
+								<button type="button" class="btn btn-link mr-2 mt-2 mb-2" onclick="openModalModificarMascota('{{ SocioMascota.mascota.idMascota }}')">
 									<i class="fas fa-edit text-dark"></i>
 								</button>
 							</div>
@@ -160,7 +160,7 @@
 									{% if responseVacunas.result == 2 %}
 									{% for vacuna in responseVacunas.listResult %}
 									<tr id="trV{{ vacuna.idVacunaMascota }}">
-										<td class="text-center"><button class="btn btn-link btn-sm" onclick="modalAplicarDosis('{{ vacuna.idVacunaMascota }}')"><i class="fas fa-syringe text-dark"></i></button></td>
+										<td class="text-center"><button type="button" class="btn btn-link btn-sm" onclick="modalAplicarDosis('{{ vacuna.idVacunaMascota }}')"><i class="fas fa-syringe text-dark"></i></button></td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaProximaDosis }}</td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaUltimaDosis }}</td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.nombreVacuna }}</td>
@@ -168,8 +168,8 @@
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.numDosis }}</td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaPrimerDosis }}</td>
 										<td class="text-center" style="min-width: 6em;">
-											<button class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalVacuna(this)"><i class="fas fa-edit text-dark"></i></button>
-											<button class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalBorrarVacuna('{{ vacuna.idVacunaMascota }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
+											<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalVacuna(this)"><i class="fas fa-edit text-dark"></i></button>
+											<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalBorrarVacuna('{{ vacuna.idVacunaMascota }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
 										</td>
 									</tr>
 									{% endfor %}
@@ -201,8 +201,8 @@
 										<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.nombreEnfermedad }}</td>
 										<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.observaciones }}</td>
 										<td class="text-center" scope="col">
-											<button class="btn btn-link btn-sm" name="{{ enfermedad.idEnfermedad }}" onclick="openModalEnfermedad(this)"><i class="fas fa-edit text-dark"></i></button>
-											<button class="btn btn-link btn-sm" onclick="openModalBorrarEnfermedad('{{ enfermedad.idEnfermedad }}')"><i class="fas fa-trash-alt text-dark"></i></button>
+											<button type="button" class="btn btn-link btn-sm" name="{{ enfermedad.idEnfermedad }}" onclick="openModalEnfermedad(this)"><i class="fas fa-edit text-dark"></i></button>
+											<button type="button" class="btn btn-link btn-sm" onclick="openModalBorrarEnfermedad('{{ enfermedad.idEnfermedad }}')"><i class="fas fa-trash-alt text-dark"></i></button>
 										</td>
 									</tr>
 									{% endfor %}
@@ -228,8 +228,8 @@
 										<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.nombre }}</td>
 										<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.detalle }}</td>
 										<td class="text-center" style="min-width: 6 em;" scope="col">
-											<button class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" name="{{ analisis.idAnalisis }}" onclick="openModalAnalaisis(this)"><i class="fas fa-edit text-dark"></i></button>
-											<button class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" onclick="openModalBorrarAnalisis('{{ analisis.idAnalisis }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
+											<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" name="{{ analisis.idAnalisis }}" onclick="openModalAnalaisis(this)"><i class="fas fa-edit text-dark"></i></button>
+											<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" onclick="openModalBorrarAnalisis('{{ analisis.idAnalisis }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
 										</td>
 									</tr>
 									{% endfor %}
@@ -344,8 +344,8 @@
 				</div>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
-				<button class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button class="btn btn-success shadow-sm" onclick="modificarMascota('{{ SocioMascota.mascota.idMascota }}')">Confirmar</button>
+				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+				<button type="button" class="btn btn-success shadow-sm" onclick="modificarMascota('{{ SocioMascota.mascota.idMascota }}')">Confirmar</button>
 			</div>
 		</div>
 	</div>
@@ -370,7 +370,7 @@
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
-							<label for="inputObservacionesEnfermedad">Motivo consulta</label>
+							<label for="">Motivo consulta</label>
 							<textarea id="inputMotivoConsultaHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
 						</div>
 					</div>
@@ -378,24 +378,35 @@
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
-							<label for="inputObservacionesEnfermedad">Diagnóstico</label>
-							<textarea id="inputDiagnosticoHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+							<label for="">Diagnóstico</label>
+							<textarea id="inputDiagnosticoHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="1" style="resize: none;"></textarea>
 						</div>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
-							<label for="inputObservacionesEnfermedad">Observaciones</label>
+							<label for="">Observaciones</label>
 							<textarea id="inputObservacionesHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="modal-footer d-flex justify-content-between" >
-				<button class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button id="buttonConfirmHistoriaClinica" class="btn btn-success shadow-sm">Confirmar</button>
-			</div>
+				<hr>
+				<form method="post" action="" id="formConfirmFileHistory">
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<input type="file" class="form-control-file" id="idInputFileResult" name="nameInputFileResult" value=""  accept="video/*, image/*" multiple>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer d-flex justify-content-between" >
+					<button class="btn btn-danger shadow-sm" type="button" data-dismiss="modal">Cerrar</button>
+					<!--button id="buttonConfirmHistoriaClinica" type="submit" class="btn btn-success shadow-sm">Confirmar</button-->
+					<button id="buttonConfirmHistoriaClinica" class="btn btn-success shadow-sm" value="Subir" type="submit" onclick="">Confirmar</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -442,8 +453,8 @@
 				</div>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
-				<button class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button class="btn btn-success shadow-sm" id="buttonConfirmModalAnalisis">Confirmar</button>
+				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+				<button type="button" class="btn btn-success shadow-sm" id="buttonConfirmModalAnalisis">Confirmar</button>
 			</div>
 		</div>
 	</div>
@@ -462,8 +473,8 @@
 				<p class="text-center" id="textModalBorrar">¿Seguro que desea borrar la enfermedad seleccionada?</p>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
-				<button class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button id="modalButtonBorrar" class="btn btn-success shadow-sm">Confirmar</button>
+				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+				<button type="button" id="modalButtonBorrar" class="btn btn-success shadow-sm">Confirmar</button>
 			</div>
 		</div>
 	</div>
@@ -501,8 +512,8 @@
 				</div>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
-				<button class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button id="buttonConfirmModalEnfermedad" class="btn btn-success shadow-sm">Confirmar</button>
+				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+				<button type="button" id="buttonConfirmModalEnfermedad" class="btn btn-success shadow-sm">Confirmar</button>
 			</div>
 		</div>
 	</div>
@@ -529,8 +540,8 @@
 				</div>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
-				<button class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button class="btn btn-success shadow-sm" id="btnAplicarDosis">Aplicar</button>
+				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+				<button type="button" class="btn btn-success shadow-sm" id="btnAplicarDosis">Aplicar</button>
 			</div>
 		</div>
 	</div>
@@ -582,8 +593,8 @@
 				</div>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
-				<button class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button id="modalButtonVacuna" class="btn btn-success shadow-sm">Confirmar</button>
+				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+				<button type="button" id="modalButtonVacuna" class="btn btn-success shadow-sm">Confirmar</button>
 			</div>
 		</div>
 	</div>
@@ -605,7 +616,7 @@
 				<p id="textModalView"></p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-success shadow-sm" data-dismiss="modal">Ok</button>
+				<button type="button" class="btn btn-success shadow-sm" data-dismiss="modal">Ok</button>
 			</div>
 		</div>
 	</div>

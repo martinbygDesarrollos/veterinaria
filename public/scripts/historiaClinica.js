@@ -1,5 +1,28 @@
 let lastId = 0;
 
+$("#formConfirmFileHistory").submit(function(e) {
+    e.preventDefault();
+    let idOrder = $("#idInputIdOrder").val();
+    var formData = new FormData(this);
+    formData.append("idOrder", idOrder);
+    sendAsyncPostFiles( "saveFile", formData)
+    .then(function(response){
+    	//console.log(response);
+        if ( response.result != 2 ){
+        	$("#modalLoadResultsOrder").modal("hide");
+        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
+        }else{
+        	$("#modalLoadResultsOrder").modal("hide");
+        	window.location.reload();
+        }
+    })
+    .catch(function(response){
+        $("#modalLoadResultsOrder").modal("hide");
+        alert(response.message);
+        //console.log(response);
+    })
+});
+
 function cargarHistoriaClinica(idMascota){
 	let response = sendPost("getHistoriaClinicaMascota", {lastId: lastId, idMascota: idMascota });
 	if(response.result == 2){

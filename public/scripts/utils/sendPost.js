@@ -38,3 +38,24 @@ function sendAsyncPost(nameFunction, parameters){
 		});
 	});
 }
+
+function sendAsyncPostFiles(nombreFuncion, formData){ //fromData es un new FormData(this)
+	return new Promise( function(resolve, reject){
+		 $.ajax({
+	        url: getSiteURL() + nombreFuncion,
+	        type: 'POST',
+	        data: formData,
+	        success: function (response) {
+	            response = response.trim();
+				var response = jQuery.parseJSON(response);
+				resolve(response);
+	        },
+	        error: function (response) {
+				reject(response.status, response.statusText);
+			},
+	        cache: false,
+	        contentType: false,
+	        processData: false
+	    });
+	});
+}
