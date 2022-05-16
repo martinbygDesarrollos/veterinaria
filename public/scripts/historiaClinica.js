@@ -1,26 +1,35 @@
 let lastId = 0;
+var idLastHistoriaClinica = null;
 
 $("#formConfirmFileHistory").submit(function(e) {
     e.preventDefault();
-    let idOrder = $("#idInputIdOrder").val();
-    var formData = new FormData(this);
-    formData.append("idOrder", idOrder);
-    sendAsyncPostFiles( "saveFile", formData)
-    .then(function(response){
-    	//console.log(response);
-        if ( response.result != 2 ){
-        	$("#modalLoadResultsOrder").modal("hide");
-        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
-        }else{
-        	$("#modalLoadResultsOrder").modal("hide");
-        	window.location.reload();
-        }
-    })
-    .catch(function(response){
-        $("#modalLoadResultsOrder").modal("hide");
-        alert(response.message);
-        //console.log(response);
-    })
+
+    if ( idLastHistoriaClinica ){
+    	var formData = new FormData(this);
+    	formData.append("category", "historiasclinica");
+    	formData.append("idCategory", idLastHistoriaClinica);
+
+	    sendAsyncPostFiles( "saveFile", formData)
+	    .then(function(response){
+	        if ( response.result != 2 ){
+	        	$("#modalLoadResultsOrder").modal("hide");
+	        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
+	        }else{
+	        	$("#modalLoadResultsOrder").modal("hide");
+	        	window.location.reload();
+	        }
+	    })
+	    .catch(function(response){
+	        $("#modalLoadResultsOrder").modal("hide");
+	        alert(response.message);
+	        //console.log(response);
+	    })
+    }else{
+    	setTimeout(()=>{
+    		console.log("no se ha cargado, se llama al submit nuevamente");
+    		$("#formConfirmFileHistory").trigger("submit");
+    	}, 200);
+    }
 });
 
 function cargarHistoriaClinica(idMascota){
@@ -95,6 +104,7 @@ function openModalHistoria(button){
 }
 
 function crearHistoriaClinica(idMascota){
+	idLastHistoriaClinica = null;
 	let fecha = $('#inputFechaHistoria').val() || null;
 	let motivoConsulta = $('#inputMotivoConsultaHistoria').val() || null;
 	let diagnostico= $('#inputDiagnosticoHistoria').val() || null;
@@ -112,6 +122,7 @@ function crearHistoriaClinica(idMascota){
 			let response = sendPost("agregarHistoriaClinica", data);
 			showReplyMessage(response.result, response.message, "Agregar historia clínica", "modalHistoriaClinica");
 			if(response.result == 2){
+				idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
 				let newHistoria = response.newHistoria;
 				$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria.idHistoriaClinica, newHistoria.fecha, newHistoria.motivoConsulta));
 			}
@@ -158,6 +169,28 @@ function verHistoriaClinica(idHistoria){
 		$("#titleModalView").html("Historia clínica");
 		$('#dateModalView').html("<b>Fecha:</b> " + historia.fecha);
 		$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Diagnóstico: </b>" + historia.diagnostico + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr>");
+
+		if ( historia.archivos ){
+			$("#divFilesTableModalView table tbody").empty();
+			$("#divFilesTableModalView").attr("hidden", true);
+			$("#divFilesTableModalView").attr("disable", true);
+			//divFilesTableModalView
+			for (var i = 0; i < historia.archivos.length; i++) {
+				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><button title="Enviar archivo" class="btn bg-light" onclick="sendWhatsapp()"><i class="fas fa-paper-plane"></i></button></td></tr>';
+
+				$("#divFilesTableModalView table tbody").append(row);
+			}
+
+			$("#divFilesTableModalView").attr("hidden", false);
+			$("#divFilesTableModalView").attr("disable", false);
+		}else{
+			$("#divFilesTableModalView table tbody").empty();
+
+			$("#divFilesTableModalView").attr("hidden", true);
+			$("#divFilesTableModalView").attr("disable", true);
+		}
+
+
 		$('#modalView').modal();
 	}
 }

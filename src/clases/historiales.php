@@ -31,13 +31,13 @@ class historiales{
 				$historia->fecha = fechas::dateToFormatBar($historia->fecha);
 
 			if(is_null($historia->observaciones) ||  strlen($historia->observaciones) < 2)
-				$historia->observaciones = "No especificado";
+				$historia->observaciones = "";
 
 			if(is_null($historia->motivoConsulta) || strlen($historia->motivoConsulta) < 2)
-				$historia->motivoConsulta = "No especificado";
+				$historia->motivoConsulta = "";
 
 			if(is_null($historia->diagnostico) ||  strlen($historia->diagnostico) < 2)
-				$historia->diagnostico = "No especificado";
+				$historia->diagnostico = "";
 
 			$responseQuery->objectResult = $historia;
 		}
@@ -62,6 +62,12 @@ class historiales{
 		$responseQuery = DataBase::sendQuery("SELECT * FROM historiasclinica WHERE idHistoriaClinica = ?", array('i', $idHistoriaClinica), "OBJECT");
 		if($responseQuery->result == 1)
 			$responseQuery->message = "No se encontro una historia clínica con el identificador seleccionado.";
+		else if ($responseQuery->result == 2){
+			$responseQueryFiles = DataBase::sendQuery("SELECT idMedia, nombre FROM media WHERE idCategoria = ?", array('i', $idHistoriaClinica), "LIST");
+			if ( $responseQueryFiles->result == 2 ){
+				$responseQuery->objectResult->archivos = $responseQueryFiles->listResult;
+			}else $responseQuery->objectResult->archivos = null;
+		}
 		return $responseQuery;
 	}
 

@@ -322,5 +322,35 @@ return function (App $app) {
             return json_encode(ctr_usuarios::getCuotasVencidas($lastId, $textToSearch));
         }else return json_encode($responseSession);
     });
+
+    $app->post('/saveFile', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $category = $data['category'];
+            $idCategory = $data['idCategory'];
+            return json_encode(ctr_historiales::saveFile($category, $idCategory));
+        }
+        else return json_encode($responseSession);
+    });
+
+    //descarga el archivo
+    $app->get('/descargar/{id}', function(Request $request, Response $response, $args) {
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $ctr_historiales = new ctr_historiales();
+            $fichero = $ctr_historiales->getFileById( $args['id'] );
+            $content = $response->getBody();
+            $content->write($fichero->objectResult->archivo);
+
+            return $response->withHeader('Content-Type', 'image/png')
+                ->withHeader('Content-Type', 'application/download')
+                ->withHeader('Content-Transfer-Encoding', 'binary')
+                ->withHeader('Content-Disposition', 'inline; filename="' . $fichero->objectResult->nombre . '"')
+                ->withHeader('Expires', '0')
+                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->withHeader('Pragma', 'public');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
+    });
 }
 ?>

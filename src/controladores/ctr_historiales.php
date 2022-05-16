@@ -222,7 +222,46 @@ class ctr_historiales {
 		return $responseListHistorial;
 	}
 
-    //-------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------
+    // FUNCIONES PARA GUARDAR Y DESCARGAR ARCHIVOS
+    // --------------------------------------------------------------
+
+
+    public function saveFile($category, $idCategory){
+
+    	$file = "";
+    	if (is_uploaded_file($_FILES['nameInputFile']['tmp_name']) ) {
+        	$file = file_get_contents($_FILES['nameInputFile']['tmp_name']);
+        }
+        if( $file != "" ){
+        	$fileName = $_FILES['nameInputFile']['name'];
+			$responseQuery = DataBase::sendQuery("INSERT INTO `media` (`categoria`, `idCategoria`, `nombre`, `archivo`) VALUES (?,?,?,?)",
+				array('siss', $category, $idCategory, $fileName, $file),"BOOLE");
+			if($responseQuery->result == 1)
+				$responseQuery->message = "No se pudo guardar el archivo ".$fileName;
+			else if( $responseQuery->result == 2 )
+				$responseQuery->message = "Archivo guardado correctamente";
+			return $responseQuery;
+        }else{
+        	$response->result = 1;
+			$response->message = "No se encontró el archivo a guardar";
+			return $response;
+        }
+
+    }
+
+
+   	public function getFileById($id){
+   		$responseQuery = DataBase::sendQuery("
+			SELECT archivo, nombre FROM media
+			WHERE idMedia = ? ",
+			array('i', $id), "OBJECT");
+		if($responseQuery->result == 1)
+			$responseQuery->message = "No se encontraron datos";
+
+		return $responseQuery;
+   	}
+
 }
 
 ?>

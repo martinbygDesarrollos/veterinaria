@@ -72,3 +72,9 @@ function getDateForShow(){
 
 	return `${day}/${month}/${year}`;
 }
+
+function downloadFile( id ){
+
+	let url = getSiteURL() + 'descargar/' + id;
+  	window.location.href = url;
+}
