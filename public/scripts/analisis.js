@@ -1,3 +1,41 @@
+//variables
+var idLastAnalisis = null;
+
+//funciones sin nombre
+$("#formConfirmFileAnalisisMasc").submit(function(e) {
+    e.preventDefault();
+    console.log("formulario archivos en nuevo analisis");
+    if ( idLastAnalisis ){
+    	var formData = new FormData(this);
+    	console.log(formData);
+
+    	formData.append("category", "analisismascota");
+    	formData.append("idCategory", idLastAnalisis);
+
+	    sendAsyncPostFiles( "saveFile", formData)
+	    .then(function(response){
+	        if ( response.result != 2 ){
+	        	$("#modalLoadResultsOrder").modal("hide");
+	        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
+	        }else{
+	        	$("#modalLoadResultsOrder").modal("hide");
+	        	window.location.reload();
+	        }
+	    })
+	    .catch(function(response){
+	        $("#modalLoadResultsOrder").modal("hide");
+	        alert(response.message);
+	        //console.log(response);
+	    })
+    }else{
+    	setTimeout(()=>{
+    		console.log("no se ha cargado, se llama al submit nuevamente");
+    		$("#formConfirmFileAnalisisMasc").trigger("submit");
+    	}, 200);
+    }
+});
+
+//funciones con nombre
 function openModalAnalaisis(button){
 	if(button.id == "NUEVOANALISIS"){
 		$('#titleModalAnalisis').html("Nuevo análisis");
@@ -36,6 +74,8 @@ function clearComponents(){
 
 
 function crearAnalisis(idMascota){
+	idLastAnalisis = null;
+
 	let nombre = $('#inputNombreAnalisis').val() || null;
 	let fecha = $('#inputFechaAnalisis').val() || null;
 	let detalle = $('#inputDetalleAnalisis').val() || null;
@@ -43,22 +83,21 @@ function crearAnalisis(idMascota){
 
 	if(nombre){
 		if(fecha){
-			if(detalle){
-				let data = {
-					idMascota: idMascota,
-					nombre: nombre,
-					fecha: fecha,
-					detalle: detalle,
-					resultado: resultado
-				};
+			let data = {
+				idMascota: idMascota,
+				nombre: nombre,
+				fecha: fecha,
+				detalle: detalle,
+				resultado: resultado
+			};
 
-				let response = sendPost("insertAnalisis", data);
-				showReplyMessage(response.result, response.message, "Agregar análisis", "modalAnalisis");
-				if(response.result == 2){
-					let analisis = response.newAnalisis;
-					$('#tbodyAnalisis').prepend(createRowAnalsis(analisis.idAnalisis, analisis.nombre, analisis.fecha,analisis.detalle, analisis.resultado));
-				}
-			}else showReplyMessage(1, "Debe ingresar el detalle del análisis que desea ingresar", "Detalle requerido", "modalAnalisis");
+			let response = sendPost("insertAnalisis", data);
+			showReplyMessage(response.result, response.message, "Agregar análisis", "modalAnalisis");
+			if(response.result == 2){
+				idLastAnalisis = response.newAnalisis.idAnalisis;
+				let analisis = response.newAnalisis;
+				$('#tbodyAnalisis').prepend(createRowAnalsis(analisis.idAnalisis, analisis.nombre, analisis.fecha,analisis.detalle, analisis.resultado));
+			}
 		}else showReplyMessage(1, "Debe ingresar la fecha del análisis que desea ingresar", "Fecha requerida", "modalAnalisis");
 	}else showReplyMessage(1, "Debe ingresar el nombre del análisis que desea ingresar", "Nombre requerido", "modalAnalisis");
 }
@@ -113,7 +152,27 @@ function verAnalisis(idAnalisis){
 		let analisis = response.objectResult;
 		$("#titleModalView").html("Análisis");
 		$('#dateModalView').html("<b>Diagnositico:</b> " + analisis.fecha);
-		$("#textModalView").html("<b>Nombre:</b> " + analisis.nombre + "<hr><b>Detalle: </b>" + analisis.detalle + "<hr><b>Resultado: </b>" + analisis.resultado + "<hr>");
+		$("#textModalView").html("<b>Nombre:</b> " + analisis.nombre + "<hr><b>Detalle: </b>" + analisis.detalle + "<hr>");
+
+		if ( analisis.archivos ){
+			$("#divFilesTableModalView table tbody").empty();
+			$("#divFilesTableModalView").attr("hidden", true);
+			$("#divFilesTableModalView").attr("disable", true);
+
+			for (var i = 0; i < analisis.archivos.length; i++) {
+				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><a href="https://wa.me/" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a></td></tr>';
+
+				$("#divFilesTableModalView table tbody").append(row);
+			}
+
+			$("#divFilesTableModalView").attr("hidden", false);
+			$("#divFilesTableModalView").attr("disable", false);
+		}else{
+			$("#divFilesTableModalView table tbody").empty();
+
+			$("#divFilesTableModalView").attr("hidden", true);
+			$("#divFilesTableModalView").attr("disable", true);
+		}
 		$('#modalView').modal();
 	}
 }

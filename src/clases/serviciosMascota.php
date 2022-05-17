@@ -25,8 +25,16 @@ class serviciosMascota {
     public function getAnalisisToShow($idAnalisis){
         $responseQuery = serviciosMascota::getAnalisis($idAnalisis);
         if($responseQuery->result == 2){
+
+            $responseQueryFiles = DataBase::sendQuery("SELECT idMedia, nombre FROM media WHERE categoria = ? AND idCategoria = ?", array('si', "analisismascota", $idAnalisis), "LIST");
+            if ( $responseQueryFiles->result == 2 ){
+                $responseQuery->objectResult->archivos = $responseQueryFiles->listResult;
+            }else $responseQuery->objectResult->archivos = null;
+
+
+
             $analisis = $responseQuery->objectResult;
-            $noData = "No especificado";
+            $noData = "";
             if(is_null($analisis->detalle) || strlen($analisis->detalle) < 2)
                 $analisis->detalle = $noData;
 
@@ -56,9 +64,9 @@ class serviciosMascota {
     }
 
     public function getAnalisisMascota($idMascota){
-        $responseQuery = DataBase::sendQuery("SELECT * FROM analisismascota WHERE idMascota = ?", array('i', $idMascota), "LIST");
+        $responseQuery = DataBase::sendQuery("SELECT * FROM analisismascota WHERE idMascota = ? ORDER BY idAnalisis DESC LIMIT 14", array('i', $idMascota), "LIST");
         if($responseQuery->result == 2){
-            $noData = "No especificado";
+            $noData = "";
             $arrayResult = array();
             foreach ($responseQuery->listResult as $key => $row) {
 
@@ -108,7 +116,7 @@ class serviciosMascota {
             $arrayResult = array();
             foreach ($responseQuery->listResult as $key => $row) {
                 if(is_null($row['raza']))
-                    $row['raza'] = "No especificada";
+                    $row['raza'] = "";
                 $row['fechaProximaDosis'] = fechas::dateToFormatBar($row['fechaProximaDosis']);
                 $row['intervaloDosis'] = serviciosMascota::getInterval($row['intervaloDosis']);
 
@@ -126,7 +134,7 @@ class serviciosMascota {
     public function getVacunasMascotas($idMascota){
         $responseQuery = DataBase::sendQuery("SELECT * FROM vacunasmascota WHERE idMascota = ? ORDER BY idVacunaMascota DESC", array('i', $idMascota), "LIST");
         if($responseQuery->result == 2){
-            $noData = "No especificada";
+            $noData = "";
             $arrayResult = array();
             foreach ($responseQuery->listResult as $key => $row) {
                 $row = serviciosMascota::vacunaToFormat($row);
@@ -139,7 +147,7 @@ class serviciosMascota {
     }
 
     public function vacunaToFormat($vacuna){
-        $noData = "No especificada";
+        $noData = "";
 
         if(!is_null($vacuna['fechaPrimerDosis']) && strlen($vacuna['fechaPrimerDosis']) == 8)
             $vacuna['fechaPrimerDosis'] = fechas::dateToFormatBar($vacuna['fechaPrimerDosis']);
@@ -248,7 +256,7 @@ class serviciosMascota {
     }
 
     public function formatVacunaObject($vacuna){
-        $noData = "No especificada";
+        $noData = "";
 
         if(strlen($vacuna->fechaPrimerDosis) == 8)
             $vacuna->fechaPrimerDosis = fechas::dateToFormatBar($vacuna->fechaPrimerDosis);
@@ -331,7 +339,7 @@ class serviciosMascota {
     public function getEnfermedadesMascota($idMascota){
         $responseQuery = DataBase::sendQuery("SELECT * FROM enfermedadesmascota WHERE idMascota = ? ORDER BY idEnfermedad DESC", array('i', $idMascota), "LIST");
         if($responseQuery->result == 2){
-            $noData = "No especificado.";
+            $noData = "";
             $arrayResult = array();
             foreach ($responseQuery->listResult as $key => $row) {
                 if(!is_null($row['fechaDiagnostico']) && strlen($row['fechaDiagnostico']) == 8)
@@ -356,7 +364,7 @@ class serviciosMascota {
             $responseQuery->objectResult->fechaDiagnostico = fechas::dateToFormatBar($responseQuery->objectResult->fechaDiagnostico);
 
             if(is_null($responseQuery->objectResult->observaciones))
-                $responseQuery->objectResult->observaciones = "No especificado";
+                $responseQuery->objectResult->observaciones = "";
         }else if($responseQuery->result == 1) $responseQuery->message = "No se encontro una enfermedad con el identificador seleccionado.";
 
         return $responseQuery;

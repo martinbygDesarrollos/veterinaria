@@ -216,7 +216,6 @@
 									<tr>
 										<td class="text-center" scope="col">Fecha</td>
 										<td class="text-center" scope="col">Nombre</td>
-										<td class="text-center" scope="col">Detalle</td>
 										<td class="text-center" scope="col">Acción</td>
 									</tr>
 								</thead>
@@ -226,7 +225,6 @@
 									<tr id="trA{{ analisis.idAnalisis }}">
 										<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.fecha }}</td>
 										<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.nombre }}</td>
-										<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.detalle }}</td>
 										<td class="text-center" style="min-width: 6 em;" scope="col">
 											<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" name="{{ analisis.idAnalisis }}" onclick="openModalAnalaisis(this)"><i class="fas fa-edit text-dark"></i></button>
 											<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" onclick="openModalBorrarAnalisis('{{ analisis.idAnalisis }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
@@ -396,7 +394,7 @@
 					<div class="row">
 						<div class="col">
 							<div class="form-group">
-								<input type="file" class="form-control-file" id="idInputFileResult" name="nameInputFile" value=""  accept="video/*, image/*">
+								<input type="file" class="form-control-file" id="idInputFileResult" name="nameInputFile[]" value=""  accept="video/*, image/*" multiple>
 							</div>
 						</div>
 					</div>
@@ -438,23 +436,25 @@
 					<div class="col">
 						<div class="form-group">
 							<label for="inputObservacionesEnfermedad">Detalle</label>
-							<textarea id="inputDetalleAnalisis" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+							<textarea id="inputDetalleAnalisis" class="form-control shadow-sm rounded-0" maxlength="200" rows="1" style="resize: none;"></textarea>
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col">
-						<div class="form-group">
-							<label for="inputObservacionesEnfermedad">Resultado</label>
-							<textarea id="inputResultadoAnalisis" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+				<hr>
+				<form method="post" action="" id="formConfirmFileAnalisisMasc">
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<input type="file" class="form-control-file" id="idInputFileAnalisisMasc" name="nameInputFileAnalisisMasc[]" value=""  accept=".pdf" multiple>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="modal-footer d-flex justify-content-between">
-				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button type="button" class="btn btn-success shadow-sm" id="buttonConfirmModalAnalisis">Confirmar</button>
-			</div>
+				<div class="modal-footer d-flex justify-content-between">
+					<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+					<button type="submit" class="btn btn-success shadow-sm" id="buttonConfirmModalAnalisis">Confirmar</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
