@@ -228,26 +228,37 @@ class ctr_historiales {
 
 
     public function saveFile($category, $idCategory){
-
+    	$response = new \stdClass();
+    	$arrayErrors = array();
     	$file = "";
-    	if (is_uploaded_file($_FILES['nameInputFile']['tmp_name']) ) {
-        	$file = file_get_contents($_FILES['nameInputFile']['tmp_name']);
-        }
-        if( $file != "" ){
-        	$fileName = $_FILES['nameInputFile']['name'];
-			$responseQuery = DataBase::sendQuery("INSERT INTO `media` (`categoria`, `idCategoria`, `nombre`, `archivo`) VALUES (?,?,?,?)",
-				array('siss', $category, $idCategory, $fileName, $file),"BOOLE");
-			if($responseQuery->result == 1)
-				$responseQuery->message = "No se pudo guardar el archivo ".$fileName;
-			else if( $responseQuery->result == 2 )
-				$responseQuery->message = "Archivo guardado correctamente";
-			return $responseQuery;
-        }else{
-        	$response->result = 1;
-			$response->message = "No se encontró el archivo a guardar";
-			return $response;
-        }
+    	foreach ($_FILES as $fileData) {
+    		for ($i=0; $i < count($fileData['name']); $i++) {
 
+		    	if (is_uploaded_file($fileData['tmp_name'][$i]) ) {
+		        	$file = file_get_contents($fileData['tmp_name'][$i]);
+		        }
+		        if( $file != "" ){
+		        	$fileName = $fileData['name'][$i];
+					$responseQuery = DataBase::sendQuery("INSERT INTO `media` (`categoria`, `idCategoria`, `nombre`, `archivo`) VALUES (?,?,?,?)",
+						array('siss', $category, $idCategory, $fileName, $file),"BOOLE");
+
+					if($responseQuery->result == 1)
+						array_push($arrayErrors,"No se pudo guardar el archivo ".$fileName);
+		        }else
+					array_push($arrayErrors,"No se encontró el archivo a guardar ".$fileData['name'][$i]);
+    		}
+		}
+
+
+		if( count($arrayErrors) > 0 ){
+			$response->result = 1;
+			$response->message = $arrayErrors;
+		}else{
+			$response->result = 2;
+			$response->message = "Archivos almacenados correctamente";
+		}
+
+		return $response;
     }
 
 
