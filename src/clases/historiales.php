@@ -63,7 +63,7 @@ class historiales{
 		if($responseQuery->result == 1)
 			$responseQuery->message = "No se encontro una historia clínica con el identificador seleccionado.";
 		else if ($responseQuery->result == 2){
-			$responseQueryFiles = DataBase::sendQuery("SELECT idMedia, nombre FROM media WHERE idCategoria = ?", array('i', $idHistoriaClinica), "LIST");
+			$responseQueryFiles = DataBase::sendQuery("SELECT idMedia, nombre FROM media WHERE categoria = ? AND idCategoria = ?", array('si', "historiasclinica", $idHistoriaClinica), "LIST");
 			if ( $responseQueryFiles->result == 2 ){
 				$responseQuery->objectResult->archivos = $responseQueryFiles->listResult;
 			}else $responseQuery->objectResult->archivos = null;
