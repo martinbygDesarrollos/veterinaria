@@ -309,6 +309,11 @@ return function (App $app) {
         return json_encode(ctr_mascotas::getVacunasVencidas($dateVencimiento));
     });
 
+    $app->post('/getSocioPorMascota', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $idMascota = $data['idMascota'];
+        return json_encode(ctr_mascotas::getMascotaWithSocio($idMascota));
+    });
 	//------------------------------------------------------------------------------------------
 
 }
