@@ -291,6 +291,7 @@ class socios{
 
 	//funcion que devuelve true o false si el socio es deudor o no (debe mas de tres meses)
 	public function socioDeudor($fechaUltimaCuota){
+		$response = new \stdClass();
 		$deudorFecha = "";
 		if(!is_null($fechaUltimaCuota) && strlen($fechaUltimaCuota) == 6)
 			$fechaUltimaCuota = fechas::getYearMonthFormatBar($fechaUltimaCuota);
