@@ -88,10 +88,10 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar mascota", null, $idMascota, "Se actualizó la información de la mascota.");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "La mascota fue modificada correctamente y se generó un registro en el historial de usuario.";
+					$response->message = "La mascota fue modificada correctamente.";
 				}else{
 					$response->result = 2;
-					$response->message = "La mascota fue modificada correctamente pero no se generó un registro en el historial de usuario por un error interno.";
+					$response->message = "La mascota fue modificada correctamente.";
 				}
 
 				$responseGetUpdatedMascota = mascotas::getMascotaToShow($idMascota);
@@ -395,10 +395,10 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar vacuna", null, $responseGetVacunaMascota->objectResult->idMascota, "Se borro la vacuna de nombre " . $responseGetVacunaMascota->objectResult->nombreVacuna . " la cual llevaba " . $responseGetVacunaMascota->objectResult->numDosis . "Dosis");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "La vacuna fue borrada correctamente y se generó un registro en el historial de usuario.";
+					$response->message = "La vacuna fue borrada correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = "La vacuna fue borrada correctamente pero un error interno no permitió crear un registro en el historial de usuario.";
+					$response->message = "La vacuna fue borrada correctamente.";
 				}
 			}else{
 				$response->result = 0;
@@ -491,10 +491,10 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo Análisis ingresado", null, $idMascota, "La mascota de nombre " . $responseGetMascota->objectResult->nombre . " se le fue ingresado un análisis de " . $nombre . ".");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "El análisis fue ingresado correctamente y se creo un registro en el historial del usuario.";
+					$response->message = "El análisis fue ingresado correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = "El análisis fue ingresado correctamente pero no se registro en el historial del usuario la operación.";
+					$response->message = "El análisis fue ingresado correctamente.";
 				}
 
 				$responseGetInserted = serviciosMascota::getAnalisisToShow($responseInsertAnalisis->id);
@@ -518,10 +518,10 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar Análisis", null, $responseGetAnalisis->objectResult->idMascota, "El análisis " . $responseGetAnalisis->objectResult->nombre ." fue modificado.");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "El análisis fue modificado correctamente y se creo un registro en el historial del usuario.";
+					$response->message = "El análisis fue modificado correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = "El análisis fue modificado correctamente pero no se registro en el historial del usuario la operación.";
+					$response->message = "El análisis fue modificado correctamente.";
 				}
 
 				$responseGetInserted = serviciosMascota::getAnalisisToShow($idAnalisis);
@@ -543,10 +543,10 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar análisis", null, $responseGetAnalisis->objectResult->idMascota, "Se borró el análisis " . $responseGetAnalisis->objectResult->nombre . ".");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "El análisis fue borrado correctamente y se generó un registro en el historial de usuario.";
+					$response->message = "El análisis fue borrado correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = "El análisis fue borrado correctamente pero no se pudo generar un registro en el historial de usuario por un error interno.";
+					$response->message = "El análisis fue borrado correctamente.";
 				}
 			}else {
 				$response->result = 0;
@@ -584,10 +584,10 @@ class ctr_mascotas {
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Enfermedad actualizada", null, $responseGetMascota->objectResult->idMascota, "La mascota de nombre " . $responseGetMascota->objectResult->nombre . " modificó la información de la enfermedad " . $nombre . ".");
 					if($responseInsertHistorial->result == 2){
 						$response->result = 2;
-						$response->message = "La enfermedad fue modificada correctamente y se generó un registro en el historial de usuario.";
+						$response->message = "La enfermedad fue modificada correctamente.";
 					}else{
 						$response->result = 1;
-						$response->message = "La enfermedad fue modificada correctamente pero no se pudo generar un registro en el historial de usuario.";
+						$response->message = "La enfermedad fue modificada correctamente.";
 					}
 
 					$repsonseGetUpdatedEnfermedad = serviciosMascota::getEnfermedadMascota($idEnfermedad);
@@ -614,10 +614,10 @@ class ctr_mascotas {
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar enfermedad", null, $responseGetEnfermedad->objectResult->idMascota, "Se borró la enfermedad " . $responseGetEnfermedad->objectResult->nombreEnfermedad . ".");
 					if($responseInsertHistorial->result == 2){
 						$response->result = 2;
-						$response->message = "La enfermedad fue borrada correctamente y se generó un registro en el historial de usuario.";
+						$response->message = "La enfermedad fue borrada correctamente.";
 					}else{
 						$response->result = 1;
-						$response->message = "La enfermedad fue borrada correctamente pero no se pudo generar un registro en el historial de usuario por un error interno.";
+						$response->message = "La enfermedad fue borrada correctamente.";
 					}
 				}else return $responseDeleteEnfermedad;
 			}else return $responseGetMascota;

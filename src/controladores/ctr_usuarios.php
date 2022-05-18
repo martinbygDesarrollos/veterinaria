@@ -502,10 +502,10 @@ class ctr_usuarios{
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualizar estados de socio", null, null, "Se actualizaron los estados de todos los socios.");
 					if($responseInsertHistorial->result == 2){
 						$response->result = 2;
-						$response->message = "Los estados de los socios fueron actualizados y se generó un registro en el historial de usuario.";
+						$response->message = "Los estados de los socios fueron actualizados.";
 					}else{
 						$response->result = 0;
-						$response->message = "Los estados de los socios fueron actualizados, pero un error interno no permitió generar un registro en el historial de usuario.";
+						$response->message = "Los estados de los socios fueron actualizados.";
 					}
 				}else return $responseDesactivarMascotas;
 			}else return $responseSetInactive;
@@ -854,10 +854,10 @@ class ctr_usuarios{
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Notificar falta de pago",$idSocio, null, "Se notificó al socio a traves de un correo electrónico sobre su falta de pago.");
 					if($responseInsertHistorial->result == 2){
 						$response->result = 2;
-						$response->message = "El socio fue notificado por su falta de pago. se registro en el historial de usuario el envió.";
+						$response->message = "El socio fue notificado.";
 					}else{
 						$response->result = 1;
-						$response->message = "El socio fue notificado por su falta de pago, pero la operación no se registro en el historial de usuario.";
+						$response->message = "El socio fue notificado.";
 					}
 				}else{
 					$response->result = 0;
@@ -887,14 +887,14 @@ class ctr_usuarios{
 							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Notificar vacunas vencidas", $responseGetSocioMascota->objectResult->idSocio, $idMascota, "Se notificó los vencimientos de las vacunas de la mascota seleccionada al socio.");
 							if($responseInsertHistorial->result == 2){
 								$response->result = 2;
-								$response->message = "Se notificó al socio por el vencimiento de vacunas de su mascota y se generó un registro en el historial de usuario.";
+								$response->message = "Se notificó al socio.";
 							}else{
 								$response->result = 1;
-								$response->message = "Se notificó al socio por el vencimiento de vacuans de su mascota, pero un error no permitió registrarlo en el historial de usaurio.";
+								$response->message = "Se notificó al socio.";
 							}
 						}else{
 							$response->result = 0;
-							$response->message = "Ocurrió un error y no se pudo notificar al socio por el vencimiento de vacunas.";
+							$response->message = "Ocurrió un error, no se pudo notificar al socio.";
 						}
 					}else return $responseGetVacunasVencidas;
 				}else{
