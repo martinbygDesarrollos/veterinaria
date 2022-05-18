@@ -52,7 +52,7 @@ function createRow(obj){
 	if ( mascotas.length > 0 ){
 		for (var i = 0; i < mascotas.length; i++) {
 			mascotaestado = "Muerto"
-			if ( mascotas[i].estado == 1 )
+			if ( !mascotas[i].fechaFallecimiento )
 				mascotaestado = "Vivo"
 
 			selectMascotas += '<option >' + mascotas[i].nombre + ' - '+ mascotaestado +'</option>'
