@@ -106,7 +106,8 @@ function modificarAnalisis(idAnalisis){
 	let nombre = $('#inputNombreAnalisis').val() || null;
 	let fecha = $('#inputFechaAnalisis').val() || null;
 	let detalle = $('#inputDetalleAnalisis').val() || null;
-	let resultado = $('#inputResultadoAnalisis').val() || null;
+	//let resultado = $('#inputResultadoAnalisis').val() || null;
+	let resultado = null;
 
 	if(nombre){
 		if(fecha){
@@ -135,7 +136,7 @@ function createRowAnalsis(idAnalisis, nombre, fecha, detalle, resultado){
 	let row = "<tr id='trA"+ idAnalisis +"'>";
 	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ fecha +"</td>";
 	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ nombre +"</td>";
-	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ detalle +"</td>";
+	//row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ detalle +"</td>";
 	row += "<td class='text-center' style='min-width: 6 em;'>";
 	row += "<button class='btn btn-link' name='" + idAnalisis + "' onclick='openModalAnalaisis(this)'><i class='fas fa-edit text-dark'></i></button>";
 	row += "<button class='btn btn-link' onclick='openModalBorrarAnalisis("+ idAnalisis + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
@@ -160,7 +161,7 @@ function verAnalisis(idAnalisis){
 			$("#divFilesTableModalView").attr("disable", true);
 
 			for (var i = 0; i < analisis.archivos.length; i++) {
-				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><a href="https://wa.me/" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a></td></tr>';
+				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><button title="Enviar archivo" class="btn bg-light" disabled><i class="fas fa-paper-plane"></i></button><!--a href="https://wa.me/" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a--></td></tr>';
 
 				$("#divFilesTableModalView table tbody").append(row);
 			}

@@ -160,6 +160,7 @@ function clearModalHistoria(){
 	$('#inputMotivoConsultaHistoria').val("");
 	$('#inputDiagnosticoHistoria').val("");
 	$('#inputObservacionesHistoria').val("");
+	$("#idInputFileResult").val('');
 }
 
 function verHistoriaClinica(idHistoria){
@@ -176,7 +177,7 @@ function verHistoriaClinica(idHistoria){
 			$("#divFilesTableModalView").attr("disable", true);
 			//divFilesTableModalView
 			for (var i = 0; i < historia.archivos.length; i++) {
-				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><button title="Enviar archivo" class="btn bg-light" onclick="sendWhatsapp()"><i class="fas fa-paper-plane"></i></button></td></tr>';
+				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><button title="Enviar archivo" class="btn bg-light" disabled ><i class="fas fa-paper-plane"></i></button><!--a href="https://wa.me/" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a--></td></tr>';
 
 				$("#divFilesTableModalView table tbody").append(row);
 			}
