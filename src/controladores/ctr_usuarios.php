@@ -184,10 +184,10 @@ class ctr_usuarios{
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue borrado del sistema.");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 2;
-							$response->message = "El usuario fue borrado del sistema y se generó un registro en el historial.";
+							$response->message = "El usuario fue borrado del sistema.";
 						}else{
 							$response->result = 1;
-							$response->message = "El usaurio fue borrado del sistema pero un error no permitió crear un registro en el historial.";
+							$response->message = "El usaurio fue borrado del sistema.";
 						}
 					}else return $responseDeleteUser;
 				}else{
@@ -212,10 +212,10 @@ class ctr_usuarios{
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue borrado del sistema.");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 2;
-							$response->message = "La contraseña del usuario fue borrada, la nueva contraseña se fijará al inciar sesión. Se generó un registro en el historial.";
+							$response->message = "Contraseña borrada, la nueva contraseña se fijará al inciar sesión.";
 						}else{
 							$response->result = 1;
-							$response->message = "La contraseña del usuario fue borrada, la nueva contraseña se fijará al inciar sesión. Un error no permitió crear un registro en el historial.";
+							$response->message = "Contraseña borrada, la nueva contraseña se fijará al inciar sesión.";
 						}
 					}else return $responseCleanPassword;
 				}else{
@@ -292,10 +292,10 @@ class ctr_usuarios{
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Usuario agregado", null ,null, "Se agrego el usuario " . $name .  " con email " .  $email . " por el administrador.");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "El usuario fue agregado correctamente y se generó un registro en el historial.";
+					$response->message = "El usuario fue agregado correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = "El usuario fue agregado correctamente pero no se pudo generar un registro en el historial.";
+					$response->message = "El usuario fue agregado correctamente.";
 				}
 			}else return $responseInsertNewUser;
 		}else{
@@ -427,10 +427,10 @@ class ctr_usuarios{
 							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Desvincular mascota", $responseGetMascotaSocio->objectResult->idSocio, $idMascota, "Se desvinculo la mascota y se actualizó la cuota del socio.");
 							if($responseInsertHistorial->result == 2){
 								$response->result = 2;
-								$response->message = "Se desvinculó la mascota " . $responseGetMascota->objectResult->nombre . " del socio seleccionado y su cuota fue actualizada. Se generó un registro en el historial.";
+								$response->message = "Se desvinculó la mascota " . $responseGetMascota->objectResult->nombre . " del socio seleccionado y su cuota fue actualizada.";
 							}else{
 								$response->result = 1;
-								$response->message = "Se desvinculó la mascota " . $responseGetMascota->objectResult->nombre . " del socio seleccionado y su cuota fue actualizada. Por un error interno no se generó un registro en el historial de usuario.";
+								$response->message = "Se desvinculó la mascota " . $responseGetMascota->objectResult->nombre . " del socio seleccionado y su cuota fue actualizada.";
 							}
 							$response->newQuota = number_format($responseCalcultateQuota->quota, 2, ",", ".");
 						}else return $responseUpdateQuota;
@@ -462,10 +462,10 @@ class ctr_usuarios{
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Vincular mascota", $idSocio, $idMascota, "Se vinculó la mascota ". $responseGetMascota->objectResult->nombre ." al socio seleccionado.");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 2;
-							$response->message = "Se vinculó la mascota " . $responseGetMascota->objectResult->nombre . " al socio seleccionado ". $resultQuota .", se creo un registro en el historial de usuario.";
+							$response->message = "Se vinculó la mascota " . $responseGetMascota->objectResult->nombre . " al socio seleccionado ". $resultQuota .".";
 						}else{
 							$response->result = 1;
-							$response->message = "Se vinculó la mascota " . $responseGetMascota->objectResult->nombre . " al socio seleccionado ". $resultQuota .", por un error interno no se pudo generar un registro en el historial de usuario.";
+							$response->message = "Se vinculó la mascota " . $responseGetMascota->objectResult->nombre . " al socio seleccionado ". $resultQuota .".";
 						}
 						$responseGetMascotaResult = ctr_mascotas::getMascotaVinculadaToShow($idMascota);
 						if($responseGetMascotaResult->result == 2)
@@ -542,19 +542,19 @@ class ctr_usuarios{
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron todas las cuotas de los socios.");
 					if($responseInsertHistorial->result ==  2){
 						$response->result = 2;
-						$response->message = "Las cuotas de los socios fueron actualizadas correctamente, se generó un registro en el historial de usuario.";
+						$response->message = "Cuotas actualizadas correctamente";
 					}else{
 						$response->result = 2;
-						$response->message = "Las cuotas de los socios fueron actualizadas correctamente, pero un error no permitió crear un registro en el historial de usuario.";
+						$response->message = "Cuotas actualizadas correctamente.";
 					}
 				}else if(sizeof($responseGetSociosActives->listResult) < sizeof($actualizados)){
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actualización de cuotas", null, null, "Se actualizaron las cuotas de los socios, para los socios " . implode(",", $noActualizados) . " las cuotas no fueron actualizadas por un error.");
 					if($responseInsertHistorial->result ==  2){
 						$response->result = 1;
-						$response->message = "Las cuotas de los socios fueron actualizadas, por algun error " . sizeof($noActualizados) . " socios no actualizaron su cuota. se generó un registro en el historial de usuario.";
+						$response->message = "Las cuotas de los socios fueron actualizadas, por algun error " . sizeof($noActualizados) . " socios no actualizaron su cuota.";
 					}else{
 						$response->result = 1;
-						$response->message = "No todas las cuotas de los socios fueron actualizados por un error, " . sizeof($noActualizados) . " socios no actualizaron su cuota. No se generó un registro en el historial de usuario.";
+						$response->message = "No todas las cuotas de los socios fueron actualizados por un error, " . sizeof($noActualizados) . " socios no actualizaron su cuota.";
 					}
 				}
 			}else return $responseGetSociosActives;
@@ -577,10 +577,10 @@ class ctr_usuarios{
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Actulizar cuota", $idSocio, null, "Se actualizo la cuota del socio seleccionado.");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "La cuota del socio fue actualizada correctamente y se creo un registro en el historial de usuario.";
+					$response->message = "La cuota del socio fue actualizada correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = "La cuota del socio fue actualizada correctamente, pero un error interno no permitió crear un registro en el historial de usaurio.";
+					$response->message = "La cuota del socio fue actualizada correctamente.";
 				}
 				$response->newQuota = number_format($responseCalcultateQuota->quota, 2, ",", ".");
 			}else{
@@ -648,10 +648,10 @@ class ctr_usuarios{
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", $responseInsertSocio->id, null, "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
 					if($responseInsertHistorial->result == 2){
 						$response->result = 2;
-						$response->message = "El nuevo socio fue creado correctamente y se creo un registro en el historial.";
+						$response->message = "Socio creado correctamente.";
 					}else{
 						$response->result = 1;
-						$response->message = "El nuevo socio fue creado correctamente, pero no se generó el registro en su historial de usuario por un error interno.";
+						$response->message = "Socio creado correctamente.";
 					}
 					$response->newIdSocio = $responseInsertSocio->id;
 				}else return $responseInsertSocio;
@@ -691,13 +691,13 @@ class ctr_usuarios{
 							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", $idSocio, null, "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 							if($responseHistorial->result == 2){
 								$response->result = 2;
-								$response->message = "Se actualizó la información del socio y se generó un registro en el historial de su usuario.";
+								$response->message = "Se actualizó la información del socio.";
 								$responseGetSocioUpdated = ctr_usuarios::getSocioToShow($idSocio);
 								if($responseGetSocioUpdated->result == 2)
 									$response->newSocio = $responseGetSocioUpdated->objectResult;
 							}else{
 								$response->result = 1;
-								$response->message = "Se actualizó la información del socio, pero no se generó el registro en su historial de usuario por un error interno.";
+								$response->message = "Se actualizó la información del socio.";
 							}
 						}else return $responseUpdateSocio;
 					}else return $responseGetQuota;
@@ -933,10 +933,10 @@ class ctr_usuarios{
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario($nuevoTextEstado . " socio", $idSocio, null, "Se cambio el estadod el socio y el de sus mascotas en caso de tenerlas.");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = $nuevoTextEstado . " correctamente y se creo un registro en el historial de usuario.";
+					$response->message = $nuevoTextEstado . " correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = $nuevoTextEstado . " correctamente pero un error interno no permitio crear un registro en el historial de usuario.";
+					$response->message = $nuevoTextEstado . " correctamente.";
 				}
 				$response->newState = $nuevoEstado;
 			}else return $responseUpdateStateSocio;
