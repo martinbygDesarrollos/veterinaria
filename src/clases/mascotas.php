@@ -177,6 +177,9 @@ class mascotas{
 		if($responseQuery->result == 2){
 			if(!is_null($responseQuery->objectResult->fechaNacimiento))
 				$responseQuery->objectResult->fechaNacimiento = fechas::dateToFormatHTML($responseQuery->objectResult->fechaNacimiento);
+
+			if(!is_null($responseQuery->objectResult->fechaFallecimiento))
+				$responseQuery->objectResult->fechaFallecimiento = fechas::dateToFormatHTML($responseQuery->objectResult->fechaFallecimiento);
 		}
 
 		return $responseQuery;
@@ -242,10 +245,9 @@ class mascotas{
 		return DataBase::sendQuery("INSERT INTO mascotas(nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('sssisiiisss', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones), "BOOLE");
 	}
 
-	public function updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
-		return DataBase::sendQuery("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, pelo = ?, chip = ? , observaciones = ? WHERE idMascota = ?", array('sssisiisssi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones, $idMascota), "BOOLE");
+	public function updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones){
+	return DataBase::sendQuery("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, fechaFallecimiento = ?, pelo = ?, chip = ? , observaciones = ? WHERE idMascota = ?", array('sssisiiisssi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones, $idMascota), "BOOLE");
 	}
-
 	public function vincularMascotaSocio($idSocio, $idMascota, $fechaCambio){
 		return DataBase::sendQuery("INSERT INTO mascotasocio (idSocio, idMascota, fechaCambio) VALUES (?,?,?)", array('iii', $idSocio, $idMascota, $fechaCambio), "BOOLE");
 	}

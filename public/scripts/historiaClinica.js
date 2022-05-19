@@ -215,6 +215,7 @@ function modificarMascota(idMascota){
 	let pedigree = $('#inputPedigreeMascota').val() || null;
 	let chip = $('#inputChipMascota').val() || null;
 	let nacimiento = $('#inputNacimientoMascota').val() || null;
+	let muerte = $('#inputFallecimientoMascota').val() || null;
 	let observaciones = $('#inputObservacionesMascota').val() || null;
 
 	if(nombre){
@@ -231,6 +232,7 @@ function modificarMascota(idMascota){
 					pedigree: pedigree,
 					chip: chip,
 					fechaNacimiento: nacimiento,
+					fechaFallecimiento: muerte,
 					observaciones: observaciones
 				}
 				let response = sendPost("modificarMascota", data);
@@ -252,5 +254,6 @@ function updateInformacionMascota(inputFrom, mascota){
 	$('#inputPedigree'+ inputFrom).val(mascota.pedigree);
 	$('#inputChip'+ inputFrom).val(mascota.chip);
 	$('#inputNacimiento'+ inputFrom).val(mascota.fechaNacimiento);
+	$('#inputFallecimiento' + inputFrom).val(mascota.fechaFallecimiento);
 	$('#inputObservaciones'+ inputFrom).val(mascota.observaciones);
 }

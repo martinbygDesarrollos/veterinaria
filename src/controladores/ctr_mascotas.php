@@ -62,10 +62,10 @@ class ctr_mascotas {
 							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nueva mascota", $idSocio, $responseInsertMascota->id, "Se le agregó una nueva mascota al socio, se vinculó y actualizó su cuota.");
 							if($responseInsertHistorial->result == 2){
 								$response->result = 2;
-								$response->message = "Se agregó la nueva mascota de " . $responseGetSocio->socio->nombre . ", y se modifico su cuota correctamente, la operación fue registrada en el historail.";
+								$response->message = "Se agregó la nueva mascota de " . $responseGetSocio->socio->nombre . ", y se modifico su cuota correctamente.";
 							}else{
 								$response->result = 1;
-								$response->message = "Se agregó la nueva mascota de " . $responseGetSocio->socio->nombre . ", y se modifico la cuota correctamente, la operación no fue registada en el historial por un error interno.";
+								$response->message = "Se agregó la nueva mascota de " . $responseGetSocio->socio->nombre . ", y se modifico la cuota correctamente.";
 							}
 						}else return $responseUpdateQuota;
 					}else return $responseGetQuota;
@@ -76,14 +76,17 @@ class ctr_mascotas {
 		return $response;
 	}
 
-	public function modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
+	public function modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento,$muerte, $pelo, $chip, $observaciones){
 		$response = new \stdClass();
 
 		$responseGetMascota = mascotas::getMascota($idMascota);
 		if($responseGetMascota->result == 2){
 			if(!is_null($fechaNacimiento))
 				$fechaNacimiento = fechas::getDateToINT($fechaNacimiento);
-			$responseUpdateMascota = mascotas::updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones);
+			if(!is_null($muerte) && $muerte != "")
+				$muerte = fechas::getDateToINT($muerte);
+			else $muerte = null;
+			$responseUpdateMascota = mascotas::updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones);
 			if($responseUpdateMascota->result == 2){
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar mascota", null, $idMascota, "Se actualizó la información de la mascota.");
 				if($responseInsertHistorial->result == 2){
@@ -150,10 +153,10 @@ class ctr_mascotas {
 
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "La mascota fue " . $newStateString . $resultUpdateQuota . " Se generó un registro en el historial de usuario.";
+					$response->message = "La mascota fue " . $newStateString . $resultUpdateQuota;
 				}else{
 					$response->result = 1;
-					$response->message = "La mascota fue " . $newStateString . $resultUpdateQuota . " No pudo generarse un registro en el historial de usuario por un error interno.";
+					$response->message = "La mascota fue " . $newStateString . $resultUpdateQuota;
 				}
 
 			}else return $responseChangeStateMascota;
@@ -348,9 +351,9 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se aplicó la primer dosis de la vacuna " . $nombreVacuna, null, null);
 				$response->result = 2;
 				if($responseInsertHistorial->result == 2)
-					$response->message = "La vacuna fue insertada correctamente, se creo un registro en el historial de la mascota.";
+					$response->message = "La vacuna fue insertada correctamente.";
 				else
-					$response->message = "La vacuna fue insertada correctamente, pero el registro en el historial de la mascota no fue creado por un error interno.";
+					$response->message = "La vacuna fue insertada correctamente";
 				$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($responseInsertVacuna->id);
 				if($responseGetVacuna->result == 2)
 					$response->newVacuna = $responseGetVacuna->objectResult;
@@ -372,9 +375,9 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar vacuna", null, $responseGetVacunaMascota->objectResult->idMascota, "Se actualizó la información de la vacuna " . $nombre . ".");
 				$response->result = 2;
 				if($responseInsertHistorial->result == 2)
-					$response->message = "La vacuna fue modificada correctamente, se agregó un registro en el historial del usuario.";
+					$response->message = "La vacuna fue modificada correctamente.";
 				else
-					$response->message = "La vacuna fue modificada correctamente, no se agregóun registro en el historial debido a un error interno.";
+					$response->message = "La vacuna fue modificada correctamente.";
 
 				$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
 				if($responseGetVacuna->result == 2)
@@ -428,19 +431,19 @@ class ctr_mascotas {
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Aplicar dosis", null, $responseGetMascota->objectResult->idMascota, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 2;
-							$response->message = "Se registró la dosis de la vacuna aplicada, se creo un registro en el historia clínica de la mascota y en el historial de usuario.";
+							$response->message = "Se registró la dosis de la vacuna aplicada.";
 						}else{
 							$response->result = 1;
-							$response->message = "Se registró la dosis de la vacuna aplicada y se creo un registro en el historia clínica de la mascota. Esta operación no pudo registrarse en el historial de usuario por un error interno.";
+							$response->message = "Se registró la dosis de la vacuna aplicada.";
 						}
 					}else{
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Aplicar dosis", null, $responseGetMascota->objectResult->idMascota, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 1;
-							$response->message = "Se registró la dosis de la vacuna aplicada, se generó un registro en el historial de usuario pero no se generó un registro en el historia clínica de la mascota por un error interno.";
+							$response->message = "Se registró la dosis de la vacuna aplicada.";
 						}else{
 							$response->result = 1;
-							$response->message = "Se registró la dosis de la vacuna aplicada pero por un error interno la la dosis no fue registrada en la historia clínica y tampoco en el historial de ususario.";
+							$response->message = "Se registró la dosis de la vacuna aplicada.";
 						}
 					}
 					$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
@@ -638,10 +641,10 @@ class ctr_mascotas {
 				if($responseInsertHistorial->result == 2){
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nueva enfermedad mascota", null, $idMascota, "Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre);
 					$response->result = 2;
-					$response->message = "Se agregó correctamente la nueva enfermedad y se creo un registro en el historial de la mascota.";
+					$response->message = "Se agregó correctamente la nueva enfermedad.";
 				}else{
 					$response->result = 1;
-					$response->message = "Se agregó correctamente la nueva enfermedad pero no se pudo generar el registro en el historial de la mascota.";
+					$response->message = "Se agregó correctamente la nueva enfermedad.";
 				}
 				$responseGetEnfermedadFormat = serviciosMascota::getEnfermedadMascotaToShow($responseInsertEnfermedad->id);
 				if($responseGetEnfermedadFormat->result == 2)

@@ -111,10 +111,11 @@ return function (App $app) {
             $color = $data['color'];
             $pedigree = $data['pedigree'];
             $fechaNacimiento = $data['fechaNacimiento'];
+            $muerte = $data['fechaFallecimiento'];
             $pelo = $data['pelo'];
             $chip = $data['chip'];
             $observaciones = $data['observaciones'];
-            return json_encode(ctr_mascotas::modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
+            return json_encode(ctr_mascotas::modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones));
         }else return json_encode($responseSession);
     });
 
