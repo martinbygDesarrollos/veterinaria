@@ -1,5 +1,6 @@
 let lastId = 0;
 var idLastHistoriaClinica = null;
+var phoneSocio = null;
 
 $("#formConfirmFileHistory").submit(function(e) {
     e.preventDefault();
@@ -172,6 +173,14 @@ function verHistoriaClinica(idHistoria){
 	let response = sendPost("getHistoriaClinicaToShow", {idHistoriaClinica: idHistoria});
 	if(response.result == 2){
 		let historia = response.objectResult;
+
+		if ( !phoneSocio ){
+			console.log("pidiendo numero de tel del socio historiasclinica");
+			let responseSocio = sendPost("getSocioPorMascota", {idMascota: response.objectResult.idMascota});
+			phoneSocio = responseSocio.socio.telefono;
+		}
+
+
 		$("#titleModalView").html("Historia clínica");
 		$('#dateModalView').html("<b>Fecha:</b> " + historia.fecha);
 		$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Diagnóstico: </b>" + historia.diagnostico + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr>");
@@ -182,7 +191,7 @@ function verHistoriaClinica(idHistoria){
 			$("#divFilesTableModalView").attr("disable", true);
 			//divFilesTableModalView
 			for (var i = 0; i < historia.archivos.length; i++) {
-				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><button title="Enviar archivo" class="btn bg-light" disabled ><i class="fas fa-paper-plane"></i></button><!--a href="https://wa.me/" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a--></td></tr>';
+				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a></td></tr>';
 
 				$("#divFilesTableModalView table tbody").append(row);
 			}

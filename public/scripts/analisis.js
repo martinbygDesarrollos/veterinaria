@@ -1,5 +1,6 @@
 //variables
 var idLastAnalisis = null;
+var phoneSocio = null;
 
 //funciones sin nombre
 $("#formConfirmFileAnalisisMasc").submit(function(e) {
@@ -127,7 +128,6 @@ function modificarAnalisis(idAnalisis){
 					detalle: detalle,
 					resultado: resultado
 				};
-				console.log(data);
 				let response = sendPost("updateAnalisis", data);
 				console.log(response)
 				showReplyMessage(response.result, response.message, "Modificar análisis", "modalAnalisis");
@@ -159,6 +159,13 @@ function verAnalisis(idAnalisis){
 	let response = sendPost("getAnalisisToShow", {idAnalisis: idAnalisis});
 	if(response.result == 2){
 		let analisis = response.objectResult;
+
+		if ( !phoneSocio ){
+			console.log("pidiendo numero de tel del socio");
+			let responseSocio = sendPost("getSocioPorMascota", {idMascota: response.objectResult.idMascota});
+			phoneSocio = responseSocio.socio.telefono;
+		}
+
 		$("#titleModalView").html("Análisis");
 		$('#dateModalView').html("<b>Diagnositico:</b> " + analisis.fecha);
 		$("#textModalView").html("<b>Nombre:</b> " + analisis.nombre + "<hr><b>Detalle: </b>" + analisis.detalle + "<hr>");
@@ -169,7 +176,7 @@ function verAnalisis(idAnalisis){
 			$("#divFilesTableModalView").attr("disable", true);
 
 			for (var i = 0; i < analisis.archivos.length; i++) {
-				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><button title="Enviar archivo" class="btn bg-light" disabled><i class="fas fa-paper-plane"></i></button><!--a href="https://wa.me/" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a--></td></tr>';
+				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a></td></tr>';
 
 				$("#divFilesTableModalView table tbody").append(row);
 			}
