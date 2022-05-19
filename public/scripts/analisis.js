@@ -5,34 +5,39 @@ var idLastAnalisis = null;
 $("#formConfirmFileAnalisisMasc").submit(function(e) {
     e.preventDefault();
     console.log("formulario archivos en nuevo analisis");
-    if ( idLastAnalisis ){
-    	var formData = new FormData(this);
-    	console.log(formData);
 
-    	formData.append("category", "analisismascota");
-    	formData.append("idCategory", idLastAnalisis);
+    if ($("#idInputFileAnalisisMasc").val().length){
+	    if ( idLastAnalisis ){
+	    	var formData = new FormData(this);
+	    	console.log(formData);
 
-	    sendAsyncPostFiles( "saveFile", formData)
-	    .then(function(response){
-	        if ( response.result != 2 ){
-	        	$("#modalLoadResultsOrder").modal("hide");
-	        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
-	        }else{
-	        	$("#modalLoadResultsOrder").modal("hide");
-	        	window.location.reload();
-	        }
-	    })
-	    .catch(function(response){
-	        $("#modalLoadResultsOrder").modal("hide");
-	        alert(response.message);
-	        //console.log(response);
-	    })
-    }else{
-    	setTimeout(()=>{
-    		console.log("no se ha cargado, se llama al submit nuevamente");
-    		$("#formConfirmFileAnalisisMasc").trigger("submit");
-    	}, 200);
-    }
+	    	formData.append("category", "analisismascota");
+	    	formData.append("idCategory", idLastAnalisis);
+
+		    sendAsyncPostFiles( "saveFile", formData)
+		    .then(function(response){
+		        if ( response.result != 2 ){
+		        	$("#modalLoadResultsOrder").modal("hide");
+		        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
+		        }else{
+		        	$("#modalLoadResultsOrder").modal("hide");
+		        	window.location.reload();
+		        }
+		    })
+		    .catch(function(response){
+		        $("#modalLoadResultsOrder").modal("hide");
+		        alert(response.message);
+		        //console.log(response);
+		    })
+	    }else{
+	    	setTimeout(()=>{
+	    		console.log("no se ha cargado, se llama al submit nuevamente");
+	    		$("#formConfirmFileAnalisisMasc").trigger("submit");
+	    	}, 200);
+	    }
+	}else{
+		console.log('en el formulario -analisis- por guardar archivos, pero no se cargaron archivos, saliendo');
+	}
 });
 
 //funciones con nombre
@@ -47,6 +52,8 @@ function openModalAnalaisis(button){
 		});
 		$('#modalAnalisis').modal();
 	}else{
+
+		//modificando datos del analisis
 		let response = sendPost("getAnalisis", {idAnalisis: button.name});
 		if(response.result == 2){
 			$('#titleModalAnalisis').html("Modificar análisis");
@@ -59,6 +66,7 @@ function openModalAnalaisis(button){
 			$('#buttonConfirmModalAnalisis').off('click');
 			$('#buttonConfirmModalAnalisis').click(function(){
 				modificarAnalisis(button.name);
+				idLastAnalisis = button.name;
 			});
 			$('#modalAnalisis').modal();
 		}
