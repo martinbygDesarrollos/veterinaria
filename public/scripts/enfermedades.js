@@ -99,18 +99,20 @@ function borrarEnfermedad(idEnfermedad){
 }
 
 function showObservaciones(idEnfermedad){
-	let response = sendPost("getEnfermedadToShow", {idEnfermedad: idEnfermedad});
-	if(response.result == 2){
-		let enfermedad = response.objectResult;
-		$("#titleModalView").html("Enfermedad");
-		$('#dateModalView').html("<b>Diagnositico</b>: " + enfermedad.fechaDiagnostico);
-		$("#textModalView").html("<b>Nombre</b>: " + enfermedad.nombreEnfermedad + "<hr><b>Observaciones: </b>" + enfermedad.observaciones + "<hr>");
+	if ( idEnfermedad ){
+		let response = sendPost("getEnfermedadToShow", {idEnfermedad: idEnfermedad});
+		if(response.result == 2){
+			let enfermedad = response.objectResult;
+			$("#titleModalView").html("Enfermedad");
+			$('#dateModalView').html("<b>Diagnositico</b>: " + enfermedad.fechaDiagnostico);
+			$("#textModalView").html("<b>Nombre</b>: " + enfermedad.nombreEnfermedad + "<hr><b>Observaciones: </b>" + enfermedad.observaciones + "<hr>");
 
 
-		$("#divFilesTableModalView").attr("hidden", true);
-		$("#divFilesTableModalView").attr("disable", true);
+			$("#divFilesTableModalView").attr("hidden", true);
+			$("#divFilesTableModalView").attr("disable", true);
 
 
-		$('#modalView').modal();
-	}
+			$('#modalView').modal();
+		}
+	}else window.location.reload();
 }
