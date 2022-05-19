@@ -3,33 +3,37 @@ var idLastHistoriaClinica = null;
 
 $("#formConfirmFileHistory").submit(function(e) {
     e.preventDefault();
+    if ( $("#idInputFileResult").val().length > 0 ){
 
-    if ( idLastHistoriaClinica ){
-    	var formData = new FormData(this);
-    	formData.append("category", "historiasclinica");
-    	formData.append("idCategory", idLastHistoriaClinica);
+	    if ( idLastHistoriaClinica ){
+	    	var formData = new FormData(this);
+	    	formData.append("category", "historiasclinica");
+	    	formData.append("idCategory", idLastHistoriaClinica);
 
-	    sendAsyncPostFiles( "saveFile", formData)
-	    .then(function(response){
-	        if ( response.result != 2 ){
-	        	$("#modalLoadResultsOrder").modal("hide");
-	        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
-	        }else{
-	        	$("#modalLoadResultsOrder").modal("hide");
-	        	window.location.reload();
-	        }
-	    })
-	    .catch(function(response){
-	        $("#modalLoadResultsOrder").modal("hide");
-	        alert(response.message);
-	        //console.log(response);
-	    })
-    }else{
-    	setTimeout(()=>{
-    		console.log("no se ha cargado, se llama al submit nuevamente");
-    		$("#formConfirmFileHistory").trigger("submit");
-    	}, 200);
-    }
+		    sendAsyncPostFiles( "saveFile", formData)
+		    .then(function(response){
+		        if ( response.result != 2 ){
+		        	$("#modalLoadResultsOrder").modal("hide");
+		        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
+		        }else{
+		        	$("#modalLoadResultsOrder").modal("hide");
+		        	window.location.reload();
+		        }
+		    })
+		    .catch(function(response){
+		        $("#modalLoadResultsOrder").modal("hide");
+		        alert(response.message);
+		        //console.log(response);
+		    })
+	    }else{
+	    	setTimeout(()=>{
+	    		console.log("no se ha cargado id de historia, se llama al submit nuevamente");
+	    		$("#formConfirmFileHistory").trigger("submit");
+	    	}, 200);
+	    }
+	}else{
+		console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
+	}
 });
 
 function cargarHistoriaClinica(idMascota){
@@ -96,6 +100,7 @@ function openModalHistoria(button){
 			$('#buttonConfirmHistoriaClinica').off('click');
 			$('#buttonConfirmHistoriaClinica').click(function(){
 				modificarHistoriaClinica(button.name);
+				idLastHistoriaClinica = button.name;
 			});
 
 			$('#modalHistoriaClinica').modal();
