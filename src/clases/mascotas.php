@@ -155,6 +155,14 @@ class mascotas{
 				$responseDeudor = socios::socioDeudor($row['fechaUltimaCuota']);
 				$row['socioDeudor'] = $responseDeudor->deudor;
 
+				if ( $row['fechaUltimaCuota'] != "" ){ //202201
+					$row['fechaUltimaCuota'] = substr($row['fechaUltimaCuota'], 4, 2)."/".substr($row['fechaUltimaCuota'], 0, 4);
+				}
+
+				if ( $row['fechaUltimoPago'] != "" && $row['fechaUltimoPago'] != null ){ //20220215
+					$row['fechaUltimoPago'] = substr($row['fechaUltimoPago'], 6, 2)."/".substr($row['fechaUltimoPago'], 4, 2)."/".substr($row['fechaUltimoPago'], 0, 4);
+				}
+
 				$arrayResult[] = $row;
 			}
 			$responseQuery->lastId = $newLastID;
