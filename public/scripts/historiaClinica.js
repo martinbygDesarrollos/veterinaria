@@ -174,12 +174,6 @@ function verHistoriaClinica(idHistoria){
 	if(response.result == 2){
 		let historia = response.objectResult;
 
-		if ( !phoneSocio ){
-			console.log("pidiendo numero de tel del socio historiasclinica");
-			let responseSocio = sendPost("getSocioPorMascota", {idMascota: response.objectResult.idMascota});
-			phoneSocio = responseSocio.socio.telefono;
-		}
-
 
 		$("#titleModalView").html("Historia clínica");
 		$('#dateModalView').html("<b>Fecha:</b> " + historia.fecha);
@@ -189,9 +183,13 @@ function verHistoriaClinica(idHistoria){
 			$("#divFilesTableModalView table tbody").empty();
 			$("#divFilesTableModalView").attr("hidden", true);
 			$("#divFilesTableModalView").attr("disable", true);
+
+			$("#thSendFilesTableModalView").attr("hidden", true);
+			$("#thSendFilesTableModalView").attr("disable", true);
+
 			//divFilesTableModalView
 			for (var i = 0; i < historia.archivos.length; i++) {
-				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a></td></tr>';
+				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"></td></tr>';
 
 				$("#divFilesTableModalView table tbody").append(row);
 			}

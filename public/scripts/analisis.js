@@ -175,6 +175,9 @@ function verAnalisis(idAnalisis){
 			$("#divFilesTableModalView").attr("hidden", true);
 			$("#divFilesTableModalView").attr("disable", true);
 
+			$("#thSendFilesTableModalView").attr("hidden", false);
+			$("#thSendFilesTableModalView").attr("disable", false);
+
 			for (var i = 0; i < analisis.archivos.length; i++) {
 				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fas fa-paper-plane"></i></button></a></td></tr>';
 

@@ -105,6 +105,12 @@ function showObservaciones(idEnfermedad){
 		$("#titleModalView").html("Enfermedad");
 		$('#dateModalView').html("<b>Diagnositico</b>: " + enfermedad.fechaDiagnostico);
 		$("#textModalView").html("<b>Nombre</b>: " + enfermedad.nombreEnfermedad + "<hr><b>Observaciones: </b>" + enfermedad.observaciones + "<hr>");
+
+
+		$("#divFilesTableModalView").attr("hidden", true);
+		$("#divFilesTableModalView").attr("disable", true);
+
+
 		$('#modalView').modal();
 	}
 }

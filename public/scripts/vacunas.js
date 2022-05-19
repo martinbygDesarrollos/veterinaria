@@ -97,6 +97,10 @@ function openDescriptionVacuna(idVacunaMascota){
 			$("#titleModalView").html("Vacuna");
 			$('#dateModalView').html("<b>Última dosis</b>: " + vacuna.fechaUltimaDosis);
 			$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Primer dosis:</b> " + vacuna.fechaPrimerDosis + "<hr><b>Proxima dosis:</b> " + vacuna.fechaProximaDosis +"<hr><b>Observaciones: </b>" + vacuna.observacion + "<hr>");
+
+			$("#divFilesTableModalView").attr("hidden", true);
+			$("#divFilesTableModalView").attr("disable", true);
+
 			$('#modalView').modal();
 		}
 	}
