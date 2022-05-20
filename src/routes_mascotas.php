@@ -315,6 +315,19 @@ return function (App $app) {
         $idMascota = $data['idMascota'];
         return json_encode(ctr_mascotas::getMascotaWithSocio($idMascota));
     });
+
+    $app->post('/getVacunasByInput', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $value = $data['value'];
+        return json_encode(ctr_mascotas::getVacunasByInput($value));
+    });
+
+    $app->post('/getVacunasByName', function(Request $request, Response $response){
+        $data = $request->getParams();
+        $value = $data['value'];
+        return json_encode(ctr_mascotas::getVacunasByName($value));
+    });
+
 	//------------------------------------------------------------------------------------------
 
 }

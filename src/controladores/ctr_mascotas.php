@@ -348,12 +348,12 @@ class ctr_mascotas {
 			$responseInsertVacuna = serviciosMascota::insertVacunaMascota($nombreVacuna, $idMascota, $intervalo, 1, $fechaDosis, $fechaDosis, $fechaProximaDosis, $observaciones);
 			if($responseInsertVacuna->result == 2){
 				//$responseInsertHistoriaClinica = ctr_historiales::
-				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se aplicó la primer dosis de la vacuna " . $nombreVacuna, null, null);
+				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se aplicó la primer dosis de " . $nombreVacuna, null, null);
 				$response->result = 2;
 				if($responseInsertHistorial->result == 2)
-					$response->message = "La vacuna fue insertada correctamente.";
+					$response->message = "La vacuna/medicamento fue insertada correctamente.";
 				else
-					$response->message = "La vacuna fue insertada correctamente";
+					$response->message = "La vacuna/medicamento fue insertada correctamente";
 				$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($responseInsertVacuna->id);
 				if($responseGetVacuna->result == 2)
 					$response->newVacuna = $responseGetVacuna->objectResult;
@@ -372,12 +372,12 @@ class ctr_mascotas {
 			$fechaUltimaDosis = fechas::getDateToINT($fechaUltimaDosis);
 			$responseUpdateVacuna = serviciosMascota::updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones);
 			if($responseUpdateVacuna->result == 2){
-				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar vacuna", null, $responseGetVacunaMascota->objectResult->idMascota, "Se actualizó la información de la vacuna " . $nombre . ".");
+				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar", null, $responseGetVacunaMascota->objectResult->idMascota, "Se actualizó la información de la vacuna/medicamento " . $nombre . ".");
 				$response->result = 2;
 				if($responseInsertHistorial->result == 2)
-					$response->message = "La vacuna fue modificada correctamente.";
+					$response->message = "La vacuna/medicamento fue modificada correctamente.";
 				else
-					$response->message = "La vacuna fue modificada correctamente.";
+					$response->message = "La vacuna/medicamento fue modificada correctamente.";
 
 				$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
 				if($responseGetVacuna->result == 2)
@@ -398,14 +398,14 @@ class ctr_mascotas {
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar vacuna", null, $responseGetVacunaMascota->objectResult->idMascota, "Se borro la vacuna de nombre " . $responseGetVacunaMascota->objectResult->nombreVacuna . " la cual llevaba " . $responseGetVacunaMascota->objectResult->numDosis . "Dosis");
 				if($responseInsertHistorial->result == 2){
 					$response->result = 2;
-					$response->message = "La vacuna fue borrada correctamente.";
+					$response->message = "La vacuna/medicamento fue borrada correctamente.";
 				}else{
 					$response->result = 1;
-					$response->message = "La vacuna fue borrada correctamente.";
+					$response->message = "La vacuna/medicamento fue borrada correctamente.";
 				}
 			}else{
 				$response->result = 0;
-				$response->message = "Ocurrió un error y la vacuna no fue borrada.";
+				$response->message = "Ocurrió un error y la vacuna/medicamento no fue borrada.";
 			}
 		}else return $responseGetVacunaMascota;
 
@@ -426,24 +426,24 @@ class ctr_mascotas {
 				$dateDosis = fechas::getDateToINT($dateDosis);
 				$responseUpdateVacuna = serviciosMascota::aplicarDosisVacunaMascota($idVacunaMascota, $dateDosis, $responseGetVacunaMascota->objectResult->numDosis + 1, $fechaProximaDosis);
 				if($responseUpdateVacuna->result == 2){
-					$responseInsertHistoriaClinica = ctr_historiales::agregarHistoriaClinica($responseGetMascota->objectResult->idMascota, null, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".", null, null);
+					$responseInsertHistoriaClinica = ctr_historiales::agregarHistoriaClinica($responseGetMascota->objectResult->idMascota, null, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna/medicamento " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".", null, null);
 					if($responseInsertHistoriaClinica->result == 2){
-						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Aplicar dosis", null, $responseGetMascota->objectResult->idMascota, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".");
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Aplicar dosis", null, $responseGetMascota->objectResult->idMascota, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna/medicamento " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 2;
-							$response->message = "Se registró la dosis de la vacuna aplicada.";
+							$response->message = "Se registró la dosis de la vacuna/medicamento aplicada.";
 						}else{
 							$response->result = 1;
-							$response->message = "Se registró la dosis de la vacuna aplicada.";
+							$response->message = "Se registró la dosis de la vacuna/medicamento aplicada.";
 						}
 					}else{
-						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Aplicar dosis", null, $responseGetMascota->objectResult->idMascota, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".");
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Aplicar dosis", null, $responseGetMascota->objectResult->idMascota, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna/medicamento " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 1;
-							$response->message = "Se registró la dosis de la vacuna aplicada.";
+							$response->message = "Se registró la dosis de la vacuna/medicamento aplicada.";
 						}else{
 							$response->result = 1;
-							$response->message = "Se registró la dosis de la vacuna aplicada.";
+							$response->message = "Se registró la dosis de la vacuna/medicamento aplicada.";
 						}
 					}
 					$responseGetVacuna = serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
@@ -471,6 +471,14 @@ class ctr_mascotas {
 
 	public function getVacunaMascotaToShowView($idVacunaMascota){
 		return serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
+	}
+
+	public function getVacunasByName($nombreVacuna){
+		return serviciosMascota::getVacunasByName($nombreVacuna);
+	}
+
+	public function getVacunasByInput($value){
+		return serviciosMascota::getVacunasByInput($value);
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------------------------

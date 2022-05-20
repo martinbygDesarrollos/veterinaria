@@ -105,7 +105,7 @@ class serviciosMascota {
                 $arrayResult[] = $row;
             }
             $responseQuery->listResult = $arrayResult;
-        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas en la base de datos.";
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron resultados.";
 
         return $responseQuery;
     }
@@ -123,7 +123,7 @@ class serviciosMascota {
                 $arrayResult[] = $row;
             }
             $responseQuery->listResult = $arrayResult;
-        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas vencidas para la fecha seleccionada.";
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas/medicamentos vencidos para la fecha seleccionada.";
         return $responseQuery;
     }
 
@@ -141,7 +141,7 @@ class serviciosMascota {
                 $arrayResult[] = $row;
             }
             $responseQuery->listResult = $arrayResult;
-        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas de la mascota seleccionada.";
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas/medicamentos de la mascota seleccionada.";
 
         return $responseQuery;
     }
@@ -165,7 +165,7 @@ class serviciosMascota {
         if(is_null($vacuna['observacion']) || strlen($vacuna['observacion']) < 1)
             $vacuna['observaciones'] = $noData;
 
-        if($vacuna['intervaloDosis'] == 1)
+        /*if($vacuna['intervaloDosis'] == 1)
             $vacuna['intervaloDosis'] = "Única dosis";
         else if($vacuna['intervaloDosis'] == 30)
             $vacuna['intervaloDosis'] = "Mensual";
@@ -174,7 +174,7 @@ class serviciosMascota {
         else if($vacuna['intervaloDosis'] == 180)
             $vacuna['intervaloDosis'] = "Semestral";
         else if($vacuna['intervaloDosis'] == 360)
-            $vacuna['intervaloDosis'] = "Anual";
+            $vacuna['intervaloDosis'] = "Anual";*/
 
         return $vacuna;
     }
@@ -241,7 +241,7 @@ class serviciosMascota {
                 $arrayResult[] = $row;
             }
             $responseQuery->listResult = $arrayResult;
-        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas vencidas de la mascota seleccionada.";
+        }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas/medicamentos vencidas de la mascota seleccionada.";
 
         return $responseQuery;
     }
@@ -250,7 +250,7 @@ class serviciosMascota {
         $responseQuery = DataBase::sendQuery("SELECT * FROM vacunasmascota WHERE idVacunaMascota = ?", array('i', $idVacunaMascota), "OBJECT");
         if($responseQuery->result == 2){
             $responseQuery->objectResult = serviciosMascota::formatVacunaObject($responseQuery->objectResult);
-        }elseif($responseQuery->result == 1) $responseQuery->message = "La se encontro una vacuna con el identificador seleccionado.";
+        }elseif($responseQuery->result == 1) $responseQuery->message = "No se encontro vacuna/medicamento con el identificador seleccionado.";
 
         return $responseQuery;
     }
@@ -313,7 +313,7 @@ class serviciosMascota {
             if(strlen($responseQuery->objectResult->fechaUltimaDosis) == 8)
                 $responseQuery->objectResult->fechaUltimaDosis = fechas::dateToFormatHTML($responseQuery->objectResult->fechaUltimaDosis);
 
-        }elseif($responseQuery->result == 1) $responseQuery->message = "La se encontro una vacuna con el identificador seleccionado.";
+        }elseif($responseQuery->result == 1) $responseQuery->message = "No se encontro vacuna/medicamento con el identificador seleccionado.";
 
         return $responseQuery;
     }
@@ -330,6 +330,13 @@ class serviciosMascota {
         return DataBase::sendQuery("UPDATE vacunasmascota SET numDosis = ? , fechaUltimaDosis = ?, fechaProximaDosis = ? WHERE idVacunaMascota  = ?", array('iiii', $nuevaNumDosis, $nuevaUltimaDosis, $fechaProximaDosis, $idVacunaMascota), "BOOLE");
     }
 
+    public function getVacunasByName($nombreVacuna){
+        return DataBase::sendQuery("SELECT * FROM vacunas WHERE nombre = ?", array('s', $nombreVacuna), "OBJECT");
+    }
+
+    public function getVacunasByInput($input){
+        return DataBase::sendQuery("SELECT * FROM vacunas WHERE nombre like '%". $input ."%' ORDER BY nombre ASC LIMIT 10", array(), "LIST");
+    }
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------ENFERMEDADES------------------------------------------------------------------------

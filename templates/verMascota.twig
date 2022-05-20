@@ -32,7 +32,7 @@
 			<div class="row">
 				<div class="col-2" style="min-width: 10em;">
 					<div class="d-flex justify-content-center mb-2">
-						<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna</button>
+						<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna o medicamento</button>
 					</div>
 					<div class="d-flex justify-content-center mb-2">
 						<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)">Nueva <br>enfermedad</button>
@@ -164,7 +164,7 @@
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaProximaDosis }}</td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaUltimaDosis }}</td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.nombreVacuna }}</td>
-										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.intervaloDosis }}</td>
+										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.intervaloDosis }} días</td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.numDosis }}</td>
 										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaPrimerDosis }}</td>
 										<td class="text-center" style="min-width: 6em;">
@@ -566,33 +566,22 @@
 					<div class="col">
 						<div class="form-group">
 							<label for="inputNombreVacuna">Nombre</label>
-							<input type="text" class="form-control text-center shadow-sm" id="inputNombreVacuna">
+							<input type="text" class="form-control text-center shadow-sm" list="dataListNombreVacuna" id="inputNombreVacuna" onsearch="getDataVacunas(this.value)" onchange="completeDataVacunas(this.value)" onkeyup="this.onsearch()" autocomplete="off">
+							<datalist id="dataListNombreVacuna"></datalist>
 						</div>
-					</div>
-					<div class="col">
-						<div class="form-group">
-							<label for="inputIntervaloVacuna">Intervalo</label>
-							<select class="custom-select" id="inputIntervaloVacuna">
-								<option value="1">Única dosis</option>
-								<option value="30">Mensual</option>
-								<option value="60">Bimestral</option>
-								<option value="180">Semestral</option>
-								<option value="360">Anual</option>
-							</select>
-						</div>
-					</div>
-				</div>
-				<div class="d-flex justify-content-center">
-					<div class="form-group w-50">
-						<label id="labelInputDateVacuna" for="inputPrimerDosisVacuna"></label>
-						<input type="date" class="form-control text-center shadow-sm" id="inputPrimerDosisVacuna">
 					</div>
 				</div>
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
-							<label for="inputPrimerDosisVacuna">Observaciones</label>
-							<textarea id="inputObservacionesVacuna" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+							<label id="labelInputDateVacuna" for="inputPrimerDosisVacuna"></label>
+							<input type="date" class="form-control text-center shadow-sm" id="inputPrimerDosisVacuna">
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label for="inputIntervaloVacuna">Intervalo (en días)</label>
+							<input type="number" class="form-control text-center shadow-sm" id="inputIntervaloVacuna">
 						</div>
 					</div>
 				</div>

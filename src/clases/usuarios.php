@@ -133,11 +133,11 @@ class usuarios{
 		</style>' .
 		'</head>' .
 		'<body class="fondo"><h1 style="color: white; font-size:35px; text-align: center;">' . $subtitulo . '</h1>' .
-		'<p class="message">' . $nombreSocio . ' Su mascota  registra las siguientes vacunas vencidas o próximas a vencer.</p>' .
+		'<p class="message">' . $nombreSocio . ' Su mascota  registra las siguientes vacunas o medicamentos vencidos o próximos a vencer.</p>' .
 		'<div align="center">
 		<table style="width:70%">
 		<tr>
-		<th>Vacuna</th>
+		<th></th>
 		<th>Última dosis</th>
 		<th>Próxima Dosis</th>
 		<th>Mascota</th>

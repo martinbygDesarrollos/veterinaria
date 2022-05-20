@@ -884,7 +884,7 @@ class ctr_usuarios{
 					if($responseGetVacunasVencidas->result == 2){
 						$resultSendEmail = usuarios::enviarNotificacionVacunas($responseGetSocioMascota->objectResult->nombre, $responseGetVacunasVencidas->listResult, $responseGetSocioMascota->objectResult->email);
 						if($resultSendEmail){
-							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Notificar vacunas vencidas", $responseGetSocioMascota->objectResult->idSocio, $idMascota, "Se notificó los vencimientos de las vacunas de la mascota seleccionada al socio.");
+							$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Notificar vacunas/medicamento vencidas", $responseGetSocioMascota->objectResult->idSocio, $idMascota, "Se notificó los vencimientos de las vacunas/medicamentos de la mascota seleccionada al socio.");
 							if($responseInsertHistorial->result == 2){
 								$response->result = 2;
 								$response->message = "Se notificó al socio.";
