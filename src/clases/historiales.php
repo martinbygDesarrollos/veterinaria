@@ -7,15 +7,15 @@ class historiales{
 	//===========================================HISTORIAL CLINICO================================================
 	//============================================================================================================
 
-	public function agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones){
-		if(is_null($fecha))
-			$fecha = fechas::getDateNowInt();
+	public function agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura){
+		if(is_null($fecha) || $fecha == "")
+			$fecha = date("Ymd");
 
-		return DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, motivoConsulta, diagnostico, observaciones) VALUES(?,?,?,?,?)", array('iisss', $idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones), "BOOLE");
+		return DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, motivoConsulta, diagnostico, observaciones, peso, temperatura) VALUES(?,?,?,?,?,?,?)", array('iisssdd', $idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura), "BOOLE");
 	}
 
-	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones){
-		return DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ? WHERE idHistoriaClinica = ?", array('isssi', $fecha, $motivoConsulta, $diagnostico, $observaciones, $idHistoriaClinica), "BOOLE");
+	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura){
+		return DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ?, peso = ?, temperatura = ? WHERE idHistoriaClinica = ?", array('isssidd', $fecha, $motivoConsulta, $diagnostico, $observaciones, $idHistoriaClinica, $peso, $temperatura), "BOOLE");
 	}
 
 	public function borrarHistoriaClinica($idHistoriaClinica){

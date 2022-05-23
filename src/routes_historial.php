@@ -120,7 +120,9 @@ return function (App $app) {
 			$motivoConsulta = $data['motivoConsulta'];
 			$diagnostico = $data['diagnostico'];
 			$observaciones = $data['observaciones'];
-			return json_encode(ctr_historiales::agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones));
+			$peso = $data['peso'];
+			$temperatura = $data['temperatura'];
+			return json_encode(ctr_historiales::agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura));
 		}else return json_encode($responseSession);
 	});
 
@@ -133,7 +135,9 @@ return function (App $app) {
 			$motivoConsulta = $data['motivoConsulta'];
 			$diagnostico = $data['diagnostico'];
 			$observaciones = $data['observaciones'];
-			return json_encode(ctr_historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones));
+			$peso = $data['peso'];
+			$temperatura = $data['temperatura'];
+			return json_encode(ctr_historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura));
 		}else return json_encode($responseSession);
 	});
 

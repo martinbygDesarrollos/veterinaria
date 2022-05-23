@@ -8,17 +8,28 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<div class="d-flex justify-content-center">
-					<div class="form-group w-50">
+				<div class="">
+					<div class="form-group" style="width: 50%;">
 						<label for="inputNombreEnfermedad">Fecha</label>
 						<input type="date" class="form-control text-center shadow-sm" id="inputFechaHistoria">
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col">
+						<table class="table-hover table-bordered" style="width: 50%;">
+							<thead><tr><td scope="col">Peso (Kg)</td><td scope="col" title="Temperatura">Temp.</td></tr></thead>
+							<tbody><tr>
+				  					<td><input id="inputPesoHistoria" type="number" class="form-control form-control-sm shadow-sm" autofocus="true"></td>
+				  					<td><input id="inputTemperaturaHistoria" type="number" class="form-control form-control-sm shadow-sm"></td>
+				  				</tr></tbody>
+						</table>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
 							<label for="">Motivo consulta</label>
-							<textarea id="inputMotivoConsultaHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+							<textarea id="inputMotivoConsultaHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="1"></textarea>
 						</div>
 					</div>
 				</div>
@@ -26,7 +37,7 @@
 					<div class="col">
 						<div class="form-group">
 							<label for="">Diagnóstico</label>
-							<textarea id="inputDiagnosticoHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="1" style="resize: none;"></textarea>
+							<textarea id="inputDiagnosticoHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="1"></textarea>
 						</div>
 					</div>
 				</div>
@@ -34,7 +45,7 @@
 					<div class="col">
 						<div class="form-group">
 							<label for="">Observaciones</label>
-							<textarea id="inputObservacionesHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+							<textarea id="inputObservacionesHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3"></textarea>
 						</div>
 					</div>
 				</div>
