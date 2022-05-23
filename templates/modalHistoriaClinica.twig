@@ -1,0 +1,58 @@
+<div class="modal fade" id="modalHistoriaClinica" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-mycolor" >
+				<span class="modal-title" id="titleHistoriaClinica"></span>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="d-flex justify-content-center">
+					<div class="form-group w-50">
+						<label for="inputNombreEnfermedad">Fecha</label>
+						<input type="date" class="form-control text-center shadow-sm" id="inputFechaHistoria">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="">Motivo consulta</label>
+							<textarea id="inputMotivoConsultaHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="">Diagnóstico</label>
+							<textarea id="inputDiagnosticoHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="1" style="resize: none;"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="">Observaciones</label>
+							<textarea id="inputObservacionesHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3" style="resize: none;"></textarea>
+						</div>
+					</div>
+				</div>
+				<hr>
+				<form method="post" action="" id="formConfirmFileHistory">
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<input type="file" class="form-control-file" id="idInputFileResult" name="nameInputFile[]" value=""  accept="video/*, image/*" multiple>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer d-flex justify-content-between" >
+					<button class="btn btn-danger shadow-sm" type="button" data-dismiss="modal">Cerrar</button>
+					<button id="buttonConfirmHistoriaClinica" class="btn btn-success shadow-sm" value="Subir" type="submit" onclick="">Confirmar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
