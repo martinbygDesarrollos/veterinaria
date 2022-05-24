@@ -15,7 +15,10 @@ class historiales{
 	}
 
 	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura){
-		return DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ?, peso = ?, temperatura = ? WHERE idHistoriaClinica = ?", array('isssidd', $fecha, $motivoConsulta, $diagnostico, $observaciones, $idHistoriaClinica, $peso, $temperatura), "BOOLE");
+		$peso = floatval($peso);
+		$temperatura = floatval($temperatura);
+		$result = DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ?, peso = ?, temperatura = ? WHERE idHistoriaClinica = ?", array('isssidd', $fecha, $motivoConsulta, $diagnostico, $observaciones, $idHistoriaClinica, $peso, $temperatura), "BOOLE");
+		return $result;
 	}
 
 	public function borrarHistoriaClinica($idHistoriaClinica){

@@ -91,17 +91,16 @@ function openModalHistoria(button){
 		$('#modalHistoriaClinica').modal();
 	}else{
 		let response = sendPost("getHistoriaClinicaToEdit", {idHistoriaClinica: button.name });
-		console.log(response);
 		if(response.result == 2){
 			$('#titleHistoriaClinica').html("Modificar historia clínica");
 			$('#inputFechaHistoria').val(response.objectResult.fecha);
 			$('#inputMotivoConsultaHistoria').val(response.objectResult.motivoConsulta);
 			$('#inputDiagnosticoHistoria').val(response.objectResult.diagnostico);
 			$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
-
-			/*console.log(response);
+			$("#inputPesoHistoria").val("");
+			$("#inputTemperaturaHistoria").val("");
 			if ( response.objectResult.peso || response.objectResult.temperatura){
-				$("#divDetailsTableModalView table tbody").empty();
+				console.log("tiene peso");
 				let auxPeso = "";
 				let auxTemperatura = "";
 				if ( response.objectResult.peso )
@@ -110,18 +109,9 @@ function openModalHistoria(button){
 				if ( response.objectResult.temperatura )
 					auxTemperatura = response.objectResult.temperatura
 
-				let row = '<tr><td>'+auxPeso+'</td><td>'+auxTemperatura+'</td></tr>';
-
-				$("#divDetailsTableModalView table tbody").append(row);
-
-				$("#divDetailsTableModalView").attr("hidden", false);
-				$("#divDetailsTableModalView").attr("disable", false);
-			}else{
-				$("#divDetailsTableModalView table tbody").empty();
-
-				$("#divDetailsTableModalView").attr("hidden", true);
-				$("#divDetailsTableModalView").attr("disable", true);
-			}*/
+				$("#inputPesoHistoria").val(auxPeso);
+				$("#inputTemperaturaHistoria").val(auxTemperatura);
+			}
 
 			$('#buttonConfirmHistoriaClinica').off('click');
 			$('#buttonConfirmHistoriaClinica').click(function(){
