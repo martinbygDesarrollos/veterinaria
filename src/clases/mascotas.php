@@ -38,7 +38,8 @@ class mascotas{
 		$responseQuery  = DataBase::sendQuery("SELECT * FROM mascotas WHERE nombre LIKE '" . $textToSearch . "%' AND idMascota NOT IN (SELECT idMascota FROM mascotasocio) LIMIT 5", null, "LIST");
 		if($responseQuery->result == 2){
 			$arrayResult = array();
-			$noData = "No especificado";
+			//$noData = "No especificado";
+			$noData = "";
 			foreach ($responseQuery->listResult as $key => $row) {
 				if(is_null($row['especie']) || strlen($row['especie']) < 2)
 					$row['especie'] = $noData;

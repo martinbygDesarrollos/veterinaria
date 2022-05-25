@@ -236,17 +236,19 @@
 							</table>
 						</div>
 						<div class="tab-pane fade border boder-2 border-top-0 p-3" id="nav-historia" role="tabpanel" aria-labelledby="nav-profile-tab">
-							<table class="table table-sm ">
-								<thead class="bg-mycolor">
-									<tr>
-										<td class="text-center" scope="col">Fecha</td>
-										<td class="text-center" scope="col">Motivo de la consulta</td>
-										<td class="text-center" scope="col">Acción</td>
-									</tr>
-								</thead>
-								<tbody id="tbodyHistoriaClinica">
-								</tbody>
-							</table>
+							<div class="tableCustomScroll" onscroll="cargarHistoriaClinica('{{ SocioMascota.mascota.idMascota }}')">
+								<table class="table table-sm ">
+									<thead class="bg-mycolor">
+										<tr>
+											<td class="text-center" scope="col">Fecha</td>
+											<td class="text-center" scope="col">Motivo de la consulta</td>
+											<td class="text-center" scope="col">Acción</td>
+										</tr>
+									</thead>
+									<tbody id="tbodyHistoriaClinica">
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>

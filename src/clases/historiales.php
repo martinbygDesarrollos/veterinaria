@@ -15,9 +15,19 @@ class historiales{
 	}
 
 	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura){
-		$peso = floatval($peso);
-		$temperatura = floatval($temperatura);
-		$result = DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ?, peso = ?, temperatura = ? WHERE idHistoriaClinica = ?", array('isssidd', $fecha, $motivoConsulta, $diagnostico, $observaciones, $idHistoriaClinica, $peso, $temperatura), "BOOLE");
+		if ( $peso == "" )
+			$peso = null;
+
+		if ( $temperatura == "" )
+			$temperatura = null;
+
+		if ( $diagnostico == "" )
+			$diagnostico = null;
+
+		if ( $observaciones == "" )
+			$observaciones = null;
+
+		$result = DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ?, peso = ?, temperatura = ? WHERE idHistoriaClinica = ?", array('isssddi', $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $idHistoriaClinica), "BOOLE");
 		return $result;
 	}
 
@@ -105,7 +115,8 @@ class historiales{
 		if($responseQuery->result == 2){
 			$arrayResult = array();
 			$newLastId = $lastId;
-			$noData = "No especificado";
+			//$noData = "No especificado";
+			$noData = "";
 			foreach ($responseQuery->listResult as $key => $row) {
 				if($newLastId > $row['idHistoriaClinica']) $newLastId = $row['idHistoriaClinica'];
 
@@ -126,7 +137,7 @@ class historiales{
 			}
 
 			$responseQuery->listResult = $arrayResult;
-			$responseQuery->lastId = $lastId;
+			$responseQuery->lastId = $newLastId;
 		}else if($responseQuery->result == 1) $responseQuery->message = "No se obtuvo la lista de registros del historial clinico de esta mascota.";
 
 		return $responseQuery;

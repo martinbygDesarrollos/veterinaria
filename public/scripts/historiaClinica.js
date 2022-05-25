@@ -42,19 +42,35 @@ function cargarHistoriaClinica(idMascota){
 	if(response.result == 2){
 		if(lastId != response.lastId)
 			lastId = response. lastId;
+
+		console.log(lastId, response.lastId);
 		let list = response.listResult;
 		for (let i = 0; i < list.length; i++) {
-			let row = createRowHistorial(list[i].idHistoriaClinica, list[i].fecha,  list[i].motivoConsulta);
+			let row = createRowHistorial(list[i]);
 			$('#tbodyHistoriaClinica').append(row);
 		}
 	}
 }
 
-function createRowHistorial(idHistoriaClinica, fecha, motivoConsulta){
+function createRowHistorial(obj){
+	let motivoConsulta = obj.motivoConsulta;
+	let fecha = obj.fecha;
+	let idHistoriaClinica = obj.idHistoriaClinica;
+	let observaciones = obj.observaciones;
+
+	let detalle = "";
+	if ( motivoConsulta.length > 0 && observaciones.length > 0)
+		detalle = motivoConsulta + " - " + observaciones;
+	else if(motivoConsulta.length == 0 && observaciones.length > 0)
+		detalle = observaciones;
+	else if (motivoConsulta.length > 0 && observaciones.length == 0)
+		detalle = motivoConsulta;
+
+
 	let row = "<tr id='trH"+ idHistoriaClinica +"'>";
 	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+ fecha +"</td>";
-	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+ motivoConsulta +"</td>";
-	row += "<td class='text-center' style='min-width: 6 em;'>";
+	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+ detalle +"</td>";
+	row += "<td class='text-center' style='min-width: 6em;'>";
 	row += "<button class='btn btn-link' name='" + idHistoriaClinica + "' onclick='openModalHistoria(this)'><i class='fas fa-edit text-dark'></i></button>";
 	row += "<button class='btn btn-link' onclick='openModalBorrarHistoria("+ idHistoriaClinica + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
 	row += "</td>";
@@ -149,7 +165,7 @@ function crearHistoriaClinica(idMascota){
 			if(response.result == 2){
 				idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
 				let newHistoria = response.newHistoria;
-				$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria.idHistoriaClinica, newHistoria.fecha, newHistoria.motivoConsulta));
+				$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));
 			}
 		}else showReplyMessage(1, "Debe ingresar el motivo de la consulta para agregar una historia clínica", "Motivo consulta requerido", "modalHistoriaClinica");
 	}else showReplyMessage(1, "Debe ingresar la fecha para agregar una historia clínica", "Fecha requerida", "modalHistoriaClinica");
@@ -178,7 +194,7 @@ function modificarHistoriaClinica(idHistoriaClinica){
 			showReplyMessage(response.result, response.message, "Modificar historia clínica", "modalHistoriaClinica");
 			if(response.result == 2){
 				let updatedHistoria = response.updatedHistoria;
-				$('#trH' + idHistoriaClinica).replaceWith(createRowHistorial(updatedHistoria.idHistoriaClinica, updatedHistoria.fecha, updatedHistoria.motivoConsulta));
+				$('#trH' + idHistoriaClinica).replaceWith(createRowHistorial(updatedHistoria));
 			}
 		}else showReplyMessage(1, "Debe ingresar el motivo de la consulta para modificar una historia clínica", "Motivo consulta requerido", "modalHistoriaClinica");
 	}else showReplyMessage(1, "Debe ingresar la fecha para modificar una historia clínica", "Fecha requerida", "modalHistoriaClinica");
@@ -190,6 +206,8 @@ function clearModalHistoria(){
 	$('#inputDiagnosticoHistoria').val("");
 	$('#inputObservacionesHistoria').val("");
 	$("#idInputFileResult").val('');
+	$("#inputPesoHistoria").val('');
+	$("#inputTemperaturaHistoria").val('');
 }
 
 function verHistoriaClinica(idHistoria){
@@ -316,4 +334,9 @@ function updateInformacionMascota(inputFrom, mascota){
 	$('#inputNacimiento'+ inputFrom).val(mascota.fechaNacimiento);
 	$('#inputFallecimiento' + inputFrom).val(mascota.fechaFallecimiento);
 	$('#inputObservaciones'+ inputFrom).val(mascota.observaciones);
+}
+
+
+function paginacionHistoriaClinica(){
+	console.log("scroll historia");
 }
