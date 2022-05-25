@@ -156,6 +156,45 @@ input[type=number] {
   margin-top: 1px;
 }
 
+.tableCustomScroll {
+  overflow: auto;
+  max-height: 600px;
+  scroll-margin-top: 10px;
+}
+
+.tableCustomScroll thead{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+}
+
+.tableCustomScroll::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+.tableCustomScroll::-webkit-scrollbar:vertical {
+  width:10px;
+}
+
+.tableCustomScroll::-webkit-scrollbar-button:increment,
+.tableCustomScroll::-webkit-scrollbar-button {
+  display: none;
+}
+
+.tableCustomScroll::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+.tableCustomScroll::-webkit-scrollbar-thumb {
+  background-color: #85B58A;
+  border: 2px solid #4D7852;
+}
+
+.tableCustomScroll::-webkit-scrollbar-track {
+  margin-top: 1px;
+}
+
 #tbodyVacunas tr:hover,
 #tbodyEnfermedades tr:hover,
 #tbodyAnalisis tr:hover,
