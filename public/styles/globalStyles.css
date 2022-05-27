@@ -119,7 +119,7 @@ input[type=number] {
 
 #containerTable {
   overflow: auto;
-  max-height: 600px;
+  max-height: 60vh;
   scroll-margin-top: 10px;
 }
 
@@ -271,4 +271,45 @@ input[type=number] {
 
 #ulContainer::-webkit-scrollbar-track {
   border-radius: 10px;
+}
+
+
+@media (min-width: 1023px) {
+  html, body{
+    font-size:1rem;
+  }
+}
+
+@media (max-width: 990px){
+  html, body{
+    font-size:1.7rem;
+  }
+
+  .notShowMobile{
+    display: none;
+  }
+
+  .w-75{
+    width: 100%!important;
+  }
+
+  .w-50{
+    width: 100%!important;
+  }
+
+  .text-center{
+    text-align: left!important;
+  }
+
+  .form-control{
+    font-size: 1.7rem;
+  }
+
+  .btn{
+    font-size: 1.5rem;
+  }
+
+  h5{
+    font-size: 2rem;
+  }
 }
