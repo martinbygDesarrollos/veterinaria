@@ -58,10 +58,10 @@ function createRow(obj){
 		row+= ">"+socioNombre + "</td>";
 
 
-	row += "<td class='text-center'>" + especie +"</td>";
+	row += "<td class='text-center notShowMobile'>" + especie +"</td>";
 	//row += "<td class='text-center'>" + raza + "</td>";
-	row += "<td class='text-center'>" + sexo +"</td>";
-	row += "<td class='text-center'>" + fechaNacimiento +"</td>";
+	row += "<td class='text-center notShowMobile'>" + sexo +"</td>";
+	row += "<td class='text-center notShowMobile'>" + fechaNacimiento +"</td>";
 	row += "</tr>";
 
 	return row;

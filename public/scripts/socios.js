@@ -69,18 +69,19 @@ function createRow(obj){
 	else
 		row += " > ";
 
-	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ idSocio +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ idSocio +"</td>";
 	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ nombre +"</td>";
-	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ telefono +"</td>";
-	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ direccion +"</td>";
 
 	if ( selectMascotas.length == 0 ){
 		row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>" + selectMascotas + "</td>";
 	}else
 		row += "<td class='text-center'>" + selectMascotas + "</td>";
 
-	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ cuota + "</td>";
-	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")' "
+
+	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ telefono +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ direccion +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ cuota + "</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")' "
 
 	if ( fechaUltimaCuota != "" ){
 		if ( deudor && deudorFecha != "" )
