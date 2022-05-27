@@ -78,3 +78,26 @@ function downloadFile( id ){
 	let url = getSiteURL() + 'descargar/' + id;
   	window.location.href = url;
 }
+
+function getCurrentDate(){
+	var today = new Date();
+	var date = null;
+	var day = null;
+	var month = null;
+	var year = null;
+
+	day = today.getDate();
+	month = today.getMonth()+1;
+	year = today.getFullYear();
+
+	if( day.toString().length == 1 ){
+		day = '0'+today.getDate();
+	}
+
+	if( month.toString().length == 1 ) {
+		month = '0'+(today.getMonth()+1)
+	}
+
+	date = year+'-'+month+'-'+day;
+	return date;
+}
