@@ -18,23 +18,52 @@ function cargarVencimientoCuota(){
 function createRowCuotas(idSocio, fechaUltimaCuota, fechaPago, nombre, cuota, lugarPago, telefono, email){
 	let row = "<tr>";
 	row += "<td class='text-center'>"+ fechaUltimaCuota +"</td>";
-	row += "<td class='text-center'>"+ fechaPago +"</td>";
+	row += "<td class='text-center notShowMobile'>"+ fechaPago +"</td>";
 	row += "<td class='text-center'>"+ nombre +"</td>";
-	row += "<td class='text-center'>"+ cuota +"</td>";
-	row += "<td class='text-center'>"+ lugarPago +"</td>";
-	row += "<td class='text-center'>"+ telefono +"</td>";
-	if(email)
+	row += "<td class='text-center notShowMobile'>"+ cuota +"</td>";
+	row += "<td class='text-center notShowMobile'>"+ lugarPago +"</td>";
+	//row += "<td class='text-center'>"+ telefono +"</td>";
+
+	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
+		if( telefono.length >= 8 )
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://wa.me/'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+		else
+			row += '<td class="text-center">'+telefono+'</td>';
+	}
+	else
+		row += "<td class='text-center'></td>";
+
+	/*if(email)
 		row += "<td class='text-center'><button onclick='notificarSocioCuota("+ idSocio +")' class='btn btn-info btn-sm'>"+ email +" <i class='fas fa-paper-plane'></i></button></td>";
 	else
 		row += "<td class='text-center'>No especificado</td>";
+	row += "</tr>";*/
+
+	if(email != "No especificado" && email != "No corresponde")
+		row += "<td class='text-center' title='"+email+"' ><button onclick='notificarSocioCuota("+ idSocio +", `"+email+"`)' class='btn btn-info'><i class='fas fa-paper-plane'></i></button></td>";
+	else
+		row += "<td class='text-center'></td>";
 	row += "</tr>";
 
 	return row;
 }
 
-function notificarSocioCuota(idSocio){
-	let response = sendPost("notificarSocioCuota", {idSocio: idSocio});
-	showReplyMessage(response.result, response.message, "Notificar socio", null);
+function notificarSocioCuota(idSocio, email){
+	console.log(email);
+	showReplyMessage(1, "Confirma enviar correo a "+email, "Notificar socio", null);
+
+	$('#modalButtonResponse').off('click');
+	$('#modalButtonResponse').click(function(){
+		$('#modalButtonResponse').attr("disable", true);
+		$('#modalButtonResponse').attr("hidden", true);
+		$('#modalMessageResponse').html("Enviando...");
+		sendAsyncPost("notificarSocioCuota", {idSocio: idSocio})
+		.then((response)=>{
+			$('#modalButtonResponse').attr("disable", false);
+			$('#modalButtonResponse').attr("hidden", false);
+			showReplyMessage(response.result, response.message, "Notificar socio", null);
+		})
+	})
 }
 
 function cargarVencimientoVacunas(){
@@ -55,23 +84,49 @@ function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosi
 
 	row += "<td class='text-center'>"+ fechaProximaDosis +"</td>";
 	row += "<td class='text-center'>"+ nombreVacuna +"</td>";
-	row += "<td class='text-center'>"+ intervaloDosis +"</td>";
-	row += "<td class='text-center'>"+ numDosis +"</td>";
+	row += "<td class='text-center notShowMobile'>"+ intervaloDosis +"</td>";
+	row += "<td class='text-center notShowMobile'>"+ numDosis +"</td>";
 	row += "<td class='text-center'>"+ nombre +"</td>";
-	row += "<td class='text-center'>"+ raza +"</td>";
+	row += "<td class='text-center notShowMobile'>"+ raza +"</td>";
 	row += "<td class='text-center'>"+ nombreSocio +"</td>";
-	row += "<td class='text-center'>"+ telefono +"</td>";
-	if(email != "No especificado" && email != "No corresponde")
-		row += "<td class='text-center'><button onclick='notificarVacunaMascota("+ idMascota +")' class='btn btn-info btn-sm'>"+ email +" <i class='fas fa-paper-plane'></i></button></td>";
+	//row += "<td class='text-center'>"+ telefono +"</td>";
+
+	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
+		if( telefono.length >= 8 )
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://wa.me/'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+		else
+			row += '<td class="text-center">'+telefono+'</td>';
+	}
 	else
-		row += "<td class='text-center'>No especificado</td>";
+		row += "<td class='text-center'></td>";
+
+	if(email != "No especificado" && email != "No corresponde")
+		row += "<td class='text-center' title='"+email+"' ><button onclick='notificarVacunaMascota("+ idMascota +", `"+email+"`)' class='btn btn-info'><i class='fas fa-paper-plane'></i></button></td>";
+	else
+		row += "<td class='text-center'></td>";
 	row += "</tr>";
 
 	return row;
 }
 
-function notificarVacunaMascota(idMascota){
-	let response = sendPost("notificarVacunaMascota", {idMascota: idMascota});
+function notificarVacunaMascota(idMascota, email){
+	/*let response = sendPost("notificarVacunaMascota", {idMascota: idMascota});
 	console.log(response);
-	showReplyMessage(response.result, response.message, "Notificar vacuna", null);
+	showReplyMessage(response.result, response.message, "Notificar vacuna", null);*/
+
+	console.log(email);
+	showReplyMessage(1, "Confirma enviar correo a "+email, "Notificar vacuna", null);
+
+	$('#modalButtonResponse').off('click');
+	$('#modalButtonResponse').click(function(){
+		$('#modalButtonResponse').attr("disable", true);
+		$('#modalButtonResponse').attr("hidden", true);
+		$('#modalMessageResponse').html("Enviando...");
+		sendAsyncPost("notificarVacunaMascota", {idMascota: idMascota})
+		.then((response)=>{
+			$('#modalButtonResponse').attr("disable", false);
+			$('#modalButtonResponse').attr("hidden", false);
+			showReplyMessage(response.result, response.message, "Notificar vacuna", null);
+		})
+	})
 }
