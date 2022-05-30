@@ -30,7 +30,7 @@
 		</div>
 		<div class="card-body">
 			<div class="row">
-				<div class="col-2" style="min-width: 10em;">
+				<div class="col-2 notShowMobile" style="min-width: 10em;">
 					<div class="d-flex justify-content-center mb-2">
 						<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna o medicamento</button>
 					</div>
@@ -143,39 +143,41 @@
 							</div>
 						</div>
 						<div class="tab-pane fade show  border boder-2 border-top-0 p-3" id="nav-vacunas" role="tabpanel" aria-labelledby="nav-home-tab">
-							<table class="table table-sm">
-								<thead class="bg-mycolor">
-									<tr>
-										<td class="text-center" scope="col">Aplicar</td>
-										<td class="text-center" scope="col">Prox. dosis</td>
-										<td class="text-center" scope="col">Última dosis</td>
-										<td class="text-center" scope="col">Nombre</td>
-										<td class="text-center" scope="col">Intervalo</td>
-										<td class="text-center" scope="col">Nº dosis</td>
-										<td class="text-center" scope="col">Primer Dosis</td>
-										<td class="text-center" scope="col">Modificar</td>
-									</tr>
-								</thead>
-								<tbody id="tbodyVacunas">
-									{% if responseVacunas.result == 2 %}
-									{% for vacuna in responseVacunas.listResult %}
-									<tr id="trV{{ vacuna.idVacunaMascota }}">
-										<td class="text-center"><button type="button" class="btn btn-link btn-sm" onclick="modalAplicarDosis('{{ vacuna.idVacunaMascota }}')"><i class="fas fa-syringe text-dark"></i></button></td>
-										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaProximaDosis }}</td>
-										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaUltimaDosis }}</td>
-										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.nombreVacuna }}</td>
-										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.intervaloDosis }} días</td>
-										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.numDosis }}</td>
-										<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaPrimerDosis }}</td>
-										<td class="text-center" style="min-width: 6em;">
-											<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalVacuna(this)"><i class="fas fa-edit text-dark"></i></button>
-											<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalBorrarVacuna('{{ vacuna.idVacunaMascota }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
-										</td>
-									</tr>
-									{% endfor %}
-									{% endif %}
-								</tbody>
-							</table>
+							<div class="tableCustomScroll">
+								<table class="table table-sm">
+									<thead class="bg-mycolor">
+										<tr>
+											<td class="text-center notShowMobile" scope="col">Aplicar</td>
+											<td class="text-center" scope="col">Prox. dosis</td>
+											<td class="text-center" scope="col">Última dosis</td>
+											<td class="text-center" scope="col">Nombre</td>
+											<td class="text-center notShowMobile" scope="col">Intervalo</td>
+											<td class="text-center" scope="col">Nº dosis</td>
+											<td class="text-center notShowMobile" scope="col">Primer Dosis</td>
+											<td class="text-center notShowMobile" scope="col">Modificar</td>
+										</tr>
+									</thead>
+									<tbody id="tbodyVacunas">
+										{% if responseVacunas.result == 2 %}
+										{% for vacuna in responseVacunas.listResult %}
+										<tr id="trV{{ vacuna.idVacunaMascota }}">
+											<td class="text-center notShowMobile"><button type="button" class="btn btn-link btn-sm" onclick="modalAplicarDosis('{{ vacuna.idVacunaMascota }}')"><i class="fas fa-syringe text-dark"></i></button></td>
+											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaProximaDosis }}</td>
+											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaUltimaDosis }}</td>
+											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.nombreVacuna }}</td>
+											<td class="text-center notShowMobile" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.intervaloDosis }} días</td>
+											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.numDosis }}</td>
+											<td class="text-center notShowMobile" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaPrimerDosis }}</td>
+											<td class="text-center notShowMobile" style="min-width: 6em;">
+												<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalVacuna(this)"><i class="fas fa-edit text-dark"></i></button>
+												<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalBorrarVacuna('{{ vacuna.idVacunaMascota }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
+											</td>
+										</tr>
+										{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</div>
 							<div class="d-flex justify-content-center m-2">
 								<div id="containerDescripcion" style="display: none;" class="form-group w-75">
 									<label for="textAreaShowDescription">Descripcion </label>
@@ -184,56 +186,60 @@
 							</div>
 						</div>
 						<div class="tab-pane fade border boder-2 border-top-0 p-3" id="nav-enfermedades" role="tabpanel" aria-labelledby="nav-profile-tab">
-							<table class="table table-sm">
-								<thead class="bg-mycolor">
-									<tr>
-										<td class="text-center" scope="col">Diagnóstico</td>
-										<td class="text-center" scope="col">Nombre</td>
-										<td class="text-center" scope="col">Observaciones</td>
-										<td class="text-center" scope="col">Modificar</td>
-									</tr>
-								</thead>
-								<tbody id="tbodyEnfermedades">
-									{% if responseEnfermedades.result == 2 %}
-									{% for enfermedad in responseEnfermedades.listResult %}
-									<tr id="trE{{ enfermedad.idEnfermedad }}">
-										<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.fechaDiagnostico }}</td>
-										<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.nombreEnfermedad }}</td>
-										<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.observaciones }}</td>
-										<td class="text-center" scope="col">
-											<button type="button" class="btn btn-link btn-sm" name="{{ enfermedad.idEnfermedad }}" onclick="openModalEnfermedad(this)"><i class="fas fa-edit text-dark"></i></button>
-											<button type="button" class="btn btn-link btn-sm" onclick="openModalBorrarEnfermedad('{{ enfermedad.idEnfermedad }}')"><i class="fas fa-trash-alt text-dark"></i></button>
-										</td>
-									</tr>
-									{% endfor %}
-									{% endif %}
-								</tbody>
-							</table>
+							<div class="tableCustomScroll" >
+								<table class="table table-sm">
+									<thead class="bg-mycolor">
+										<tr>
+											<td class="text-center" scope="col">Diagnóstico</td>
+											<td class="text-center" scope="col">Nombre</td>
+											<td class="text-center" scope="col">Observaciones</td>
+											<td class="text-center notShowMobile" scope="col">Modificar</td>
+										</tr>
+									</thead>
+									<tbody id="tbodyEnfermedades">
+										{% if responseEnfermedades.result == 2 %}
+										{% for enfermedad in responseEnfermedades.listResult %}
+										<tr id="trE{{ enfermedad.idEnfermedad }}">
+											<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.fechaDiagnostico }}</td>
+											<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.nombreEnfermedad }}</td>
+											<td class="text-center" onclick="showObservaciones('{{ enfermedad.idEnfermedad }}')" scope="col">{{ enfermedad.observaciones }}</td>
+											<td class="text-center notShowMobile" scope="col">
+												<button type="button" class="btn btn-link btn-sm" name="{{ enfermedad.idEnfermedad }}" onclick="openModalEnfermedad(this)"><i class="fas fa-edit text-dark"></i></button>
+												<button type="button" class="btn btn-link btn-sm" onclick="openModalBorrarEnfermedad('{{ enfermedad.idEnfermedad }}')"><i class="fas fa-trash-alt text-dark"></i></button>
+											</td>
+										</tr>
+										{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</div>
 						</div>
 						<div class="tab-pane fade border boder-2 border-top-0 p-3" id="nav-analisis" role="tabpanel" aria-labelledby="nav-profile-tab">
-							<table class="table table-sm ">
-								<thead class="bg-mycolor">
-									<tr>
-										<td class="text-center" scope="col">Fecha</td>
-										<td class="text-center" scope="col">Nombre</td>
-										<td class="text-center" scope="col">Acción</td>
-									</tr>
-								</thead>
-								<tbody id="tbodyAnalisis">
-									{% if responseAnalisis.result == 2 %}
-									{% for analisis in responseAnalisis.listResult %}
-									<tr id="trA{{ analisis.idAnalisis }}">
-										<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.fecha }}</td>
-										<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.nombre }}</td>
-										<td class="text-center" style="min-width: 6 em;" scope="col">
-											<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" name="{{ analisis.idAnalisis }}" onclick="openModalAnalaisis(this)"><i class="fas fa-edit text-dark"></i></button>
-											<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" onclick="openModalBorrarAnalisis('{{ analisis.idAnalisis }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
-										</td>
-									</tr>
-									{% endfor %}
-									{% endif %}
-								</tbody>
-							</table>
+							<div class="tableCustomScroll" >
+								<table class="table table-sm ">
+									<thead class="bg-mycolor">
+										<tr>
+											<td class="text-center" scope="col">Fecha</td>
+											<td class="text-center" scope="col">Nombre</td>
+											<td class="text-center" scope="col">Acción</td>
+										</tr>
+									</thead>
+									<tbody id="tbodyAnalisis">
+										{% if responseAnalisis.result == 2 %}
+										{% for analisis in responseAnalisis.listResult %}
+										<tr id="trA{{ analisis.idAnalisis }}">
+											<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.fecha }}</td>
+											<td class="text-center" onclick="verAnalisis('{{ analisis.idAnalisis }}')" scope="col">{{ analisis.nombre }}</td>
+											<td class="text-center" style="min-width: 6 em;" scope="col">
+												<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" name="{{ analisis.idAnalisis }}" onclick="openModalAnalaisis(this)"><i class="fas fa-edit text-dark"></i></button>
+												<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" onclick="openModalBorrarAnalisis('{{ analisis.idAnalisis }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
+											</td>
+										</tr>
+										{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</div>
 						</div>
 						<div class="tab-pane fade border boder-2 border-top-0 p-3" id="nav-historia" role="tabpanel" aria-labelledby="nav-profile-tab">
 							<div class="tableCustomScroll" onscroll="cargarHistoriaClinica('{{ SocioMascota.mascota.idMascota }}')">
@@ -563,7 +569,7 @@
 					<hr>
 				</div>
 				<p id="textModalView"></p>
-				<div id="divFilesTableModalView" hidden disabled>
+				<div id="divFilesTableModalView" class="tableCustomScroll" hidden disabled>
 					<table class="table table-sm ">
 						<thead class="bg-mycolor">
 							<tr>

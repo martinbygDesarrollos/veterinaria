@@ -5,26 +5,29 @@
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border shadow w-75">
 		<div class="card-header d-flex justify-content-between bg-mycolor">
-			<h5 class="card-title">Socios</h5>
+			<h5 class="card-title">Cuotas socios</h5>
 		</div>
 		<div class="card-body">
 			<div class="input-group mb-3 w-50">
 				<input type="text" class="form-control shadow-sm" placeholder="Buscar nombre...">
 			</div>
-			<table class="table">
-				<thead class="bg-mycolor">
-					<tr>
-						<td class="text-center" scope="col">Ultima cuota</td>
-						<td class="text-center" scope="col">Día de pago</td>
-						<td class="text-center" scope="col">Socio</td>
-						<td class="text-center" scope="col">Cuota</td>
-						<td class="text-center" scope="col">Lugar de pago</td>
-						<td class="text-center" scope="col">Teléfono</td>
-						<td class="text-center" scope="col">Email</td>
-					</tr>
-				</thead>
-				<tbody id="tbodyVencimientosCuota"></tbody>
-			</table>
+
+			<div class="tableCustomScroll">
+				<table class="table">
+					<thead class="bg-mycolor">
+						<tr>
+							<td class="text-center" scope="col">Ultima cuota</td>
+							<td class="text-center notShowMobile" scope="col">Día de pago</td>
+							<td class="text-center" scope="col">Socio</td>
+							<td class="text-center notShowMobile" scope="col">Cuota</td>
+							<td class="text-center notShowMobile" scope="col">Lugar de pago</td>
+							<td class="text-center" scope="col">Teléfono</td>
+							<td class="text-center" scope="col">Email</td>
+						</tr>
+					</thead>
+					<tbody id="tbodyVencimientosCuota"></tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>
