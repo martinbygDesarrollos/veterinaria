@@ -449,7 +449,7 @@ class ctr_usuarios{
 		if($responseGetSocio->result == 2){
 			$responseGetMascota = ctr_mascotas::getMascota($idMascota);
 			if($responseGetMascota->result == 2){
-				$responseGetMascotaSocio = ctr_mascotas::mascotaIsVinculada($idMascota);
+				$responseGetMascotaSocio = ctr_mascotas::getMascotaSocio($idMascota);
 				if($responseGetMascotaSocio->result == 1){
 					$responseInsertMascotaSocio = ctr_mascotas::vincularMascotaSocio($idSocio, $idMascota);
 					if($responseInsertMascotaSocio->result == 2){

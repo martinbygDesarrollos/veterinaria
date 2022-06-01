@@ -26,13 +26,13 @@ class mascotas{
 		return DataBase::sendQuery("UPDATE mascotas SET estado = ? WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio IN (SELECT idSocio FROM socios WHERE estado = ?))", array('ii', $state, $state), "BOOLE");
 	}
 
-	public function mascotaIsVinculada($idMascota){
+	/*public function mascotaIsVinculada($idMascota){
 		$responseQuery =  DataBase::sendQuery("SELECT * FROM mascotasocio WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
 		if($responseQuery->result == 1)
 			$responseQuery->message = "La mascota no tiene un socio vinculado.";
 
 		return $responseQuery;
-	}
+	}*/
 
 	public function getMascotasNoSocio($textToSearch){
 		$responseQuery  = DataBase::sendQuery("SELECT * FROM mascotas WHERE nombre LIKE '" . $textToSearch . "%' AND idMascota NOT IN (SELECT idMascota FROM mascotasocio) LIMIT 5", null, "LIST");
@@ -65,13 +65,13 @@ class mascotas{
 		return $responseQuery;
 	}
 
-	public function getSocioIdByMascota($idMascota){
+	/*public function getSocioIdByMascota($idMascota){
 		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotasocio WHERE idMascota = ?", array('i', $idMascota), "OBJECT");
 		if($responseQuery->result == 1)
 			$responseQuery->message = "No se encontro un socio vinculado a la mascota seleccionada.";
 
 		return $responseQuery;
-	}
+	}*/
 
 	public function getSocioActivePets($idSocio){
 		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE estado = 1 AND idMascota IN (SELECT idMascota AS cantMascotas FROM mascotasocio WHERE idSocio = ?)", array('i', $idSocio), "LIST");

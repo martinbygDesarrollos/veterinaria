@@ -30,9 +30,9 @@ class ctr_mascotas {
 		return mascotas::getMascotaToShow($idMascota);
 	}
 
-	public function mascotaIsVinculada($idMascota){
+	/*public function mascotaIsVinculada($idMascota){
 		return mascotas::mascotaIsVinculada($idMascota);
-	}
+	}*/
 
 	public function vincularMascotaSocio($idSocio, $idMascota){
 		$currentDate = fechas::getCurrentDateInt();
@@ -247,7 +247,7 @@ class ctr_mascotas {
 		if($responseGetMascota->result == 2)
 			$response->mascota = $responseGetMascota->objectResult;
 
-		$responseGetIDSocio = mascotas::getSocioIdByMascota($idMascota);
+		$responseGetIDSocio = mascotas::getMascotaSocio($idMascota);
 		if($responseGetIDSocio->result == 2){
 			$responseGetSocio = ctr_usuarios::getSocioToShow($responseGetIDSocio->objectResult->idSocio);
 			if($responseGetSocio->result == 2)
