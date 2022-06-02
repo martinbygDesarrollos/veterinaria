@@ -44,18 +44,32 @@ function createNewVacuna(idMascota){
 				let vacuna = response.newVacuna;
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 
-				//buscar mascota y sus datos
+				//buscar dueño de la mascota y sus datos
 				idMascota = vacuna.idVacunaMascota;
-				sendAsyncPost("getSocioByMacota", {id: idMascota})
+				sendAsyncPost("getSocioDataByMacota", {id: idMascota})
 				.then((response)=>{
-					vacMessage = "Se agendó próxima dosis de "+vacuna.nombreVacuna+" para el día "+vacuna.fechaProximaDosis+" a ";
-					console.log(data);
-					sendAsyncPost("enviarWhatsappAutomatico", {phone: "92459188", message: vacMessage})
-					.then(( response )=>{
-						console.log(response);
-					})
-
 					console.log(response);
+					if ( response.result == 2 ){
+
+//no se controla si hay o no mascotas porque ya se pide de antemano los datos del dueño de la mascota idMascota por lo que si o si response tiene que tener mascotas
+						let nombreMascotaVacunada = "";
+						for (var i = 0; i < response.mascotas.listMascotas.length; i++) {
+							if ( response.mascotas.listMascotas[i].idMascota == idMascota ){
+								console.log("en el if, id listado "+response.mascotas.listMascotas[i].idMascota+" id parametro "+idMascota);
+								nombreMascotaVacunada = response.mascotas.listMascotas[i].nombre;
+							}
+						}
+							//OBTENER DUEÑO CORRECTO MASCOTA CORRECTA
+						vacMessage = "Se agendó próxima dosis de "+vacuna.nombreVacuna+" para el día "+vacuna.fechaProximaDosis +" a "+ nombreMascotaVacunada;
+						console.log(vacMessage);return;
+						if ( response.socio.telefono ){
+							console.log("cliente tiene tel "+response.socio.telefono);
+							redirectToWhatsapp( response.socio.telefono, vacMessage );
+						}else{
+							console.log("cliente no tiene tel");
+							redirectToWhatsapp( null, vacMessage );
+						}
+					}
 				})
 			}
 		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");

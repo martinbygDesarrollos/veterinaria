@@ -101,3 +101,17 @@ function getCurrentDate(){
 	date = year+'-'+month+'-'+day;
 	return date;
 }
+
+
+function redirectToWhatsapp( phone, message ){
+
+	console.log("utils function redirectToWhatsapp", phone, message);
+	if ( phone ){
+		window.open("https://wa.me/"+phone+"?text="+message, '_blank');
+	}else
+		window.open("https://wa.me/");
+
+
+	//enviar whatsapp por celu
+	//whatsapp://send?phone=59892459188
+}

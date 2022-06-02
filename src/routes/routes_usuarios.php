@@ -352,5 +352,28 @@ return function (App $app) {
                 ->withHeader('Pragma', 'public');
         }else return $response->withRedirect($request->getUri()->getBaseUrl());
     });
+
+    $app->post('/getSocioDataByMacota', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['id'];
+
+            $idSocio = null;
+            $responseGetSocio = null;
+
+            $responseData = ctr_mascotas::getMascotaSocio($idMascota);
+            if ( $responseData->result == 2 ){
+                $idSocio = $responseData->objectResult->idSocio;
+            }
+
+            if ($idSocio){
+                $responseGetSocio = ctr_usuarios::getSocioWithMascotaToShow($idSocio);
+            }
+
+            return json_encode($responseGetSocio);
+        }
+        else return json_encode($responseSession);
+    });
 }
 ?>
