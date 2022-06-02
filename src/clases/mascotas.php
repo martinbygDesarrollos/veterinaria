@@ -74,7 +74,8 @@ class mascotas{
 	}*/
 
 	public function getSocioActivePets($idSocio){
-		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE estado = 1 AND idMascota IN (SELECT idMascota AS cantMascotas FROM mascotasocio WHERE idSocio = ?)", array('i', $idSocio), "LIST");
+		//$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE estado = 1 AND idMascota IN (SELECT idMascota AS cantMascotas FROM mascotasocio WHERE idSocio = ?)", array('i', $idSocio), "LIST");
+		$responseQuery = DataBase::sendQuery("SELECT * FROM mascotas WHERE (fechaFallecimiento IS NULL OR fechaFallecimiento = '') AND idMascota IN (SELECT idMascota AS cantMascotas FROM mascotasocio WHERE idSocio = ?)", array('i', $idSocio), "LIST");
 		if($responseQuery->result == 1)
 			$responseQuery->message = "No se econtraron mascotas vinculadas al socio seleccionado.";
 
@@ -119,10 +120,10 @@ class mascotas{
 		$select = "SELECT m.*, ms.idSocio, s.nombre AS nombreSocio, s.fechaUltimoPago, s.fechaUltimaCuota FROM mascotas AS m ";
 		$join = " LEFT JOIN mascotasocio AS ms ON m.idMascota = ms.idMascota
 				LEFT JOIN socios AS s ON s.idSocio = ms.idSocio ";
-		$where = " WHERE m.estado = ? AND m.idMascota < ? ";
+		$where = " WHERE m.idMascota < ? ";
 		$orderAndList = " ORDER BY m.idMascota DESC LIMIT 14 ";
 
-		$responseQuery = DataBase::sendQuery($select . $join . $where . $sqlToSearch . $orderAndList, array('ii', $stateMascota, $lastId), "LIST");
+		$responseQuery = DataBase::sendQuery($select . $join . $where . $sqlToSearch . $orderAndList, array('i', $lastId), "LIST");
 		if($responseQuery->result == 2){
 			$newLastID = $lastId;
 			$arrayResult = array();
