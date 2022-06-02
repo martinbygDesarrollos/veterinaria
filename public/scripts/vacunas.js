@@ -43,6 +43,20 @@ function createNewVacuna(idMascota){
 			if(response.result == 2){
 				let vacuna = response.newVacuna;
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
+
+				//buscar mascota y sus datos
+				idMascota = vacuna.idVacunaMascota;
+				sendAsyncPost("getSocioByMacota", {id: idMascota})
+				.then((response)=>{
+					vacMessage = "Se agendó próxima dosis de "+vacuna.nombreVacuna+" para el día "+vacuna.fechaProximaDosis+" a ";
+					console.log(data);
+					sendAsyncPost("enviarWhatsappAutomatico", {phone: "92459188", message: vacMessage})
+					.then(( response )=>{
+						console.log(response);
+					})
+
+					console.log(response);
+				})
 			}
 		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");
 	}else showReplyMessage(1, "El nombre no puede ser ingresado vacio.", "Nombre requerido.", "modalVacuna");
@@ -94,17 +108,15 @@ function aplicarDosisVacuna(idVacunaMascota){
 function openDescriptionVacuna(idVacunaMascota){
 	let response = sendPost('getVacunaMascotaToShow', {idVacunaMascota: idVacunaMascota});
 	if(response.result == 2){
-		if(response.objectResult.observacion){
-			let vacuna = response.objectResult;
-			$("#titleModalView").html("Vacuna");
-			$('#dateModalView').html("<b>Última dosis</b>: " + vacuna.fechaUltimaDosis);
-			$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Primer dosis:</b> " + vacuna.fechaPrimerDosis + "<hr><b>Proxima dosis:</b> " + vacuna.fechaProximaDosis +"<hr><b>Observaciones: </b>" + vacuna.observacion + "<hr>");
+		let vacuna = response.objectResult;
+		$("#titleModalView").html("Vacuna");
+		$('#dateModalView').html("<b>Última dosis</b>: " + vacuna.fechaUltimaDosis);
+		$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Primer dosis:</b> " + vacuna.fechaPrimerDosis + "<hr><b>Proxima dosis:</b> " + vacuna.fechaProximaDosis +"<hr><b>Observaciones: </b>" + vacuna.observacion + "<hr>");
 
-			$("#divFilesTableModalView").attr("hidden", true);
-			$("#divFilesTableModalView").attr("disable", true);
+		$("#divFilesTableModalView").attr("hidden", true);
+		$("#divFilesTableModalView").attr("disable", true);
 
-			$('#modalView').modal();
-		}
+		$('#modalView').modal();
 	}
 }
 
