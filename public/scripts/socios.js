@@ -2,6 +2,17 @@ let lastId = 0;
 let textToSearch = null;
 let estado = 1;
 
+$(document).ready(()=>{
+
+	if (estado) {
+		$("#inputActiveSocio").prop('checked', true);
+		$("#inputInactiveSocio").prop('checked', false);
+	}else{
+		$("#inputActiveSocio").prop('checked', false);
+		$("#inputInactiveSocio").prop('checked', true);
+	}
+})
+
 function cargarTablaSocios(){
 
 	let response = sendPost("getSociosPagina", {lastId: lastId, textToSearch: textToSearch, estado: estado});
