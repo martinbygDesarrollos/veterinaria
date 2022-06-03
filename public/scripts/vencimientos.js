@@ -84,7 +84,7 @@ function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosi
 
 	row += "<td class='text-center'>"+ fechaProximaDosis +"</td>";
 	row += "<td class='text-center'>"+ nombreVacuna +"</td>";
-	row += "<td class='text-center notShowMobile'>"+ intervaloDosis +"</td>";
+	row += "<td class='text-center notShowMobile'>"+ intervaloDosis +" días</td>";
 	row += "<td class='text-center notShowMobile'>"+ numDosis +"</td>";
 	row += "<td class='text-center'>"+ nombre +"</td>";
 	row += "<td class='text-center notShowMobile'>"+ raza +"</td>";
