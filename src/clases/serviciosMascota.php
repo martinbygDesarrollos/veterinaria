@@ -118,8 +118,6 @@ class serviciosMascota {
                 if(is_null($row['raza']))
                     $row['raza'] = "";
                 $row['fechaProximaDosis'] = fechas::dateToFormatBar($row['fechaProximaDosis']);
-                $row['intervaloDosis'] = serviciosMascota::getInterval($row['intervaloDosis']);
-
                 $arrayResult[] = $row;
             }
             $responseQuery->listResult = $arrayResult;
@@ -164,17 +162,6 @@ class serviciosMascota {
 
         if(is_null($vacuna['observacion']) || strlen($vacuna['observacion']) < 1)
             $vacuna['observaciones'] = $noData;
-
-        /*if($vacuna['intervaloDosis'] == 1)
-            $vacuna['intervaloDosis'] = "Única dosis";
-        else if($vacuna['intervaloDosis'] == 30)
-            $vacuna['intervaloDosis'] = "Mensual";
-        else if($vacuna['intervaloDosis'] == 60)
-            $vacuna['intervaloDosis'] = "Bimestral";
-        else if($vacuna['intervaloDosis'] == 180)
-            $vacuna['intervaloDosis'] = "Semestral";
-        else if($vacuna['intervaloDosis'] == 360)
-            $vacuna['intervaloDosis'] = "Anual";*/
 
         return $vacuna;
     }
@@ -274,31 +261,7 @@ class serviciosMascota {
         if(is_null($vacuna->observacion) || strlen($vacuna->observacion) < 1)
             $vacuna->observacion = $noData;
 
-        if($vacuna->intervaloDosis == 1)
-            $vacuna->intervaloDosis = "Única dosis";
-        else if($vacuna->intervaloDosis == 30)
-            $vacuna->intervaloDosis = "Mensual";
-        else if($vacuna->intervaloDosis == 60)
-            $vacuna->intervaloDosis = "Bimestral";
-        else if($vacuna->intervaloDosis == 180)
-            $vacuna->intervaloDosis = "Semestral";
-        else if($vacuna->intervaloDosis == 360)
-            $vacuna->intervaloDosis = "Anual";
-
         return $vacuna;
-    }
-
-    public function getInterval($value){
-        if($value == 1)
-            return "Única dosis";
-        if($value == 30)
-            return "Mensual";
-        if($value == 60)
-            return "Bimestral";
-        if($value == 180)
-            return "Semestral";
-        if($value == 360)
-            return "Anual";
     }
 
     public function getVacunaMascota($idVacunaMascota){
