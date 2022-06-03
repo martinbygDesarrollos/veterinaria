@@ -13,7 +13,7 @@
 				<div class="row ml-2">
 					{% if SocioMascota.socio %}
 					{% if BackTo != "VerSocio" %}
-					<h5 class="card-title mt-2">Mascota de&nbsp;
+					<h5 class="card-title mt-2">{{SocioMascota.mascota.nombre}}&nbsp-&nbsp;
 					<a href="{{ path_for('VerSocio', {idSocio: SocioMascota.socio.idSocio }) }}" style="color:black; ">{{SocioMascota.socio.nombre}}</a>&nbsp;
 					</h5>
 					{% else %}
