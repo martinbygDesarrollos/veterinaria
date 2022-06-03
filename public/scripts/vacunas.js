@@ -2,6 +2,7 @@ function openModalVacuna(inputButton){
 	$("#dataListNombreVacuna").empty();
 
 	if(inputButton.id == "NUEVAVACUNA"){
+		console.log("boton nueva vac",inputButton);
 		$('#modalTitleVacuna').html("Nueva vacuna/medicamento");
 		$('#labelInputDateVacuna').text("Fecha primer dosis");
 		clearModalVacuna();
@@ -34,7 +35,7 @@ function createNewVacuna(idMascota){
 	let intervalo = $('#inputIntervaloVacuna').val() || null;
 	let primerDosis = $('#inputPrimerDosisVacuna').val() || null;
 	let observaciones = $('#inputObservacionesVacuna').html() || null;
-	console.log(intervalo);
+	//console.log(intervalo);
 	if(nombre){
 		if(primerDosis){
 			let data ={idMascota: idMascota, nombreVacuna: nombre, intervalo: intervalo, fechaDosis: primerDosis, observaciones: observaciones};
@@ -45,33 +46,26 @@ function createNewVacuna(idMascota){
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 
 				//buscar dueño de la mascota y sus datos
-				idMascota = vacuna.idVacunaMascota;
 				sendAsyncPost("getSocioDataByMacota", {id: idMascota})
 				.then((response)=>{
-					console.log(response);
 					if ( response.result == 2 ){
-
 //no se controla si hay o no mascotas porque ya se pide de antemano los datos del dueño de la mascota idMascota por lo que si o si response tiene que tener mascotas
 						let nombreMascotaVacunada = "";
 						for (var i = 0; i < response.mascotas.listMascotas.length; i++) {
 							if ( response.mascotas.listMascotas[i].idMascota == idMascota ){
-								console.log("en el if, id listado "+response.mascotas.listMascotas[i].idMascota+" id parametro "+idMascota);
 								nombreMascotaVacunada = response.mascotas.listMascotas[i].nombre;
 							}
 						}
-							//OBTENER DUEÑO CORRECTO MASCOTA CORRECTA
+						//OBTENER DUEÑO CORRECTO MASCOTA CORRECTA
 						vacMessage = "Se agendó próxima dosis de "+vacuna.nombreVacuna+" para el día "+vacuna.fechaProximaDosis +" a "+ nombreMascotaVacunada;
-						console.log(vacMessage);return;
 						if ( response.socio.telefono ){
-							console.log("cliente tiene tel "+response.socio.telefono);
 							redirectToWhatsapp( response.socio.telefono, vacMessage );
 						}else{
-							console.log("cliente no tiene tel");
 							redirectToWhatsapp( null, vacMessage );
 						}
-					}
+					}else console.log( "al buscar datos del dueño de la mascota no se dio resultado 2", response );
 				})
-			}
+			}else console.log( "al crear nuevade la mascota no se dio resultado 2", response );
 		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");
 	}else showReplyMessage(1, "El nombre no puede ser ingresado vacio.", "Nombre requerido.", "modalVacuna");
 }
@@ -204,7 +198,7 @@ function removeVacunaMascota(idVacunaMascota){
 }
 
 function getDataVacunas(valueInput){
-	console.log(valueInput);
+	//console.log(valueInput);
 
 	if ( valueInput.length > 2 ){
 		sendAsyncPost("getVacunasByInput", {value: valueInput})
@@ -228,7 +222,7 @@ function completeDataVacunas( value ){
 		if( response.result == 2 ){
 			let obj = response.objectResult
 			$("#inputIntervaloVacuna").val(obj.intervalo)
-			console.log(response)
+			//console.log(response)
 		}
 
 	})
