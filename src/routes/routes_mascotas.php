@@ -305,30 +305,42 @@ return function (App $app) {
     });
 
     $app->post('/getVacunasVencidas', function(Request $request, Response $response){
-        $data = $request->getParams();
-        $dateVencimiento = $data['dateVencimiento'];
-        return json_encode(ctr_mascotas::getVacunasVencidas($dateVencimiento));
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $dateVencimiento = $data['dateVencimiento'];
+            return json_encode(ctr_mascotas::getVacunasVencidas($dateVencimiento));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/getSocioPorMascota', function(Request $request, Response $response){
-        $data = $request->getParams();
-        $idMascota = $data['idMascota'];
-        return json_encode(ctr_mascotas::getMascotaWithSocio($idMascota));
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data['idMascota'];
+            return json_encode(ctr_mascotas::getMascotaWithSocio($idMascota));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/getVacunasByInput', function(Request $request, Response $response){
-        $data = $request->getParams();
-        $value = $data['value'];
-        return json_encode(ctr_mascotas::getVacunasByInput($value));
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $value = $data['value'];
+            return json_encode(ctr_mascotas::getVacunasByInput($value));
+        }else return json_encode($responseSession);
     });
 
     $app->post('/getVacunasByName', function(Request $request, Response $response){
-        $data = $request->getParams();
-        $value = $data['value'];
-        return json_encode(ctr_mascotas::getVacunasByName($value));
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $value = $data['value'];
+            return json_encode(ctr_mascotas::getVacunasByName($value));
+        }else return json_encode($responseSession);
     });
 
-	//------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------
 
 }
 ?>
