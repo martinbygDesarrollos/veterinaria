@@ -51,6 +51,25 @@
 			</div>
 		</div>
 	</div>
+	<div id="modalMessageConfirm" class="modal" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div id="" class="modal-header alert-warning">
+					<span id="modalMessageConfirmTitle" class="modal-title"></span>
+					<button type="button" class="close" data-dismiss="modal" accesskey="x" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p id="modalMessageConfirmMessage" class="texts-center"></p>
+				</div>
+				<div class="modal-footer">
+					<button id="modalMessageConfirmBtnNo" type="button" class="btn btn-warning shadow-sm">No</button>
+					<button id="modalMessageConfirmBtnSi" type="button" class="btn btn-success shadow-sm">Si</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js"></script>
 	<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js"></script>
 	<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js"></script>

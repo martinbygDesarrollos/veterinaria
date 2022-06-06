@@ -201,7 +201,8 @@ input[type=number] {
 #tbodyHistoriaClinica tr:hover,
 #tbodyMascotas tr:hover,
 #tbodyMascotasSocio tr:hover,
-#tbodySocios tr:hover {
+#tbodySocios tr:hover,
+#tbodyVencimientosVacuna tr:hover {
   background-color: #CBEDCF;
 }
 

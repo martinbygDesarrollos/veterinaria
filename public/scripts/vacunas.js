@@ -40,10 +40,66 @@ function createNewVacuna(idMascota){
 		if(primerDosis){
 			let data ={idMascota: idMascota, nombreVacuna: nombre, intervalo: intervalo, fechaDosis: primerDosis, observaciones: observaciones};
 			let response = sendPost("aplicarNuevaVacunaMascota", data);
-			showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
+			//showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
 			if(response.result == 2){
 				let vacuna = response.newVacuna;
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
+
+				showMessageConfirm(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
+				$('#modalMessageConfirmBtnSi').off('click');
+				$('#modalMessageConfirmBtnSi').click(function(){
+					$('#modalMessageConfirmBtnSi').attr("disable", true);
+					let timestamp = getTimestamp();
+					if ( timestamp.length == 14 ){
+						if ( vacuna.observaciones ){
+							obs = vacuna.observaciones + ","+timestamp;
+						}else obs = timestamp;
+					}else obs = vacuna.observaciones;
+
+					let data = {
+						idVacunaMascota: vacuna.idVacunaMascota,
+						nombre: vacuna.nombreVacuna,
+						intervalo: vacuna.intervaloDosis,
+						fechaUltimaDosis: vacuna.fechaUltimaDosis,
+						observaciones: obs
+					};
+					sendAsyncPost("updateVacunaMascota", data)
+					.then((response)=>{
+						console.log(response);
+						if (response.result != 2){
+							showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
+						}
+					})
+					$('#modalMessageConfirmBtnSi').attr("disable", false);
+					$('#modalMessageConfirm').modal("hide");
+				});
+
+				$('#modalMessageConfirmBtnNo').off('click');
+				$('#modalMessageConfirmBtnNo').click(function(){
+					$('#modalMessageConfirmBtnNo').attr("disable", true);
+
+					if ( vacuna.observaciones ){
+						obs = vacuna.observaciones + ",0";
+					}else obs = "0";
+
+					let data = {
+						idVacunaMascota: vacuna.idVacunaMascota,
+						nombre: vacuna.nombreVacuna,
+						intervalo: vacuna.intervaloDosis,
+						fechaUltimaDosis: vacuna.fechaUltimaDosis,
+						observaciones: obs
+					};
+					sendAsyncPost("updateVacunaMascota", data)
+					.then((response)=>{
+						console.log(response);
+						if (response.result != 2){
+							showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
+						}
+					})
+					$('#modalMessageConfirmBtnNo').attr("disable", false);
+					$('#modalMessageConfirm').modal("hide");
+				});
+
 
 				//buscar dueño de la mascota y sus datos
 				sendAsyncPost("getSocioDataByMacota", {id: idMascota})
@@ -65,7 +121,10 @@ function createNewVacuna(idMascota){
 						}
 					}else console.log( "al buscar datos del dueño de la mascota no se dio resultado 2", response );
 				})
-			}else console.log( "al crear nuevade la mascota no se dio resultado 2", response );
+			}else {
+				console.log( "al crear nueva vacuna de la mascota no se dio resultado 2", response );
+				showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
+			}
 		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");
 	}else showReplyMessage(1, "El nombre no puede ser ingresado vacio.", "Nombre requerido.", "modalVacuna");
 }
@@ -117,9 +176,22 @@ function openDescriptionVacuna(idVacunaMascota){
 	let response = sendPost('getVacunaMascotaToShow', {idVacunaMascota: idVacunaMascota});
 	if(response.result == 2){
 		let vacuna = response.objectResult;
+		let fechasNotif = vacuna.fechasNotif;
+		let fechas = "";
+
+		if ( fechasNotif ){
+			fechas = '<table class="w-100 table-hover" >'
+			for (var i = 0; i < fechasNotif.length; i++) {
+				if ( fechasNotif[i] == "0" )
+					fechas += '<tr class=""><td>Envío pendiente</td><td><td class="text-center"><a href="https://'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td></td></tr>';
+				else fechas += '<tr class=""><td>'+fechasNotif[i]+'</td></tr>';
+			}
+			fechas += '</table>';
+		}
+
 		$("#titleModalView").html("Vacuna");
 		$('#dateModalView').html("<b>Última dosis</b>: " + vacuna.fechaUltimaDosis);
-		$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Primer dosis:</b> " + vacuna.fechaPrimerDosis + "<hr><b>Proxima dosis:</b> " + vacuna.fechaProximaDosis +"<hr><b>Observaciones: </b>" + vacuna.observacion + "<hr>");
+		$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Primer dosis:</b> " + vacuna.fechaPrimerDosis + "<hr><b>Proxima dosis:</b> " + vacuna.fechaProximaDosis +"<hr><b>Notificaciones enviadas: </b>" + fechas + "<hr>");
 
 		$("#divFilesTableModalView").attr("hidden", true);
 		$("#divFilesTableModalView").attr("disable", true);

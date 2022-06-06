@@ -84,8 +84,29 @@ class fechas{
 	}
 
 	public function calcularFechaProximaDosis($fechaUltimaDosis, $intervalo){
+		var_dump($fechaUltimaDosis);
+		strtotime("Y-m-d",$fechaUltimaDosis);exit;
+
 		$nuevafecha = date("Y-m-d", strtotime("$fechaUltimaDosis + ". $intervalo ." day"));
+		var_dump("fechas calcularFechaProximaDosis",$fechaUltimaDosis, $intervalo);
 		$nuevafecha = fechas::getDateToINT($nuevafecha);
 		return fechas::dateToFormatBar($nuevafecha, "/");
+
+		/*
+			Observe:
+
+			<?php
+			echo date("jS F, Y", strtotime("11.12.10"));
+			// outputs 10th December, 2011
+
+			echo date("jS F, Y", strtotime("11/12/10"));
+			// outputs 12th November, 2010
+
+			echo date("jS F, Y", strtotime("11-12-10"));
+			// outputs 11th December, 2010
+			?>
+
+			Hope this helps someone!
+		*/
 	}
 }

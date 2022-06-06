@@ -180,7 +180,7 @@ function verAnalisis(idAnalisis){
 
 			buttonWhatsapp = '<td class="text-center" title="No se encontró número de teléfono"></td>';
 			if ( phoneSocio )
-				buttonWhatsapp = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+				buttonWhatsapp = '<td class="text-center"><a href="https://'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 
 			for (var i = 0; i < analisis.archivos.length; i++) {
 				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td>'+buttonWhatsapp+'</tr>';

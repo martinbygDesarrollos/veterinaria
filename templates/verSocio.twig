@@ -60,7 +60,7 @@
 								<div class="input-group-prepend">
 									<input type="text" class="form-control text-center shadow-sm" readonly id="inputTelefono" value="{{ responseSocio.socio.telefono }}">
 									{% if responseSocio.socio.telefono|length > 8  %}
-									<a href="https://wa.me/{{responseSocio.socio.telefono}}" target="_blank"><button title="Notificar cliente {{responseSocio.socio.telefono}}" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a>
+									<a href="https://{{responseSocio.socio.telefono}}" target="_blank"><button title="Notificar cliente {{responseSocio.socio.telefono}}" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a>
 									{% endif %}
 								</div>
 							</div>

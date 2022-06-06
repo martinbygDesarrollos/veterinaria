@@ -25,3 +25,26 @@ function showReplyMessage(typeMessage, message, title, currentModal){
 
 	$("#modalResponse").modal();
 }
+
+function showMessageConfirm(typeMessage, message, title, currentModal){
+	if(currentModal)
+		$('#' + currentModal).modal('hide');
+
+	$('#modalMessageConfirmMessage').html(message);
+	$('#modalMessageConfirmTitle').html(title);
+
+	$('#modalMessageConfirmBtnNo').off('click');
+	$('#modalMessageConfirmBtnNo').click(function(){
+		$('#modalMessageConfirm').modal('hide');
+		if(currentModal && typeMessage != 2){
+			$('#' + currentModal).modal();
+		}
+	});
+
+	$('#modalMessageConfirmBtnSi').off('click');
+	$('#modalMessageConfirmBtnSi').click(function(){
+		console.log("agregar funcionalidad al boton si");
+	});
+
+	$("#modalMessageConfirm").modal({backdrop: 'static', keyboard: false});
+}

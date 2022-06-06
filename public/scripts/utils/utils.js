@@ -102,14 +102,54 @@ function getCurrentDate(){
 	return date;
 }
 
+function getTimestamp(){
+	var today = new Date();
+	var date = null;
+	var day = null;
+	var month = null;
+	var year = null;
+	var hour = null;
+	var minute = null;
+	var second = null;
+
+	day = today.getDate();
+	month = today.getMonth()+1;
+	year = today.getFullYear();
+	hour = today.getHours();
+	minute = today.getMinutes();
+	second = today.getSeconds();
+
+	if( day.toString().length == 1 ){
+		day = '0'+today.getDate();
+	}
+
+	if( month.toString().length == 1 ) {
+		month = '0'+(today.getMonth()+1)
+	}
+
+	if( hour.toString().length == 1 ){
+		hour = '0'+today.getDate();
+	}
+
+	if( minute.toString().length == 1 ){
+		minute = '0'+today.getDate();
+	}
+
+	if( second.toString().length == 1 ){
+		second = '0'+today.getDate();
+	}
+
+	date = String(year) + String(month) + String(day) + String(hour) + String(minute) + String(second);
+	return date;
+}
 
 function redirectToWhatsapp( phone, message ){
 
 	console.log("utils function redirectToWhatsapp", phone, message);
-	if ( phone ){
+	/*if ( phone ){
 		window.open("https://wa.me/"+phone+"?text="+message, '_blank');
 	}else
-		window.open("https://wa.me/");
+		window.open("https://wa.me/");*/
 
 
 	//enviar whatsapp por celu

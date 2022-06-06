@@ -368,6 +368,9 @@ class ctr_mascotas {
 
 		$responseGetVacunaMascota = serviciosMascota::getVacunaMascota($idVacunaMascota);
 		if($responseGetVacunaMascota->result == 2){
+			var_dump("ctr_mascotas actualizando mascota", $fechaUltimaDosis, $intervalo, fechas::calcularFechaProximaDosis($fechaUltimaDosis, $intervalo));exit;
+
+
 			$fechaProximaDosis = fechas::getDateToINT(fechas::calcularFechaProximaDosis($fechaUltimaDosis, $intervalo));
 			$fechaUltimaDosis = fechas::getDateToINT($fechaUltimaDosis);
 			$responseUpdateVacuna = serviciosMascota::updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones);
@@ -470,7 +473,27 @@ class ctr_mascotas {
 	}
 
 	public function getVacunaMascotaToShowView($idVacunaMascota){
-		return serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
+		$response = serviciosMascota::getVacunaMascotaToShow($idVacunaMascota);
+
+		$arrayFechasNotif = null;
+		if ( $response->result == 2 ){
+			if ( strlen($response->objectResult->observacion) > 0 ){
+				$arrayFechasNotif = explode(",", $response->objectResult->observacion);
+			}
+		}
+
+		if ( $arrayFechasNotif ){
+			foreach ($arrayFechasNotif as $index => $date) {
+				if ( $date != "0" ){
+					$date = date_create($date);
+					if ( $date ){
+						$arrayFechasNotif[$index] = date_format($date, 'd/m/Y H:i:s');
+					}
+				}
+			}
+		}
+		$response->objectResult->fechasNotif = $arrayFechasNotif;
+		return $response;
 	}
 
 	public function getVacunasByName($nombreVacuna){

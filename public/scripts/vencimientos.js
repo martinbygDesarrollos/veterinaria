@@ -26,7 +26,7 @@ function createRowCuotas(idSocio, fechaUltimaCuota, fechaPago, nombre, cuota, lu
 
 	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
 		if( telefono.length >= 8 )
-			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://wa.me/'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 		else
 			row += '<td class="text-center">'+telefono+'</td>';
 	}
@@ -82,18 +82,20 @@ function cargarVencimientoVacunas(){
 function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosis, fechaProximaDosis, idMascota, nombre, raza, idSocio, nombreSocio, telefono, email){
 	let row = "<tr>";
 
-	row += "<td class='text-center'>"+ fechaProximaDosis +"</td>";
-	row += "<td class='text-center'>"+ nombreVacuna +"</td>";
-	row += "<td class='text-center notShowMobile'>"+ intervaloDosis +" días</td>";
-	row += "<td class='text-center notShowMobile'>"+ numDosis +"</td>";
-	row += "<td class='text-center'>"+ nombre +"</td>";
-	row += "<td class='text-center notShowMobile'>"+ raza +"</td>";
-	row += "<td class='text-center'>"+ nombreSocio +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ fechaProximaDosis +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombreVacuna +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ intervaloDosis +" días</td>";
+	row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ numDosis +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombre +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ raza +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombreSocio +"</td>";
 	//row += "<td class='text-center'>"+ telefono +"</td>";
 
 	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
+		'href="https://'+telefono+'"';
+		//href="https://wa.me/'+telefono+'"
 		if( telefono.length >= 8 )
-			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://wa.me/'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
 		else
 			row += '<td class="text-center">'+telefono+'</td>';
 	}
@@ -129,4 +131,47 @@ function notificarVacunaMascota(idMascota, email){
 			showReplyMessage(response.result, response.message, "Notificar vacuna", null);
 		})
 	})
+}
+
+
+function thenNotifyVacunaByWhatsapp(idVacunaMascota){
+	showMessageConfirm(1, "Se notificó correctamente?", "Vacuna/medicamento", "modalVacuna");
+	$('#modalMessageConfirmBtnSi').off('click');
+	$('#modalMessageConfirmBtnSi').click(function(){
+
+		console.log("luego del boton de notificar por wpp  ",idVacunaMascota);
+		sendAsyncPost( "getVacunaMascotaToShow", {idVacunaMascota:idVacunaMascota})
+		.then(( response )=>{
+			console.log("datos de vacuna", response);
+			let vacuna = null;
+			if ( response.result == 2 ){
+				vacuna = response.objectResult;
+			}
+
+			let timestamp = getTimestamp();
+			if ( timestamp.length == 14 ){
+				if ( vacuna.observacion ){
+					obs = vacuna.observacion + ","+timestamp;
+				}else obs = timestamp;
+			}else obs = vacuna.observacion;
+
+			let data = {
+				idVacunaMascota: vacuna.idVacunaMascota,
+				nombre: vacuna.nombreVacuna,
+				intervalo: vacuna.intervaloDosis,
+				fechaUltimaDosis: vacuna.fechaUltimaDosis,
+				observaciones: obs
+			};
+
+			sendAsyncPost("updateVacunaMascota", data)
+			.then((response)=>{
+				console.log(response);
+				if (response.result != 2){
+					showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
+				}
+			})
+			$('#modalMessageConfirmBtnSi').attr("disable", false);
+			$('#modalMessageConfirm').modal("hide");
+		});
+	});
 }
