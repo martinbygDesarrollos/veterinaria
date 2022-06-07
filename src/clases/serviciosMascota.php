@@ -111,7 +111,28 @@ class serviciosMascota {
     }
 
     public function getVacunasVencidas($dateVacuna){
-        $responseQuery = DataBase::sendQuery("SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, M.idMascota, M.nombre, M.raza FROM vacunasmascota AS VM, mascotas AS M WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis = ? ORDER BY VM.idVacunaMascota DESC", array('i', $dateVacuna), "LIST");
+
+        //calcular fecha previa ej 20220531
+        // datevacuna seria igual a 20220607
+        //calcular fecha posterior ej 20220614
+        $responseQuery = DataBase::sendQuery("
+            SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, M.idMascota, M.nombre, M.raza
+            FROM vacunasmascota AS VM, mascotas AS M
+            WHERE VM.idMascota = M.idMascota AND M.fechaFallecimiento AND
+                VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis < ?
+            ORDER BY VM.idVacunaMascota DESC LIMIT 25", array('i', $dateVacuna), "LIST");
+
+/*
+SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, M.idMascota, M.nombre, M.raza
+FROM vacunasmascota AS VM, mascotas AS M
+WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND
+    VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis = ?
+ORDER BY VM.idVacunaMascota DESC
+*/
+
+
+/*  where fechaProximaDosis > 20220520 and fechaProximaDosis < 20220606 order by fechaProximaDosis asc  */
+
         if($responseQuery->result == 2){
             $arrayResult = array();
             foreach ($responseQuery->listResult as $key => $row) {
