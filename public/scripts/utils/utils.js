@@ -128,15 +128,15 @@ function getTimestamp(){
 	}
 
 	if( hour.toString().length == 1 ){
-		hour = '0'+today.getDate();
+		hour = '0'+today.getHours();
 	}
 
 	if( minute.toString().length == 1 ){
-		minute = '0'+today.getDate();
+		minute = '0'+today.getMinutes();
 	}
 
 	if( second.toString().length == 1 ){
-		second = '0'+today.getDate();
+		second = '0'+today.getSeconds();
 	}
 
 	date = String(year) + String(month) + String(day) + String(hour) + String(minute) + String(second);
