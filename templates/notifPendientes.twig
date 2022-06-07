@@ -1,0 +1,92 @@
+{% extends "base.twig" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center">
+	<div class="card border-top-0 rounded-bottom border shadow w-75">
+		<div class="card-header d-flex justify-content-between bg-mycolor">
+			<h5 class="card-title">Vacunas sin notificar</h5>
+		</div>
+		<div class="card-body">
+			<div id="containerTableVacunasNotif" class="tableCustomScroll">
+				<table class="table">
+					<thead class="bg-mycolor">
+						<tr>
+							<td class="text-center" scope="col">Vencimiento</td>
+							<td class="text-center" scope="col">Vacuna</td>
+							<td class="text-center" scope="col">Mascota</td>
+							<td class="text-center" scope="col">Socio</td>
+							<td class="text-center" scope="col">Teléfono</td>
+							<td class="text-center" scope="col">Email</td>
+						</tr>
+					</thead>
+					<tbody id="tbodyVacunasSinNotificar"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{% include("modalViewMascota.twig") %}
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vacunas.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/vencimientos.js?{{version}}"></script>
+<script type="text/javascript">
+lastId = 0;
+
+$(document).ready(()=>{
+	cargarVacunasSinNotificar();
+});
+
+function cargarVacunasSinNotificar(){
+	sendAsyncPost('getVacunasSinNotificar', {id: lastId})
+	.then((response)=>{
+		if(response.result == 2){
+			if(response.lastId != lastId)
+				lastId = response.lastId;
+			let list = response.listResult;
+			for (var i = 0; i < list.length; i++) {
+				let row = createRow(list[i]);
+				$('#tbodyVacunasSinNotificar').append(row);
+			}
+		}
+	})
+}
+
+function createRow(obj){
+	let row = "<tr>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+obj.idVacunaMascota+")'>"+ obj.fechaProximaDosis +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+obj.idVacunaMascota+")'>"+ obj.nombreVacuna +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+obj.idVacunaMascota+")'>"+ obj.nombre +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna("+obj.idVacunaMascota+")'>"+ obj.nombreSocio +"</td>";
+
+	if(obj.telefono != "No especificado" && obj.telefono != "No corresponde" && obj.telefono != "" && obj.telefono){
+		'href="https://'+obj.telefono+'"';
+		//href="https://wa.me/'+obj.telefono+'"
+		if( obj.telefono.length >= 8 )
+			row += '<td class="text-center" title="Notificar cliente '+obj.telefono+'"><a target="_blank"><button title="Notificar cliente '+obj.telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+obj.idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
+		else
+			row += '<td class="text-center">'+obj.telefono+'</td>';
+	}
+	else
+		row += "<td class='text-center'></td>";
+
+	if(obj.email != "No especificado" && obj.email != "No corresponde")
+		row += "<td class='text-center' title='"+obj.email+"' ><button onclick='notificarVacunaMascota("+ obj.idMascota +", `"+obj.email+"`)' class='btn btn-info'><i class='fas fa-paper-plane'></i></button></td>";
+	else
+		row += "<td class='text-center'></td>";
+	row += "</tr>";
+
+	return row;
+}
+
+$('#containerTableVacunasNotif').on('scroll', function() {
+	if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+		cargarVacunasSinNotificar();
+	}
+});
+</script>
+{% endblock %}
+{% endblock %}

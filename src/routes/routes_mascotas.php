@@ -340,6 +340,14 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
+    $app->post('/getVacunasSinNotificar', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $value = $data['id'];
+            return json_encode(ctr_mascotas::getVacunasSinNotificar($value));
+        }else return json_encode($responseSession);
+    });
     //------------------------------------------------------------------------------------------
 
 }

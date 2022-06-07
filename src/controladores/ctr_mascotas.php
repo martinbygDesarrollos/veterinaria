@@ -501,6 +501,31 @@ class ctr_mascotas {
 		return serviciosMascota::getVacunasByInput($value);
 	}
 
+	public function getVacunasSinNotificar($lastid){
+
+		//calcular el last id
+		if ( !$lastid || $lastid == 0 ){
+			$lastid = serviciosMascota::getLastIdVacunasMascotas();
+		}
+
+		$response = serviciosMascota::getVacunasSinNotificar($lastid);
+		if ( $response->result == 2 ){
+			$newLastId = $lastid;
+			foreach ($response->listResult as $index => $object) {
+				if($newLastId > $object["idVacunaMascota"])
+					$newLastId = $object["idVacunaMascota"];
+
+
+				$response->listResult[$index]['fechaProximaDosis'] = substr($object['fechaProximaDosis'], 6, 2) . "/" .  substr($object['fechaProximaDosis'], 4, 2) . "/" . substr($object['fechaProximaDosis'], 0, 4);
+				//fechas::dateTimeToFormatBar($object['fechaProximaDosis']);
+			}
+
+			$response->lastId = $newLastId;
+		}
+
+		return $response;
+	}
+
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	//-------------------------------------------------------FUNCIONES ANALISIS-------------------------------------------------------------------

@@ -92,6 +92,15 @@ return function (App $app) {
         }else return $response->withRedirect('iniciar-sesion');
     })->setName("CuotasVencidas");
 
+    $app->get('/notificaciones', function($request, $response, $args) use ($container){
+        $args['version'] = FECHA_ULTIMO_PUSH;
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $args['administrador'] = $responseSession->session;
+            return $this->view->render($response, "notifPendientes.twig", $args);
+        }else return $response->withRedirect('iniciar-sesion');
+    })->setName("Notificaciones");
+
     //------------------------------------------------------------------------------------------
 
     //------------------------------ POST ------------------------------------------------------

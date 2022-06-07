@@ -300,6 +300,22 @@ class serviciosMascota {
     public function getVacunasByInput($input){
         return DataBase::sendQuery("SELECT * FROM vacunas WHERE nombre like '%". $input ."%' ORDER BY nombre ASC LIMIT 10", array(), "LIST");
     }
+
+    public function getVacunasSinNotificar($lastId){
+
+        return DataBase::sendQuery("
+            SELECT vm.*, s.nombre as nombreSocio,s.email, s.telefono, m.nombre FROM vacunasmascota as vm
+            LEFT JOIN mascotasocio as ms on vm.idMascota = ms.idMascota
+            LEFT JOIN socios as s on ms.idSocio = s.idSocio
+            LEFT JOIN mascotas as m on ms.idMascota = m.idMascota
+            WHERE ( observacion IS NULL OR observacion = '' ) AND idVacunaMascota < ?
+            ORDER BY vm.idVacunaMascota DESC LIMIT 14", array('i', $lastId), "LIST");
+    }
+
+    public function getLastIdVacunasMascotas(){
+        $responseQuery = DataBase::sendQuery("SELECT MAX(idVacunaMascota) AS lastID FROM vacunasmascota", array(), "OBJECT");
+        if($responseQuery->result == 2) return ($responseQuery->objectResult->lastID +1);
+    }
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------ENFERMEDADES------------------------------------------------------------------------
