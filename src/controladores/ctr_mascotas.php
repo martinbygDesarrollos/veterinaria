@@ -368,9 +368,6 @@ class ctr_mascotas {
 
 		$responseGetVacunaMascota = serviciosMascota::getVacunaMascota($idVacunaMascota);
 		if($responseGetVacunaMascota->result == 2){
-			var_dump("ctr_mascotas actualizando mascota", $fechaUltimaDosis, $intervalo, fechas::calcularFechaProximaDosis($fechaUltimaDosis, $intervalo));exit;
-
-
 			$fechaProximaDosis = fechas::getDateToINT(fechas::calcularFechaProximaDosis($fechaUltimaDosis, $intervalo));
 			$fechaUltimaDosis = fechas::getDateToINT($fechaUltimaDosis);
 			$responseUpdateVacuna = serviciosMascota::updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones);

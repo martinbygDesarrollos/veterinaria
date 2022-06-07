@@ -149,6 +149,8 @@ function thenNotifyVacunaByWhatsapp(idVacunaMascota){
 			}
 
 			let timestamp = getTimestamp();
+
+			console.log(timestamp);
 			if ( timestamp.length == 14 ){
 				if ( vacuna.observacion ){
 					obs = vacuna.observacion + ","+timestamp;
@@ -168,7 +170,7 @@ function thenNotifyVacunaByWhatsapp(idVacunaMascota){
 				console.log(response);
 				if (response.result != 2){
 					showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
-				}
+				}else window.location.reload();
 			})
 			$('#modalMessageConfirmBtnSi').attr("disable", false);
 			$('#modalMessageConfirm').modal("hide");

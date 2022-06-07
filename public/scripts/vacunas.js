@@ -73,34 +73,6 @@ function createNewVacuna(idMascota){
 					$('#modalMessageConfirmBtnSi').attr("disable", false);
 					$('#modalMessageConfirm').modal("hide");
 				});
-
-				$('#modalMessageConfirmBtnNo').off('click');
-				$('#modalMessageConfirmBtnNo').click(function(){
-					$('#modalMessageConfirmBtnNo').attr("disable", true);
-
-					if ( vacuna.observaciones ){
-						obs = vacuna.observaciones + ",0";
-					}else obs = "0";
-
-					let data = {
-						idVacunaMascota: vacuna.idVacunaMascota,
-						nombre: vacuna.nombreVacuna,
-						intervalo: vacuna.intervaloDosis,
-						fechaUltimaDosis: vacuna.fechaUltimaDosis,
-						observaciones: obs
-					};
-					sendAsyncPost("updateVacunaMascota", data)
-					.then((response)=>{
-						console.log(response);
-						if (response.result != 2){
-							showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
-						}
-					})
-					$('#modalMessageConfirmBtnNo').attr("disable", false);
-					$('#modalMessageConfirm').modal("hide");
-				});
-
-
 				//buscar dueño de la mascota y sus datos
 				sendAsyncPost("getSocioDataByMacota", {id: idMascota})
 				.then((response)=>{
@@ -182,9 +154,7 @@ function openDescriptionVacuna(idVacunaMascota){
 		if ( fechasNotif ){
 			fechas = '<table class="w-100 table-hover" >'
 			for (var i = 0; i < fechasNotif.length; i++) {
-				if ( fechasNotif[i] == "0" )
-					fechas += '<tr class=""><td>Envío pendiente</td><td><td class="text-center"><a href="https://'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td></td></tr>';
-				else fechas += '<tr class=""><td>'+fechasNotif[i]+'</td></tr>';
+				fechas += '<tr class=""><td>'+fechasNotif[i]+'</td></tr>';
 			}
 			fechas += '</table>';
 		}

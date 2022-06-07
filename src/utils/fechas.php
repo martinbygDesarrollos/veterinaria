@@ -84,11 +84,8 @@ class fechas{
 	}
 
 	public function calcularFechaProximaDosis($fechaUltimaDosis, $intervalo){
-		var_dump($fechaUltimaDosis);
-		strtotime("Y-m-d",$fechaUltimaDosis);exit;
-
+		$fechaUltimaDosis = str_replace("/", "-", $fechaUltimaDosis);
 		$nuevafecha = date("Y-m-d", strtotime("$fechaUltimaDosis + ". $intervalo ." day"));
-		var_dump("fechas calcularFechaProximaDosis",$fechaUltimaDosis, $intervalo);
 		$nuevafecha = fechas::getDateToINT($nuevafecha);
 		return fechas::dateToFormatBar($nuevafecha, "/");
 
