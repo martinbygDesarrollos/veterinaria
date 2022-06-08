@@ -124,13 +124,19 @@ class serviciosMascota {
 
         if($responseQuery->result == 2){
             $arrayResult = array();
+            $newLastId = $lastid;
+
             foreach ($responseQuery->listResult as $key => $row) {
+                if($newLastId > $row["idVacunaMascota"])
+                    $newLastId = $row["idVacunaMascota"];
+
                 if(is_null($row['raza']))
                     $row['raza'] = "";
                 $row['fechaProximaDosis'] = fechas::dateToFormatBar($row['fechaProximaDosis']);
                 $arrayResult[] = $row;
             }
             $responseQuery->listResult = $arrayResult;
+            $responseQuery->lastId = $newLastId;
         }else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron vacunas/medicamentos vencidos para la fecha seleccionada.";
         return $responseQuery;
     }

@@ -26,7 +26,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="tableCustomScroll">
+			<div class="tableCustomScroll" id="tableVencimientosVacunas">
 				<table class="table">
 					<thead class="bg-mycolor">
 						<tr>
@@ -80,6 +80,12 @@
 
 	$("#inputDateVencimientoDesde").val(firstDay+"01");
 	$("#inputDateVencimientoHasta").val(getLastDayMonth(today));
+
+	$('#tableVencimientosVacunas').on('scroll', function() {
+		if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+			cargarVencimientoVacunas();
+		}
+	});
 
 	if ($("#inputDateVencimientoDesde").val() && $("#inputDateVencimientoHasta").val()){
 		cargarVencimientoVacunas();

@@ -75,14 +75,14 @@ function cargarVencimientoVacunas(){
 
 	let response = sendPost("getVacunasVencidas", {desde: dateVencimientoInit, hasta:dateVencimientoFinish, lastid: lastidvac});
 	if(response.result == 2){
-		$('#tbodyVencimientosVacuna').empty();
+		console.log(response);
+		if(lastidvac != response.lastId)
+			lastidvac = response.lastId;
 		let list = response.listResult;
 		for (var i = 0; i < list.length; i++) {
 			let row = createRowVacunas(list[i].idVacunaMascota, list[i].nombreVacuna, list[i].intervaloDosis, list[i].numDosis, list[i].fechaProximaDosis, list[i].idMascota, list[i].nombre, list[i].raza, list[i].idSocio, list[i].nombreSocio, list[i].telefono, list[i].email, list[i].observacion);
 			$('#tbodyVencimientosVacuna').append(row);
 		}
-	}else{
-		$('#tbodyVencimientosVacuna').empty();
 	}
 }
 
