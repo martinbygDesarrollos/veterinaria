@@ -51,10 +51,10 @@ function createNewVacuna(idMascota){
 					$('#modalMessageConfirmBtnSi').attr("disable", true);
 					let timestamp = getTimestamp();
 					if ( timestamp.length == 14 ){
-						if ( vacuna.observaciones ){
-							obs = vacuna.observaciones + ","+timestamp;
+						if ( vacuna.notifEnviada ){
+							obs = vacuna.notifEnviada + ","+timestamp;
 						}else obs = timestamp;
-					}else obs = vacuna.observaciones;
+					}else obs = vacuna.notifEnviada;
 
 					let data = {
 						idVacunaMascota: vacuna.idVacunaMascota,

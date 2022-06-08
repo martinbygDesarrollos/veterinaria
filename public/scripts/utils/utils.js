@@ -102,6 +102,21 @@ function getCurrentDate(){
 	return date;
 }
 
+function getLastDayMonth(currentDate){
+	let date = new Date(currentDate + 'T00:00');
+	date = new Date(date.getFullYear(), date.getMonth()+1, 0);
+
+	let day = date.getDate();
+	let month = date.getMonth() + 1;
+	let year = date.getFullYear();
+
+	if(month < 10) month = "0" + month ;
+	if(day < 10) day = "0" + day;
+	//return `${year}-${month}-${day}`;
+	date = year+'-'+month+'-'+day;
+	return date;
+}
+
 function getTimestamp(){
 	var today = new Date();
 	var date = null;
@@ -146,10 +161,10 @@ function getTimestamp(){
 function redirectToWhatsapp( phone, message ){
 
 	console.log("utils function redirectToWhatsapp", phone, message);
-	/*if ( phone ){
+	if ( phone ){
 		window.open("https://wa.me/"+phone+"?text="+message, '_blank');
 	}else
-		window.open("https://wa.me/");*/
+		window.open("https://wa.me/");
 
 
 	//enviar whatsapp por celu

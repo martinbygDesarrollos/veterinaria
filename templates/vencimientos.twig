@@ -8,15 +8,21 @@
 			<h5 class="card-title">Vacunas vencidas</h5>
 		</div>
 		<div class="card-body">
-			<div class="d-flex flex-row-reverse">
-				<div class="form-group row mr-2">
-					<label for="staticEmail" class="col col-form-label">Vencimiento</label>
-					<div>
-						<select id="inputDateVencimiento" class="form-control" onchange="cargarVencimientoVacunas()">
-							{% for vencimiento in responseVencimientos.listResult %}
-							<option value="{{ vencimiento.fechaProximaDosis }}">{{ vencimiento.fechaProximaDosisFormat }}</option>
-							{% endfor %}
-						</select>
+			<div>
+				<div class="form-row">
+					<div class="col">
+						<label for="inputDateVencimientoDesde">Desde</label>
+					</div>
+					<div class="col">
+						<label for="inputDateVencimientoHasta">Hasta</label>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col">
+						<input type="date" id="inputDateVencimientoDesde" class="form-control" onchange="cargarVencimientoVacunas()">
+					</div>
+					<div class="col">
+						<input type="date" id="inputDateVencimientoHasta" class="form-control" onchange="cargarVencimientoVacunas()">
 					</div>
 				</div>
 			</div>
@@ -27,10 +33,9 @@
 							<td class="text-center" scope="col">Vencimiento</td>
 							<td class="text-center" scope="col">Vacuna</td>
 							<td class="text-center notShowMobile" scope="col">Intervalo</td>
-							<td class="text-center notShowMobile" scope="col">N° Dosis</td>
 							<td class="text-center" scope="col">Mascota</td>
-							<td class="text-center notShowMobile" scope="col">Raza</td>
 							<td class="text-center" scope="col">Socio</td>
+							<td class="text-center" scope="col">Notificado</td>
 							<td class="text-center" scope="col">Teléfono</td>
 							<td class="text-center" scope="col">Email</td>
 						</tr>
@@ -70,7 +75,15 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/vencimientos.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/vacunas.js?{{version}}"></script>
 <script type="text/javascript">
-	cargarVencimientoVacunas();
+	let today = getCurrentDate();
+	let firstDay = today.slice(0, today.length-2);
+
+	$("#inputDateVencimientoDesde").val(firstDay+"01");
+	$("#inputDateVencimientoHasta").val(getLastDayMonth(today));
+
+	if ($("#inputDateVencimientoDesde").val() && $("#inputDateVencimientoHasta").val()){
+		cargarVencimientoVacunas();
+	}
 </script>
 {% endblock %}
 {% endblock %}

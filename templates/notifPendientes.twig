@@ -63,10 +63,8 @@ function createRow(obj){
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+obj.idVacunaMascota+")'>"+ obj.nombreSocio +"</td>";
 
 	if(obj.telefono != "No especificado" && obj.telefono != "No corresponde" && obj.telefono != "" && obj.telefono){
-		'href="https://'+obj.telefono+'"';
-		//href="https://wa.me/'+obj.telefono+'"
 		if( obj.telefono.length >= 8 )
-			row += '<td class="text-center" title="Notificar cliente '+obj.telefono+'"><a target="_blank"><button title="Notificar cliente '+obj.telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+obj.idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
+			row += '<td class="text-center" title="Notificar cliente '+obj.telefono+'"><a target="_blank" href="https://wa.me/'+obj.telefono+'"><button title="Notificar cliente '+obj.telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+obj.idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
 		else
 			row += '<td class="text-center">'+obj.telefono+'</td>';
 	}

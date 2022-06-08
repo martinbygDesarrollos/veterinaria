@@ -309,8 +309,12 @@ class ctr_mascotas {
 		return serviciosMascota::getFechasVacunasVencimiento($currentDate);
 	}
 
-	public function getVacunasVencidas($dateVencimiento){
-		$responseGetVencimientos = serviciosMascota::getVacunasVencidas($dateVencimiento);
+	public function getVacunasVencidas($from, $to, $lastid ){
+		if ( $lastid == 0 ){
+			$lastid = serviciosMascota::getLastIdVacunasMascotas();
+		}
+
+		$responseGetVencimientos = serviciosMascota::getVacunasVencidas($from, $to, $lastid);
 		if($responseGetVencimientos->result == 2){
 			$arrayResult = array();
 			foreach ($responseGetVencimientos->listResult as $key => $value) {
@@ -320,13 +324,13 @@ class ctr_mascotas {
 					$value['idSocio'] = $responseGetSocioMascota->socio->idSocio;
 					$value['telefono'] = $responseGetSocioMascota->socio->telefono;
 					if (!filter_var($responseGetSocioMascota->socio->email, FILTER_VALIDATE_EMAIL))
-						$value['email'] = "No especificado";
+						$value['email'] = "";
 					else if(strlen($responseGetSocioMascota->socio->email) > 7)
 						$value['email'] = $responseGetSocioMascota->socio->email;
 				}else{
 					$value['nombreSocio'] = "Sin socio";
-					$value['telefono'] = "No corresponde";
-					$value['email'] = "No corresponde";
+					$value['telefono'] = "";
+					$value['email'] = "";
 				}
 				$arrayResult[] = $value;
 			}
@@ -474,18 +478,16 @@ class ctr_mascotas {
 
 		$arrayFechasNotif = null;
 		if ( $response->result == 2 ){
-			if ( strlen($response->objectResult->observacion) > 0 ){
-				$arrayFechasNotif = explode(",", $response->objectResult->observacion);
+			if ( strlen($response->objectResult->notifEnviada) > 0 ){
+				$arrayFechasNotif = explode(",", $response->objectResult->notifEnviada);
 			}
 		}
 
 		if ( $arrayFechasNotif ){
 			foreach ($arrayFechasNotif as $index => $date) {
-				if ( $date != "0" ){
-					$date = date_create($date);
-					if ( $date ){
-						$arrayFechasNotif[$index] = date_format($date, 'd/m/Y H:i:s');
-					}
+				$date = date_create($date);
+				if ( $date ){
+					$arrayFechasNotif[$index] = date_format($date, 'd/m/Y H:i:s');
 				}
 			}
 		}

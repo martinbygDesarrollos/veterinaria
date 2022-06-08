@@ -308,8 +308,10 @@ return function (App $app) {
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $data = $request->getParams();
-            $dateVencimiento = $data['dateVencimiento'];
-            return json_encode(ctr_mascotas::getVacunasVencidas($dateVencimiento));
+            $dateVencimiento = $data['desde'];
+            $dateVencimiento2 = $data['hasta'];
+            $lastid = $data['lastid'];
+            return json_encode(ctr_mascotas::getVacunasVencidas($dateVencimiento, $dateVencimiento2, $lastid));
         }else return json_encode($responseSession);
     });
 

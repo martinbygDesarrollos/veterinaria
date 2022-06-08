@@ -110,28 +110,17 @@ class serviciosMascota {
         return $responseQuery;
     }
 
-    public function getVacunasVencidas($dateVacuna){
+    public function getVacunasVencidas($from, $to, $lastid){
+        $from = str_replace("-", "", $from);
+        $to = str_replace("-", "", $to);
 
-        //calcular fecha previa ej 20220531
-        // datevacuna seria igual a 20220607
-        //calcular fecha posterior ej 20220614
         $responseQuery = DataBase::sendQuery("
-            SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, M.idMascota, M.nombre, M.raza
+            SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, VM.notifEnviada as observacion , M.idMascota, M.nombre, M.raza
             FROM vacunasmascota AS VM, mascotas AS M
-            WHERE VM.idMascota = M.idMascota AND M.fechaFallecimiento AND
-                VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis < ?
-            ORDER BY VM.idVacunaMascota DESC LIMIT 25", array('i', $dateVacuna), "LIST");
-
-/*
-SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, M.idMascota, M.nombre, M.raza
-FROM vacunasmascota AS VM, mascotas AS M
-WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND
-    VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis = ?
-ORDER BY VM.idVacunaMascota DESC
-*/
-
-
-/*  where fechaProximaDosis > 20220520 and fechaProximaDosis < 20220606 order by fechaProximaDosis asc  */
+            WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND M.fechaFallecimiento IS NULL AND
+                VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis >= ? AND VM.fechaProximaDosis <= ?
+                AND VM.idVacunaMascota < ?
+            ORDER BY `VM`.`idVacunaMascota` ASC LIMIT 50", array('iii', $from, $to, $lastid), "LIST");
 
         if($responseQuery->result == 2){
             $arrayResult = array();
@@ -303,11 +292,11 @@ ORDER BY VM.idVacunaMascota DESC
     }
 
     public function insertVacunaMascota($nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones){
-        return DataBase::sendQuery("INSERT INTO vacunasmascota (nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, fechaProximaDosis, observacion) VALUES (?,?,?,?,?,?,?,?)", array('siiiiiis', $nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones),"BOOLE");
+        return DataBase::sendQuery("INSERT INTO vacunasmascota (nombreVacuna, idMascota, intervaloDosis, numDosis, fechaPrimerDosis, fechaUltimaDosis, fechaProximaDosis, notifEnviada) VALUES (?,?,?,?,?,?,?,?)", array('siiiiiis', $nombre, $idMascota, $intervaloDosis, $numDosis, $fechaPrimerDosis, $fechaUltimaDosis,$fechaProximaDosis, $observaciones),"BOOLE");
     }
 
     public function updateVacunaMascota($idVacunaMascota, $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones){
-        return DataBase::sendQuery("UPDATE vacunasmascota SET nombreVacuna= ?, intervaloDosis = ?, fechaUltimaDosis = ?, fechaProximaDosis = ?, observacion = ? WHERE idVacunaMascota = ?", array('siiisi', $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones, $idVacunaMascota), "BOOLE");
+        return DataBase::sendQuery("UPDATE vacunasmascota SET nombreVacuna= ?, intervaloDosis = ?, fechaUltimaDosis = ?, fechaProximaDosis = ?, notifEnviada = ? WHERE idVacunaMascota = ?", array('siiisi', $nombre, $intervalo, $fechaUltimaDosis, $fechaProximaDosis, $observaciones, $idVacunaMascota), "BOOLE");
     }
 
     public function aplicarDosisVacunaMascota($idVacunaMascota, $nuevaUltimaDosis, $nuevaNumDosis, $fechaProximaDosis){
@@ -329,7 +318,7 @@ ORDER BY VM.idVacunaMascota DESC
             LEFT JOIN mascotasocio as ms on vm.idMascota = ms.idMascota
             LEFT JOIN socios as s on ms.idSocio = s.idSocio
             LEFT JOIN mascotas as m on ms.idMascota = m.idMascota
-            WHERE ( observacion IS NULL OR observacion = '' ) AND idVacunaMascota < ?
+            WHERE ( notifEnviada IS NULL OR notifEnviada = '' ) AND idVacunaMascota < ?
             ORDER BY vm.idVacunaMascota DESC LIMIT 14", array('i', $lastId), "LIST");
     }
 

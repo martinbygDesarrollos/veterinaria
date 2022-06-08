@@ -1,5 +1,6 @@
 let lastId = 0;
 let textToSearch = null;
+let lastidvac = 0;
 
 function cargarVencimientoCuota(){
 	let response = sendPost("getCuotasVencidas", {lastId: lastId, textToSearch: textToSearch});
@@ -26,7 +27,7 @@ function createRowCuotas(idSocio, fechaUltimaCuota, fechaPago, nombre, cuota, lu
 
 	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
 		if( telefono.length >= 8 )
-			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://wa.me/'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 		else
 			row += '<td class="text-center">'+telefono+'</td>';
 	}
@@ -50,6 +51,8 @@ function createRowCuotas(idSocio, fechaUltimaCuota, fechaPago, nombre, cuota, lu
 
 function notificarSocioCuota(idSocio, email){
 	console.log(email);
+	$('#modalButtonResponse').attr("disable", false);
+	$('#modalButtonResponse').attr("hidden", false);
 	showReplyMessage(1, "Confirma enviar correo a "+email, "Notificar socio", null);
 
 	$('#modalButtonResponse').off('click');
@@ -67,35 +70,45 @@ function notificarSocioCuota(idSocio, email){
 }
 
 function cargarVencimientoVacunas(){
-	let dateVencimiento = $('#inputDateVencimiento').val();
-	let response = sendPost("getVacunasVencidas", {dateVencimiento: dateVencimiento});
+	let dateVencimientoInit = $('#inputDateVencimientoDesde').val();
+	let dateVencimientoFinish = $('#inputDateVencimientoHasta').val();
+
+	let response = sendPost("getVacunasVencidas", {desde: dateVencimientoInit, hasta:dateVencimientoFinish, lastid: lastidvac});
 	if(response.result == 2){
 		$('#tbodyVencimientosVacuna').empty();
 		let list = response.listResult;
 		for (var i = 0; i < list.length; i++) {
-			let row = createRowVacunas(list[i].idVacunaMascota, list[i].nombreVacuna, list[i].intervaloDosis, list[i].numDosis, list[i].fechaProximaDosis, list[i].idMascota, list[i].nombre, list[i].raza, list[i].idSocio, list[i].nombreSocio, list[i].telefono, list[i].email);
+			let row = createRowVacunas(list[i].idVacunaMascota, list[i].nombreVacuna, list[i].intervaloDosis, list[i].numDosis, list[i].fechaProximaDosis, list[i].idMascota, list[i].nombre, list[i].raza, list[i].idSocio, list[i].nombreSocio, list[i].telefono, list[i].email, list[i].observacion);
 			$('#tbodyVencimientosVacuna').append(row);
 		}
+	}else{
+		$('#tbodyVencimientosVacuna').empty();
 	}
 }
 
-function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosis, fechaProximaDosis, idMascota, nombre, raza, idSocio, nombreSocio, telefono, email){
+function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosis, fechaProximaDosis, idMascota, nombre, raza, idSocio, nombreSocio, telefono, email, obs){
 	let row = "<tr>";
 
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ fechaProximaDosis +"</td>";
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombreVacuna +"</td>";
 	row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ intervaloDosis +" días</td>";
-	row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ numDosis +"</td>";
+	//row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ numDosis +"</td>";
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombre +"</td>";
-	row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ raza +"</td>";
+	//row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ raza +"</td>";
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombreSocio +"</td>";
 	//row += "<td class='text-center'>"+ telefono +"</td>";
 
+	if ( obs ){
+		if ( obs.length > 0 ){
+			row += "<td class='text-center'><i class='fas fa-check'></i></td>";
+		}else
+			row += "<td class='text-center'><i class='fas fa-times'></i></td>";
+	}else
+			row += "<td class='text-center'><i class='fas fa-times'></i></td>";
+
 	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
-		'href="https://'+telefono+'"';
-		//href="https://wa.me/'+telefono+'"
 		if( telefono.length >= 8 )
-			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a target="_blank" href="https://wa.me/'+telefono+'"><button title="Notificar cliente '+telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
 		else
 			row += '<td class="text-center">'+telefono+'</td>';
 	}
@@ -115,7 +128,8 @@ function notificarVacunaMascota(idMascota, email){
 	/*let response = sendPost("notificarVacunaMascota", {idMascota: idMascota});
 	console.log(response);
 	showReplyMessage(response.result, response.message, "Notificar vacuna", null);*/
-
+	$('#modalButtonResponse').attr("disable", false);
+	$('#modalButtonResponse').attr("hidden", false);
 	console.log(email);
 	showReplyMessage(1, "Confirma enviar correo a "+email, "Notificar vacuna", null);
 
@@ -135,6 +149,7 @@ function notificarVacunaMascota(idMascota, email){
 
 
 function thenNotifyVacunaByWhatsapp(idVacunaMascota){
+	console.log("------------------------------------------");
 	showMessageConfirm(1, "Se notificó correctamente?", "Vacuna/medicamento", "modalVacuna");
 	$('#modalMessageConfirmBtnSi').off('click');
 	$('#modalMessageConfirmBtnSi').click(function(){
@@ -152,10 +167,10 @@ function thenNotifyVacunaByWhatsapp(idVacunaMascota){
 
 			console.log(timestamp);
 			if ( timestamp.length == 14 ){
-				if ( vacuna.observacion ){
-					obs = vacuna.observacion + ","+timestamp;
+				if ( vacuna.notifEnviada ){
+					obs = vacuna.notifEnviada + ","+timestamp;
 				}else obs = timestamp;
-			}else obs = vacuna.observacion;
+			}else obs = vacuna.notifEnviada;
 
 			let data = {
 				idVacunaMascota: vacuna.idVacunaMascota,
