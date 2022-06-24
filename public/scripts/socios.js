@@ -91,6 +91,7 @@ function createRow(obj){
 
 	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ telefono +"</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ direccion +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>Tipo</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ cuota + "</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")' "
 
@@ -105,7 +106,7 @@ function createRow(obj){
 	else
 		row+= fechaUltimaCuota + "</td>";
 
-	row += "<td class='text-center'><a class='text-dark' data-toggle='tooltip' data-placement='top' title='Agregar nueva mascota' href='" + getSiteURL() + "nueva-mascota/" + idSocio +"'><i class='fas fa-paw'></i></a></td>";
+	row += "<td class='text-center'><a class='text-dark' data-toggle='tooltip' data-placement='top' title='Agregar nueva mascota' href='" + getSiteURL() + "nueva-mascota/" + idSocio +"'><button class='btn btn-light' type='button'>Nueva masc.</button></a></td>";
 	row += "</tr>";
 
 	return row;
