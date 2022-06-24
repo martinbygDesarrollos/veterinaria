@@ -20,7 +20,7 @@
 					<h5 >Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>&nbsp;
 					{% endif %}
 					{% else %}
-					<h5 class="card-title mt-2">Mascota sin socio</h5>
+					<h5 class="card-title mt-2"></h5>
 					{% endif %}
 					{% if SocioMascota.socio.deudor == true %}
 					<h5 class="card-title mt-2" style="float: right !important;"><i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>

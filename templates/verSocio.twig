@@ -18,8 +18,8 @@
 			</div>
 			{% if responseSocio.result == 2 %}
 			<div class="row">
-				<button id="{{ responseSocio.socio.idSocio }}" type="button" data-toggle="tooltip" data-placement="top" title="Modificar socio" class="btn btn-dark mt-2 mr-4" onclick="openModalUpdateSocio(this)"><i class="fas fa-user-edit"></i></button>
-				<button class="btn btn-dark mt-2 mr-1" type="button" data-toggle="tooltip" data-placement="top" title="Activar/Desactivar socio" onclick="openModalChangeState('{{ responseSocio.socio.idSocio }}')">
+				<button id="{{ responseSocio.socio.idSocio }}" type="button" data-toggle="tooltip" data-placement="top" title="Modificar cliente" class="btn btn-dark mt-2 mr-4" onclick="openModalUpdateSocio(this)"><i class="fas fa-user-edit"></i></button>
+				<button class="btn btn-dark mt-2 mr-1" type="button" data-toggle="tooltip" data-placement="top" title="Activar/Desactivar cliente" onclick="openModalChangeState('{{ responseSocio.socio.idSocio }}')">
 					{% if responseSocio.socio.estado == 1 %}
 					<i id="iconButtonState" class="fas fa-user-check"></i>
 					{% else %}
@@ -67,7 +67,7 @@
 						</div>
 						<div class="col">
 							<div class="form-group">
-								<label for="selectTipoSocio">Tipo de socio</label>
+								<label for="selectTipoSocio">Tipo de cliente</label>
 								<input type="text" class="form-control text-center shadow-sm" readonly id="selectTipoSocio" value="{{ responseSocio.socio.tipo }}">
 							</div>
 						</div>
@@ -151,7 +151,7 @@
 					<br>
 					<div class="d-flex justify-content-between mb-1">
 						<h6 class="card-subtitle mb-3 text-muted mt-2">Mascotas</h6>
-						<button class="btn btn-dark" data-toggle="modal" type="button" data-target="#modalSetNewMascota" data-toggle="tooltip" data-placement="top" title="Asignar mascota sin socio"><i class="fas fa-paw"></i></button>
+						<button class="btn btn-dark" data-toggle="modal" type="button" data-target="#modalSetNewMascota" data-toggle="tooltip" data-placement="top" title="Asignar mascota sin dueño">Asignar mascota</button>
 					</div>
 					<div class="tableCustomScroll">
 						<div class="d-flex justify-content-center">
@@ -334,13 +334,13 @@
 	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header bg-mycolor">
-				<span class="modal-title" id="exampleModalLongTitle">Modificar socio</span>
+				<span class="modal-title" id="exampleModalLongTitle">Modificar cliente</span>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
-				<h6 class="card-subtitle mb-3 text-muted">Información del socio</h6>
+				<h6 class="card-subtitle mb-3 text-muted">Información</h6>
 				<div class="row">
 					<div class="col-3">
 						<div class="form-group">
@@ -372,10 +372,11 @@
 				<div class="row">
 					<div class="col-3">
 						<div class="form-group">
-							<label for="selectTipoSocio">Tipo socio</label>
+							<label for="selectTipoSocio">Tipo cliente</label>
 							<select class="form-select form-control shadow-sm" id="selectModalTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
-								<option value="0">No socio</option>
 								<option value="1">Socio</option>
+								<option value="3">Ex socio</option>
+								<option value="0">No socio</option>
 								<option value="2">ONG</option>
 							</select>
 						</div>

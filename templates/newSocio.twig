@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border w-50 shadow">
 		<div class="card-header d-flex justify-content-between bg-mycolor">
-			<h5 class="card-title mt-2">Agregar socio</h5>
+			<h5 class="card-title mt-2">Agregar cliente</h5>
 		</div>
 		<div class="card-body">
 			<div class="row">
@@ -42,10 +42,11 @@
 			<div class="row">
 				<div class="col-3">
 					<div class="form-group">
-						<label for="inputTipoSocio">Tipo socio</label>
+						<label for="inputTipoSocio">Tipo cliente</label>
 						<select class="form-select form-control shadow-sm" id="inputTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
-							<option value="0">No socio</option>
 							<option selected value="1">Socio</option>
+							<option value="3">Ex socio</option>
+							<option value="0">No socio</option>
 							<option value="2">ONG</option>
 						</select>
 					</div>
@@ -105,13 +106,13 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header bg-mycolor">
-				<span class="modal-title">Socio agregado</span>
+				<span class="modal-title">Cliente agregado</span>
 				<button type="button" class="close" data-dismiss="modal" accesskey="x" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
-				<p class="text-center">El socio fue agregado correctamente.</p>
+				<p class="text-center">El cliente fue agregado correctamente.</p>
 				<p class="text-center">¿Desea asignarle su primer mascota?</p>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
