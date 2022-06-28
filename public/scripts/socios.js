@@ -91,7 +91,7 @@ function createRow(obj){
 
 	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ telefono +"</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ direccion +"</td>";
-	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>Tipo</td>";
+	//row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>Tipo</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ cuota + "</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")' "
 
