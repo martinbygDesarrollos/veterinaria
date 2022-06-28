@@ -17,6 +17,11 @@ class ctr_usuarios{
 		return socios::getSociosVistaFactura();
 	}
 
+	public function getAllClients(){
+		$sociosClass = new socios();
+		return $sociosClass->getAllSocios();
+	}
+
 	public function gestComRestCuotas($idSocio, $ultimoPago, $ultimaCuota, $token){
 		$response = new \stdClass();
 
@@ -63,7 +68,8 @@ class ctr_usuarios{
 		if(!is_null($token)){
 			if(strcmp($token, $myToken) == 0){
 				//ctr_usuarios::updateStateSocio();
-				$responseGetSocios = ctr_usuarios::getSociosVistaFactura();
+				//$responseGetSocios = ctr_usuarios::getSociosVistaFactura();
+				$responseGetSocios = ctr_usuarios::getAllClients();
 				if($responseGetSocios->result == 2){
 					$stringList = "";
 					foreach ($responseGetSocios->listResult as $key => $socio){
@@ -96,13 +102,27 @@ class ctr_usuarios{
 
 						//"cant","N",2,0
 						$cantMascotas = "''";
-						$cuota = "''";
+						$cuota = "0";
 						$responseGetCantMascotas = ctr_mascotas::getSocioActivePets($socio['idSocio']);
 						if($responseGetCantMascotas->result == 2){
 							$cantMascotas = sizeof($responseGetCantMascotas->mascotas);
-							$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas));
-							if($responseCalculateQuota->result == 2)
-								$cuota = $responseCalculateQuota->quota;
+
+							//calcular el importe,
+						/**
+						 * calcular importe de cada cliente
+						 * 0 cliente - $0
+							1 socio fa $...
+							2 ong - $0
+							3 ex socio fa fb $0
+
+							0 inactivo $0
+							1 activo $...
+						 */
+							if ( $socio['estado'] == 1 && $socio['tipo'] == 1 ){
+								$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas));
+								if($responseCalculateQuota->result == 2)
+									$cuota = $responseCalculateQuota->quota;
+							}else $cuota = 0;
 						}
 
 						$stringList .= $cantMascotas . ",";
@@ -127,9 +147,21 @@ class ctr_usuarios{
 						//"mascota","C",20,0
 						$stringList .= "'',";
 
-						//"fec_ingr","C",19,0
-						if(is_null($socio['fechaIngreso'])) $stringList .= ",".chr(13).chr(10);
-						else $stringList .= fechas::dateToFormatBar($socio['fechaIngreso']) . " 12:13:00,".chr(13).chr(10);
+						//"fec_ingr","C",8,0
+						if(is_null($socio['fechaIngreso'])) $stringList .= "'',";
+						else $stringList .= $socio['fechaIngreso'].",";
+						//else $stringList .= fechas::dateToFormatBar($socio['fechaIngreso']) . " 12:13:00,".chr(13).chr(10);
+
+						//"fec_baja", ...
+						if(is_null($socio['fechaBajaSocio'])) $stringList .= "'',";
+						else $stringList .= $socio['fechaBajaSocio'].",";
+
+						//"activo", boolean
+						if(is_null($socio['estado'])) $stringList .= "''";
+						else $stringList .= $socio['estado'];
+
+						//para finalizar la línea
+						$stringList .= chr(13).chr(10);
 					}
 					$response->result = 2;
 					$response->string = base64_encode($stringList);
