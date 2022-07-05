@@ -1,6 +1,20 @@
+:root {
+  --first-color: #79bcc5;         /**/
+  --socio: white;                 /*identificar socio*/
+  --socio-warning: #ffee0040;     /*identificar socio deudor*/
+  --exsocio: #0299e355;                /*identificar exsocio*/
+  --exsocio-warning: red;        /*identificar exsocio deudor*/
+  --nosocio: #d1d1d1;                /*identificar NO socio*/
+}
+
 html,
 body {
   height: 100%;
+  text-align: left!important;
+}
+
+.text-center {
+  text-align: left!important;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -33,11 +47,11 @@ input[type=number] {
 }
 
 .bg-mycolor{
-  background: #85B58A
+  background:var(--first-color);
 }
 
 .text-mycolor{
-  color: #85B58A;
+  color: var(--first-color);
 }
 
 .btn-mycolor{
@@ -148,8 +162,8 @@ input[type=number] {
 }
 
 #containerTable::-webkit-scrollbar-thumb {
-  background-color: #85B58A;
-  border: 2px solid #4D7852;
+  background-color: var(--first-color);
+  border: 2px solid var(--first-color);
 }
 
 #containerTable::-webkit-scrollbar-track {
@@ -187,8 +201,8 @@ input[type=number] {
 }
 
 .tableCustomScroll::-webkit-scrollbar-thumb {
-  background-color: #85B58A;
-  border: 2px solid #4D7852;
+  background-color: var(--first-color);
+  border: 2px solid var(--first-color);
 }
 
 .tableCustomScroll::-webkit-scrollbar-track {
@@ -203,7 +217,12 @@ input[type=number] {
 #tbodyMascotasSocio tr:hover,
 #tbodySocios tr:hover,
 #tbodyVencimientosVacuna tr:hover {
-  background-color: #CBEDCF;
+  cursor: pointer;
+  background-color: #79BCC540;
+  /*aceaf2
+  79BCC5
+  95bfc4
+  #a2c2c788*/
 }
 
 .btn-transparent{

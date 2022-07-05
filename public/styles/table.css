@@ -1,3 +1,15 @@
 .rowWarning {
-  background-color: #ffee0040;
+  background-color: var(--socio-warning);
+}
+
+.rowExsocio {
+  background-color: var(--exsocio);
+}
+
+.rowExsocioWarning {
+  background-color: var(--exsocio-warning);
+}
+
+.rowNosocio {
+  background-color: var(--nosocio);
 }
