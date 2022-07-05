@@ -41,7 +41,8 @@ function createRow(obj){
 	let deudor = obj.deudor
 	let deudorFecha = obj.deudorFecha
 	let mascotas = obj.mascotas
-	//console.log(idSocio, deudor);
+	let tipo = obj.tipo
+	console.log(idSocio, tipo, deudor);
 
 	if ( !telefono ){
 		telefono = "";
@@ -72,13 +73,26 @@ function createRow(obj){
 		selectMascotas += '</select>'
 	}else selectMascotas = "";
 
-	let row = "<tr "
-	if ( deudor ){
-		//console.log("cambio de color de la linea ");
-		row += "class='rowWarning' >";
+	//console.log("CALCULAR EL COLOR DE LA LINEA SEGUN EL TIPO DE SOCIO Y LA DEUDA ");
+	classForClient = "";
+
+	if ( tipo == 0 ){ //NO SOCIO
+		if ( deudor )
+			classForClient = "rowNosocio";
+		else
+			classForClient = "rowNosocio";
+	}else if ( tipo == 1 ){ //SOCIO
+		if ( deudor )
+			classForClient = "rowWarning";
+	}else if ( tipo == 3 ){ //EX SOCIO
+		if ( deudor )
+			classForClient = "rowExsocioWarning";
+		else
+			classForClient = "rowExsocio";
 	}
-	else
-		row += " > ";
+
+	let row = "<tr class='"+classForClient+"' >";
+	//.rowWarning.rowExsocio.rowExsocioWarning.rowNosocio
 
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ idSocio +"</td>";
 	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ nombre +"</td>";
@@ -91,7 +105,6 @@ function createRow(obj){
 
 	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ telefono +"</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ direccion +"</td>";
-	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>Tipo</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ cuota + "</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")' "
 
