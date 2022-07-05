@@ -1,2 +1,6 @@
 
 src/config.php
+*.log
+*.txt
+*.tmp
+*-tmp
