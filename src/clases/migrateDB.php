@@ -211,6 +211,11 @@ class migrateDB{
             foreach ($responseQueryGetSocio->listResult as $key => $row) {
                 $tipoSocio = migrateDB::getTipoSocio($row['estado']);
 
+                $fechaIngreso = null;
+                if( $tipoSocio == 1 ){
+                    $fechaIngreso = date("Ymd");
+                }
+
                 $fechaUltimoPago = migrateDB::getFechaInt($row['ultimopago']);
 
                 $fechaUltimaCuota = null;
@@ -222,9 +227,9 @@ class migrateDB{
                 if ( $fechaUltimaCuota > date( "Ym", strtotime( date("Ym")." +12 month" ) ) )
                     $fechaUltimaCuota = null;
 
-                $fechaIngreso = null;
+                /*$fechaIngreso = null;
                 if(strlen($row['fechaingreo']) > 9)
-                    $fechaIngreso = fechas::getDateToINT($row['fechaingreo']);
+                    $fechaIngreso = fechas::getDateToINT($row['fechaingreo']);*/
 
                 /*$estado = 1;
                 if($fechaVencimiento >= $fechaUltimaCuota)
