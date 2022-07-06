@@ -4,11 +4,7 @@
 {% block content %}
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border w-75 shadow">
-		{% if SocioMascota.socio.deudor == false %}
-		<div class="card-header d-flex bg-mycolor">
-		{% else %}
-		<div class="card-header d-flex rowWarning">
-		{% endif %}
+		<div class="card-header d-flex bg-mycolor {{rowColorClientType}}">
 			<div class="row">
 				<div class="row ml-2">
 					{% if SocioMascota.socio %}

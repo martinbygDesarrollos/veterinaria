@@ -65,8 +65,22 @@ return function (App $app) {
             $args['administrador'] = $responseSession->session;
             $idSocio = $args['idSocio'];
             $responseGetSocio = ctr_usuarios::getSocioWithMascotaToShow($idSocio);
-            if($responseGetSocio->result == 2)
+            if($responseGetSocio->result == 2){
                 $args['responseSocio'] = $responseGetSocio;
+
+                $args['rowColorClientType'] = "rowSocio";
+                if ( $responseGetSocio->socio->tipoSocio == 0 ){ //NO SOCIO
+                    $args['rowColorClientType'] = "rowNosocio";
+                }else if ( $responseGetSocio->socio->tipoSocio == 1 ){ //SOCIO
+                    if ( $responseGetSocio->socio->deudor )
+                        $args['rowColorClientType'] = "rowWarning";
+                }else if ( $responseGetSocio->socio->tipoSocio == 3 ){ //EX SOCIO
+                    if ( $responseGetSocio->socio->deudor )
+                        $args['rowColorClientType'] = "rowExsocioWarning";
+                    else
+                        $args['rowColorClientType'] = "rowExsocio";
+                }
+            }
             else return $response->withRedirect('socios');
             return $this->view->render($response, "verSocio.twig", $args);
         }else return $response->withRedirect('iniciar-sesion');

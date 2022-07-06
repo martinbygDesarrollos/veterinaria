@@ -225,6 +225,7 @@ class socios{
 				$socio->lugarPago = "Veterinaria";
 			else $socio->lugarPago = "Cobrador";
 
+			$socio->tipoSocio = $socio->tipo;
 			if($socio->tipo == 1)
 				$socio->tipo = "Socio";
 			else if($socio->tipo == 0)

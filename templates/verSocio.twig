@@ -4,11 +4,7 @@
 {% block content %}
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border shadow w-75">
-		{% if responseSocio.socio.deudor == false %}
-		<div class="card-header d-flex justify-content-between bg-mycolor">
-		{% else %}
-		<div class="card-header d-flex justify-content-between rowWarning">
-		{% endif %}
+		<div class="card-header d-flex justify-content-between {{rowColorClientType}}">
 			<div class="row">
 				<h5 class="card-title mt-2 ml-2">{{ responseSocio.socio.nombre }}
 				{% if responseSocio.socio.deudor == true %}

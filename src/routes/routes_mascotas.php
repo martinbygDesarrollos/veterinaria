@@ -40,6 +40,21 @@ return function (App $app) {
 
             $idMascota = $args['idMascota'];
             $args['SocioMascota'] = ctr_mascotas::getMascotaWithSocio($idMascota);
+            if ( $args['SocioMascota'] ){
+                $args['rowColorClientType'] = "rowSocio";
+                if ( $args['SocioMascota']->socio->tipoSocio == 0 ){ //NO SOCIO
+                    $args['rowColorClientType'] = "rowNosocio";
+                }else if ( $args['SocioMascota']->socio->tipoSocio == 1 ){ //SOCIO
+                    if ( $args['SocioMascota']->socio->deudor )
+                        $args['rowColorClientType'] = "rowWarning";
+                }else if ( $args['SocioMascota']->socio->tipoSocio == 3 ){ //EX SOCIO
+                    if ( $args['SocioMascota']->socio->deudor )
+                        $args['rowColorClientType'] = "rowExsocioWarning";
+                    else
+                        $args['rowColorClientType'] = "rowExsocio";
+                }
+            }
+
             $args['responseVacunas'] = ctr_mascotas::getVacunasMascota($idMascota);
             $args['responseEnfermedades'] = ctr_mascotas::getEnfermedadesMascota($idMascota);
             $args['responseAnalisis'] = ctr_mascotas::getAnalisisMascota($idMascota);
