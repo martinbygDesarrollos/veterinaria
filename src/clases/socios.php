@@ -221,16 +221,23 @@ class socios{
 				$socio->fechaIngreso = $noData;
 			else $socio->fechaIngreso = fechas::dateToFormatBar($socio->fechaIngreso);
 
+			if(is_null($socio->fechaBajaSocio) || $socio->fechaBajaSocio == 0)
+				$socio->fechaBajaSocio = $noData;
+			else $socio->fechaBajaSocio = fechas::dateToFormatBar($socio->fechaBajaSocio);
+
 			if($socio->lugarPago == 0)
 				$socio->lugarPago = "Veterinaria";
 			else $socio->lugarPago = "Cobrador";
 
 			$socio->tipoSocio = $socio->tipo;
-			if($socio->tipo == 1)
-				$socio->tipo = "Socio";
-			else if($socio->tipo == 0)
+			if($socio->tipo == 0)
 				$socio->tipo = "No socio";
-			else $socio->tipo = "ONG";
+			else if($socio->tipo == 1)
+				$socio->tipo = "Socio";
+			else if($socio->tipo == 2)
+				$socio->tipo = "ONG";
+			else if($socio->tipo == 3)
+				$socio->tipo = "Ex socio";
 
 			$socio->deudorFecha = "";
 			if ( $socio->fechaUltimaCuota != "" ){
@@ -282,8 +289,8 @@ class socios{
 		return DataBase::sendQuery("INSERT INTO socios (nombre, cedula, direccion, telefono, fechaPago, lugarPago, telefax, fechaIngreso, email, rut, tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('ssssiisissi', $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio), "BOOLE");
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $quota){
-		return DataBase::sendQuery("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ?, fechaUltimaCuota = ?, cuota = ?, fechaUltimoPago = ? WHERE idSocio = ?", array('sssssiiissiiiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $ultimoMesPago, $quota, $ultimoPago, $idSocio), "BOOLE");
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $quota, $fechaBajaSocio){
+		return DataBase::sendQuery("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ?, fechaUltimaCuota = ?, cuota = ?, fechaUltimoPago = ?, fechaBajaSocio = ? WHERE idSocio = ?", array('sssssiiissiiiiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $ultimoMesPago, $quota, $ultimoPago, $fechaBajaSocio, $idSocio), "BOOLE");
 	}
 
 	public function getAllSocios(){
@@ -313,6 +320,43 @@ class socios{
 		}
 
 		$response->deudor = $deudor;
+
+		return $response;
+	}
+
+
+	public function clientTypeChangesDate( $currentClientType, $newClientType ){
+		/**
+		 * cliente normal(0) a socio(1) se guarda la fecha de alta
+		 *
+		 * socio(1) a cualquier otra excepto ong(2) se guarda la fecha de baja
+		 *
+		 * de exsocio a socio, se puede? se guarda algo?
+		 */
+
+		$response = new \stdClass();
+		if ( isset($currentClientType) && isset($newClientType) ){
+			if ( $currentClientType != $newClientType ){
+				if ( $currentClientType == 0 && $newClientType == 1 ){
+					$response->dateInit = date("Y-m-d");
+					$response->dateFinish = null;
+					$response->result = 2;
+				}elseif ( $currentClientType == 1 && $newClientType != 2 ){
+					$response->dateInit = null;
+					$response->dateFinish = date("Y-m-d");
+					$response->result = 2;
+				}else{
+					error_log("funcion clientTypeChangesDate tipo cliente actual ".$currentClientType." - ".$newClientType." tipo cliente nuevo");
+					$response->result = 1;
+				}
+			}else{
+				error_log("funcion clientTypeChangesDate tipo cliente actual y nuevo son iguales");
+				$response->result = 1;
+			}
+		}else{
+			error_log("funcion clientTypeChangesDate tipo cliente actual ".$currentClientType." - ".$newClientType." tipo cliente nuevo. undefined o null");
+			$response->result = 1;
+		}
 
 		return $response;
 	}

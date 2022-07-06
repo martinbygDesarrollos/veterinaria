@@ -696,18 +696,53 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago){
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago){
 		$response = new \stdClass();
-
+		$sociosClass = new socios();
+		error_log("-- ctr usuario updateSocio --");
 		$responseGetSocio = socios::getSocio($idSocio);
 		if($responseGetSocio->result == 2){
+
+			$tipoSocio = $responseGetSocio->objectResult->tipo;
 			$responseCedulaNotRepeated = socios::getSocioCedula($cedula, $idSocio);
 			if($responseCedulaNotRepeated->result == 1){
 				$responseValidateData = ctr_usuarios::validateInfoSocio($nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax);
 				if($responseValidateData->result == 2){
 
-					if(!is_null($fechaIngreso))
+					error_log("la fecha de ingreso que llegó ".$fechaIngreso);
+					if ( !isset($fechaIngreso) ){
+						$fechaIngreso = $responseGetSocio->objectResult->fechaIngreso;
+						error_log("ahora la fecha de ingreso es ".$fechaIngreso);
+					}
+
+					//error_log("la fecha de baja que llegó ".$fechaBajaSocio);
+					if( !isset($fechaBajaSocio) ){
+						$fechaBajaSocio = $responseGetSocio->objectResult->fechaBajaSocio;
+						error_log("ahora la fecha de baja es ".$fechaBajaSocio);
+					}
+
+					if ( $tipoSocio != $tipoSocioNuevo){
+						$fechasTipoSocio = $sociosClass->clientTypeChangesDate( $tipoSocio, $tipoSocioNuevo );
+						if ( $fechasTipoSocio->result == 2 ){
+							if ( isset($fechasTipoSocio->dateInit) )
+								$fechaIngreso = $fechasTipoSocio->dateInit;
+
+							if ( isset($fechasTipoSocio->dateFinish) )
+								$fechaBajaSocio = $fechasTipoSocio->dateFinish;
+						}
+					}
+
+					if(!is_null($fechaIngreso)){
+						error_log("en el if de la fecha de ingreso ".$fechaIngreso);
 						$fechaIngreso = fechas::getDateToINT($fechaIngreso);
+						error_log("ahora la fecha de ingreso es ".$fechaIngreso);
+					}
+
+					if(!is_null($fechaBajaSocio)){
+						error_log("en el if de la fecha de baja ".$fechaBajaSocio);
+						$fechaBajaSocio = fechas::getDateToINT($fechaBajaSocio);
+						error_log("ahora la fecha de baja es ".$fechaBajaSocio);
+					}
 
 					if(!is_null($ultimoMesPago))
 						$ultimoMesPago = str_replace("-","",$ultimoMesPago);
@@ -717,7 +752,10 @@ class ctr_usuarios{
 
 					$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
 					if($responseGetQuota->result == 2){
-						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $responseGetQuota->quota);
+						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $responseGetQuota->quota, $fechaBajaSocio);
+
+						error_log("-- ctr usuario updateSocio fin --");
+
 						if($responseUpdateSocio->result == 2){
 							//$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", $idSocio, null, "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
@@ -851,6 +889,8 @@ class ctr_usuarios{
 		if($responseGetSocio->result == 2){
 			if(!is_null($responseGetSocio->objectResult->fechaIngreso))
 				$responseGetSocio->objectResult->fechaIngreso = fechas::dateToFormatHTML($responseGetSocio->objectResult->fechaIngreso);
+			if(!is_null($responseGetSocio->objectResult->fechaBajaSocio))
+				$responseGetSocio->objectResult->fechaBajaSocio = fechas::dateToFormatHTML($responseGetSocio->objectResult->fechaBajaSocio);
 			if(!is_null($responseGetSocio->objectResult->fechaUltimaCuota))
 				$responseGetSocio->objectResult->fechaUltimaCuota = fechas::monthToFormatHTML($responseGetSocio->objectResult->fechaUltimaCuota);
 			if(!is_null($responseGetSocio->objectResult->fechaUltimoPago))

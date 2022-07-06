@@ -236,7 +236,7 @@ function saveChangeSocio(buttonConfirm){
 }
 
 function setValues(inputFrom, socio){
-	console.log(socio)
+	//console.log(socio)
 	$('#input'+ inputFrom +'Cedula').val(socio.cedula);
 	$('#input'+ inputFrom +'Nombre').val(socio.nombre);
 	$('#input'+ inputFrom +'Direccion').val(socio.direccion);
@@ -248,8 +248,10 @@ function setValues(inputFrom, socio){
 	$('#input'+ inputFrom +'FechaIngreso').val(socio.fechaIngreso)
 	$('#select'+ inputFrom +'TipoSocio').val(socio.tipo);
 	$('#input' + inputFrom + 'Cuota').val(socio.cuota);
-	if(inputFrom == "Modal")
+	if(inputFrom == "Modal"){
 		$('#selectLugarPago').val(socio.lugarPago)
+		$('#input'+ inputFrom +'FechaBaja').val(socio.fechaBajaSocio)
+	}
 
 	$('#input'+ inputFrom +'Rut').val(socio.rut);
 	$('#input'+ inputFrom +'Telefax').val(socio.telefax);
