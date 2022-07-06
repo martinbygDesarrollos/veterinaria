@@ -1,3 +1,7 @@
+.rowSocio {
+  background-color: var(--socio);
+}
+
 .rowWarning {
   background-color: var(--socio-warning);
 }
