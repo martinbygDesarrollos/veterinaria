@@ -235,6 +235,10 @@ class migrateDB{
                 if($fechaVencimiento >= $fechaUltimaCuota)
                     $estado = 0;*/
 
+
+                /*
+                el estado se hereda del sistema anterior. Antes el estado podía ser activo, no socio, inactivo, honorario, sin mascota.
+                */
                 $estado = 1;
                 if(strcmp($row['estado'], "Inactivo") == 0)
                     $estado = 0;
