@@ -3,8 +3,8 @@
 require_once '../src/utils/formats.php';
 
 class socios{
-	//TIPO SOCIO::: SOCIO = 1, NO SOCIO = 0 ONG = 2
-	//activo = 1 inactivo = 0
+	//TIPO SOCIO::: SOCIO = 1, NO SOCIO o cliente = 0 ONG = 2 ex socio = 3
+	//estado activo = 1 inactivo = 0
 
 	public function updateGestcomSocio($idSocio, $ultimoPago, $ultimaCuota){
 		return DataBase::sendQuery("UPDATE socios SET fechaUltimoPago = ?, fechaUltimaCuota = ? WHERE idSocio = ?", array('iii', $ultimoPago, $ultimaCuota, $idSocio), "BOOLE");
