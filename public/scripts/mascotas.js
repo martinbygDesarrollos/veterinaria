@@ -31,14 +31,27 @@ function createRow(obj){
 	fechaUltimaCuota = obj.fechaUltimaCuota
 	fechaUltimoPago = obj.fechaUltimoPago
 	socioDeudor = obj.socioDeudor
+	socioTipo = obj.socioTipo;
+	socioActivo = obj.socioActivo;
+	console.log(socioActivo);
 
+	if ( socioActivo == 0 ) socioActivo = " (Inactivo)"; else socioActivo = "";
 
-	let row = "<tr onclick='redirectToMascota("+ idMascota +")'";
-	if ( socioDeudor )
-		row += "class='rowWarning' >";
-	else
-		row += " > ";
+	classForClient = "";
 
+	if ( socioTipo == 0 ){ //NO SOCIO
+		classForClient = "rowNosocio";
+	}else if ( socioTipo == 1 ){ //SOCIO
+		if ( socioDeudor )
+			classForClient = "rowWarning";
+	}else if ( socioTipo == 3 ){ //EX SOCIO
+		if ( socioDeudor )
+			classForClient = "rowExsocioWarning";
+		else
+			classForClient = "rowExsocio";
+	}
+
+	let row = "<tr onclick='redirectToMascota("+ idMascota +")' class='"+classForClient+"' >";
 	row += "<td class='text-center'>" + nombre +"</td>";
 	row += "<td class='text-center'"
 
@@ -48,14 +61,14 @@ function createRow(obj){
 
 	if ( fechaUltimaCuota != "" ){
 		if ( socioDeudor && fechaUltimoPago != "" )
-			row += ' title="Último mes pago '+ fechaUltimaCuota +' el día '+ fechaUltimoPago +'" >'+socioNombre+' <i class="fas fa-exclamation-triangle"></i></td>';
+			row += ' title="Último mes pago '+ fechaUltimaCuota +' el día '+ fechaUltimoPago +'" >'+socioNombre+ socioActivo+' <i class="fas fa-exclamation-triangle"></i></td>';
 		else if (socioDeudor && fechaUltimoPago == "" )
-			row += ' title="No se encontró fecha del último pago" >'+socioNombre+' <i class="fas fa-exclamation-triangle"></i></td>';
+			row += ' title="No se encontró fecha del último pago" >'+socioNombre+socioActivo+' <i class="fas fa-exclamation-triangle"></i></td>';
 		else if ( !socioDeudor )
-			row += ">"+socioNombre+'</td>';
+			row += ">"+socioNombre+socioActivo+'</td>';
 	}
 	else
-		row+= ">"+socioNombre + "</td>";
+		row+= ">"+socioNombre + socioActivo+"</td>";
 
 
 	row += "<td class='text-center notShowMobile'>" + especie +"</td>";

@@ -218,8 +218,13 @@ input[type=number] {
 #tbodySocios tr:hover,
 #tbodyVencimientosVacuna tr:hover {
   cursor: pointer;
-  background-color: #79BCC540;
-  /*aceaf2
+  font-style: italic;
+  border-bottom: 0.1rem solid;
+  border-left: 0.1rem solid;
+
+
+  /*background-color: #79BCC540;
+  aceaf2
   79BCC5
   95bfc4
   #a2c2c788*/
