@@ -26,6 +26,11 @@ class socios{
 		return $responseQuery;
 	}
 
+	public function getSocioById($id){
+		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE idSocio = ?", array('i', $id), "OBJECT");
+		return $responseQuery;
+	}
+
 	public function getSocioMaxId(){
 		return DataBase::sendQuery("SELECT MAX(idSocio) AS idMaximo FROM socios", null, "OBJECT");
 	}
@@ -168,7 +173,7 @@ class socios{
 	}
 
 	public function getSociosWithMascotas(){
-		return DataBase::sendQuery("SELECT S.idSocio, S.estado , COUNT(MS.idMascota) AS cantMascotas FROM socios AS S, mascotasocio AS MS WHERE S.idSocio = MS.idSocio AND S.estado = 1 GROUP BY MS.idSocio", null, "LIST");
+		return DataBase::sendQuery("SELECT S.idSocio, S.estado, S.tipo, COUNT(MS.idMascota) AS cantMascotas FROM socios AS S, mascotasocio AS MS WHERE S.idSocio = MS.idSocio AND S.estado = 1 GROUP BY MS.idSocio", null, "LIST");
 	}
 
 	public function getSocioToShow($idSocio){

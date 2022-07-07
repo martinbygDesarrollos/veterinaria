@@ -13,25 +13,29 @@ class configuracionSistema{
 		return $responseQuery;
 	}
 
-	public function getQuotaSocio($cantMascotas){
+	public function getQuotaSocio($cantMascotas, $tipoCliente){
 		$response = new \stdClass();
 
 		$response->result = 1;
 		$response->quota = 0;
-
-		$responseGetQuota = configuracionSistema::getQuota();
-		if($responseGetQuota->result == 2){
-			if($cantMascotas == 1){
-				$response->result = 2;
-				$response->quota = $responseGetQuota->objectResult->cuotaUno;
-			}else if($cantMascotas == 2){
-				$response->result = 2;
-				$response->quota = $responseGetQuota->objectResult->cuotaDos;
-			}else if($cantMascotas > 2){
-				$response->result = 2;
-				$response->quota = ($responseGetQuota->objectResult->cuotaDos + (($cantMascotas - 2) * $responseGetQuota->objectResult->cuotaExtra));
-			}
-		}else return $responseGetQuota;
+		if ( $tipoCliente == 1 ){
+			$responseGetQuota = configuracionSistema::getQuota();
+			if($responseGetQuota->result == 2){
+				if($cantMascotas == 1){
+					$response->result = 2;
+					$response->quota = $responseGetQuota->objectResult->cuotaUno;
+				}else if($cantMascotas == 2){
+					$response->result = 2;
+					$response->quota = $responseGetQuota->objectResult->cuotaDos;
+				}else if($cantMascotas > 2){
+					$response->result = 2;
+					$response->quota = ($responseGetQuota->objectResult->cuotaDos + (($cantMascotas - 2) * $responseGetQuota->objectResult->cuotaExtra));
+				}
+			}else return $responseGetQuota;
+		}else{
+			$response->result = 2;
+			$response->quota = 0;
+		}
 
 		return $response;
 	}
