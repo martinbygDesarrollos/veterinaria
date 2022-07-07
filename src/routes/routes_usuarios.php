@@ -10,6 +10,9 @@ require_once '../src/controladores/ctr_mascotas.php';
 return function (App $app) {
     $container = $app->getContainer();
 
+    //---------------------------- CONTROLADORES Y CLASES ------------------------------------------------------
+    $userController = new ctr_usuarios();
+
     //---------------------------- VISTAS ------------------------------------------------------
     $app->get('/iniciar-sesion', function ($request, $response, $args) use ($container) {
         $args['version'] = FECHA_ULTIMO_PUSH;
@@ -132,6 +135,11 @@ return function (App $app) {
         $data = $request->getParams();
         $token = $data['token'];
         return json_encode(ctr_usuarios::getFileVistaFactura($token));
+    });
+
+    $app->post('/gestcom-rest-newclient', function(Request $request, Response $response) use ($userController){
+        $data = $request->getParams();
+        return json_encode(ctr_usuarios::gestcomNewClient($data));
     });
 
     $app->post('/asignarMascotaSocio', function(Request $request, Response $response){

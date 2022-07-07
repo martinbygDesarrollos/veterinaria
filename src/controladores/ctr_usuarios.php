@@ -178,6 +178,52 @@ class ctr_usuarios{
 		return $response;
 	}
 
+	public function gestcomNewClient($data=array())
+	{
+    	$userController = new ctr_usuarios();
+		$response = new \stdClass();
+
+		$response->cliente = 0;
+
+		if ( count($data) > 0 ){
+			$currentDate = fechas::getCurrentDateInt();
+			$token = base64_encode($currentDate . "gestcom1213");
+			if ( $token == $data['token'] ){
+				if ( isset($data['nombre']) ){
+
+					$cedula = null;
+					$rut = null;
+
+					if(strlen($data['cedula'])>8)
+						$rut = $data['cedula'];
+					else $cedula = $data['cedula'];
+
+					$nombre = $data['nombre'];
+					$cedula = $cedula;
+					$rut = $rut;
+					$direccion = $data['direccion'] || null;
+					$telefono = $data['telefono'] || null;
+					$telefax = null;
+					$fechaPago = $data['fechapago'] || null;
+					$lugarPago = $data['lugarpago'] || null;
+					$fechaIngreso = null;
+					$email = $data['email'] || null;
+					$tipoSocio = 0;
+
+					$responseInsert = $userController->insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+					if ( isset($responseInsert->newIdSocio) ){
+						$response->cliente = $responseInsert->newIdSocio;
+					}
+					$response->message = $responseInsert->message;
+				}else $response->message = "Debe ingresar nombre del cliente.";
+			}else{
+				$response->result = 0;
+				$response->message = "El Token de validación no es correcto.";
+			}
+		}
+		return $response;
+	}
+
 	public function creteFile($arrayResult){
 		if(is_array($arrayResult) && sizeof($arrayResult) > 0){
 			$file = fopen('C:\Users\Usuario\Desktop\archivo\FACTURA.txt','w+');
