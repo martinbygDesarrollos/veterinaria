@@ -119,7 +119,7 @@ class ctr_usuarios{
 							1 activo $...
 						 */
 							if ( $socio['estado'] == 1 && $socio['tipo'] == 1 ){
-								$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas));
+								$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas), $socio['tipo']);
 								if($responseCalculateQuota->result == 2)
 									$cuota = $responseCalculateQuota->quota;
 							}else $cuota = 0;
@@ -620,7 +620,7 @@ class ctr_usuarios{
 				$actualizados = array();
 				$noActualizados = array();
 				foreach ($responseGetSociosActives->listResult as $key => $socio) {
-					$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas']);
+					$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas'], $socio['tipo']);
 					if($responseGetQuota->result == 2){
 						$responseUpdateQuota = socios::updateQuotaSocio($socio['idSocio'], $responseGetQuota->quota);
 						if($responseUpdateQuota->result == 2)
@@ -687,15 +687,23 @@ class ctr_usuarios{
 	public function calculateQuotaSocio($idSocio){
 		$response = new \stdClass();
 
+		error_log("actualizar el valor de la cuota del cliente");
 		$responseGetMascotasSocio = ctr_mascotas::getSocioActivePets($idSocio);
 		if($responseGetMascotasSocio->result == 2){
-			$responseGetQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetMascotasSocio->mascotas));
-			if($responseGetQuota->result == 2){
-				$response->result = 2;
-				$response->quota = $responseGetQuota->quota;
+			$socio = socios::getSocioById($idSocio);
+			if( $socio->result == 2 ){
+				$socioTipo = $socio->objectResult->tipo;
+				$responseGetQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetMascotasSocio->mascotas), $socioTipo);
+				if($responseGetQuota->result == 2){
+					$response->result = 2;
+					$response->quota = $responseGetQuota->quota;
+				}else{
+					$response->result = 0;
+					$response->message = "Ocurrió un error y la cuota del socio no pudo ser calculada.";
+				}
 			}else{
 				$response->result = 0;
-				$response->message = "Ocurrió un error y la cuota del socio no pudo ser calculada.";
+				$response->message = "No se conoce el tipo de cliente.";
 			}
 		}else{
 			$response->result = 2;
@@ -810,13 +818,19 @@ class ctr_usuarios{
 					if(!is_null($ultimoPago))
 						$ultimoPago = fechas::getDateToINT($ultimoPago);
 
-					$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
-					if($responseGetQuota->result == 2){
-						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $responseGetQuota->quota, $fechaBajaSocio);
+					$cuota = $responseGetSocio->objectResult->cuota;
+					//if($responseGetQuota->result == 2){
+						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $cuota, $fechaBajaSocio);
 
 						error_log("-- ctr usuario updateSocio fin --");
 
 						if($responseUpdateSocio->result == 2){
+							//luego de guardar los nuevos datos se actualiza la cuota
+							$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
+							if ( $responseGetQuota->result != 2 ){
+								$response->result = 1;
+								$response->message = "Se actualizó la información del socio. No se puedo actualizar el valor de la cuota.";
+							}
 							//$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", $idSocio, null, "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 							if($responseHistorial->result == 2){
@@ -830,7 +844,7 @@ class ctr_usuarios{
 								$response->message = "Se actualizó la información del socio.";
 							}
 						}else return $responseUpdateSocio;
-					}else return $responseGetQuota;
+					//}else return $responseGetQuota;
 				}else return $responseValidateData;
 			}else{
 				$response->result = 0;
