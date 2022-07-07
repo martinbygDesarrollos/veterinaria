@@ -199,15 +199,29 @@ class ctr_usuarios{
 					else $cedula = $data['cedula'];
 
 					$nombre = $data['nombre'];
+
 					$cedula = $cedula;
+
 					$rut = $rut;
-					$direccion = $data['direccion'] || null;
-					$telefono = $data['telefono'] || null;
+					if ($rut == "")
+						$rut = null;
+
+					$direccion = $data['direccion'];
+					if ($direccion == "")
+						$direccion = null;
+
+					$telefono = $data['telefono'];
+					if ($telefono == "")
+						$telefono = null;
+
 					$telefax = null;
-					$fechaPago = $data['fechapago'] || null;
-					$lugarPago = $data['lugarpago'] || null;
+					$fechaPago = $data['fechapago'] || 0;
+					$lugarPago = $data['lugarpago'] || 0;
 					$fechaIngreso = null;
-					$email = $data['email'] || null;
+					$email = $data['email'];
+					if ($email == "")
+						$email = null;
+
 					$tipoSocio = 0;
 
 					$responseInsert = $userController->insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
