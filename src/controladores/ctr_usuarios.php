@@ -737,8 +737,27 @@ class ctr_usuarios{
 		if($responseValidateData->result == 2){
 			$responseGetSocio = socios::getSocioByCedula($cedula);
 			if($responseGetSocio->result == 1){
-				if(!is_null($fechaIngreso))
-					$fechaIngreso = fechas::getDateToINT($fechaIngreso);
+				if (strlen($direccion)<=0)
+					$direccion  = null;
+
+				if (strlen($telefono)<=0)
+					$telefono  = null;
+
+				if (strlen($telefax)<=0)
+					$telefax  = null;
+
+				if (strlen($email)<=0)
+					$email  = null;
+
+				if (strlen($rut)<=0)
+					$rut = null;
+
+
+				/*if(!is_null($fechaIngreso))
+					$fechaIngreso = fechas::getDateToINT($fechaIngreso);*/
+				if ( $tipoSocio != 1 ){
+					$fechaIngreso = null;
+				}else $fechaIngreso = date("Ymd");
 
 				if(!is_null($fechaPago))
 					$fechaPago = fechas::getDateToINT($fechaPago);

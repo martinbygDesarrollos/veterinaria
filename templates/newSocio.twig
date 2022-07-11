@@ -3,19 +3,12 @@
 {% endblock %}
 {% block content %}
 <div class="d-flex justify-content-center">
-	<div class="card border-top-0 rounded-bottom border w-50 shadow">
+	<div class="card border-top-0 rounded-bottom border w-75 shadow">
 		<div class="card-header d-flex justify-content-between bg-mycolor">
 			<h5 class="card-title mt-2">Agregar cliente</h5>
 		</div>
 		<div class="card-body">
 			<div class="row">
-				<div class="col-3">
-					<div class="form-group">
-						<label for="inputCedulaSocio">Cédula</label>
-						<input type="number" class="form-control text-center shadow-sm" id="inputCedulaSocio" onkeypress="return keyEnterPress(event, this.value, 9)">
-						<small id="emailHelp" class="form-text text-muted">Obligatoria</small>
-					</div>
-				</div>
 				<div class="col">
 					<div class="form-group">
 						<label for="inputNombreSocio">Nombre</label>
@@ -23,10 +16,16 @@
 						<small id="emailHelp" class="form-text text-muted">Obligatorio</small>
 					</div>
 				</div>
-
+				<div class="col">
+					<div class="form-group">
+						<label for="inputCedulaSocio">Cédula</label>
+						<input type="number" class="form-control text-center shadow-sm" id="inputCedulaSocio" onkeypress="return keyEnterPress(event, this.value, 9)">
+						<small id="emailHelp" class="form-text text-muted">Obligatoria</small>
+					</div>
+				</div>
 			</div>
 			<div class="row">
-				<div class="col-3">
+				<div class="col">
 					<div class="form-group">
 						<label for="inputDireccionSocio">Teléfono</label>
 						<input type="number" class="form-control text-center shadow-sm" id="inputTelefonoSocio" onkeypress="return keyEnterPress(event, this.value, 9)">
@@ -34,13 +33,35 @@
 				</div>
 				<div class="col">
 					<div class="form-group">
+						<label for="inputDireccionSocio">Email</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputEmailSocio" onkeypress="return keyEnterPress(event, this.value, 50)">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<div class="form-group">
 						<label for="inputDireccionSocio">Dirección</label>
 						<input type="text" class="form-control text-center shadow-sm" id="inputDireccionSocio" onkeypress="return keyEnterPress(event, this.value, 100)">
 					</div>
 				</div>
 			</div>
+			<div class="row mt-2">
+				<div class="col">
+					<div class="form-group">
+						<label for="inputDireccionSocio">RUT</label>
+						<input type="number" class="form-control text-center shadow-sm" id="inputRutSocio" onkeypress="return keyEnterPress(event, this.value, 12)">
+					</div>
+				</div>
+				<div class="col">
+					<div class="form-group">
+						<label for="inputDireccionSocio">Telefax</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputTelefaxSocio" onkeypress="return keyEnterPress(event, this.value, 100)">
+					</div>
+				</div>
+			</div>
 			<div class="row">
-				<div class="col-3">
+				<div class="col">
 					<div class="form-group">
 						<label for="inputTipoSocio">Tipo cliente</label>
 						<select class="form-select form-control shadow-sm" id="inputTipoSocio" onkeypress="return keyEnterPress(event, null, null)">
@@ -52,47 +73,28 @@
 					</div>
 				</div>
 				<div class="col">
-					<div class="form-group">
-						<label for="inputDireccionSocio">Email</label>
-						<input type="text" class="form-control text-center shadow-sm" id="inputEmailSocio" onkeypress="return keyEnterPress(event, this.value, 50)">
-					</div>
 				</div>
 			</div>
-			<div class="row mt-4">
-				<div class="col-3">
+			<div class="row mt-2">
+				<div class="col">
 					<div class="form-group">
 						<label for="inputDireccionSocio">Fecha de pago</label>
 						<input type="number" class="form-control text-center shadow-sm" id="inputFechaPagoSocio" onkeypress="return keyEnterPress(event, this.value, 2)">
 					</div>
 				</div>
-				<div class="col-4">
+				<!--div class="col">
 					<div class="form-group">
 						<label for="inputDireccionSocio">Fecha ingreso</label>
 						<input type="date" class="form-control text-center shadow-sm" id="inputFechaIngresoSocio" onkeypress="return keyEnterPress(event, null, null)">
 					</div>
-				</div>
-				<div class="col-4">
+				</div-->
+				<div class="col">
 					<div class="form-group">
 						<label for="inputLugarPagoSocio">Lugar de pago</label>
 						<select class="form-select form-control shadow-sm" id="inputLugarPagoSocio" onkeypress="return keyEnterPress(event, null, null)">
 							<option selected value="0">Veterinaria</option>
 							<option value="1">Cobrador</option>
 						</select>
-					</div>
-				</div>
-			</div>
-			<h6 class="card-subtitle mt-4 text-muted">Información adicional</h6>
-			<div class="row mt-2">
-				<div class="col-4">
-					<div class="form-group">
-						<label for="inputDireccionSocio">RUT</label>
-						<input type="number" class="form-control text-center shadow-sm" id="inputRutSocio" onkeypress="return keyEnterPress(event, this.value, 12)">
-					</div>
-				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputDireccionSocio">Telefax</label>
-						<input type="text" class="form-control text-center shadow-sm" id="inputTelefaxSocio" onkeypress="return keyEnterPress(event, this.value, 100)">
 					</div>
 				</div>
 			</div>
