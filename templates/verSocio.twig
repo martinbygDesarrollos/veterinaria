@@ -424,38 +424,39 @@
 				</div>
 				<hr>
 				<h6 class="card-subtitle mb-3 text-muted">Información de pago</h6>
-						<div class="form-group">
-				<div class="row">
-					<div class="col">
-						<label for="inputFechaPago">Fecha pago</label>
-						<input type="number" class="form-control text-center shadow-sm"  id="inputModalFechaPago" onkeypress="return keyEnterPress(event, this.value, 2)">
-					</div>
-					<div class="col">
-						<div class="form-group">
-							<label for="inputUltimoPago">Último pago</label>
-							<input type="date" class="form-control text-center shadow-sm"id="inputModalUltimoPago" onkeypress="return keyEnterPress(event, null, null)">
+				<div class="form-group">
+					<div class="row">
+						<div class="col">
+							<label for="inputFechaPago">Fecha pago</label>
+							<input type="number" class="form-control text-center shadow-sm"  id="inputModalFechaPago" onkeypress="return keyEnterPress(event, this.value, 2)">
 						</div>
-					</div>
-					<div class="col">
-						<div class="form-group">
-							<label for="inputUltimoMesPago">Último mes pago</label>
-							<input type="month" class="form-control text-center shadow-sm"  id="inputModalUltimoMesPago" onkeypress="return keyEnterPress(event, null, null)">
+						<div class="col">
+							<div class="form-group">
+								<label for="inputUltimoPago">Último pago</label>
+								<input type="date" class="form-control text-center shadow-sm"id="inputModalUltimoPago" onkeypress="return keyEnterPress(event, null, null)">
+							</div>
 						</div>
-					</div>
-					<div class="col">
-						<div class="form-group">
-							<label for="inputLugarPago">Lugar de pago</label>
-							<select class="form-select form-control shadow-sm" id="selectLugarPago" onkeypress="return keyEnterPress(event, null, null)">
-								<option value="0">Veterinaria</option>
-								<option value="1">Cobrador</option>
-							</select>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputUltimoMesPago">Último mes pago</label>
+								<input type="month" class="form-control text-center shadow-sm"  id="inputModalUltimoMesPago" onkeypress="return keyEnterPress(event, null, null)">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputLugarPago">Lugar de pago</label>
+								<select class="form-select form-control shadow-sm" id="selectLugarPago" onkeypress="return keyEnterPress(event, null, null)">
+									<option value="0">Veterinaria</option>
+									<option value="1">Cobrador</option>
+								</select>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="modal-footer d-flex justify-content-between">
-				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button id="btnConfirmChange" type="button" name="{{ responseSocio.socio.idSocio }}" class="btn btn-success shadow-sm" onclick="saveChangeSocio(this)" onkeypress="return keyEnterPress(event, null, null)">Guardar</button>
+				<div class="modal-footer d-flex justify-content-between">
+					<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
+					<button id="btnConfirmChange" type="button" name="{{ responseSocio.socio.idSocio }}" class="btn btn-success shadow-sm" onclick="saveChangeSocio(this)" onkeypress="return keyEnterPress(event, null, null)">Guardar</button>
+				</div>
 			</div>
 		</div>
 	</div>
