@@ -270,10 +270,11 @@ return function (App $app) {
             $tipoSocio = $data['tipo'];
             $lugarPago = $data['lugarPago'];
             $fechaIngreso = $data['fechaIngreso'];
+            $fechaBaja = $data['fechaBajaSocio'];
             $ultimoPago = $data['ultimoPago'];
             $fechaPago =  $data['fechaPago'];
             $ultimoMesPago = $data['ultimoMesPago'];
-            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago));
+            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $fechaBaja, $ultimoPago, $fechaPago, $ultimoMesPago));
         }else return json_encode($responseSession);
     });
 

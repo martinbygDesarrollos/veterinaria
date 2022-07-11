@@ -197,6 +197,7 @@ function saveChangeSocio(buttonConfirm){
 	let ultimoPago = $('#inputModalUltimoPago').val() || null;
 	let ultimoMesPago = $('#inputModalUltimoMesPago').val() || null;
 	let fechaIngreso = $('#inputModalFechaIngreso').val() || null;
+	let fechaBajaSocio = $('#inputModalFechaBaja').val() || null;
 	let lugarPago = $('#selectLugarPago').val() || null;
 	let tipoSocio = $('#selectModalTipoSocio').val() || null;
 	let rut = $('#inputModalRut').val() || null;
@@ -219,15 +220,20 @@ function saveChangeSocio(buttonConfirm){
 							lugarPago: lugarPago,
 							ultimoMesPago: ultimoMesPago,
 							fechaIngreso: fechaIngreso,
+							fechaBajaSocio: fechaBajaSocio,
 							rut: rut,
 							telefax: telefax,
 							tipo: tipoSocio,
 							email: email
 						};
+						console.log("fecha baja antes de la ruta ",fechaBajaSocio);
 						let response = sendPost("updateSocio", data);
-						showReplyMessage(response.result, response.message, "Modificar socio", "modalUpdateSocio");
+						//showReplyMessage(response.result, response.message, "Modificar socio", "modalUpdateSocio");
 						if(response.result == 2)
-							setValues("", response.newSocio);
+							window.location.reload();
+						else
+							showReplyMessage(response.result, response.message, "Modificar socio", "modalUpdateSocio");
+						//setValues("", response.newSocio);
 					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido.", "Email incorrecto", "modalUpdateSocio");
 				}else showReplyMessage(1, "El nombre del socio debe tener al menos 6 caracteres para ser considerado valido.", "Nombre incorrecto", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del socio para modificarlo", "Nombre requerido", "modalUpdateSocio");
@@ -248,9 +254,9 @@ function setValues(inputFrom, socio){
 	$('#input'+ inputFrom +'FechaIngreso').val(socio.fechaIngreso)
 	$('#select'+ inputFrom +'TipoSocio').val(socio.tipo);
 	$('#input' + inputFrom + 'Cuota').val(socio.cuota);
+	$('#input'+ inputFrom +'FechaBaja').val(socio.fechaBajaSocio)
 	if(inputFrom == "Modal"){
 		$('#selectLugarPago').val(socio.lugarPago)
-		$('#input'+ inputFrom +'FechaBaja').val(socio.fechaBajaSocio)
 	}
 
 	$('#input'+ inputFrom +'Rut').val(socio.rut);

@@ -764,10 +764,10 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago){
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $fechaBajaSocio, $ultimoPago, $fechaPago, $ultimoMesPago){
+
 		$response = new \stdClass();
 		$sociosClass = new socios();
-		error_log("-- ctr usuario updateSocio --");
 		$responseGetSocio = socios::getSocio($idSocio);
 		if($responseGetSocio->result == 2){
 
@@ -777,19 +777,15 @@ class ctr_usuarios{
 				$responseValidateData = ctr_usuarios::validateInfoSocio($nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax);
 				if($responseValidateData->result == 2){
 
-					error_log("la fecha de ingreso que llegó ".$fechaIngreso);
 					if ( !isset($fechaIngreso) ){
 						$fechaIngreso = $responseGetSocio->objectResult->fechaIngreso;
-						error_log("ahora la fecha de ingreso es ".$fechaIngreso);
 					}
 
-					//error_log("la fecha de baja que llegó ".$fechaBajaSocio);
 					if( !isset($fechaBajaSocio) ){
 						$fechaBajaSocio = $responseGetSocio->objectResult->fechaBajaSocio;
-						error_log("ahora la fecha de baja es ".$fechaBajaSocio);
 					}
 
-					if ( $tipoSocio != $tipoSocioNuevo){
+					if ( $tipoSocio != $tipoSocioNuevo ){
 						$fechasTipoSocio = $sociosClass->clientTypeChangesDate( $tipoSocio, $tipoSocioNuevo );
 						if ( $fechasTipoSocio->result == 2 ){
 							if ( isset($fechasTipoSocio->dateInit) )
@@ -801,15 +797,11 @@ class ctr_usuarios{
 					}
 
 					if(!is_null($fechaIngreso)){
-						error_log("en el if de la fecha de ingreso ".$fechaIngreso);
 						$fechaIngreso = fechas::getDateToINT($fechaIngreso);
-						error_log("ahora la fecha de ingreso es ".$fechaIngreso);
 					}
 
 					if(!is_null($fechaBajaSocio)){
-						error_log("en el if de la fecha de baja ".$fechaBajaSocio);
 						$fechaBajaSocio = fechas::getDateToINT($fechaBajaSocio);
-						error_log("ahora la fecha de baja es ".$fechaBajaSocio);
 					}
 
 					if(!is_null($ultimoMesPago))
@@ -822,14 +814,14 @@ class ctr_usuarios{
 					//if($responseGetQuota->result == 2){
 						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $cuota, $fechaBajaSocio);
 
-						error_log("-- ctr usuario updateSocio fin --");
-
 						if($responseUpdateSocio->result == 2){
-							//luego de guardar los nuevos datos se actualiza la cuota
 							$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
-							if ( $responseGetQuota->result != 2 ){
-								$response->result = 1;
-								$response->message = "Se actualizó la información del socio. No se puedo actualizar el valor de la cuota.";
+							if ( $responseGetQuota->result == 2 ){
+								$responseUpdateQuota =  socios::updateQuotaSocio($idSocio, $responseGetQuota->quota);
+								if ( $responseUpdateQuota->result != 2 ){
+									$response->result = 1;
+									$response->message = "Se actualizó la información del socio. No se puedo actualizar el valor de la cuota.";
+								}
 							}
 							//$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", $idSocio, null, "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
