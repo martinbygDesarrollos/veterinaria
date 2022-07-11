@@ -130,9 +130,9 @@ function createRowMascotasNoSocio(idSocio, idMascota, nombre, especie, raza, sex
 	row += "<td class='text-center'>"+ sexo +"</td>";
 	row += "<td class='text-center'>"+ fechaNacimiento +"</td>";
 	if(estado == 1)
-		row += "<td class='text-center'>Activa</td>";
+		row += "<td class='text-center'>Si</td>";
 	else
-		row += "<td class='text-center'>Inactiva</td>";
+		row += "<td class='text-center'>No</td>";
 	row += "<td class='text-center'><button id='"+ idSocio +"' name='"+ idMascota +"' class='btn btn-dark btn-sm' onclick='asignarMascota(this)'><i class='fas fa-plus'></i></button></td>";
 	row += "</tr>";
 
@@ -164,9 +164,9 @@ function createRowMascotasSocio(idMascota, nombre, raza, especie, sexo, nacimien
 	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + sexo + "</td>";
 	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>"+ nacimiento + "</td>";
 	if(estado == 1)
-		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>Activa</td>";
+		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>Si</td>";
 	else
-		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>Inactiva</td>";
+		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>No</td>";
 	row += "<td class='text-center'><button class='btn btn-link' onclick='desvincularMascota("+ idMascota + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
 
 	row += "</tr>";
