@@ -180,16 +180,6 @@ class ctr_usuarios{
 
 	public function gestcomNewClient($data=array())
 	{
-
-		/**
-		 * verificar que no se repita el rut
-		 * si no se envia cedula que se controle igual los caracteres del nombre
-		 * si el rut o la cedula se repite devolver el id del cliente
-		 * si el nombre se repite devolver que se encuentra creado y el documento del socio
-		 * no guardar dos nombres de clientes iguales
-		 *
-		 * que los indices opcionales puedan no estar definidos
-		 */
     	$userController = new ctr_usuarios();
 		$response = new \stdClass();
 
@@ -255,6 +245,9 @@ class ctr_usuarios{
 				$response->result = 0;
 				$response->message = "El Token debe estar definido y ser distinto de null.";
 			}
+		}else {
+			$response->result = 0;
+			$response->message = "No se han obtenido datos.";
 		}
 		return $response;
 	}
