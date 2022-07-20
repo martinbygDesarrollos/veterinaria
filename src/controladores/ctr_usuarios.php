@@ -891,12 +891,9 @@ class ctr_usuarios{
 		if(is_null($nombre)){
 			$response->result = 1;
 			$response->message = "El nombre de usuario no puede ser ingresado vacio.";
-		}else if(strlen($nombre) < 6 || strlen($nombre) > 50){
+		}else if(strlen($nombre) <= 0 ){
 			$response->result = 1;
-			$response->message = "El nombre de usuario debe tener una longitud entre los 6 y 50 caracteres.";
-		}else if(preg_match("/[^a-zA-Z ]/", $nombre)){
-			$response->result = 1;
-			$response->message = "El nombre unicamente permite caracteres alfabeticos.";
+			$response->message = "El nombre de usuario debe tener al menos un caracter.";
 		}
 
 		if(is_null($cedula)){
@@ -905,7 +902,7 @@ class ctr_usuarios{
 		}else if(!ctype_digit($cedula)){
 			$response->result = 1;
 			$response->message = "La cédula solo permite caracteres alfanuméricos.";
-		}else if(strlen($cedula) < 7){
+		}else if(strlen($cedula) < 8){
 			$response->result = 1;
 			$response->message = "La longitud de la cédula no es valida.";
 		}else if(!validate::validateCI($cedula)){
@@ -913,20 +910,10 @@ class ctr_usuarios{
 			$response->message = "La cédula ingresada no es valida.";
 		}
 
-		if(!is_null($direccion) && strlen($direccion) > 1){
-			if(strlen($direccion) < 6 || strlen($direccion) > 100){
-				$response->result = 1;
-				$response->message = "La dirección del socio debe tener una longitud entre los 6 y 100 caracteres.";
-			}
-		}
-
 		if(!is_null($telefono) && strlen($telefono) > 1){
 			if(!ctype_digit($telefono)){
 				$response->result = 1;
 				$response->message = "El teléfono solo puede contener caracteres numéricos.";
-			}else if(strlen($telefono) < 8 && strlen($telefono > 9)){
-				$response->result = 1;
-				$response->message = "El teléfono debe tener una longitud entre los 8 y 9 caracteres.";
 			}
 		}
 
@@ -939,13 +926,6 @@ class ctr_usuarios{
 
 		if(!is_null($rut) && strlen($rut) > 1)
 			$response = validate::validateRut($rut);
-
-		if(!is_null($telefax) && strlen($telefax) > 1){
-			if(strlen($telefax) < 6 || strlen($telefax) > 100){
-				$response->result = 1;
-				$response->message = "El telefax del socio debete tener una longitud entre los 6 y 100 caracteres.";
-			}
-		}
 
 		return $response;
 	}
