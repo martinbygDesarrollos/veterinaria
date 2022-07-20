@@ -219,10 +219,9 @@ class ctr_usuarios{
 								$tipoSocio = 0;
 
 								$responseInsert = $userController->insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+
 								if ( isset($responseInsert->newIdSocio) ){
 									$response->cliente = $responseInsert->newIdSocio;
-								}else if(isset($responseInsert->cliente)){
-									$response->cliente = $responseInsert->cliente;
 								}
 								$response->message = $responseInsert->message;
 							}else {
@@ -792,8 +791,7 @@ class ctr_usuarios{
 				}else return $responseInsertSocio;
 			}else{
 				$response->result = 0;
-				$response->cliente = $responseGetSocio->objectResult->idSocio;
-				$response->message = "La cédula ingresada corresponde al socio registrado " . $responseGetSocio->objectResult->nombre;
+				$response->message = "La cédula ingresada corresponde al socio ".$responseGetSocio->objectResult->idSocio." - " . $responseGetSocio->objectResult->nombre;
 			}
 		}else return $responseValidateData;
 
