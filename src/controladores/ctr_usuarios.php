@@ -180,6 +180,16 @@ class ctr_usuarios{
 
 	public function gestcomNewClient($data=array())
 	{
+
+		/**
+		 * verificar que no se repita el rut
+		 * si no se envia cedula que se controle igual los caracteres del nombre
+		 * si el rut o la cedula se repite devolver el id del cliente
+		 * si el nombre se repite devolver que se encuentra creado y el documento del socio
+		 * no guardar dos nombres de clientes iguales
+		 *
+		 * que los indices opcionales puedan no estar definidos
+		 */
     	$userController = new ctr_usuarios();
 		$response = new \stdClass();
 
@@ -188,51 +198,62 @@ class ctr_usuarios{
 		if ( count($data) > 0 ){
 			$currentDate = fechas::getCurrentDateInt();
 			$token = base64_encode($currentDate . "gestcom1213");
-			if ( $token == $data['token'] ){
-				if ( isset($data['nombre']) ){
+			if (isset($data['token'])){
+				if ( $token == $data['token'] ){
+					if ( isset($data['nombre']) ){
+						if ( isset($data['cedula']) ){
+							if ( isset($data['lugarpago']) ){
+								$nombre = $data['nombre'];
+								$lugarPago = $data['lugarpago'];
+								$cedula = null;
+								$rut = null;
 
-					$cedula = null;
-					$rut = null;
+								if(strlen($data['cedula'])>8)
+									$rut = $data['cedula'];
+								else $cedula = $data['cedula'];
 
-					if(strlen($data['cedula'])>8)
-						$rut = $data['cedula'];
-					else $cedula = $data['cedula'];
 
-					$nombre = $data['nombre'];
+								$direccion = null;
+								$telefono = null;
+								$fechaPago = null;
+								$email = null;
 
-					$cedula = $cedula;
+								//no importa si no está definido el dato en la consulta
+								if (isset($data['direccion']) && $data['direccion'] != "") $direccion = $data['direccion'];
+								if (isset($data['telefono']) && $data['telefono'] != "") $telefono = $data['telefono'];
+								if (isset($data['fechapago']) && $data['fechapago'] != "") $fechaPago = $data['fechapago'];
+								if (isset($data['email'])  && $data['email'] != "") $email = $data['email'];
 
-					$rut = $rut;
-					if ($rut == "")
-						$rut = null;
+								$telefax = null;
+								$fechaIngreso = null;
+								$tipoSocio = 0;
 
-					$direccion = $data['direccion'];
-					if ($direccion == "")
-						$direccion = null;
-
-					$telefono = $data['telefono'];
-					if ($telefono == "")
-						$telefono = null;
-
-					$telefax = null;
-					$fechaPago = $data['fechapago'] || 0;
-					$lugarPago = $data['lugarpago'] || 0;
-					$fechaIngreso = null;
-					$email = $data['email'];
-					if ($email == "")
-						$email = null;
-
-					$tipoSocio = 0;
-
-					$responseInsert = $userController->insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
-					if ( isset($responseInsert->newIdSocio) ){
-						$response->cliente = $responseInsert->newIdSocio;
+								$responseInsert = $userController->insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+								if ( isset($responseInsert->newIdSocio) ){
+									$response->cliente = $responseInsert->newIdSocio;
+								}else if(isset($responseInsert->cliente)){
+									$response->cliente = $responseInsert->cliente;
+								}
+								$response->message = $responseInsert->message;
+							}else {
+								$response->result = 0;
+								$response->message = "El lugar de pago debe estar definido y ser distinto de null.";
+							}
+						}else {
+							$response->result = 0;
+							$response->message = "La cédula debe estar definida y ser distinta de null.";
+						}
+					}else {
+						$response->result = 0;
+						$response->message = "El nombre debe estar definido y ser distinto de null.";
 					}
-					$response->message = $responseInsert->message;
-				}else $response->message = "Debe ingresar nombre del cliente.";
-			}else{
+				}else{
+					$response->result = 0;
+					$response->message = "El Token de validación no es correcto.";
+				}
+			}else {
 				$response->result = 0;
-				$response->message = "El Token de validación no es correcto.";
+				$response->message = "El Token debe estar definido y ser distinto de null.";
 			}
 		}
 		return $response;
@@ -342,16 +363,18 @@ class ctr_usuarios{
 
 		if(isset($_SESSION['ADMIN'])){
 			$session = $_SESSION['ADMIN'];
-			$responseGetUser = usuarios::getUser($session['IDENTIFICADOR']);
-			if($responseGetUser->result == 2){
-				if(strcmp($responseGetUser->objectResult->token, $session['TOKEN']) == 0){
-					$response->result = 2;
-					$response->session = $session;
-				}else{
-					$response->result = 0;
-					$response->message = "Su sesión caduco, por favor vuelva a ingresar.";
-				}
-			}else return $responseGetUser;
+			if( isset($session['IDENTIFICADOR']) ){
+				$responseGetUser = usuarios::getUser($session['IDENTIFICADOR']);
+				if($responseGetUser->result == 2){
+					if(strcmp($responseGetUser->objectResult->token, $session['TOKEN']) == 0){
+						$response->result = 2;
+						$response->session = $session;
+					}else{
+						$response->result = 0;
+						$response->message = "Su sesión caduco, por favor vuelva a ingresar.";
+					}
+				}else return $responseGetUser;
+			}
 		}else{
 			$response->result = 0;
 			$response->message = "No se encontro una sesión activa.";
@@ -776,6 +799,7 @@ class ctr_usuarios{
 				}else return $responseInsertSocio;
 			}else{
 				$response->result = 0;
+				$response->cliente = $responseGetSocio->objectResult->idSocio;
 				$response->message = "La cédula ingresada corresponde al socio registrado " . $responseGetSocio->objectResult->nombre;
 			}
 		}else return $responseValidateData;
