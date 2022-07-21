@@ -8,6 +8,9 @@ require_once '../src/controladores/ctr_mascotas.php';
 
 return function (App $app) {
     $container = $app->getContainer();
+    //---------------------------- CONTROLADORES Y CLASES ------------------------------------------------------
+    $userController = new ctr_usuarios();
+    $mascotaController = new ctr_mascotas();
 
 	//---------------------------- VISTAS ------------------------------------------------------
     $app->get('/mascotas', function($request, $response, $args) use ($container){
@@ -363,6 +366,22 @@ return function (App $app) {
             $data = $request->getParams();
             $value = $data['id'];
             return json_encode(ctr_mascotas::getVacunasSinNotificar($value));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/searchPetClientByName', function(Request $request, Response $response) use ($userController, $mascotaController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $value = $data['value'];
+            $client = $data['client'];
+
+            if ( isset($client) && $client != "")
+                return json_encode( $mascotaController->getMascotasSocioByName($value, $client));
+            else if( isset($value) && $value != "" )
+                return json_encode( $mascotaController->getMascotaByName($value));
+            else return json_encode($response->result = 1);
+
         }else return json_encode($responseSession);
     });
     //------------------------------------------------------------------------------------------

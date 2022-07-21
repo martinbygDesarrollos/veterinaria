@@ -365,4 +365,9 @@ class socios{
 
 		return $response;
 	}
+
+	public function searchClientByName($value){
+		$dataBaseCLass = new DataBase();
+		return $dataBaseCLass->sendQuery("SELECT idSocio, nombre FROM `socios` WHERE `nombre` LIKE '%".$value."%' ORDER BY `nombre` ASC LIMIT 5", array(), "LIST");
+	}
 }

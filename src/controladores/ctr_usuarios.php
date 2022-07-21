@@ -1117,4 +1117,17 @@ class ctr_usuarios{
 	public function buscadorSocioNombre($nombreSocio, $estadoSocio){
 		return socios::buscadorSocioNombre($nombreSocio, $estadoSocio);
 	}
+
+	public function searchClientByName($value){
+		$response = new \stdClass();
+		$sociosClass = new socios();
+		$response->result = 2;
+		$response->listResult = array();
+
+		if ( strlen($value)>0 ){
+			$response = $sociosClass->searchClientByName($value);
+		}
+
+		return $response;
+	}
 }

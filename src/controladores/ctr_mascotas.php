@@ -236,6 +236,19 @@ class ctr_mascotas {
 		return $response;
 	}
 
+	public function getMascotasSocioByName($name, $idSocio){
+		$response = new \stdClass();
+		$mascotasClass = new mascotas();
+
+		$responseGetMascotas = $mascotasClass->getMascotasSocioByName($name, $idSocio);
+		if($responseGetMascotas->result == 2){
+			$response->result = 2;
+			$response->listMascotas = $responseGetMascotas->listResult;
+		}else return $responseGetMascotas;
+
+		return $response;
+	}
+
 	public function getMascota($idMascota){
 		return mascotas::getMascota($idMascota);
 	}
@@ -721,5 +734,19 @@ class ctr_mascotas {
 
 	public function getEnfermedadMascotaToShow($idEnfermedad){
 		return serviciosMascota::getEnfermedadMascotaToShow($idEnfermedad);
+	}
+
+	public function searchPetClientByName( $value, $client){
+		$mascotasClass = new mascotas();
+
+		$responseGetMascota = $mascotasClass->getMascota($idMascota);
+		return $responseGetMascota;
+	}
+
+	public function getMascotaByName($value){
+		$mascotasClass = new mascotas();
+
+		$result = $mascotasClass->getMascotaByName($value);
+		return $result;
 	}
 }

@@ -407,5 +407,15 @@ return function (App $app) {
         }
         else return json_encode($responseSession);
     });
+
+    $app->post('/searchClientByName', function(Request $request, Response $response) use ($userController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $value = $data["value"];
+            return json_encode($userController->searchClientByName($value));
+        }
+        else return json_encode($responseSession);
+    });
 }
 ?>

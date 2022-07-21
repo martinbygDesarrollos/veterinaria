@@ -276,6 +276,36 @@ class mascotas{
 		return $responseQuery;
 	}
 
+	public function getMascotasSocioByName($name, $idSocio){
+
+		$dataBaseClass = new DataBase();
+		$responseQuery = $dataBaseClass->sendQuery("SELECT * FROM mascotas WHERE idMascota IN (SELECT idMascota FROM mascotasocio WHERE idSocio = ? ) AND nombre LIKE '%".$name."%' ", array('i', $idSocio), "LIST");
+		if($responseQuery->result == 2){
+			$arrayResult = array();
+			foreach ($responseQuery->listResult as $key => $row) {
+				$row['fechaNacimiento'] = fechas::dateToFormatBar($row['fechaNacimiento'], "/");
+				$arrayResult[] = $row;
+			}
+			$responseQuery->listResult = $arrayResult;
+		}else if($responseQuery->result == 1) $responseQuery->message = "No se encontraron mascotas para el socio seleccionado.";
+
+		return $responseQuery;
+	}
+
+	public function getMascotaByName($name){
+		$response = new \stdClass();
+
+		$dataBaseClass = new DataBase();
+		$responseQuery = $dataBaseClass->sendQuery("SELECT idMascota, nombre FROM mascotas WHERE nombre LIKE '%".$name."%' ORDER BY nombre ASC LIMIT 5", array(), "LIST");
+
+		if( $responseQuery->result == 2 ){
+			$response->result = $responseQuery->result;
+			$response->listMascotas = $responseQuery->listResult;
+		}
+		return $response;
+	}
+
+
 	public function getMascotaId($nombreMascota, $numSocio){
 		return DataBase::sendQuery("SELECT MS.idMascota FROM socios AS S, mascotasocio AS MS, mascotas AS M WHERE S.idSocio = MS.idSocio AND MS.idMascota = M.idMascota AND S.idSocio = ? AND M.nombre = ? LIMIT 1", array('is', $numSocio, $nombreMascota), "OBJECT");
 	}
