@@ -101,7 +101,7 @@ function paginaAnterior(){
 function buscarSocio(inputSearch){
 	var aBuscar = inputSearch.value;
 	var idMascota = document.getElementById('idMascota').value;
-	if(aBuscar.length > 3){
+	if(aBuscar.length > 0){
 		document.getElementById("irAtrasPagina").style.visibility = "hidden";
 		document.getElementById("irAdelantePagina").style.visibility = "hidden";
 		$.ajax({

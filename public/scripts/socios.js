@@ -135,7 +135,7 @@ function buscarSocio(){
 	let textTemp = $('#textToSearch').val() || null;
 
 	if(textTemp){
-		if(textTemp.length > 3){
+		if(textTemp.length > 0){
 			textToSearch = textTemp;
 			lastId = 0;
 			$('#tbodySocios').empty();
