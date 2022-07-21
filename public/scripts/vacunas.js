@@ -242,7 +242,7 @@ function removeVacunaMascota(idVacunaMascota){
 function getDataVacunas(valueInput){
 	//console.log(valueInput);
 
-	if ( valueInput.length > 2 ){
+	if ( valueInput.length > 0 ){
 		sendAsyncPost("getVacunasByInput", {value: valueInput})
 		.then((response)=>{
 			if( response.result == 2 ){
