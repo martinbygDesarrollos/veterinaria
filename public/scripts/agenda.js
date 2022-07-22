@@ -14,8 +14,7 @@ function getCirugiasByDay( day ){
 					if (!response.listResult[i].hora)
 						hora = "00:00"
 					else hora = response.listResult[i].hora;
-
-					row = '<tr id="'+ response.listResult[i].idAgenda +'" onchange="saveEventInCalendar(this)"><td><input class="form-control text-center shadow-sm" type="time" name="" value="'+ hora +'"></td><td class="w-50"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ response.listResult[i].descripcion +'" placeholder="Motivo" ></td><td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ response.listResult[i].nombreCliente +'" onkeyup="searchClientByName(this.value)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td><td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ response.listResult[i].nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td></td></tr>';
+					row = createRow(response.listResult[i]);
 					$("#tbodyCirugiasCalendar").append(row);
 				}
 			}else {
@@ -27,6 +26,57 @@ function getCirugiasByDay( day ){
 			clearTableEvents();
 		}
 	})
+}
+
+
+function createRow( obj ){
+	//fila
+	let row = '<tr id="'+ obj.idAgenda +'" onchange="saveEventInCalendar(this)">';
+	//hora
+	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value="'+ hora +'"></td>';
+	//motivo
+	row += '<td class="w-25"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
+	//cliente
+	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
+	//contacto cliente
+	contactClient = '';
+	if ( obj.socio ){
+		contactClient = '<select class="form-select form-control shadow-sm">';
+
+		if ( obj.socio.telefono )
+			contactClient += '<option>'+obj.socio.telefono+'</option>';
+		if (obj.socio.telefax)
+			contactClient += '<option>'+obj.socio.telefax+'</option>';
+		if (obj.socio.email)
+			contactClient += '<option>'+obj.socio.email+'</option>';
+
+		contactClient += '</select>';
+	}else{
+		contactClient = '<select class="form-select form-control shadow-sm" disabled></select>';
+	}
+
+	row += '<td class="notShowMobile" id="tdRowContactClient'+obj.idAgenda+'">'+contactClient+'</td>';
+	//boton ver cliente
+	buttonVerSocio = "";
+	if ( obj.socio )
+		buttonVerSocio = '<a class="btn btn-info subtexto" title="Ver cliente" href="'+getSiteURL()+"ver-socio/"+obj.socio.idSocio+'" value="" target="_blank">Cliente</a>';
+	else
+		buttonVerSocio = '<button class="btn btn-info subtexto" title="Ver cliente" disabled >Cliente</button>';
+
+
+	row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
+	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
+
+	//boton ver mascota
+	buttonVerMascota = "";
+	if ( obj.mascota )
+		buttonVerMascota = '<a class="btn btn-info subtexto" title="Ver mascota" href="'+getSiteURL()+"ver-mascota/"+obj.mascota.idMascota+'" value="" target="_blank">Mascota</a>';
+	else
+		buttonVerMascota = '<button class="btn btn-info subtexto" title="Ver mascota" disabled >Mascota</button>';
+
+	row += '<td class="notShowMobile">'+buttonVerMascota+'</td></tr>';
+
+	return row;
 }
 
 function saveEventInCalendar( tr ){
@@ -65,15 +115,23 @@ function clearTableEvents(){
 }
 
 function newRowCirugiaCalendar(){
-	row = '<tr id="" onchange="saveEventInCalendar(this)"><td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td><td class="w-50" ><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo" ></td><td  class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td><td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td></tr>';
+	row = '<tr id="" onchange="saveEventInCalendar(this)"><td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td><td class="w-50" ><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo" ></td><td  class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value, ``)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td><td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td></tr>';
 	$("#tbodyCirugiasCalendar").append(row);
 }
 
-function searchClientByName( valueCli ){
+function searchClientByName( valueCli, idRow ){
+	console.log(valueCli);
+	console.log("el dato del cliente cambió, dejar limpia columna de contactos y boton de ver cliente");
+
+	if ( idRow ){
+		$("#tdRowContactClient"+idRow+" select").
+	}
+
 	if ( valueCli.length > 0 ){
 		$('#dataListClientsCalendar').empty();
 		sendAsyncPost("searchClientByName", {value: valueCli})
 		.then((response)=>{
+			console.log(response);
 			if( response.result == 2 ){
 				let list = response.listResult;
 				for (let i = 0; i < list.length; i++) {
