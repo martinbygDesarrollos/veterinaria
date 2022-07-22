@@ -36,32 +36,27 @@ function saveEventInCalendar( tr ){
 	let hours = tr.getElementsByTagName("input")[0].value;
 	let event = tr.getElementsByTagName("input")[1].value;
 	let client = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
-	let petClient = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
+	let petClient = tr.getElementsByTagName("input")[3].value.split(" - ")[0];
 
 	day = day.replaceAll("-","");
 	hours = hours.replaceAll(":","");
 
 	let datetime = day+hours;
-	//console.log(datetime);
 
-	if ( datetime && event ){
-
+	if ( datetime || event || client || petClient ){
 		if ( tr.id ){
 			data = {"id":tr.id, "fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
-			/*sendAsyncPost("modifyEventCalendarByDay",{event:data})
+			sendAsyncPost("modifyEventCalendarByDay",{event:data})
 			.then(( response )=>{
 				console.log("se modificó el evento de la cirugia");
-			});*/
+			});
 		}else{
 			data = {"fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
-			/*sendAsyncPost("saveEventCalendarByDay",{event:data})
+			sendAsyncPost("saveEventCalendarByDay",{event:data})
 			.then(( response )=>{
-				console.log("se creó nuevo evento en la agenda");
-				console.log(response);
 				window.location.reload();
-			});*/
+			});
 		}
-		//console.log(data);
 	}
 }
 

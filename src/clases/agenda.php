@@ -9,15 +9,14 @@ class agenda{
 
 	}
 
-	public function modifyNewEventCirugias( $idAgenda, $idUser, $time, $event ){
+	public function modifyNewEventCirugias( $idAgenda, $idUser, $time, $event, $client, $pet ){
 		$database = new DataBase();
-		return $database->sendQuery("UPDATE `agenda` SET `idUsuario` = ?, `fechaHora` = ?, `descripcion` = ? WHERE `agenda`.`idAgenda` = ?", array('issi', $idUser, $time, $event, $idAgenda), "BOOLE");
+		return $database->sendQuery("UPDATE `agenda` SET `idUsuario` = ?, `fechaHora` = ?, `descripcion` = ?, `idSocio` = ?, `idMascota` = ? WHERE `agenda`.`idAgenda` = ?", array('issssi', $idUser, $time, $event, $client, $pet, $idAgenda), "BOOLE");
 	}
 
-	public function saveNewEventCirugias( $idUser, $time, $event ){
+	public function saveNewEventCirugias( $idUser, $time, $event, $client, $pet ){
 		$database = new DataBase();
-		return $database->sendQuery("INSERT INTO `agenda` (`categoria`, `fechaHora`, `idUsuario`, `descripcion`) VALUES (?,?,?,?)", array('ssis',"cirugia", $time, $idUser, $event), "BOOLE");
-
+		return $database->sendQuery("INSERT INTO `agenda` (`categoria`, `fechaHora`, `idUsuario`, `descripcion`, `idSocio`, `idMascota`) VALUES (?,?,?,?,?,?)", array('ssisss',"cirugia", $time, $idUser, $event, $client, $pet), "BOOLE");
 	}
 }
 

@@ -44,10 +44,12 @@ class ctr_agenda {
 		$calendarClass = new agenda();
 
 		$idAgenda = $data['id'];
-		$time = $data['fechaHora'];
-		$event = $data['descripcion'];
+		$time = isset($data['fechaHora']) && $data['fechaHora'] != "" ? $data['fechaHora'] : null;
+		$event = isset($data['descripcion']) && $data['descripcion'] != "" ? $data['descripcion'] : null;
+		$client = isset($data['cliente']) && $data['cliente'] != "" ? $data['cliente'] : null;
+		$pet = isset($data['mascota']) && $data['mascota'] != "" ? $data['mascota'] : null;
 
-		$response = $calendarClass->modifyNewEventCirugias($idAgenda, $idUser, $time, $event);
+		$response = $calendarClass->modifyNewEventCirugias($idAgenda, $idUser, $time, $event, $client, $pet );
 		return $response;
 	}
 
@@ -55,10 +57,12 @@ class ctr_agenda {
 		$response = new \stdClass();
 		$calendarClass = new agenda();
 
-		$time = $data['fechaHora'];
-		$event = $data['descripcion'];
+		$time = isset($data['fechaHora']) && $data['fechaHora'] != "" ? $data['fechaHora'] : null;
+		$event = isset($data['descripcion']) && $data['descripcion'] != "" ? $data['descripcion'] : null;
+		$client = isset($data['cliente']) && $data['cliente'] != "" ? $data['cliente'] : null;
+		$pet = isset($data['mascota']) && $data['mascota'] != "" ? $data['mascota'] : null;
 
-		$response = $calendarClass->saveNewEventCirugias( $idUser, $time, $event );
+		$response = $calendarClass->saveNewEventCirugias( $idUser, $time, $event, $client, $pet );
 		return $response;
 	}
 }
