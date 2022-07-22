@@ -298,6 +298,10 @@ input[type=number] {
   border-radius: 10px;
 }
 
+.subtexto{
+  font-size: 80%;
+}
+
 
 @media (min-width: 1023px) {
   html, body{
@@ -307,7 +311,7 @@ input[type=number] {
 
 @media (max-width: 990px){
   html, body{
-    font-size:1.7rem;
+    font-size:1.5rem;
   }
 
   .notShowMobile{
