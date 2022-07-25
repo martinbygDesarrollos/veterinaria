@@ -24,13 +24,12 @@ return function (App $app) {
     $routesAg($app);
 
     $app->get('/', function ($request, $response, $args) use ($container) {
+        $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
             $args['hayVencimientos'] = ctr_mascotas::getFechasVacunasVencimiento();
             $args['responseVencimientosSocio'] = ctr_usuarios::getCuotasVencidas(0, null);
-
-            $args['version'] = FECHA_ULTIMO_PUSH;
         }
         return $this->view->render($response, "index.twig", $args);
     })->setName("Inicio");
