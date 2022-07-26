@@ -1,11 +1,6 @@
 function getCirugiasByDay( day ){
-
-	//console.log("consultando las cirugias del dia ",day);
-
 	sendAsyncPost("getEventCalendarByDay",{day:day})
 	.then(( response )=>{
-		//console.log(response);
-
 		if ( response.result == 2 ){
 			if ( response.listResult.length > 0){
 				clearTableEvents();
@@ -18,11 +13,9 @@ function getCirugiasByDay( day ){
 					$("#tbodyCirugiasCalendar").append(row);
 				}
 			}else {
-				//console.log("no hay eventos este dia", response);
 				clearTableEvents();
 			}
 		}else{
-			//console.log("la respuesta es ", response);
 			clearTableEvents();
 		}
 	})
@@ -35,13 +28,13 @@ function createRow( obj ){
 	//hora
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value="'+ hora +'"></td>';
 	//motivo
-	row += '<td class="w-25"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
+	row += '<td><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
 	//cliente
-	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
+	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value, this.parentElement.parentElement)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
 	//contacto cliente
 	contactClient = '';
 	if ( obj.socio ){
-		contactClient = '<select class="form-select form-control shadow-sm">';
+		contactClient = '<select id="selectClientsCalendar'+obj.idAgenda+'" class="form-select form-control shadow-sm">';
 
 		if ( obj.socio.telefono )
 			contactClient += '<option>'+obj.socio.telefono+'</option>';
@@ -64,24 +57,25 @@ function createRow( obj ){
 		buttonVerSocio = '<button class="btn btn-info subtexto" title="Ver cliente" disabled >Cliente</button>';
 
 
-	row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
+	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
 	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
 
 	//boton ver mascota
 	buttonVerMascota = "";
 	if ( obj.mascota )
-		buttonVerMascota = '<a class="btn btn-info subtexto" title="Ver mascota" href="'+getSiteURL()+"ver-mascota/"+obj.mascota.idMascota+'" value="" target="_blank">Mascota</a>';
+		buttonVerMascota = '<a class="btn btn-info subtexto" title="Ver mascota" href="'+getSiteURL()+"ver-mascota/"+obj.mascota.idMascota+'" value="" target="_blank">ver</a>';
 	else
-		buttonVerMascota = '<button class="btn btn-info subtexto" title="Ver mascota" disabled >Mascota</button>';
+		buttonVerMascota = '<button class="btn btn-info subtexto" title="Ver mascota" disabled >ver</button>';
 
-	row += '<td class="notShowMobile">'+buttonVerMascota+'</td></tr>';
+	//row += '<td class="notShowMobile">'+buttonVerMascota+'</td></tr>';
+	row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
+
+	row += '</tr>';
 
 	return row;
 }
 
 function saveEventInCalendar( tr ){
-	//console.log(tr)
-
 	let day = $("#idInputTodayCalendar").val();
 	let hours = tr.getElementsByTagName("input")[0].value;
 	let event = tr.getElementsByTagName("input")[1].value;
@@ -93,18 +87,32 @@ function saveEventInCalendar( tr ){
 
 	let datetime = day+hours;
 
+	if ( client ){
+		let isnum = /^\d+$/.test(client);
+		if ( isnum ){
+			console.log("cargar contactos del cliente");
+			loadClientContactData( client, tr )
+		}
+	}
+
+
 	if ( datetime || event || client || petClient ){
 		if ( tr.id ){
 			data = {"id":tr.id, "fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
 			sendAsyncPost("modifyEventCalendarByDay",{event:data})
 			.then(( response )=>{
-				console.log("se modificó el evento de la cirugia");
+				if ( response.result != 2 ){
+					showReplyMessage(response.result, response.message, "Agenda", null);
+				}
 			});
 		}else{
 			data = {"fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
 			sendAsyncPost("saveEventCalendarByDay",{event:data})
 			.then(( response )=>{
-				window.location.reload();
+				if ( response.result != 2 ){
+					showReplyMessage(response.result, response.message, "Agenda", null);
+				}
+				//window.location.reload();
 			});
 		}
 	}
@@ -115,18 +123,24 @@ function clearTableEvents(){
 }
 
 function newRowCirugiaCalendar(){
-	row = '<tr id="" onchange="saveEventInCalendar(this)"><td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td><td class="w-50" ><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo" ></td><td  class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value, ``)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td><td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td></tr>';
+	row = createCleanRow();
 	$("#tbodyCirugiasCalendar").append(row);
 }
 
-function searchClientByName( valueCli, idRow ){
-	console.log(valueCli);
-	console.log("el dato del cliente cambió, dejar limpia columna de contactos y boton de ver cliente");
+function createCleanRow(){
+	let row = '<tr id="" onchange="saveEventInCalendar(this)">';
+	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td>'
+	row += '<td ><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo"></td>'
+	row += '<td  class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value, ``)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>'
+	//row += '<td class="notShowMobile"><button class="btn btn-info subtexto" title="Ver cliente" disabled >ver</button></td>';
+	row += '<td><select class="form-select form-control shadow-sm" disabled></select></td>'
+	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>'
+	row += '<td class="notShowMobile"><button class="btn btn-info subtexto" title="Ver mascota" disabled >Cliente</button></td></tr>';
 
-	if ( idRow ){
-		$("#tdRowContactClient"+idRow+" select").
-	}
+	return row;
+}
 
+function searchClientByName( valueCli, tr ){
 	if ( valueCli.length > 0 ){
 		$('#dataListClientsCalendar').empty();
 		sendAsyncPost("searchClientByName", {value: valueCli})
@@ -140,21 +154,70 @@ function searchClientByName( valueCli, idRow ){
 				}
 			}
 		})
-	}else
+	}else{
+		console.log("el dato del cliente cambió, dejar limpia columna de contactos y boton de ver cliente");
+		console.log(tr.getElementsByTagName("select")[0].childNodes);
+		let constactListCurrent = tr.getElementsByTagName("select")[0];
+		/*elemento var = document.getElementById("top");
+		while (element.firstChild) {
+		  element.removeChild(element.firstChild);
+		}*/
+
 		$('#dataListClientsCalendar').empty();
+	}
 }
 
 function searchPetClientByName( valuePet, tr ){
-		let client = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
-		$('#dataListPetCalendar').empty();
-		sendAsyncPost("searchPetClientByName", {value: valuePet, client:client})
-		.then((response)=>{
-			if( response.result == 2 ){
-				let list = response.listMascotas;
-				for (let i = 0; i < list.length; i++) {
-					let option = "<option>"+list[i].idMascota+" - "+list[i].nombre+"</option>";
-					$('#dataListPetCalendar').append(option);
-				}
+	let client = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
+	$('#dataListPetCalendar').empty();
+	sendAsyncPost("searchPetClientByName", {value: valuePet, client:client})
+	.then((response)=>{
+		if( response.result == 2 ){
+			let list = response.listMascotas;
+			for (let i = 0; i < list.length; i++) {
+				let option = "<option>"+list[i].idMascota+" - "+list[i].nombre+"</option>";
+				$('#dataListPetCalendar').append(option);
 			}
-		})
+		}
+	})
+}
+
+
+function loadClientContactData( idClient, tr ){
+	console.log(idClient);
+	console.log(tr.getElementsByTagName("select"));
+
+	tr.getElementsByTagName("select")[0];
+	//pedir los datos del cliente agregar al select
+	sendAsyncPost("getSocio", {idSocio:idClient})
+	.then((response)=>{
+		console.log(response.socio);
+		if ( response.result == 2 ){
+			if (response.socio.telefono){
+				let option = document.createElement("option")
+				option.append(response.socio.telefono)
+				tr.getElementsByTagName("select")[0].appendChild(option);
+			}
+
+			if (response.socio.telefax){
+				let option = document.createElement("option")
+				option.append(response.socio.telefax)
+				tr.getElementsByTagName("select")[0].appendChild(option);
+			}
+
+			if (response.socio.email){
+				let option = document.createElement("option")
+				option.append(response.socio.email)
+				tr.getElementsByTagName("select")[0].appendChild(option);
+			}
+
+			if (response.socio.direccion){
+				let option = document.createElement("option")
+				option.append(response.socio.direccion)
+				tr.getElementsByTagName("select")[0].appendChild(option);
+			}
+		}
+	});
+
+	tr.getElementsByTagName("select")[0].removeAttribute("disabled");
 }
