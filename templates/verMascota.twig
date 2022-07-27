@@ -272,7 +272,7 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
+			<div class="modal-body p-4">
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
@@ -281,6 +281,9 @@
 							<small id="inputNombreMascota" class="form-text text-muted">Obligatorio</small>
 						</div>
 					</div>
+				</div>
+				<hr>
+				<div class="row">
 					<div class="col">
 						<div class="form-group">
 							<label for="inputEspecieMascota">Especie</label>
@@ -299,14 +302,11 @@
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
-							<label for="inputNacimientoMascota">Nacimiento</label>
-							<input type="date" class="form-control text-center shadow-sm" id="inputNacimientoMascota">
-						</div>
-					</div>
-					<div class="col">
-						<div class="form-group">
-							<label for="inputFallecimientoMascota">Fallecimiento</label>
-							<input type="date" class="form-control text-center shadow-sm" id="inputFallecimientoMascota">
+							<label for="inputSexoMascota">Sexo</label>
+							<select class="form-control shadow-sm" id="inputSexoMascota">
+								<option value="0">Hembra</option>
+								<option value="1">Macho</option>
+							</select>
 						</div>
 					</div>
 					<div class="col">
@@ -323,16 +323,7 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-3">
-						<div class="form-group">
-							<label for="inputSexoMascota">Sexo</label>
-							<select class="form-control shadow-sm" id="inputSexoMascota">
-								<option value="0">Hembra</option>
-								<option value="1">Macho</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-2">
+					<div class="col">
 						<div class="form-group">
 							<label for="inputPedigreeMascota" hidden disabled>Pedigree</label>
 							<select class="form-control shadow-sm" id="inputPedigreeMascota" hidden disabled>
@@ -350,10 +341,27 @@
 						</div>
 					</div>
 				</div>
-				<div class="col">
-					<div class="form-group">
-						<label for="inputObservacionesMascota">Observaciones</label>
-						<textarea id="inputObservacionesMascota" class="form-control shadow-sm rounded-0" maxlength="200" style="resize: none;" rows="3"></textarea>
+				<hr>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="inputNacimientoMascota">Nacimiento</label>
+							<input type="date" class="form-control text-center shadow-sm" id="inputNacimientoMascota">
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label for="inputFallecimientoMascota">Fallecimiento</label>
+							<input type="date" class="form-control text-center shadow-sm" id="inputFallecimientoMascota">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label for="inputObservacionesMascota">Observaciones</label>
+							<textarea id="inputObservacionesMascota" class="form-control shadow-sm rounded-0" maxlength="200" style="resize: none;" rows="3"></textarea>
+						</div>
 					</div>
 				</div>
 			</div>
