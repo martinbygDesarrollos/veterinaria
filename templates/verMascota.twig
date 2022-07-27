@@ -102,9 +102,13 @@
 							</div>
 							<div class="row d-flex justify-content-center m-3">
 								<div class="col">
-									<div class="form-group">
+									<div class="form-group" hidden disabled>
 										<label for="inputPedigree">Pedigree</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputPedigree" readonly value="{{ SocioMascota.mascota.pedigree }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputPedigree" readonly value="{{ SocioMascota.mascota.pedigree }}" onkeypress="return keyEnterPress(event, this.value, 50)" hidden disabled>
+									</div>
+									<div class="form-group">
+										<label for="inputPeso">Peso (Kg)</label>
+										<input type="text" class="form-control text-center shadow-sm" id="inputPeso" readonly value="{{ SocioMascota.mascota.peso }}" onkeypress="return keyEnterPress(event, this.value, 50)">
 									</div>
 								</div>
 								<div class="col">
@@ -330,11 +334,13 @@
 					</div>
 					<div class="col-2">
 						<div class="form-group">
-							<label for="inputPedigreeMascota">Pedigree</label>
-							<select class="form-control shadow-sm" id="inputPedigreeMascota">
+							<label for="inputPedigreeMascota" hidden disabled>Pedigree</label>
+							<select class="form-control shadow-sm" id="inputPedigreeMascota" hidden disabled>
 								<option value="0">No</option>
 								<option value="1">Si</option>
 							</select>
+							<label for="inputPesoMascota">Peso (Kg)</label>
+							<input type="number" class="form-control text-center shadow-sm" id="inputPesoMascota">
 						</div>
 					</div>
 					<div class="col">

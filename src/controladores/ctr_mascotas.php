@@ -76,7 +76,7 @@ class ctr_mascotas {
 		return $response;
 	}
 
-	public function modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento,$muerte, $pelo, $chip, $observaciones){
+	public function modificarMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento,$muerte, $pelo, $chip, $observaciones, $peso){
 		$response = new \stdClass();
 
 		$responseGetMascota = mascotas::getMascota($idMascota);
@@ -86,7 +86,10 @@ class ctr_mascotas {
 			if(!is_null($muerte) && $muerte != "")
 				$muerte = fechas::getDateToINT($muerte);
 			else $muerte = null;
-			$responseUpdateMascota = mascotas::updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones);
+
+			$peso = isset($peso) || $peso != "" ? $peso : null;
+
+			$responseUpdateMascota = mascotas::updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones, $peso);
 			if($responseUpdateMascota->result == 2){
 				$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Modificar mascota", null, $idMascota, "Se actualizó la información de la mascota.");
 				if($responseInsertHistorial->result == 2){

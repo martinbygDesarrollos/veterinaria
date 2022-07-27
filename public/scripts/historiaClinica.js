@@ -291,6 +291,7 @@ function modificarMascota(idMascota){
 	let pelo = $('#inputPeloMascota').val() || null;
 	let color = $('#inputColorMascota').val() || null;
 	let pedigree = $('#inputPedigreeMascota').val() || null;
+	let peso = $('#inputPesoMascota').val() || null;
 	let chip = $('#inputChipMascota').val() || null;
 	let nacimiento = $('#inputNacimientoMascota').val() || null;
 	let muerte = $('#inputFallecimientoMascota').val() || null;
@@ -308,6 +309,7 @@ function modificarMascota(idMascota){
 					pelo: pelo,
 					color: color,
 					pedigree: pedigree,
+					peso: peso,
 					chip: chip,
 					fechaNacimiento: nacimiento,
 					fechaFallecimiento: muerte,
@@ -334,6 +336,7 @@ function updateInformacionMascota(inputFrom, mascota){
 	$('#inputNacimiento'+ inputFrom).val(mascota.fechaNacimiento);
 	$('#inputFallecimiento' + inputFrom).val(mascota.fechaFallecimiento);
 	$('#inputObservaciones'+ inputFrom).val(mascota.observaciones);
+	$('#inputPeso'+ inputFrom).val(mascota.peso);
 }
 
 

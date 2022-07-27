@@ -247,8 +247,8 @@ class mascotas{
 		return DataBase::sendQuery("INSERT INTO mascotas(nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('sssisiiisss', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones), "BOOLE");
 	}
 
-	public function updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones){
-	return DataBase::sendQuery("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, fechaFallecimiento = ?, pelo = ?, chip = ? , observaciones = ? WHERE idMascota = ?", array('sssisiiisssi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones, $idMascota), "BOOLE");
+	public function updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones, $peso){
+	return DataBase::sendQuery("UPDATE mascotas SET nombre = ?, especie = ?, raza = ?, sexo = ?, color = ?, pedigree = ?, fechaNacimiento = ?, fechaFallecimiento = ?, pelo = ?, chip = ? , observaciones = ?, peso = ? WHERE idMascota = ?", array('sssisiiisssdi', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones, $peso, $idMascota), "BOOLE");
 	}
 	public function vincularMascotaSocio($idSocio, $idMascota, $fechaCambio){
 		return DataBase::sendQuery("INSERT INTO mascotasocio (idSocio, idMascota, fechaCambio) VALUES (?,?,?)", array('iii', $idSocio, $idMascota, $fechaCambio), "BOOLE");
