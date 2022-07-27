@@ -243,8 +243,8 @@ class mascotas{
 		return $mascota;
 	}
 
-	public function insertMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones){
-		return DataBase::sendQuery("INSERT INTO mascotas(nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('sssisiiisss', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones), "BOOLE");
+	public function insertMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones, $peso){
+		return DataBase::sendQuery("INSERT INTO mascotas(nombre, especie, raza, sexo, color, pedigree, fechaNacimiento, estado, pelo, chip, observaciones, peso) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", array('sssisiiisssd', $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $estado, $pelo, $chip, $observaciones, $peso), "BOOLE");
 	}
 
 	public function updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones, $peso){

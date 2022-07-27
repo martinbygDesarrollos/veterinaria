@@ -113,7 +113,8 @@ return function (App $app) {
             $pelo = $data['pelo'];
             $chip = $data['chip'];
             $observaciones = $data['observaciones'];
-            return json_encode(ctr_mascotas::insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones));
+            $peso = $data['peso'];
+            return json_encode(ctr_mascotas::insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones, $peso));
         }else return json_encode($responseSession);
     });
 

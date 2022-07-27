@@ -10,6 +10,7 @@ function insertNewMascota(inputButton){
 	let chip = $('#inputChip').val() || null;
 	let observaciones = $('#inputObservaciones').val() || null;
 	let pedigree = $('#inputPedegree').val() || null;
+	let peso = $('#inputPeso').val() || null;
 
 	if(nombre){
 		if(especie){
@@ -25,7 +26,8 @@ function insertNewMascota(inputButton){
 					chip: chip,
 					observaciones: observaciones,
 					idSocio: idSocio,
-					pedigree: pedigree
+					pedigree: pedigree,
+					peso: peso
 				};
 				let response = sendPost("insertNewMascota", data);
 				showReplyMessage(response.result, response.message, "Agregar mascota", null);

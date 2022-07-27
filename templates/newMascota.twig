@@ -9,21 +9,24 @@
 		</div>
 		<div class="card-body">
 			<div class="row">
-				<div class="col-4">
+				<div class="col">
 					<div class="form-group">
 						<label for="inputNombre">Nombre</label>
 						<input type="text" class="form-control text-center shadow-sm" id="inputNombre" onkeypress="return keyEnterPress(event, this.value, 30)">
 						<small id="emailHelp" class="form-text text-muted">Obligatorio</small>
 					</div>
 				</div>
-				<div class="col-4">
+			</div>
+			<hr>
+			<div class="row">
+				<div class="col">
 					<div class="form-group">
 						<label for="inputEspecie">Especie</label>
 						<input type="email" class="form-control text-center shadow-sm" id="inputEspecie" onkeypress="return keyEnterPress(event, this.value, 30)">
 						<small id="emailHelp" class="form-text text-muted">Obligatorio</small>
 					</div>
 				</div>
-				<div class="col-4">
+				<div class="col">
 					<div class="form-group">
 						<label for="inputRaza">Raza</label>
 						<input type="text" class="form-control text-center shadow-sm" id="inputRaza" onkeypress="return keyEnterPress(event, this.value, 30)">
@@ -32,7 +35,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-4">
+				<div class="col">
 					<div class="form-group">
 						<label for="inputSexo">Sexo</label>
 						<select class="custom-select shadow-sm" id="inputSexo" onkeypress="return keyEnterPress(event, null, null)">
@@ -41,21 +44,6 @@
 						</select>
 					</div>
 				</div>
-				<div class="col-4">
-					<div class="form-group">
-						<label for="inputNacimiento">Nacimiento</label>
-						<input type="date" class="form-control text-center shadow-sm" id="inputNacimiento" onkeypress="return keyEnterPress(event, null, null)">
-					</div>
-				</div>
-				<div class="col-4">
-					<div class="form-group">
-						<label for="inputColor">Color</label>
-						<input type="text" class="form-control text-center shadow-sm" id="inputColor" onkeypress="return keyEnterPress(event, this.value, 30)">
-					</div>
-				</div>
-			</div>
-			<h6 class="card-subtitle mt-3 mb-2 text-muted">Información adicional</h6>
-			<div class="row">
 				<div class="col">
 					<div class="form-group">
 						<label for="inputPelo">Pelo</label>
@@ -64,17 +52,40 @@
 				</div>
 				<div class="col">
 					<div class="form-group">
-						<label for="inputChip">Chip</label>
-						<input type="text" class="form-control text-center shadow-sm" id="inputChip" onkeypress="return keyEnterPress(event, this.value, 30)">
+						<label for="inputColor">Color</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputColor" onkeypress="return keyEnterPress(event, this.value, 30)">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<div class="form-group">
+						<label for="inputPeso">Peso (Kg)</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputPeso" onkeypress="return keyEnterPress(event, this.value, 50)">
 					</div>
 				</div>
 				<div class="col">
 					<div class="form-group">
+						<label for="inputChip">Chip</label>
+						<input type="text" class="form-control text-center shadow-sm" id="inputChip" onkeypress="return keyEnterPress(event, this.value, 30)">
+					</div>
+				</div>
+				<div class="col" hidden disabled>
+					<div class="form-group">
 						<label for="inputColor">Pedegree</label>
-						<select class="custom-select shadow-sm" id="inpPedegree" onkeypress="return keyEnterPress(event, null, null)">
+						<select class="custom-select shadow-sm" id="inpPedegree" onkeypress="return keyEnterPress(event, null, null)" hidden disabled>
 							<option value="0" selected>No</option>
 							<option value="1">Si</option>
 						</select>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class="row">
+				<div class="col-6">
+					<div class="form-group">
+						<label for="inputNacimiento">Nacimiento</label>
+						<input type="date" class="form-control text-center shadow-sm" id="inputNacimiento" onkeypress="return keyEnterPress(event, null, null)">
 					</div>
 				</div>
 			</div>

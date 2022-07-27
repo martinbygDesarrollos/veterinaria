@@ -43,7 +43,7 @@ class ctr_mascotas {
 		return mascotas::getMascotaToEdit($idMascota);
 	}
 
-	public function  insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones){
+	public function  insertNewMascota($idSocio, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $pelo, $chip, $observaciones, $peso){
 		$response = new \stdClass();
 
 		$responseGetSocio = ctr_usuarios::getSocio($idSocio);
@@ -51,7 +51,7 @@ class ctr_mascotas {
 			if(!is_null($fechaNacimiento))
 				$fechaNacimiento = fechas::getDateToINT($fechaNacimiento);
 
-			$responseInsertMascota = mascotas::insertMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, 1, $pelo, $chip, $observaciones);
+			$responseInsertMascota = mascotas::insertMascota($nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, 1, $pelo, $chip, $observaciones, $peso);
 			if($responseInsertMascota->result == 2){
 				$responseAsociarMascota = mascotas::vincularMascotaSocio($idSocio, $responseInsertMascota->id, fechas::getCurrentDateInt());
 				if($responseAsociarMascota->result == 2){
