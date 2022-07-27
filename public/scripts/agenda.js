@@ -1,3 +1,14 @@
+var widthBySize = 'style="width:25%"';
+
+$(document).ready(()=>{
+	var sizeHeight = window.innerHeight;
+	var sizeWidth = window.innerWidth;
+
+	if ( sizeWidth <= 768 ){
+		widthBySize = '';
+	}
+});
+
 function getCirugiasByDay( day ){
 	sendAsyncPost("getEventCalendarByDay",{day:day})
 	.then(( response )=>{
@@ -21,16 +32,16 @@ function getCirugiasByDay( day ){
 	})
 }
 
-
+//funcion para cargar todas las filas cuando ya hay registros en la agenda
 function createRow( obj ){
 	//fila
 	let row = '<tr id="'+ obj.idAgenda +'" onchange="saveEventInCalendar(this)">';
 	//hora
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value="'+ hora +'"></td>';
 	//motivo
-	row += '<td><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
+	row += '<td '+widthBySize+'><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
 	//cliente
-	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value, this.parentElement.parentElement)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style="width:25%"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value, this.parentElement.parentElement)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
 	//contacto cliente
 	contactClient = '';
 	if ( obj.socio ){
@@ -42,6 +53,8 @@ function createRow( obj ){
 			contactClient += '<option>'+obj.socio.telefax+'</option>';
 		if (obj.socio.email)
 			contactClient += '<option>'+obj.socio.email+'</option>';
+		if (obj.socio.direccion)
+			contactClient += '<option>'+obj.socio.direccion+'</option>';
 
 		contactClient += '</select>';
 	}else{
@@ -58,7 +71,7 @@ function createRow( obj ){
 
 
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
-	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style="width:25%" ><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
 
 	//boton ver mascota
 	buttonVerMascota = "";
@@ -90,9 +103,11 @@ function saveEventInCalendar( tr ){
 	if ( client ){
 		let isnum = /^\d+$/.test(client);
 		if ( isnum ){
-			console.log("cargar contactos del cliente");
+			cleanSelectContactList(tr.id);
 			loadClientContactData( client, tr )
 		}
+	}else{
+		cleanSelectContactList(tr.id);
 	}
 
 
@@ -112,7 +127,7 @@ function saveEventInCalendar( tr ){
 				if ( response.result != 2 ){
 					showReplyMessage(response.result, response.message, "Agenda", null);
 				}
-				//window.location.reload();
+				window.location.reload();
 			});
 		}
 	}
@@ -130,10 +145,10 @@ function newRowCirugiaCalendar(){
 function createCleanRow(){
 	let row = '<tr id="" onchange="saveEventInCalendar(this)">';
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td>'
-	row += '<td ><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo"></td>'
+	row += '<td><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo"></td>'
 	row += '<td  class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value, ``)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>'
 	//row += '<td class="notShowMobile"><button class="btn btn-info subtexto" title="Ver cliente" disabled >ver</button></td>';
-	row += '<td><select class="form-select form-control shadow-sm" disabled></select></td>'
+	row += '<td><select class="form-select form-control shadow-sm notShowMobile" disabled></select></td>'
 	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>'
 	row += '<td class="notShowMobile"><button class="btn btn-info subtexto" title="Ver mascota" disabled >Cliente</button></td></tr>';
 
@@ -145,7 +160,6 @@ function searchClientByName( valueCli, tr ){
 		$('#dataListClientsCalendar').empty();
 		sendAsyncPost("searchClientByName", {value: valueCli})
 		.then((response)=>{
-			console.log(response);
 			if( response.result == 2 ){
 				let list = response.listResult;
 				for (let i = 0; i < list.length; i++) {
@@ -155,14 +169,7 @@ function searchClientByName( valueCli, tr ){
 			}
 		})
 	}else{
-		console.log("el dato del cliente cambió, dejar limpia columna de contactos y boton de ver cliente");
-		console.log(tr.getElementsByTagName("select")[0].childNodes);
-		let constactListCurrent = tr.getElementsByTagName("select")[0];
-		/*elemento var = document.getElementById("top");
-		while (element.firstChild) {
-		  element.removeChild(element.firstChild);
-		}*/
-
+		//cleanSelectContactList(tr.id);
 		$('#dataListClientsCalendar').empty();
 	}
 }
@@ -184,14 +191,10 @@ function searchPetClientByName( valuePet, tr ){
 
 
 function loadClientContactData( idClient, tr ){
-	console.log(idClient);
-	console.log(tr.getElementsByTagName("select"));
-
 	tr.getElementsByTagName("select")[0];
 	//pedir los datos del cliente agregar al select
 	sendAsyncPost("getSocio", {idSocio:idClient})
 	.then((response)=>{
-		console.log(response.socio);
 		if ( response.result == 2 ){
 			if (response.socio.telefono){
 				let option = document.createElement("option")
@@ -220,4 +223,9 @@ function loadClientContactData( idClient, tr ){
 	});
 
 	tr.getElementsByTagName("select")[0].removeAttribute("disabled");
+}
+
+function cleanSelectContactList(idrow){
+	$("#"+idrow+" select").attr("disabled", true);
+	$("#"+idrow+" select").empty();
 }
