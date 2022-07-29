@@ -43,7 +43,6 @@ function cargarHistoriaClinica(idMascota){
 		if(lastId != response.lastId)
 			lastId = response. lastId;
 
-		console.log(lastId, response.lastId);
 		let list = response.listResult;
 		for (let i = 0; i < list.length; i++) {
 			let row = createRowHistorial(list[i]);
@@ -115,18 +114,36 @@ function openModalHistoria(button){
 			$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
 			$("#inputPesoHistoria").val("");
 			$("#inputTemperaturaHistoria").val("");
-			if ( response.objectResult.peso || response.objectResult.temperatura){
-				console.log("tiene peso");
+
+			let obj = response.objectResult;
+			if ( obj.peso || obj.temperatura || obj.fc || obj.fr || obj.tllc){
+
 				let auxPeso = "";
 				let auxTemperatura = "";
-				if ( response.objectResult.peso )
-					auxPeso = response.objectResult.peso
+				let auxFc = "";
+				let auxFr = "";
+				let auxTllc = "";
 
-				if ( response.objectResult.temperatura )
-					auxTemperatura = response.objectResult.temperatura
+				if ( obj.peso )
+					auxPeso = obj.peso
+
+				if ( obj.temperatura )
+					auxTemperatura = obj.temperatura
+
+				if ( obj.fc )
+					auxFc = obj.fc
+
+				if ( obj.fr )
+					auxFr = obj.fr
+
+				if ( obj.tllc )
+					auxTllc = obj.tllc
 
 				$("#inputPesoHistoria").val(auxPeso);
 				$("#inputTemperaturaHistoria").val(auxTemperatura);
+				$("#inputFrecuenciaCardiacaHistoria").val(auxFc);
+				$("#inputFRHistoria").val(auxFr);
+				$("#inputTiempoLlenadoCapilarHistoria").val(auxTllc);
 			}
 
 			$('#buttonConfirmHistoriaClinica').off('click');
@@ -148,27 +165,29 @@ function crearHistoriaClinica(idMascota){
 	let observaciones = $('#inputObservacionesHistoria').val() || null;
 	let peso = $('#inputPesoHistoria').val() || null;
 	let temp = $('#inputTemperaturaHistoria').val() || null;
+	let fc = $("#inputFrecuenciaCardiacaHistoria").val() || null;
+	let fr = $("#inputFRHistoria").val() || null;
+	let tllc = $("#inputTiempoLlenadoCapilarHistoria").val() || null;
 
-	if(fecha){
-		if(motivoConsulta){
-			let data = {
-				idMascota: idMascota,
-				fecha: fecha,
-				motivoConsulta: motivoConsulta,
-				diagnostico: diagnostico,
-				observaciones: observaciones,
-				peso: peso,
-				temperatura: temp
-			};
-			let response = sendPost("agregarHistoriaClinica", data);
-			showReplyMessage(response.result, response.message, "Agregar historia clínica", "modalHistoriaClinica");
-			if(response.result == 2){
-				idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
-				let newHistoria = response.newHistoria;
-				$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));
-			}
-		}else showReplyMessage(1, "Debe ingresar el motivo de la consulta para agregar una historia clínica", "Motivo consulta requerido", "modalHistoriaClinica");
-	}else showReplyMessage(1, "Debe ingresar la fecha para agregar una historia clínica", "Fecha requerida", "modalHistoriaClinica");
+	let data = {
+		idMascota: idMascota,
+		fecha: fecha,
+		motivoConsulta: motivoConsulta,
+		diagnostico: diagnostico,
+		observaciones: observaciones,
+		peso: peso,
+		temperatura: temp,
+		fc: fc,
+		fr: fr,
+		tllc: tllc
+	};
+	let response = sendPost("agregarHistoriaClinica", data);
+	showReplyMessage(response.result, response.message, "Agregar historia clínica", "modalHistoriaClinica");
+	if(response.result == 2){
+		idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
+		let newHistoria = response.newHistoria;
+		$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));
+	}
 }
 
 function modificarHistoriaClinica(idHistoriaClinica){
@@ -178,26 +197,28 @@ function modificarHistoriaClinica(idHistoriaClinica){
 	let observaciones = $('#inputObservacionesHistoria').val() || null;
 	let peso = $('#inputPesoHistoria').val() || null;
 	let temp = $('#inputTemperaturaHistoria').val() || null;
+	let fc = $("#inputFrecuenciaCardiacaHistoria").val() || null;
+	let fr = $("#inputFRHistoria").val() || null;
+	let tllc = $("#inputTiempoLlenadoCapilarHistoria").val() || null;
 
-	if(fecha){
-		if(motivoConsulta){
-			let data = {
-				idHistoriaClinica: idHistoriaClinica,
-				fecha: fecha,
-				motivoConsulta: motivoConsulta,
-				diagnostico: diagnostico,
-				observaciones: observaciones,
-				peso: peso,
-				temperatura: temp
-			};
-			let response = sendPost("modificarHistoriaClinica", data);
-			showReplyMessage(response.result, response.message, "Modificar historia clínica", "modalHistoriaClinica");
-			if(response.result == 2){
-				let updatedHistoria = response.updatedHistoria;
-				$('#trH' + idHistoriaClinica).replaceWith(createRowHistorial(updatedHistoria));
-			}
-		}else showReplyMessage(1, "Debe ingresar el motivo de la consulta para modificar una historia clínica", "Motivo consulta requerido", "modalHistoriaClinica");
-	}else showReplyMessage(1, "Debe ingresar la fecha para modificar una historia clínica", "Fecha requerida", "modalHistoriaClinica");
+	let data = {
+		idHistoriaClinica: idHistoriaClinica,
+		fecha: fecha,
+		motivoConsulta: motivoConsulta,
+		diagnostico: diagnostico,
+		observaciones: observaciones,
+		peso: peso,
+		temperatura: temp,
+		fc: fc,
+		fr: fr,
+		tllc: tllc
+	};
+	let response = sendPost("modificarHistoriaClinica", data);
+	showReplyMessage(response.result, response.message, "Modificar historia clínica", "modalHistoriaClinica");
+	if(response.result == 2){
+		let updatedHistoria = response.updatedHistoria;
+		$('#trH' + idHistoriaClinica).replaceWith(createRowHistorial(updatedHistoria));
+	}
 }
 
 function clearModalHistoria(){
@@ -244,19 +265,32 @@ function verHistoriaClinica(idHistoria){
 			$("#divFilesTableModalView").attr("disable", true);
 		}
 
-		if ( historia.peso || historia.temperatura){
+		if ( historia.peso || historia.temperatura || historia.fc || historia.fr || historia.tllc){
 			$("#divDetailsTableModalView table tbody").empty();
 
 			//divDetailsTableModalView
 			let auxPeso = "";
 			let auxTemperatura = "";
+			let auxFc = "";
+			let auxFr = "";
+			let auxTllc = "";
+
 			if ( historia.peso )
 				auxPeso = historia.peso
 
 			if ( historia.temperatura )
 				auxTemperatura = historia.temperatura
 
-			let row = '<tr><td>'+auxPeso+'</td><td>'+auxTemperatura+'</td></tr>';
+			if ( historia.fc )
+				auxFc = historia.fc
+
+			if ( historia.fr )
+				auxFr = historia.fr
+
+			if ( historia.tllc )
+				auxTllc = historia.tllc
+
+			let row = '<tr><td hidden disabled>'+auxPeso+'</td><td>'+auxTemperatura+'</td><td>'+auxFc+'</td><td>'+auxFr+'</td><td>'+auxTllc+'</td></tr>';
 
 			$("#divDetailsTableModalView table tbody").append(row);
 

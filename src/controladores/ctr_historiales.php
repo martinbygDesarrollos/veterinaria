@@ -42,13 +42,13 @@ class ctr_historiales {
 
 	//----------------------------------- FUNCIONES DE HISTORIAL CLINICO ------------------------------------------
 
-	public function agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura){
+	public function agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){
 		$response = new \stdClass();
 
 		$responseGetMascota = ctr_mascotas::getMascota($idMascota);
 		if($responseGetMascota->result == 2){
 			$fecha = fechas::getDateToINT($fecha);
-			$responseInsertHistoriaClinica = historiales::agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura);
+			$responseInsertHistoriaClinica = historiales::agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc);
 			if($responseInsertHistoriaClinica->result == 2){
 				$response->result = 2;
 				$response->message = "La historia clínica se agregó correctamente.";
@@ -61,13 +61,13 @@ class ctr_historiales {
 		return $response;
 	}
 
-	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura){
+	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){
 		$response = new \stdClass();
 
 		$responseGetHistoriaClinica = historiales::getHistoriaClinica($idHistoriaClinica);
 		if($responseGetHistoriaClinica->result == 2){
 			$fecha = fechas::getDateToINT($fecha);
-			$responseUpdateHistoriaClinica = historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura);
+			$responseUpdateHistoriaClinica = historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc);
 			if($responseUpdateHistoriaClinica->result == 2){
 				$response->result = 2;
 				$response->message = "La historia clínica se agregó correctamente.";

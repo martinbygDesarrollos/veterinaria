@@ -16,12 +16,26 @@
 				</div>
 				<div class="row">
 					<div class="form-group col">
-						<table class="table-hover table-bordered" style="width: 50%;">
-							<thead><tr><td scope="col">Peso (Kg)</td><td scope="col" title="Temperatura">Temp.</td></tr></thead>
-							<tbody><tr>
-				  					<td><input id="inputPesoHistoria" type="number" class="form-control form-control-sm shadow-sm" autofocus="true"></td>
+						<table class="table-hover table-bordered" style="width: 100%;">
+							<thead>
+								<tr>
+									<td scope="col" hidden disabled>Peso (Kg)</td>
+									<td scope="col" title="Temperatura">Temp.</td>
+									<td scope="col" title="">FC. (p/m)</td>
+									<td scope="col" title="">FR.</td>
+									<td scope="col" title="Tiempo de llenado capilar">TLLC. (seg.)</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td hidden disabled><input id="inputPesoHistoria" type="number" class="form-control form-control-sm shadow-sm" autofocus="true"></td>
 				  					<td><input id="inputTemperaturaHistoria" type="number" class="form-control form-control-sm shadow-sm"></td>
-				  				</tr></tbody>
+				  					<td><input id="inputFrecuenciaCardiacaHistoria" type="number" class="form-control form-control-sm shadow-sm"></td>
+				  					<td><input id="inputFRHistoria" type="number" class="form-control form-control-sm shadow-sm"></td>
+				  					<td><input id="inputTiempoLlenadoCapilarHistoria" type="number" class="form-control form-control-sm shadow-sm"></td>
+				  				</tr>
+
+				  			</tbody>
 						</table>
 					</div>
 				</div>
