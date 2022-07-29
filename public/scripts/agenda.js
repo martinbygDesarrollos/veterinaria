@@ -1,4 +1,4 @@
-var widthBySize = 'style="width:25%"';
+var widthBySize = 'style="width:75%"';
 
 $(document).ready(()=>{
 	var sizeHeight = window.innerHeight;
@@ -41,7 +41,7 @@ function createRow( obj ){
 	//motivo
 	row += '<td '+widthBySize+'><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
 	//cliente
-	row += '<td class="notShowMobile" style="width:25%"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value, this.parentElement.parentElement)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style="width:25%; display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value, this.parentElement.parentElement)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
 	//contacto cliente
 	contactClient = '';
 	if ( obj.socio ){
@@ -61,7 +61,7 @@ function createRow( obj ){
 		contactClient = '<select class="form-select form-control shadow-sm" disabled></select>';
 	}
 
-	row += '<td class="notShowMobile" id="tdRowContactClient'+obj.idAgenda+'">'+contactClient+'</td>';
+	row += '<td class="notShowMobile" style="display:none" id="tdRowContactClient'+obj.idAgenda+'">'+contactClient+'</td>';
 	//boton ver cliente
 	buttonVerSocio = "";
 	if ( obj.socio )
@@ -71,7 +71,7 @@ function createRow( obj ){
 
 
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
-	row += '<td class="notShowMobile" style="width:25%" ><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style="width:25%; display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
 
 	//boton ver mascota
 	buttonVerMascota = "";
@@ -81,7 +81,7 @@ function createRow( obj ){
 		buttonVerMascota = '<button class="btn btn-info subtexto" title="Ver mascota" disabled >ver</button>';
 
 	//row += '<td class="notShowMobile">'+buttonVerMascota+'</td></tr>';
-	row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
+	row += '<td class="notShowMobile" style="display:none">'+buttonVerSocio+'</td>';
 
 	row += '</tr>';
 
@@ -146,11 +146,11 @@ function createCleanRow(){
 	let row = '<tr id="" onchange="saveEventInCalendar(this)">';
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td>'
 	row += '<td><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo"></td>'
-	row += '<td  class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value, ``)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>'
+	row += '<td  class="notShowMobile" style="display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value, ``)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>'
 	//row += '<td class="notShowMobile"><button class="btn btn-info subtexto" title="Ver cliente" disabled >ver</button></td>';
-	row += '<td><select class="form-select form-control shadow-sm notShowMobile" disabled></select></td>'
-	row += '<td class="notShowMobile"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>'
-	row += '<td class="notShowMobile"><button class="btn btn-info subtexto" title="Ver mascota" disabled >Cliente</button></td></tr>';
+	row += '<td><select class="form-select form-control shadow-sm notShowMobile" style="display:none" disabled></select></td>'
+	row += '<td class="notShowMobile" style="display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>'
+	row += '<td class="notShowMobile" style="display:none"><button class="btn btn-info subtexto" title="Ver mascota" disabled >Cliente</button></td></tr>';
 
 	return row;
 }
