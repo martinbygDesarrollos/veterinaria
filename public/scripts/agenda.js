@@ -226,6 +226,9 @@ function loadClientContactData( idClient, tr ){
 }
 
 function cleanSelectContactList(idrow){
-	$("#"+idrow+" select").attr("disabled", true);
-	$("#"+idrow+" select").empty();
+
+	if ( idrow ){
+		$("#"+idrow+" select").attr("disabled", true);
+		$("#"+idrow+" select").empty();
+	}
 }
