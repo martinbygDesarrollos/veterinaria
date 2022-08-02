@@ -170,3 +170,27 @@ function redirectToWhatsapp( phone, message ){
 	//enviar whatsapp por celu
 	//whatsapp://send?phone=59892459188
 }
+
+function calculateColorRowByClient(tipo, deudor){
+
+	classForClient = "";
+	tipoCliente = "";
+
+	if ( tipo == 0 ){ //NO SOCIO
+		tipoCliente = "<br>(Cliente)";
+		classForClient = "rowNosocio";
+	}else if ( tipo == 1 ){ //SOCIO
+		tipoCliente = "<br>(Socio)";
+		if ( deudor )
+			classForClient = "rowWarning";
+	}else if ( tipo == 3 ){ //EX SOCIO
+		tipoCliente = "<br>(Ex socio)";
+		if ( deudor )
+			classForClient = "rowExsocioWarning";
+		else
+			classForClient = "rowExsocio";
+	}else if ( tipo == 2 ) //ONG
+		tipoCliente = "<br>(ONG)";
+
+	return {tipo: tipoCliente, class:classForClient};
+}
