@@ -386,6 +386,21 @@ return function (App $app) {
 
         }else return json_encode($responseSession);
     });
+
+    $app->post('/getClientOrPetByInput', function(Request $request, Response $response) use ($userController, $mascotaController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $value = $data['value'];
+            $indexLimit = $data['indexLimit'];
+
+            if ( isset($value) && $value != "")
+                return json_encode( $mascotaController->getClientOrPetByInput($value, $indexLimit));
+            else return json_encode($response->result = 1);
+
+        }else return json_encode($responseSession);
+    });
+
     //------------------------------------------------------------------------------------------
 
 }

@@ -392,4 +392,32 @@ class serviciosMascota {
 
         return $responseQuery;
     }
+
+    public function getClientOrPetByInput( $valueInput = array(), $indexLimit ){
+        if ( !isset($indexLimit) || $indexLimit < 0 ){
+            $indexLimit = 0;
+        }
+
+        $where = "";
+        foreach ($valueInput as $value) {
+            if ( strlen($value) ){
+                if ( strlen($where) > 0 ){
+                    $where .= " AND (s.nombre like '%".$value."%' OR m.nombre like '%".$value."%') ";
+                }else
+                    $where .= " (s.nombre like '%".$value."%' OR m.nombre like '%".$value."%' )";
+            }
+        }
+
+        return DataBase::sendQuery(
+            "SELECT
+            s.idSocio, s.nombre AS nomSocio, s.telefono, s.telefax, s.email, s.direccion, s.fechaUltimaCuota, s.tipo,
+            m.idMascota, m.nombre AS nomMascota, m.especie, m.sexo, m.fechaFallecimiento
+            FROM `socios` AS s
+            LEFT JOIN `mascotasocio` AS ms ON s.idSocio = ms.idSocio
+            LEFT JOIN `mascotas` AS m on ms.idMascota = m.idMascota
+            WHERE s.estado = 1 AND (".$where.")
+            ORDER BY s.nombre, m.nombre ASC
+            LIMIT ".$indexLimit.",10",
+            array(), "LIST");
+    }
 }

@@ -1130,4 +1130,19 @@ class ctr_usuarios{
 
 		return $response;
 	}
+
+	public function calculateSocioDeudor($value){
+		$response = new \stdClass();
+		$sociosClass = new socios();
+
+		$response->result = 1;
+		$response->message = "Ocurrió un error al procesar la fecha del último pago";
+
+		if ( isset($value) && $value != "" ){
+			$response = $sociosClass->socioDeudor($value);
+			$response->result = 2;
+		}
+
+		return $response;
+	}
 }

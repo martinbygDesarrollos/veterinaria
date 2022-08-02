@@ -1,4 +1,6 @@
-var widthBySize = 'style="width:75%"';
+var widthBySize = 'style="width:20%"';
+var lastIndexLimit = 0;
+var trSelected = null; //elemento en el que se da click a la lupa
 
 $(document).ready(()=>{
 	var sizeHeight = window.innerHeight;
@@ -41,7 +43,7 @@ function createRow( obj ){
 	//motivo
 	row += '<td '+widthBySize+'><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
 	//cliente
-	row += '<td class="notShowMobile" style="width:25%; display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreCliente +'" onkeyup="searchClientByName(this.value, this.parentElement.parentElement)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" value="'+ obj.nombreCliente +'" placeholder="Cliente"></td>';
 	//contacto cliente
 	contactClient = '';
 	if ( obj.socio ){
@@ -61,28 +63,28 @@ function createRow( obj ){
 		contactClient = '<select class="form-select form-control shadow-sm" disabled></select>';
 	}
 
-	row += '<td class="notShowMobile" style="display:none" id="tdRowContactClient'+obj.idAgenda+'">'+contactClient+'</td>';
+	row += '<td class="notShowMobile" style="" id="tdRowContactClient'+obj.idAgenda+'">'+contactClient+'</td>';
 	//boton ver cliente
 	buttonVerSocio = "";
 	if ( obj.socio )
-		buttonVerSocio = '<a class="btn btn-info subtexto" title="Ver cliente" href="'+getSiteURL()+"ver-socio/"+obj.socio.idSocio+'" value="" target="_blank">Cliente</a>';
+		buttonVerSocio = '<a class="btn btn-info" title="Ver cliente" href="'+getSiteURL()+"ver-socio/"+obj.socio.idSocio+'" value="" target="_blank">Cliente</a>';
 	else
-		buttonVerSocio = '<button class="btn btn-info subtexto" title="Ver cliente" disabled >Cliente</button>';
+		buttonVerSocio = '<button class="btn btn-info" title="Ver cliente" disabled >Cliente</button>';
 
 
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
-	row += '<td class="notShowMobile" style="width:25%; display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
 
 	//boton ver mascota
 	buttonVerMascota = "";
 	if ( obj.mascota )
-		buttonVerMascota = '<a class="btn btn-info subtexto" title="Ver mascota" href="'+getSiteURL()+"ver-mascota/"+obj.mascota.idMascota+'" value="" target="_blank">ver</a>';
+		buttonVerMascota = '<a class="btn btn-info" title="Ver mascota" href="'+getSiteURL()+"ver-mascota/"+obj.mascota.idMascota+'" value="" target="_blank">ver</a>';
 	else
-		buttonVerMascota = '<button class="btn btn-info subtexto" title="Ver mascota" disabled >ver</button>';
+		buttonVerMascota = '<button class="btn btn-info" title="Ver mascota" disabled >ver</button>';
 
 	//row += '<td class="notShowMobile">'+buttonVerMascota+'</td></tr>';
-	row += '<td class="notShowMobile" style="display:none">'+buttonVerSocio+'</td>';
-
+	row += '<td class="notShowMobile" style="">'+buttonVerSocio+'</td>';
+	row += '<td class="notShowMobile"><button class="btn btn-info" onclick="openModalSearchClientOrPet(this.parentElement.parentElement)" ><i class="fas fa-search"></i></button></td>';
 	row += '</tr>';
 
 	return row;
@@ -99,17 +101,6 @@ function saveEventInCalendar( tr ){
 	hours = hours.replaceAll(":","");
 
 	let datetime = day+hours;
-
-	if ( client ){
-		let isnum = /^\d+$/.test(client);
-		if ( isnum ){
-			cleanSelectContactList(tr.id);
-			loadClientContactData( client, tr )
-		}
-	}else{
-		cleanSelectContactList(tr.id);
-	}
-
 
 	if ( datetime || event || client || petClient ){
 		if ( tr.id ){
@@ -146,20 +137,22 @@ function createCleanRow(){
 	let row = '<tr id="" onchange="saveEventInCalendar(this)">';
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td>'
 	row += '<td><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo"></td>'
-	row += '<td  class="notShowMobile" style="display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchClientByName(this.value, ``)" list="dataListClientsCalendar" placeholder="Cliente"><datalist id="dataListClientsCalendar"></datalist></td>'
-	//row += '<td class="notShowMobile"><button class="btn btn-info subtexto" title="Ver cliente" disabled >ver</button></td>';
-	row += '<td><select class="form-select form-control shadow-sm notShowMobile" style="display:none" disabled></select></td>'
-	row += '<td class="notShowMobile" style="display:none"><input class="form-control text-center shadow-sm" type="text" name="" value="" onkeyup="searchPetClientByName(this.value, this.parentElement.parentElement)" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>'
-	row += '<td class="notShowMobile" style="display:none"><button class="btn btn-info subtexto" title="Ver mascota" disabled >Cliente</button></td></tr>';
+	row += '<td  class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Cliente"></td>'
+	//row += '<td class="notShowMobile"><button class="btn btn-info" title="Ver cliente" disabled >ver</button></td>';
+	row += '<td><select class="form-select form-control shadow-sm notShowMobile" style="" disabled></select></td>'
+	row += '<td class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style=""><button class="btn btn-info" title="Ver mascota" disabled >Cliente</button></td>';
+	row += '<td class="notShowMobile" style="" onclick="openModalSearchClientOrPet(this.parentElement)" ><i class="btn btn-info fas fa-search"></i></td></tr>';
 
 	return row;
 }
 
 function searchClientByName( valueCli, tr ){
-	if ( valueCli.length > 0 ){
+	/*if ( valueCli.length > 0 ){
 		$('#dataListClientsCalendar').empty();
 		sendAsyncPost("searchClientByName", {value: valueCli})
 		.then((response)=>{
+			console.log(response);
 			if( response.result == 2 ){
 				let list = response.listResult;
 				for (let i = 0; i < list.length; i++) {
@@ -168,10 +161,10 @@ function searchClientByName( valueCli, tr ){
 				}
 			}
 		})
-	}else{
+	else{
 		//cleanSelectContactList(tr.id);
 		$('#dataListClientsCalendar').empty();
-	}
+	}*/
 }
 
 function searchPetClientByName( valuePet, tr ){
@@ -190,39 +183,34 @@ function searchPetClientByName( valuePet, tr ){
 }
 
 
-function loadClientContactData( idClient, tr ){
-	tr.getElementsByTagName("select")[0];
-	//pedir los datos del cliente agregar al select
-	sendAsyncPost("getSocio", {idSocio:idClient})
-	.then((response)=>{
-		if ( response.result == 2 ){
-			if (response.socio.telefono){
-				let option = document.createElement("option")
-				option.append(response.socio.telefono)
-				tr.getElementsByTagName("select")[0].appendChild(option);
-			}
+function loadClientContactData( objClient ){
 
-			if (response.socio.telefax){
-				let option = document.createElement("option")
-				option.append(response.socio.telefax)
-				tr.getElementsByTagName("select")[0].appendChild(option);
-			}
+	if ( trSelected ){
 
-			if (response.socio.email){
-				let option = document.createElement("option")
-				option.append(response.socio.email)
-				tr.getElementsByTagName("select")[0].appendChild(option);
-			}
-
-			if (response.socio.direccion){
-				let option = document.createElement("option")
-				option.append(response.socio.direccion)
-				tr.getElementsByTagName("select")[0].appendChild(option);
-			}
+		if (objClient.telefono){
+			let option = document.createElement("option")
+			option.append(objClient.telefono)
+			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
-	});
 
-	tr.getElementsByTagName("select")[0].removeAttribute("disabled");
+		if (objClient.telefax){
+			let option = document.createElement("option")
+			option.append(objClient.telefax)
+			trSelected.getElementsByTagName("select")[0].appendChild(option);
+		}
+
+		if (objClient.email){
+			let option = document.createElement("option")
+			option.append(objClient.email)
+			trSelected.getElementsByTagName("select")[0].appendChild(option);
+		}
+
+		if (objClient.direccion){
+			let option = document.createElement("option")
+			option.append(objClient.direccion)
+			trSelected.getElementsByTagName("select")[0].appendChild(option);
+		}
+	}
 }
 
 function cleanSelectContactList(idrow){
@@ -232,3 +220,81 @@ function cleanSelectContactList(idrow){
 		$("#"+idrow+" select").empty();
 	}
 }
+
+function openModalSearchClientOrPet( tr ){
+	trSelected = tr;
+	$("#modalSearchClientOrPet input").val("");
+	$("#modalSearchClientOrPet tbody").empty();
+	if ( tr )
+		$("#modalSearchClientOrPet").modal("show");
+	else
+		$("#modalSearchClientOrPet").modal("hide");
+}
+
+function searchDataClienstOrPet( value ){
+	if (value.length > 0 ){
+		$("#modalSearchClientOrPet tbody").empty();
+		sendAsyncPost("getClientOrPetByInput", {value: value, indexLimit: lastIndexLimit})
+		.then(( response )=>{
+			/*if ( response.newIndexLimit != lastIndexLimit ){
+				console.log(response.newIndexLimit);
+				lastIndexLimit = response.newIndexLimit;
+			}*/
+
+			if ( response.result == 2 ){
+				let list = response.listResult;
+				for (var i = 0; i < list.length; i++) {
+					let row = createRowDataClientOrPet(list[i]);
+					$("#modalSearchClientOrPet tbody").append(row);
+				}
+			}
+			else $("#modalSearchClientOrPet tbody").empty();
+		})
+	} else
+		$("#modalSearchClientOrPet tbody").empty();
+}
+
+function createRowDataClientOrPet( obj ){
+	let telefono = obj.telefono;
+	let telefax = obj.telefax;
+	let direccion = obj.direccion;
+
+	if ( obj.telefono == null ) telefono = "";
+	if ( obj.telefax == null) telefax = "";
+	if ( obj.direccion == null ) direccion = "";
+
+	//agregar color a la fila de la tabla según la deuda del cliente
+	tipoClient = calculateColorRowByClient(obj.tipo, obj.deudor);
+
+	//si hay fecha de muerte agregar que esta fallecida la mascota
+	mascotaViva = "";
+	if ( obj.fechaFallecimiento != null && obj.fechaFallecimiento != "" ){
+		mascotaViva = "(falleció)";
+	}
+
+	let clientContactList = null;
+
+	let row = '<tr class="'+tipoClient.class+'">';
+	row += '<td class="subtexto">'+obj.idSocio+'</td>';
+	row += '<td><a href="'+getSiteURL()+'ver-socio/'+obj.idSocio+'" >'+obj.nomSocio+'</a></td>';
+	row += '<td><a href="'+getSiteURL()+'ver-mascota/'+obj.idMascota+'" >'+obj.nomMascota+'</a> '+mascotaViva+'</td>';
+	row += '<td>'+telefono+' '+telefax+'</td>obj';
+	row += '<td>'+direccion+'</td>';
+	row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+obj.nomSocio+'`, '+obj.idMascota+', `'+obj.nomMascota+'`, '+clientContactList+')" ><i class="fas fa-plus-circle"></i></button></td></tr>';
+
+	return row;
+}
+
+function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, contactList ){
+	trSelected.getElementsByTagName("input")[2].value = idClient +" - "+nomClient;
+	trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
+
+	var evt = document.createEvent("HTMLEvents");
+    evt.initEvent("change", false, true);
+	trSelected.dispatchEvent(evt);
+
+
+	openModalSearchClientOrPet(null);
+}
+
+//SCROLL TABLA BODY RESULTADOS PARA AGREGAR CLIENTE A SECCION CIRUGIAS

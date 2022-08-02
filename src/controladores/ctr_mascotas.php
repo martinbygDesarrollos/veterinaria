@@ -752,4 +752,33 @@ class ctr_mascotas {
 		$result = $mascotasClass->getMascotaByName($value);
 		return $result;
 	}
+
+	public function getClientOrPetByInput ( $value = null, $indexLimit ){
+		$serviciosClass = new serviciosMascota();
+		$usersController = new ctr_usuarios();
+		$valueArray = explode(" ", $value);
+		$response = $serviciosClass->getClientOrPetByInput( $valueArray, $indexLimit );
+		if ( $response->result == 2 ){
+
+			//calcular si el cliente es deudor
+			foreach ($response->listResult as $key => $value) {
+				if ( isset($value['fechaUltimaCuota']) && $value['fechaUltimaCuota'] != "" ){
+					$resultClientDeudor = $usersController->calculateSocioDeudor($value['fechaUltimaCuota']);
+					if ( $resultClientDeudor->result == 2 ){
+						$response->listResult[$key]["deudor"] = $resultClientDeudor->deudor;
+					}
+					else
+						$response->listResult[$key]["deudor"] = false;
+				}
+				else
+					$response->listResult[$key]["deudor"] = false;
+			}
+
+
+			$response->newIndexLimit = ($indexLimit + count( $response->listResult ));
+		}
+		else
+			$response->newIndexLimit = $indexLimit;
+		return $response;
+	}
 }
