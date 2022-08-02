@@ -183,33 +183,36 @@ function searchPetClientByName( valuePet, tr ){
 }
 
 
-function loadClientContactData( objClient ){
+function loadClientContactData( telefono, telefax, direccion, email ){
 
 	if ( trSelected ){
 
-		if (objClient.telefono){
+		if (telefono && telefono != null && telefono != ""){
 			let option = document.createElement("option")
-			option.append(objClient.telefono)
+			option.append(telefono)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
 
-		if (objClient.telefax){
+		if (telefax && telefax != null && telefax != ""){
 			let option = document.createElement("option")
-			option.append(objClient.telefax)
+			option.append(telefax)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
 
-		if (objClient.email){
+		if (email && email != null && email != ""){
 			let option = document.createElement("option")
-			option.append(objClient.email)
+			option.append(email)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
 
-		if (objClient.direccion){
+		if (direccion && direccion != null && direccion != ""){
 			let option = document.createElement("option")
-			option.append(objClient.direccion)
+			option.append(direccion)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
+
+		trSelected.getElementsByTagName("select")[0].setAttribute("disabled", false);
+		console.log(trSelected.getElementsByTagName("select")[0]);
 	}
 }
 
@@ -272,22 +275,22 @@ function createRowDataClientOrPet( obj ){
 		mascotaViva = "(falleció)";
 	}
 
-	let clientContactList = null;
-
 	let row = '<tr class="'+tipoClient.class+'">';
 	row += '<td class="subtexto">'+obj.idSocio+'</td>';
 	row += '<td><a href="'+getSiteURL()+'ver-socio/'+obj.idSocio+'" >'+obj.nomSocio+'</a></td>';
 	row += '<td><a href="'+getSiteURL()+'ver-mascota/'+obj.idMascota+'" >'+obj.nomMascota+'</a> '+mascotaViva+'</td>';
 	row += '<td>'+telefono+' '+telefax+'</td>obj';
 	row += '<td>'+direccion+'</td>';
-	row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+obj.nomSocio+'`, '+obj.idMascota+', `'+obj.nomMascota+'`, '+clientContactList+')" ><i class="fas fa-plus-circle"></i></button></td></tr>';
+	row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+obj.nomSocio+'`, '+obj.idMascota+', `'+obj.nomMascota+'`, `'+obj.telefono+'`, `'+obj.telefax+'`, `'+obj.direccion+'`, `'+obj.email+'`)" ><i class="fas fa-plus-circle"></i></button></td></tr>';
 
 	return row;
 }
 
-function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, contactList ){
+function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email ){
 	trSelected.getElementsByTagName("input")[2].value = idClient +" - "+nomClient;
 	trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
+
+	loadClientContactData(tel, telefax, direccion, email);
 
 	var evt = document.createEvent("HTMLEvents");
     evt.initEvent("change", false, true);
