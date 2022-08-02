@@ -69,7 +69,7 @@ function createRow( obj ){
 	if ( obj.socio )
 		buttonVerSocio = '<a class="btn btn-info" title="Ver cliente" href="'+getSiteURL()+"ver-socio/"+obj.socio.idSocio+'" value="" target="_blank">Cliente</a>';
 	else
-		buttonVerSocio = '<button class="btn btn-info" title="Ver cliente" disabled >Cliente</button>';
+		buttonVerSocio = '<a class="btn btn-info" target="_blank" title="Ver cliente" disabled >Cliente</a>';
 
 
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
@@ -138,10 +138,9 @@ function createCleanRow(){
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value=""></td>'
 	row += '<td><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo"></td>'
 	row += '<td  class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Cliente"></td>'
-	//row += '<td class="notShowMobile"><button class="btn btn-info" title="Ver cliente" disabled >ver</button></td>';
 	row += '<td><select class="form-select form-control shadow-sm notShowMobile" style="" disabled></select></td>'
 	row += '<td class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
-	row += '<td class="notShowMobile" style=""><button class="btn btn-info" title="Ver mascota" disabled >Cliente</button></td>';
+	row += '<td class="notShowMobile" style=""><a class="btn btn-info" target="_blank" title="Ver cliente" disabled >Cliente</a></td>';
 	row += '<td class="notShowMobile" style="" onclick="openModalSearchClientOrPet(this.parentElement)" ><i class="btn btn-info fas fa-search"></i></td></tr>';
 
 	return row;
@@ -187,32 +186,31 @@ function loadClientContactData( telefono, telefax, direccion, email ){
 
 	if ( trSelected ){
 
-		if (telefono && telefono != null && telefono != ""){
+		if (telefono && telefono != "null" && telefono != ""){
 			let option = document.createElement("option")
 			option.append(telefono)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
 
-		if (telefax && telefax != null && telefax != ""){
+		if (telefax && telefax != "null" && telefax != ""){
 			let option = document.createElement("option")
 			option.append(telefax)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
 
-		if (email && email != null && email != ""){
+		if (email && email != "null" && email != ""){
 			let option = document.createElement("option")
 			option.append(email)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
 
-		if (direccion && direccion != null && direccion != ""){
+		if (direccion && direccion != "null" && direccion != ""){
 			let option = document.createElement("option")
 			option.append(direccion)
 			trSelected.getElementsByTagName("select")[0].appendChild(option);
 		}
 
-		trSelected.getElementsByTagName("select")[0].setAttribute("disabled", false);
-		console.log(trSelected.getElementsByTagName("select")[0]);
+		trSelected.getElementsByTagName("select")[0].removeAttribute("disabled");
 	}
 }
 
@@ -289,6 +287,8 @@ function createRowDataClientOrPet( obj ){
 function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email ){
 	trSelected.getElementsByTagName("input")[2].value = idClient +" - "+nomClient;
 	trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
+	trSelected.getElementsByTagName("a")[0].setAttribute("href", getSiteURL()+"ver-socio/"+idClient)
+	trSelected.getElementsByTagName("a")[0].removeAttribute("disabled");
 
 	loadClientContactData(tel, telefax, direccion, email);
 
