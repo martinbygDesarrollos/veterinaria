@@ -35,14 +35,14 @@ return function (App $app) {
         }else return $response->withRedirect('iniciar-sesion');
     })->setName('NuevaMascota');
 
-    $app->get('/ver-mascota/{idMascota}', function($request, $response, $args) use ($container){
+    $app->get('/ver-mascota/{idMascota}', function($request, $response, $args) use ($container, $mascotaController){
         $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
 
             $idMascota = $args['idMascota'];
-            $args['SocioMascota'] = ctr_mascotas::getMascotaWithSocio($idMascota);
+            $args['SocioMascota'] = $mascotaController->getMascotaWithSocio($idMascota);
             if ( $args['SocioMascota'] ){
                 $args['rowColorClientType'] = "rowSocio";
                 if ( $args['SocioMascota']->socio->tipoSocio == 0 ){ //NO SOCIO
@@ -58,9 +58,16 @@ return function (App $app) {
                 }
             }
 
-            $args['responseVacunas'] = ctr_mascotas::getVacunasMascota($idMascota);
-            $args['responseEnfermedades'] = ctr_mascotas::getEnfermedadesMascota($idMascota);
-            $args['responseAnalisis'] = ctr_mascotas::getAnalisisMascota($idMascota);
+            $args['responseVacunas'] = $mascotaController->getVacunasMascota($idMascota);
+            $args['responseEnfermedades'] = $mascotaController->getEnfermedadesMascota($idMascota);
+            $args['responseAnalisis'] = $mascotaController->getAnalisisMascota($idMascota);
+
+            $args['responseListVacunas'] = array();
+            $listVac = $mascotaController->getListadoVacunas();
+            if ( $listVac->result == 2 ){
+                $args['responseListVacunas'] = $listVac->listResult;
+            }
+
             return $this->view->render($response, "verMascota.twig", $args);
         }else return $response->withRedirect('iniciar-sesion');
     })->setName("verMascota");

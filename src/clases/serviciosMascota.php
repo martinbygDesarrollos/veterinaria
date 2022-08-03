@@ -420,4 +420,11 @@ class serviciosMascota {
             LIMIT ".$indexLimit.",10",
             array(), "LIST");
     }
+
+    public function getListadoVacunas(){
+        $responseQuery = DataBase::sendQuery("SELECT * FROM `vacunas` LIMIT 50", array(), "LIST");
+        if( $responseQuery->result == 1 ) $responseQuery->message = "No se encontro el listado de las vacunas.";
+
+        return $responseQuery;
+    }
 }

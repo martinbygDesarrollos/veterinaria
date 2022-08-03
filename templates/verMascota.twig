@@ -523,10 +523,17 @@
 			<div class="modal-body">
 				<div class="row">
 					<div class="col">
-						<div class="form-group">
+						<!--div class="form-group">
 							<label for="inputNombreVacuna">Nombre</label>
 							<input type="text" class="form-control text-center shadow-sm" list="dataListNombreVacuna" id="inputNombreVacuna" onsearch="getDataVacunas(this.value)" onchange="completeDataVacunas(this.value)" onkeyup="this.onsearch()" autocomplete="off" placeholder="Escriba algo...">
 							<datalist id="dataListNombreVacuna"></datalist>
+						</div-->
+						<div class="form-group">
+							<select id="inputNombreVacuna" class="form-select form-control shadow-sm" onchange="completeDataVacunas(this.value)">
+								{% for item in responseListVacunas %}
+								<option value="{{item.nombre}}" >{{item.nombre}}</option>
+								{% endfor %}
+							</select>
 						</div>
 					</div>
 				</div>
@@ -572,6 +579,11 @@
 			cargarHistoriaClinica('{{ SocioMascota.mascota.idMascota }}');
 		}
 	});
+
+	$(document).ready(( )=>{
+		completeDataVacunas($("#modalVacuna select").val());
+	})
+
 </script>
 {% endblock %}
 {% endblock %}
