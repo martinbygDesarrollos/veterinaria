@@ -234,14 +234,11 @@ function openModalSearchClientOrPet( tr ){
 
 function searchDataClienstOrPet( value ){
 	if (value.length > 0 ){
-		$("#modalSearchClientOrPet tbody").empty();
+		//$("#modalSearchClientOrPet tbody").empty();
+		console.log("indice previo a consultar", lastIndexLimit);
 		sendAsyncPost("getClientOrPetByInput", {value: value, indexLimit: lastIndexLimit})
 		.then(( response )=>{
-			/*if ( response.newIndexLimit != lastIndexLimit ){
-				console.log(response.newIndexLimit);
-				lastIndexLimit = response.newIndexLimit;
-			}*/
-
+			$("#modalSearchClientOrPet tbody").empty();
 			if ( response.result == 2 ){
 				let list = response.listResult;
 				for (var i = 0; i < list.length; i++) {
@@ -249,7 +246,6 @@ function searchDataClienstOrPet( value ){
 					$("#modalSearchClientOrPet tbody").append(row);
 				}
 			}
-			else $("#modalSearchClientOrPet tbody").empty();
 		})
 	} else
 		$("#modalSearchClientOrPet tbody").empty();
@@ -273,20 +269,32 @@ function createRowDataClientOrPet( obj ){
 		mascotaViva = "(falleció)";
 	}
 
+	let nomMascota = "";
+	let hrefMascota = "";
+	if (obj.nomMascota != null &&  obj.nomMascota != "" ){
+		nomMascota = obj.nomMascota;
+		hrefMascota = 'href="'+getSiteURL()+'ver-mascota/'+obj.idMascota+'"';
+	}
+
+
+
 	let row = '<tr class="'+tipoClient.class+'">';
 	row += '<td class="subtexto">'+obj.idSocio+'</td>';
 	row += '<td><a href="'+getSiteURL()+'ver-socio/'+obj.idSocio+'" >'+obj.nomSocio+'</a></td>';
-	row += '<td><a href="'+getSiteURL()+'ver-mascota/'+obj.idMascota+'" >'+obj.nomMascota+'</a> '+mascotaViva+'</td>';
-	row += '<td>'+telefono+' '+telefax+'</td>obj';
+	row += '<td><a '+hrefMascota+' >'+nomMascota+'</a> '+mascotaViva+'</td>';
+	row += '<td>'+telefono+' '+telefax+'</td>';
 	row += '<td>'+direccion+'</td>';
 	row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+obj.nomSocio+'`, '+obj.idMascota+', `'+obj.nomMascota+'`, `'+obj.telefono+'`, `'+obj.telefax+'`, `'+obj.direccion+'`, `'+obj.email+'`)" ><i class="fas fa-plus-circle"></i></button></td></tr>';
-
+	//console.log(row);
 	return row;
 }
 
 function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email ){
 	trSelected.getElementsByTagName("input")[2].value = idClient +" - "+nomClient;
-	trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
+	if ( idMascota != null && idMascota  )
+		trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
+
+
 	trSelected.getElementsByTagName("a")[0].setAttribute("href", getSiteURL()+"ver-socio/"+idClient)
 	trSelected.getElementsByTagName("a")[0].removeAttribute("disabled");
 
@@ -301,3 +309,18 @@ function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel,
 }
 
 //SCROLL TABLA BODY RESULTADOS PARA AGREGAR CLIENTE A SECCION CIRUGIAS
+$('#modalSearchClientOrPet .tableCustomScroll').on('scroll', function() {
+	console.log("el datos del last index ", lastIndexLimit);
+	console.log("en el scroll");
+	console.log("antes de cambiar el lastIndexLimit ", lastIndexLimit);
+
+	/*if ( response.newIndexLimit != lastIndexLimit ){
+		console.log(response.newIndexLimit);
+		lastIndexLimit = response.newIndexLimit;
+	}*/
+	lastIndexLimit = $('#modalSearchClientOrPet tbody').children().length;
+	console.log("se cambio el lastIndexLimit ", lastIndexLimit);
+
+	//console.log($('#modalSearchClientOrPet input').val());
+	searchDataClienstOrPet($('#modalSearchClientOrPet input').val());
+})
