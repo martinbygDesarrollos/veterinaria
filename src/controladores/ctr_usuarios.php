@@ -76,28 +76,32 @@ class ctr_usuarios{
 						$newArray = array();
 
 						//"nro_deu","N",7,0
-						if(is_null($socio['idSocio'])) $stringList .= "'',";
-						else $stringList .= $socio['idSocio'] . ",";
+						if(is_null($socio['idSocio'])) $stringList .= "''|";
+						else $stringList .= $socio['idSocio'] . "|";
 
 						//"nombre","C",30,0
-						if(is_null($socio['nombre'])) $stringList .= "'',";
-						else $stringList .= $socio['nombre']. ",";
+						if(is_null($socio['nombre'])) $stringList .= "''|";
+						else $stringList .= $socio['nombre']. "|";
 
 
 						//"calle","C",55,0
-						if(is_null($socio['direccion'])) $stringList .= "'',";
-						else $stringList .= $socio['direccion'] . ",";
+						if(is_null($socio['direccion']) || $socio['direccion'] == "") $stringList .= "''|";
+						else $stringList .= $socio['direccion'] . "|";
 
 						//"casa","N",5,0
-						$stringList .= "'',";
+						$stringList .= "''|";
 
 						//"apto","N",4,0
-						$stringList .= "'',";
+						$stringList .= "''|";
 
 						//"rut","C",12,0
-						if($socio['rut']>0) $stringList .= $socio['rut'].",";
-						else $stringList .= "'',";
+						if($socio['rut']>0) $stringList .= $socio['rut']."|";
+						else $stringList .= "''|";
 
+
+						//"cedula","C",8,0
+						if($socio['cedula']>0) $stringList .= $socio['cedula']."|";
+						else $stringList .= "''|";
 
 
 						//"cant","N",2,0
@@ -125,36 +129,36 @@ class ctr_usuarios{
 							}else $cuota = 0;
 						}
 
-						$stringList .= $cantMascotas . ",";
+						$stringList .= $cantMascotas . "|";
 
 
 						//"imp","N",13,2
-						$stringList .= $cuota . ",";
+						$stringList .= $cuota . "|";
 
 
 
 						//"lugar","C",15,0
 						if($socio['lugarPago'] == 1)
-							$stringList .= "Cobrador". ",";
+							$stringList .= "Cobrador|";
 						else
-							$stringList .= "Veterinaria". ",";
+							$stringList .= "Veterinaria|";
 
 
 						//"prox_vacu","C",11,0
-						$stringList .= "'',";
+						$stringList .= "''|";
 
 
 						//"mascota","C",20,0
-						$stringList .= "'',";
+						$stringList .= "''|";
 
 						//"fec_ingr","C",8,0
-						if(is_null($socio['fechaIngreso'])) $stringList .= "'',";
-						else $stringList .= $socio['fechaIngreso'].",";
+						if(is_null($socio['fechaIngreso'])) $stringList .= "''|";
+						else $stringList .= $socio['fechaIngreso']."|";
 						//else $stringList .= fechas::dateToFormatBar($socio['fechaIngreso']) . " 12:13:00,".chr(13).chr(10);
 
 						//"fec_baja", ...
-						if(is_null($socio['fechaBajaSocio'])) $stringList .= "'',";
-						else $stringList .= $socio['fechaBajaSocio'].",";
+						if(is_null($socio['fechaBajaSocio'])) $stringList .= "''|";
+						else $stringList .= $socio['fechaBajaSocio']."|";
 
 						//"activo", boolean
 						if(is_null($socio['estado'])) $stringList .= "''";
