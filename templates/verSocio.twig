@@ -4,11 +4,11 @@
 {% block content %}
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border shadow w-75">
-		<div class="card-header d-flex justify-content-between &nbsp;{{rowColorClientType}}">
+		<div class="card-header d-flex justify-content-between &nbsp; {{rowColorClientType}}">
 			<div class="row" style="text-transform: uppercase;">
 				<h5 class="card-title mt-2 ml-2">{{ responseSocio.socio.nombre }}
 				{% if responseSocio.socio.deudor == true %}
-				<i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp;{{responseSocio.socio.fechaUltimaCuota}} el día &nbsp;{{responseSocio.socio.fechaUltimoPago}}"></i>
+				<i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp; {{responseSocio.socio.fechaUltimaCuota}} el día &nbsp; {{responseSocio.socio.fechaUltimoPago}}"></i>
 				{% endif %}
 				</h5>
 			</div>
