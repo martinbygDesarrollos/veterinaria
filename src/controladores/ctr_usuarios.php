@@ -184,7 +184,6 @@ class ctr_usuarios{
 						$stringList .= chr(13).chr(10);
 					}
 					$response->result = 2;
-					var_dump($stringList);exit;
 					$response->string = base64_encode($stringList);
 				}
 			}else{
