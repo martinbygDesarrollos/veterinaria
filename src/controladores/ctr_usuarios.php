@@ -137,13 +137,13 @@ class ctr_usuarios{
 									$cuota = $responseCalculateQuota->quota;
 							}else $cuota = 0;
 
-							foreach ($responseGetCantMascotas->mascotas as $value) {
+							/*foreach ($responseGetCantMascotas->mascotas as $value) {
 								if ( is_null($value['fechaFallecimiento']) || $value['fechaFallecimiento'] == "" ){
 									if ( strlen($nomMascotas) > 0 ){
 										$nomMascotas .= ",".$value['nombre'];
 									}else $nomMascotas .= $value['nombre'];
 								}
-							}
+							}*/
 						}
 
 						$stringList .= $cantMascotas . "|";
@@ -163,9 +163,9 @@ class ctr_usuarios{
 
 						//concatenar nombres de las mascotas
 						//"mascota","C",20,0
-						if ( strlen($nomMascotas) > 0 ){
+						/*if ( strlen($nomMascotas) > 0 ){
 							$stringList .= $nomMascotas . "|";
-						}else $stringList .= "''|";
+						}else $stringList .= "''|";*/
 
 						//"fec_ingr","C",8,0
 						if(is_null($socio['fechaIngreso'])) $stringList .= "''|";
@@ -184,6 +184,7 @@ class ctr_usuarios{
 						$stringList .= chr(13).chr(10);
 					}
 					$response->result = 2;
+					var_dump($stringList);exit;
 					$response->string = base64_encode($stringList);
 				}
 			}else{
