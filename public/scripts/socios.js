@@ -29,10 +29,10 @@ function cargarTablaSocios(){
 }
 
 function createRow(obj){
-	//console.log(obj);
 	let idSocio = obj.idSocio
 	let nombre = obj.nombre
 	let telefono = obj.telefono
+	let telefax = obj.telefax
 	let cantMascotas = obj.cantMascotas
 	let cuota = obj.cuota
 	let fechaUltimoPago = obj.fechaUltimoPago
@@ -46,6 +46,10 @@ function createRow(obj){
 
 	if ( !telefono ){
 		telefono = "";
+	}
+
+	if ( !telefax ){
+		telefax = "";
 	}
 
 	if ( !direccion ){
@@ -105,9 +109,9 @@ function createRow(obj){
 		row += "<td class='text-center'>" + selectMascotas + "</td>";
 
 
-	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ telefono +"</td>";
-	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ direccion +"</td>";
-	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ cuota + "</td>";
+	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ telefono +" "+ telefax +"</td>";
+	//row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ direccion +"</td>";
+	//row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")'>"+ cuota + "</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToSocio("+ idSocio +")' "
 
 	if ( fechaUltimaCuota != "" ){
@@ -121,7 +125,8 @@ function createRow(obj){
 	else
 		row+= fechaUltimaCuota + "</td>";
 
-	row += "<td class='text-center'><a class='text-dark' data-toggle='tooltip' data-placement='top' title='Agregar nueva mascota' href='" + getSiteURL() + "nueva-mascota/" + idSocio +"'><button class='btn btn-light' type='button'>Nueva masc.</button></a></td>";
+	//row += "<td class='text-center'><a class='text-dark' data-toggle='tooltip' data-placement='top' title='Agregar nueva mascota' href='" + getSiteURL() + "nueva-mascota/" + idSocio +"'><button class='btn btn-light' type='button'>Nueva masc.</button></a></td>";
+	row += '<td class="text-center"><a href="https://wa.me/'+telefax+'" target="_blank"><button title="Enviar mensaje a '+telefax+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 	row += "</tr>";
 
 	return row;
