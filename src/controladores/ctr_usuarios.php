@@ -83,16 +83,24 @@ class ctr_usuarios{
 						if(is_null($socio['nombre'])) $stringList .= "''|";
 						else $stringList .= $socio['nombre']. "|";
 
-
 						//"calle","C",55,0
 						if(is_null($socio['direccion']) || $socio['direccion'] == "") $stringList .= "''|";
 						else $stringList .= $socio['direccion'] . "|";
 
-						//"casa","N",5,0
-						$stringList .= "''|";
+						//"email"
+						if (is_null($socio['email']) || $socio['email'] == "" || !strpos( $socio['email'], '@')){
+							$stringList .= "''|";
+						}else $stringList .= $socio['email']."|";
 
-						//"apto","N",4,0
-						$stringList .= "''|";
+						//"celular"
+						if (is_null($socio['telefax']) || $socio['telefax'] == "" || !ctype_digit($socio['telefax'])){
+							$stringList .= "''|";
+						}else $stringList .= $socio['telefax']."|";
+
+						//"telefijo"
+						if (is_null($socio['telefono']) || $socio['telefono'] == "" || !ctype_digit($socio['telefono'])){
+							$stringList .= "''|";
+						}else $stringList .= $socio['telefono']."|";
 
 						//"rut","C",12,0
 						if($socio['rut']>0) $stringList .= $socio['rut']."|";
@@ -106,27 +114,36 @@ class ctr_usuarios{
 
 						//"cant","N",2,0
 						$cantMascotas = "''";
+						$nomMascotas = "";
 						$cuota = "0";
 						$responseGetCantMascotas = ctr_mascotas::getSocioActivePets($socio['idSocio']);
 						if($responseGetCantMascotas->result == 2){
 							$cantMascotas = sizeof($responseGetCantMascotas->mascotas);
 
 							//calcular el importe,
-						/**
-						 * calcular importe de cada cliente
-						 * 0 cliente - $0
-							1 socio fa $...
-							2 ong - $0
-							3 ex socio fa fb $0
+							/**
+							 * calcular importe de cada cliente
+							 * 0 cliente - $0
+								1 socio fa $...
+								2 ong - $0
+								3 ex socio fa fb $0
 
-							0 inactivo $0
-							1 activo $...
-						 */
+								0 inactivo $0
+								1 activo $...
+							 */
 							if ( $socio['estado'] == 1 && $socio['tipo'] == 1 ){
 								$responseCalculateQuota = configuracionSistema::getQuotaSocio(sizeof($responseGetCantMascotas->mascotas), $socio['tipo']);
 								if($responseCalculateQuota->result == 2)
 									$cuota = $responseCalculateQuota->quota;
 							}else $cuota = 0;
+
+							foreach ($responseGetCantMascotas->mascotas as $value) {
+								if ( is_null($value['fechaFallecimiento']) || $value['fechaFallecimiento'] == "" ){
+									if ( strlen($nomMascotas) > 0 ){
+										$nomMascotas .= ",".$value['nombre'];
+									}else $nomMascotas .= $value['nombre'];
+								}
+							}
 						}
 
 						$stringList .= $cantMascotas . "|";
@@ -144,12 +161,11 @@ class ctr_usuarios{
 							$stringList .= "Veterinaria|";
 
 
-						//"prox_vacu","C",11,0
-						$stringList .= "''|";
-
-
+						//concatenar nombres de las mascotas
 						//"mascota","C",20,0
-						$stringList .= "''|";
+						if ( strlen($nomMascotas) > 0 ){
+							$stringList .= $nomMascotas . "|";
+						}else $stringList .= "''|";
 
 						//"fec_ingr","C",8,0
 						if(is_null($socio['fechaIngreso'])) $stringList .= "''|";
