@@ -224,17 +224,17 @@ class ctr_usuarios{
 
 
 								$direccion = null;
-								$telefono = null;
+								$telefax = null;
 								$fechaPago = null;
 								$email = null;
 
 								//no importa si no está definido el dato en la consulta
 								if (isset($data['direccion']) && $data['direccion'] != "") $direccion = $data['direccion'];
-								if (isset($data['telefono']) && $data['telefono'] != "") $telefono = $data['telefono'];
+								if (isset($data['telefono']) && $data['telefono'] != "") $telefax = $data['telefono'];
 								if (isset($data['fechapago']) && $data['fechapago'] != "") $fechaPago = $data['fechapago'];
 								if (isset($data['email'])  && $data['email'] != "") $email = $data['email'];
 
-								$telefax = null;
+								$telefono = null;
 								$fechaIngreso = null;
 								$tipoSocio = 0;
 
