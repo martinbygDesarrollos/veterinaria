@@ -36,11 +36,11 @@ function insertarNuevoSocio(){
 							$('#modalButtonNewSocio').click(function(){
 								window.location.href = getSiteURL() + "nueva-mascota/" + response.newIdSocio;
 							});
-						}else showReplyMessage(response.result, response.message, "Agregar socio", null);
-					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido.", "Email incorrecto", "modalUpdateSocio");
-			}else showReplyMessage(1, "Debe ingresar el nombre del socio para agregarlo", "Nombre requerido", "modalUpdateSocio");
-		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cédula incorrecta", "modalUpdateSocio");
-	}else showReplyMessage(1, "Debe ingresar la cédula del socio para poder agregarlo.", "Cédula requerida", "modalUpdateSocio");
+						}else showReplyMessage(response.result, response.message, "Cliente", null);
+					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido.", "Cliente", "modalUpdateSocio");
+			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para agregarlo", "Cliente", "modalUpdateSocio");
+		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");
+	}else showReplyMessage(1, "Debe ingresar la cédula del cliente para poder agregarlo.", "Cliente", "modalUpdateSocio");
 }
 
 

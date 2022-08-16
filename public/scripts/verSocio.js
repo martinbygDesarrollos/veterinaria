@@ -78,15 +78,15 @@ function createHistorialSocio(idSocio){
 				observaciones: observaciones
 			};
 			let response = sendPost('crearHistorialSocio', data);
-			showReplyMessage(response.result, response.message, "Agregar historia", "modalHistorialSocio");
+			showReplyMessage(response.result, response.message, "Cliente", "modalHistorialSocio");
 			if(response.result == 2){
 				let newRow = response.newHistorial;
 				let row = createRowHistorial(newRow.idHistorialSocio, newRow.idSocio, newRow.idMascota, newRow.mascota, newRow.fechaEmision, newRow.asunto, newRow.importe, newRow.fecha, newRow.observaciones);
 				$('#tbodyHistorialSocio').prepend(row);
 				clearModalHistorial();
 			}
-		}else showReplyMessage(1, "Debe ingresar un asunto para crear un registro en el historial", "Asunto requerido", "modalHistorialSocio");
-	}else showReplyMessage(1, "Debe ingresar una fecha para crear un registro en el historial", "Fecha requeridda", "modalHistorialSocio");
+		}else showReplyMessage(1, "Debe ingresar un asunto para crear un registro en el historial", "Cliente", "modalHistorialSocio");
+	}else showReplyMessage(1, "Debe ingresar una fecha para crear un registro en el historial", "Cliente", "modalHistorialSocio");
 
 }
 
@@ -96,12 +96,12 @@ function openModalUpdateSocio(btnShowModal){
 	if(response.result == 2){
 		setValues("Modal", response.socio);
 		$('#modalUpdateSocio').modal();
-	}else showReplyMessage(response.result, response.message, "Obtener socio", null);
+	}else showReplyMessage(response.result, response.message, "Cliente", null);
 }
 
 function calculateQuotaSocio(idSocio){
 	let response = sendPost("actualizarCuotaSocio", {idSocio: idSocio});
-	showReplyMessage(response.result, response.message, "Actualizar cuota", null);
+	showReplyMessage(response.result, response.message, "Cliente", null);
 	if(response.result != 0)
 		$('#inputCuota').val(response.newQuota);
 }
@@ -144,7 +144,7 @@ function asignarMascota(buttonAsignar){
 	let idMascota = buttonAsignar.name;
 
 	let response = sendPost("asignarMascotaSocio", {idSocio: idSocio, idMascota: idMascota});
-	showReplyMessage(response.result, response.message, "Asignar mascota", "modalSetNewMascota");
+	showReplyMessage(response.result, response.message, "Cliente", "modalSetNewMascota");
 	if(response.result != 0){
 		$('#trM' +  idMascota).remove();
 		let newMascota = response.newMascota;
@@ -180,7 +180,7 @@ function verMascota(idMascota){
 
 function desvincularMascota(idMascota){
 	let response = sendPost("desvincularMascota", {idMascota: idMascota});
-	showReplyMessage(response.result, response.message, "Desvincular mascota", null);
+	showReplyMessage(response.result, response.message, "Cliente", null);
 	if(response.result != 0){
 		$('#inputCuota').val(response.newQuota);
 		$('#trM2' + idMascota).remove();
@@ -232,13 +232,13 @@ function saveChangeSocio(buttonConfirm){
 						if(response.result == 2)
 							window.location.reload();
 						else
-							showReplyMessage(response.result, response.message, "Modificar socio", "modalUpdateSocio");
+							showReplyMessage(response.result, response.message, "Cliente", "modalUpdateSocio");
 						//setValues("", response.newSocio);
-					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido.", "Email incorrecto", "modalUpdateSocio");
-				}else showReplyMessage(1, "El nombre del socio debe tener al menos 6 caracteres para ser considerado valido.", "Nombre incorrecto", "modalUpdateSocio");
-			}else showReplyMessage(1, "Debe ingresar el nombre del socio para modificarlo", "Nombre requerido", "modalUpdateSocio");
-		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cédula incorrecta", "modalUpdateSocio");
-	}else showReplyMessage(1, "Debe ingresar la cédula del socio para poder modificarlo.", "Cédula requerida", "modalUpdateSocio");
+					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
+				}else showReplyMessage(1, "Debe ingresar el nombre del cliente", "Cliente", "modalUpdateSocio");
+			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para modificarlo", "Cliente", "modalUpdateSocio");
+		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");
+	}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cédula requerida", "modalUpdateSocio");
 }
 
 function setValues(inputFrom, socio){
@@ -296,11 +296,11 @@ function openModalChangeState(idSocio){
 	let responseGetSocio = sendPost("getSocio", {idSocio: idSocio});
 	if(responseGetSocio.result == 2){
 		if(responseGetSocio.socio.estado == 1){
-			$('#tittleModalState').html("Desactivar socio");
-			$('#messageModalState').html("¿Desea desactivar el socio seleccionado?<br>Esta operación desactivara todas las mascotas del socio y dejara su cuota en 0");
+			$('#tittleModalState').html("Desactivar cliente");
+			$('#messageModalState').html("¿Desea desactivar el cliente seleccionado?<br>Esta operación desactivara todas las mascotas del cliente y dejara su cuota en 0");
 		}else{
-			$('#tittleModalState').html("Activar socio");
-			$('#messageModalState').html("¿Desea activar el socio seleccionado?");
+			$('#tittleModalState').html("Activar cliente");
+			$('#messageModalState').html("¿Desea activar el cliente seleccionado?");
 		}
 		$('#buttonModalState').off('click');
 		$('#buttonModalState').click(function(){
@@ -311,9 +311,9 @@ function openModalChangeState(idSocio){
 }
 
 function activarDesactivarSocio(idSocio, estado){
-	let nuevoEstado = "Activar socio";
+	let nuevoEstado = "Activar cliente";
 	if(estado == 1)
-		nuevoEstado = "Desactivar socio";
+		nuevoEstado = "Desactivar cliente";
 
 	let response = sendPost("activarDesactivarSocio", {idSocio: idSocio});
 	showReplyMessage(response.result, response.message, nuevoEstado, "modalChangeState");

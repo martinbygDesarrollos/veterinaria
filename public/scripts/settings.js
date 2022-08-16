@@ -9,17 +9,17 @@ function fijarCostoCuota(){
 			if(cuotaExtra){
 				if(plazoDeuda){
 					let response = sendPost('updateAllQuotaSocio', {cuotaUno: cuotaUno, cuotaDos: cuotaDos, cuotaExtra: cuotaExtra, plazoDeuda: plazoDeuda});
-					showReplyMessage(response.result, response.message, "Modificar cuota", null);
+					showReplyMessage(response.result, response.message, "Cuota", null);
 					if(response.result == 2){
 						$("#inputCuotaUno").val(response.quota.cuotaUno);
 						$("#inputCuotaDos").val(response.quota.cuotaDos);
 						$("#inputCuotaExtra").val(response.quota.cuotaExtra);
 						$('#inputPlazoDeuda').val(response.quota.plazoDeuda);
 					}
-				}else showReplyMessage(1, "Debe ingresar el plazo para desactivar el socio para modificar los estados de los socios.", "Plazo deuda requerido", null);
-			}else showReplyMessage(1, "Debe ingresar el monto extra por mascota para modificar las cuotas de los socios.", "Cuota extra requerida", null);
-		}else showReplyMessage(1, "Debe ingresar el monto por dos mascotas para modificar las cuotas de los socios.", "Cuota dos requerida", null);
-	}else showReplyMessage(1, "Debe ingresar el monto por una mascota para modificar las cuotas de los socios.", "Cuota uno requerida", null);
+				}else showReplyMessage(1, "Debe ingresar el plazo para desactivar el cliente para modificar los estados de los clientes.", "Cuota", null);
+			}else showReplyMessage(1, "Debe ingresar el monto extra por mascota para modificar las cuotas de los clientes.", "Cuota", null);
+		}else showReplyMessage(1, "Debe ingresar el monto por dos mascotas para modificar las cuotas de los clientes.", "Cuota", null);
+	}else showReplyMessage(1, "Debe ingresar el monto por una mascota para modificar las cuotas de los clientes.", "Cuota", null);
 }
 
 function selectUsuarioModificar(idUsuario, nombre, email){
@@ -58,13 +58,13 @@ function crearUsuario(){
 
 	if(usuario){
 		let response = sendPost("crearUsuario", {usuario: usuario, correo: correo});
-		showReplyMessage(response.result, response.message, "Crear usuario", null);
+		showReplyMessage(response.result, response.message, "Usuarios", null);
 		if(response.result == 2){
 			let row = createRow(response.newUser.idUsuario, response.newUser.nombre, response.newUser.email);
 			$('#tbodyUsers').append(row);
 			clearForm();
 		}
-	}else showReplyMessage(1, "El usuario no puede ser ingresado con el nombre vacio", "Usuario requerido", null);
+	}else showReplyMessage(1, "El usuario no puede ser ingresado con el nombre vacio", "Usuarios", null);
 }
 
 function modificarUsuario(idUsuario){
@@ -74,29 +74,29 @@ function modificarUsuario(idUsuario){
 	if(usuario){
 		if(correo){
 			if(!validateEmail(correo)){
-				showReplyMessage(1, "En caso de ingresar un correo, este debe ser valido.", "Correo no valido", null);
+				showReplyMessage(1, "En caso de ingresar un correo, este debe ser valido.", "Usuarios", null);
 				return;
 			}
 		}
 		let response = sendPost("modificarUsuario", {idUsuario: idUsuario, usuario: usuario, correo: correo});
-		showReplyMessage(response.result, response.message, "Modificar usuario", null);
+		showReplyMessage(response.result, response.message, "Usuarios", null);
 		if(response.result == 2){
 			$('#' + idUsuario).replaceWith(createRow(response.user.idUsuario, response.user.nombre, response.user.email));
 			clearForm();
 		}
-	}else showReplyMessage(1, "El usuario no puede ser modificado con el nombre de usuario vacio", "Usuario requerido", null);
+	}else showReplyMessage(1, "El usuario no puede ser modificado con el nombre de usuario vacio", "Usuarios", null);
 }
 
 function deleteUser(idUser){
 	let response = sendPost("deleteUser", {idUser: idUser});
-	showReplyMessage(response.result, response.message, "Borrar usuario", null);
+	showReplyMessage(response.result, response.message, "Usuarios", null);
 	if(response.result == 2)
 		$('#' + idUser).remove();
 }
 
 function cleanPassword(idUser){
 	let response = sendPost('cleanPassword', {idUser: idUser});
-	showReplyMessage(response.result, response.message, "Borrar usuario", null);
+	showReplyMessage(response.result, response.message, "Usuarios", null);
 }
 
 function createRow(idUsuario, nombre, email){

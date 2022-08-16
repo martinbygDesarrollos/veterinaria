@@ -19,7 +19,7 @@ $("#formConfirmFileAnalisisMasc").submit(function(e) {
 		    .then(function(response){
 		        if ( response.result != 2 ){
 		        	$("#modalLoadResultsOrder").modal("hide");
-		        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
+		        	showReplyMessage(response.result, response.message, "Análisis", null, true);
 		        }else{
 		        	$("#modalLoadResultsOrder").modal("hide");
 		        	window.location.reload();
@@ -101,14 +101,14 @@ function crearAnalisis(idMascota){
 			};
 
 			let response = sendPost("insertAnalisis", data);
-			showReplyMessage(response.result, response.message, "Agregar análisis", "modalAnalisis");
+			showReplyMessage(response.result, response.message, "Análisis", "modalAnalisis");
 			if(response.result == 2){
 				idLastAnalisis = response.newAnalisis.idAnalisis;
 				let analisis = response.newAnalisis;
 				$('#tbodyAnalisis').prepend(createRowAnalsis(analisis.idAnalisis, analisis.nombre, analisis.fecha,analisis.detalle, analisis.resultado));
 			}
-		}else showReplyMessage(1, "Debe ingresar la fecha del análisis que desea ingresar", "Fecha requerida", "modalAnalisis");
-	}else showReplyMessage(1, "Debe ingresar el nombre del análisis que desea ingresar", "Nombre requerido", "modalAnalisis");
+		}else showReplyMessage(1, "Debe ingresar la fecha del análisis que desea ingresar", "Análisis", "modalAnalisis");
+	}else showReplyMessage(1, "Debe ingresar el nombre del análisis que desea ingresar", "Análisis", "modalAnalisis");
 }
 
 function modificarAnalisis(idAnalisis){
@@ -130,14 +130,14 @@ function modificarAnalisis(idAnalisis){
 				};
 				let response = sendPost("updateAnalisis", data);
 				console.log(response)
-				showReplyMessage(response.result, response.message, "Modificar análisis", "modalAnalisis");
+				showReplyMessage(response.result, response.message, "Análisis", "modalAnalisis");
 				if(response.result == 2){
 					let analisis = response.newAnalisis;
 					$('#trA' + idAnalisis).replaceWith(createRowAnalsis(analisis.idAnalisis, analisis.nombre, analisis.fecha,analisis.detalle, analisis.resultado));
 				}
-			}else showReplyMessage(1, "Debe ingresar el detalle del análisis que desea ingresar", "Detalle requerido", "modalAnalisis");
-		}else showReplyMessage(1, "Debe ingresar la fecha del análisis que desea ingresar", "Fecha requerida", "modalAnalisis");
-	}else showReplyMessage(1, "Debe ingresar el nombre del análisis que desea ingresar", "Nombre requerido", "modalAnalisis");
+			}else showReplyMessage(1, "Debe ingresar el detalle del análisis que desea ingresar", "Análisis", "modalAnalisis");
+		}else showReplyMessage(1, "Debe ingresar la fecha del análisis que desea ingresar", "Análisis", "modalAnalisis");
+	}else showReplyMessage(1, "Debe ingresar el nombre del análisis que desea ingresar", "Análisis", "modalAnalisis");
 }
 
 function createRowAnalsis(idAnalisis, nombre, fecha, detalle, resultado){
@@ -212,7 +212,7 @@ function openModalBorrarAnalisis(idAnalisis){
 
 function borrarAnalisis(idAnalisis){
 	let response = sendPost("deleteAnalisis", {idAnalisis: idAnalisis});
-	showReplyMessage(response.result, response.message, "Borrar análisis", "modalBorrar");
+	showReplyMessage(response.result, response.message, "Análisis", "modalBorrar");
 	if(response.result == 2)
 		$('#trA' + idAnalisis).remove();
 }

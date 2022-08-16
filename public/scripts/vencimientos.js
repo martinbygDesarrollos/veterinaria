@@ -53,7 +53,7 @@ function notificarSocioCuota(idSocio, email){
 	console.log(email);
 	$('#modalButtonResponse').attr("disable", false);
 	$('#modalButtonResponse').attr("hidden", false);
-	showReplyMessage(1, "Confirma enviar correo a "+email, "Notificar socio", null);
+	showReplyMessage(1, "Confirma enviar correo a "+email, "Cliente", null);
 
 	$('#modalButtonResponse').off('click');
 	$('#modalButtonResponse').click(function(){
@@ -64,7 +64,7 @@ function notificarSocioCuota(idSocio, email){
 		.then((response)=>{
 			$('#modalButtonResponse').attr("disable", false);
 			$('#modalButtonResponse').attr("hidden", false);
-			showReplyMessage(response.result, response.message, "Notificar socio", null);
+			showReplyMessage(response.result, response.message, "Cliente", null);
 		})
 	})
 }
@@ -130,13 +130,10 @@ function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosi
 }
 
 function notificarVacunaMascota(idMascota, email){
-	/*let response = sendPost("notificarVacunaMascota", {idMascota: idMascota});
-	console.log(response);
-	showReplyMessage(response.result, response.message, "Notificar vacuna", null);*/
 	$('#modalButtonResponse').attr("disable", false);
 	$('#modalButtonResponse').attr("hidden", false);
 	console.log(email);
-	showReplyMessage(1, "Confirma enviar correo a "+email, "Notificar vacuna", null);
+	showReplyMessage(1, "Confirma enviar correo a "+email, "Vacuna/medicamento", null);
 
 	$('#modalButtonResponse').off('click');
 	$('#modalButtonResponse').click(function(){
@@ -147,7 +144,7 @@ function notificarVacunaMascota(idMascota, email){
 		.then((response)=>{
 			$('#modalButtonResponse').attr("disable", false);
 			$('#modalButtonResponse').attr("hidden", false);
-			showReplyMessage(response.result, response.message, "Notificar vacuna", null);
+			showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
 		})
 	})
 }

@@ -15,7 +15,7 @@ $("#formConfirmFileHistory").submit(function(e) {
 		    .then(function(response){
 		        if ( response.result != 2 ){
 		        	$("#modalLoadResultsOrder").modal("hide");
-		        	showReplyMessage(response.result, response.message, "Orden de trabajo", null, true);
+		        	showReplyMessage(response.result, response.message, "Historia clínica", null, true);
 		        }else{
 		        	$("#modalLoadResultsOrder").modal("hide");
 		        	window.location.reload();
@@ -90,7 +90,7 @@ function openModalBorrarHistoria(idHistoriaClinica){
 
 function borrarHistoriaClinica(idHistoriaClinica){
 	let response = sendPost("borrarHistoriaClinica", {idHistoriaClinica: idHistoriaClinica});
-	showReplyMessage(response.result, response.message, "Borrar hisotira clínica", "modalBorrar");
+	showReplyMessage(response.result, response.message, "Historia clínica", "modalBorrar");
 	if(response.result == 2)
 		$('#trH' + idHistoriaClinica).remove();
 }
@@ -182,7 +182,7 @@ function crearHistoriaClinica(idMascota){
 		tllc: tllc
 	};
 	let response = sendPost("agregarHistoriaClinica", data);
-	showReplyMessage(response.result, response.message, "Agregar historia clínica", "modalHistoriaClinica");
+	showReplyMessage(response.result, response.message, "Historia clínica", "modalHistoriaClinica");
 	if(response.result == 2){
 		idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
 		let newHistoria = response.newHistoria;
@@ -214,7 +214,7 @@ function modificarHistoriaClinica(idHistoriaClinica){
 		tllc: tllc
 	};
 	let response = sendPost("modificarHistoriaClinica", data);
-	showReplyMessage(response.result, response.message, "Modificar historia clínica", "modalHistoriaClinica");
+	showReplyMessage(response.result, response.message, "Historia clínica", "modalHistoriaClinica");
 	if(response.result == 2){
 		let updatedHistoria = response.updatedHistoria;
 		$('#trH' + idHistoriaClinica).replaceWith(createRowHistorial(updatedHistoria));
@@ -350,12 +350,12 @@ function modificarMascota(idMascota){
 					observaciones: observaciones
 				}
 				let response = sendPost("modificarMascota", data);
-				showReplyMessage(response.result, response.message, "Modificar mascota", "modalModificarMascota");
+				showReplyMessage(response.result, response.message, "Mascota", "modalModificarMascota");
 				if(response.result == 2)
 					updateInformacionMascota("", response.updatedMascota);
-			}else showReplyMessage(1, "Debe ingresar el nombre de la mascota para modificarla.", "Nombre requerido", "modalModificarMascota");
-		}else showReplyMessage(1, "Debe ingresar la especie de la mascota para modificarla.", "Especie requerida", "modalModificarMascota");
-	}else showReplyMessage(1, "Debe ingresar la raza de la mascota para modificarla.", "Raza requerida", "modalModificarMascota");
+			}else showReplyMessage(1, "Debe ingresar el nombre de la mascota para modificarla.", "Mascota", "modalModificarMascota");
+		}else showReplyMessage(1, "Debe ingresar la especie de la mascota para modificarla.", "Mascota", "modalModificarMascota");
+	}else showReplyMessage(1, "Debe ingresar la raza de la mascota para modificarla.", "Mascota", "modalModificarMascota");
 }
 
 function updateInformacionMascota(inputFrom, mascota){

@@ -28,12 +28,12 @@ function vincularSocioMascota(idSocio, idMascota){
 			console.log("response SUCCESS: ", response);
 
 			if(response.retorno){
-				showReplyMessage('success', response.mensaje, response.enHistorial, "Vincular socio");
+				showReplyMessage('success', response.mensaje, response.enHistorial, "Cliente");
 				$("#modalButtonRetorno").click(function(){
 					window.location.href = urlBase + "/mascotas";
 				});
 			}else{
-				showReplyMessage('danger', response.mensajeError, null,"Vincular socio");
+				showReplyMessage('danger', response.mensajeError, null,"Cliente");
 				$("#modalButtonRetorno").click(function(){
 					$("#modalRetorno").modal("hide");
 				});

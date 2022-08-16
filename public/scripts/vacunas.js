@@ -45,7 +45,7 @@ function createNewVacuna(idMascota){
 				let vacuna = response.newVacuna;
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 
-				showMessageConfirm(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
+				showMessageConfirm(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
 				$('#modalMessageConfirmBtnSi').off('click');
 				$('#modalMessageConfirmBtnSi').click(function(){
 					$('#modalMessageConfirmBtnSi').attr("disable", true);
@@ -95,10 +95,10 @@ function createNewVacuna(idMascota){
 				})
 			}else {
 				console.log( "al crear nueva vacuna de la mascota no se dio resultado 2", response );
-				showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
+				showReplyMessage(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
 			}
-		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");
-	}else showReplyMessage(1, "El nombre no puede ser ingresado vacio.", "Nombre requerido.", "modalVacuna");
+		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Vacuna/medicamento", "modalVacuna");
+	}else showReplyMessage(1, "El nombre no puede ser ingresado vacio.", "Vacuna/medicamento", "modalVacuna");
 }
 
 function createRowVacuna(idVacunaMascota, fechaProximaDosis, fechaUltimaDosis, nombreVacuna, observaciones, intervalo, numDosis, fechaPrimerDosis){
@@ -128,19 +128,19 @@ function modalAplicarDosis(idVacunaMascota){
 		$('#btnAplicarDosis').click(function(){
 			aplicarDosisVacuna(idVacunaMascota);
 		});
-	}else showReplyMessage(response.result, response.message, "Vacuna/medicamento no encontrado", null);
+	}else showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
 }
 
 function aplicarDosisVacuna(idVacunaMascota){
 	let dateDosis = $('#inputDateAplicarDosis').val() || null;
 	if(dateDosis){
 		let response = sendPost("aplicarDosisVacuna", {idVacunaMascota: idVacunaMascota, dateDosis: dateDosis});
-		showReplyMessage(response.result, response.message, "Aplicar dosis", "modalAplicarDosis");
+		showReplyMessage(response.result, response.message, "Vacuna/medicamento", "modalAplicarDosis");
 		if(response.result != 0){
 			let vacuna = response.updatedVacuna;
 			$('#trV' + vacuna.idVacunaMascota).replaceWith(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 		}
-	}else showReplyMessage(1, "Debe ingresar una fecha válida.", "Fecha requerida", "modalAplicarDosis");
+	}else showReplyMessage(1, "Debe ingresar una fecha válida.", "Vacuna/medicamento", "modalAplicarDosis");
 }
 
 
@@ -194,13 +194,13 @@ function updateVacunaMascota(idVacunaMascota){
 				observaciones: observaciones
 			};
 			let response = sendPost("updateVacunaMascota", data);
-			showReplyMessage(response.result, response.message, "Modificar", "modalVacuna");
+			showReplyMessage(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
 			if(response.result == 2){
 				let vacuna = response.updatedVacuna;
 				$('#trV' + vacuna.idVacunaMascota).replaceWith(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 			}
-		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Fecha primer dosis requerida", "modalVacuna");
-	}else showReplyMessage(1, "El nombre no puede ser ingresado vacio.", "Nombre requerido.", "modalVacuna");
+		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Vacuna/medicamento", "modalVacuna");
+	}else showReplyMessage(1, "El nombre no puede ser ingresado vacio.", "Vacuna/medicamento", "modalVacuna");
 }
 
 function changeStateMascota(inputCheck){
@@ -234,7 +234,7 @@ function openModalBorrarVacuna(idVacunaMascota){
 function removeVacunaMascota(idVacunaMascota){
 
 	let response = sendPost("borrarVacunaMascota", {idVacunaMascota: idVacunaMascota});
-	showReplyMessage(response.result, response.message, "Borrar vacuna", "modalBorrar");
+	showReplyMessage(response.result, response.message, "Vacuna/medicamento", "modalBorrar");
 	if(response.result == 2)
 		$('#trV' + idVacunaMascota).remove();
 }

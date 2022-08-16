@@ -40,13 +40,13 @@ function createNewEnfermedad(idMascota){
 	if(nombre){
 		if(fechaDiagnostico){
 			let response = sendPost("insertEnfermedadMascota", {idMascota: idMascota, nombre: nombre, fechaDiagnostico: fechaDiagnostico, observaciones: observaciones});
-			showReplyMessage(response.result, response.message, "Agregar enfermedad", "modalEnfermedad");
+			showReplyMessage(response.result, response.message, "Enfermedad", "modalEnfermedad");
 			if(response.result != 0){
 				let enf = response.newEnfermedad;
 				$('#tbodyEnfermedades').prepend(createRowEnfermedad(enf.idEnfermedad, enf.nombreEnfermedad, enf.fechaDiagnostico, enf.observaciones));
 			}
-		}else showReplyMessage(1, "Debe ingresar una fecha de diagnositico para la enfermedad", "Fecha diagnositico requerida", "modalEnfermedad");
-	}else showReplyMessage(1, "Debe ingresar un nombre para la enfermedad", "Nombre requerido", "modalEnfermedad");
+		}else showReplyMessage(1, "Debe ingresar una fecha de diagnositico para la enfermedad", "Enfermedad", "modalEnfermedad");
+	}else showReplyMessage(1, "Debe ingresar un nombre para la enfermedad", "Enfermedad", "modalEnfermedad");
 }
 
 function updateEnfermedad(idEnfermedad){
@@ -57,13 +57,13 @@ function updateEnfermedad(idEnfermedad){
 	if(nombre){
 		if(fechaDiagnostico){
 			let response = sendPost("updateEnfermedad", {idEnfermedad: idEnfermedad, nombre: nombre, fechaDiagnostico: fechaDiagnostico, observaciones: observaciones});
-			showReplyMessage(response.result, response.message, "Modificar enfermedad", "modalEnfermedad");
+			showReplyMessage(response.result, response.message, "Enfermedad", "modalEnfermedad");
 			if(response.result != 0){
 				let enf = response.updatedEnfermedad;
 				$('#trE' + idEnfermedad).replaceWith(createRowEnfermedad(enf.idEnfermedad, enf.nombreEnfermedad, enf.fechaDiagnostico, enf.observaciones));
 			}
-		}else showReplyMessage(1, "Debe ingresar una fecha de diagnositico para la enfermedad", "Fecha diagnositico requerida", "modalEnfermedad");
-	}else showReplyMessage(1, "Debe ingresar un nombre para la enfermedad", "Nombre requerido", "modalEnfermedad");
+		}else showReplyMessage(1, "Debe ingresar una fecha de diagnositico para la enfermedad", "Enfermedad", "modalEnfermedad");
+	}else showReplyMessage(1, "Debe ingresar un nombre para la enfermedad", "Enfermedad", "modalEnfermedad");
 }
 
 function createRowEnfermedad(idEnfermedad, nombre, fechaDiagnostico, observaciones){
@@ -93,7 +93,7 @@ function openModalBorrarEnfermedad(idEnfermedad){
 
 function borrarEnfermedad(idEnfermedad){
 	let response = sendPost("deleteEnfermedad", {idEnfermedad: idEnfermedad});
-	showReplyMessage(response.result, response.message, "Borrar enfermedad", "modalBorrarEnfermedad");
+	showReplyMessage(response.result, response.message, "Enfermedad", "modalBorrarEnfermedad");
 	if(response.result == 2)
 		$('#trE'+ idEnfermedad).remove();
 }
