@@ -291,6 +291,10 @@ class socios{
 	}
 
 	public function insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
+
+		if ($cedula == "")
+			$cedula = null;
+
 		return DataBase::sendQuery("INSERT INTO socios (nombre, cedula, direccion, telefono, fechaPago, lugarPago, telefax, fechaIngreso, email, rut, tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('ssssiisissi', $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio), "BOOLE");
 	}
 
@@ -369,5 +373,14 @@ class socios{
 	public function searchClientByName($value){
 		$dataBaseCLass = new DataBase();
 		return $dataBaseCLass->sendQuery("SELECT idSocio, nombre FROM `socios` WHERE `nombre` LIKE '%".$value."%' ORDER BY `nombre` ASC LIMIT 5", array(), "LIST");
+	}
+
+	public function searchClientByNameAndRut($name, $rut){
+		$dataBaseCLass = new DataBase();
+		$response = $dataBaseCLass->sendQuery("SELECT * FROM `socios` WHERE `nombre` = ? AND `rut` = ?", array('ss', $name, $rut), "OBJECT");
+		if($response->result == 1)
+			$response->message = "La cédula ingresada no corresponse a un socio en el sistema.";
+
+		return $response;
 	}
 }

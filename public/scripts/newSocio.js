@@ -11,36 +11,36 @@ function insertarNuevoSocio(){
 	let tipoSocio = $('#inputTipoSocio').val() || null;
 	let fechaIngreso = $('#inputFechaIngresoSocio').val() || null;
 
-	if(cedula){
-		if(validateCI(cedula)){
+	if( cedula || rut ){
+		if(validateCI(cedula) || !cedula){
 			if(nombre){
-					if(!email || validateEmail(email)){
-						let data = {
-							cedula: cedula,
-							nombre: nombre,
-							direccion: direccion,
-							telefono: telefono,
-							fechaPago: fechaPago,
-							lugarPago: lugarPago,
-							fechaIngreso: fechaIngreso,
-							rut: rut,
-							telefax: telefax,
-							tipo: tipoSocio,
-							email: email
-						};
+				if(!email || validateEmail(email)){
+					let data = {
+						cedula: cedula,
+						nombre: nombre,
+						direccion: direccion,
+						telefono: telefono,
+						fechaPago: fechaPago,
+						lugarPago: lugarPago,
+						fechaIngreso: fechaIngreso,
+						rut: rut,
+						telefax: telefax,
+						tipo: tipoSocio,
+						email: email
+					};
 
-						let response = sendPost("insertNewSocio", data);
-						if(response.result == 2){
-							$('#modalResultNewSocio').modal();
-							$('#modalResultNewSocio').modal();
-							$('#modalButtonNewSocio').click(function(){
-								window.location.href = getSiteURL() + "nueva-mascota/" + response.newIdSocio;
-							});
-						}else showReplyMessage(response.result, response.message, "Cliente", null);
-					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido.", "Cliente", "modalUpdateSocio");
+					let response = sendPost("insertNewSocio", data);
+					if(response.result == 2){
+						$('#modalResultNewSocio').modal();
+						$('#modalResultNewSocio').modal();
+						$('#modalButtonNewSocio').click(function(){
+							window.location.href = getSiteURL() + "nueva-mascota/" + response.newIdSocio;
+						});
+					}else showReplyMessage(response.result, response.message, "Cliente", null);
+				}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para agregarlo", "Cliente", "modalUpdateSocio");
 		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");
-	}else showReplyMessage(1, "Debe ingresar la cédula del cliente para poder agregarlo.", "Cliente", "modalUpdateSocio");
+	}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
 }
 
 

@@ -767,48 +767,60 @@ class ctr_usuarios{
 
 	public function insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
 		$response = new \stdClass();
+		$clientClass = new socios();
 
 		$responseValidateData = ctr_usuarios::validateInfoSocio($nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax);
 		if($responseValidateData->result == 2){
 			$responseGetSocio = socios::getSocioByCedula($cedula);
 			if($responseGetSocio->result == 1){
-				if (strlen($direccion)<=0)
-					$direccion  = null;
+				$responseGetClientRut = $clientClass->searchClientByNameAndRut($nombre, $rut);
+				if ( $responseGetClientRut->result == 1 ){
 
-				if (strlen($telefono)<=0)
-					$telefono  = null;
+					if (strlen($direccion)<=0)
+						$direccion  = null;
 
-				if (strlen($telefax)<=0)
-					$telefax  = null;
+					if (strlen($telefono)<=0)
+						$telefono  = null;
 
-				if (strlen($email)<=0)
-					$email  = null;
+					if (strlen($telefax)<=0)
+						$telefax  = null;
 
-				if (strlen($rut)<=0)
-					$rut = null;
+					if (strlen($email)<=0)
+						$email  = null;
+
+					if (strlen($rut)<=0)
+						$rut = null;
 
 
-				/*if(!is_null($fechaIngreso))
-					$fechaIngreso = fechas::getDateToINT($fechaIngreso);*/
-				if ( $tipoSocio != 1 ){
-					$fechaIngreso = null;
-				}else $fechaIngreso = date("Ymd");
+					/*if(!is_null($fechaIngreso))
+						$fechaIngreso = fechas::getDateToINT($fechaIngreso);*/
+					if ( $tipoSocio != 1 ){
+						$fechaIngreso = null;
+					}else $fechaIngreso = date("Ymd");
 
-				if(!is_null($fechaPago))
-					$fechaPago = fechas::getDateToINT($fechaPago);
+					if(!is_null($fechaPago))
+						$fechaPago = fechas::getDateToINT($fechaPago);
 
-				$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
-				if($responseInsertSocio->result == 2){
-					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", $responseInsertSocio->id, null, "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
-					if($responseInsertHistorial->result == 2){
-						$response->result = 2;
-						$response->message = "Socio creado correctamente.";
-					}else{
-						$response->result = 1;
-						$response->message = "Socio creado correctamente.";
-					}
-					$response->newIdSocio = $responseInsertSocio->id;
-				}else return $responseInsertSocio;
+
+
+					$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+					if($responseInsertSocio->result == 2){
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", $responseInsertSocio->id, null, "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
+						if($responseInsertHistorial->result == 2){
+							$response->result = 2;
+							$response->message = "Socio creado correctamente.";
+						}else{
+							$response->result = 1;
+							$response->message = "Socio creado correctamente.";
+						}
+						$response->newIdSocio = $responseInsertSocio->id;
+					}else return $responseInsertSocio;
+
+				}else {
+					$response->result = 0;
+					$response->message = "El RUT ". $rut ." y nombre ".$nombre." ingresados corresponden al socio con identificador".$responseGetClientRut->objectResult->idSocio;
+
+				}
 			}else{
 				$response->result = 0;
 				$response->message = "La cédula ingresada corresponde al socio ".$responseGetSocio->objectResult->idSocio." - " . $responseGetSocio->objectResult->nombre;

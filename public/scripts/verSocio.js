@@ -204,41 +204,36 @@ function saveChangeSocio(buttonConfirm){
 	let telefax = $('#inputModalTelefax').val() || null;
 	let email = $('#inputModalEmail').val() || null;
 
-	if(cedula){
-		if(validateCI(cedula)){
+	if( cedula || rut ){
+		if(validateCI(cedula) || !cedula){
 			if(nombre){
-				if(nombre.length > 5){
-					if(!email || validateEmail(email)){
-						let data = {
-							idSocio: idSocio,
-							cedula: cedula,
-							nombre: nombre,
-							direccion: direccion,
-							telefono: telefono,
-							fechaPago: fechaPago,
-							ultimoPago: ultimoPago,
-							lugarPago: lugarPago,
-							ultimoMesPago: ultimoMesPago,
-							fechaIngreso: fechaIngreso,
-							fechaBajaSocio: fechaBajaSocio,
-							rut: rut,
-							telefax: telefax,
-							tipo: tipoSocio,
-							email: email
-						};
-						console.log("fecha baja antes de la ruta ",fechaBajaSocio);
-						let response = sendPost("updateSocio", data);
-						//showReplyMessage(response.result, response.message, "Modificar socio", "modalUpdateSocio");
-						if(response.result == 2)
-							window.location.reload();
-						else
-							showReplyMessage(response.result, response.message, "Cliente", "modalUpdateSocio");
-						//setValues("", response.newSocio);
-					}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
-				}else showReplyMessage(1, "Debe ingresar el nombre del cliente", "Cliente", "modalUpdateSocio");
+				if(!email || validateEmail(email)){
+					let data = {
+						idSocio: idSocio,
+						cedula: cedula,
+						nombre: nombre,
+						direccion: direccion,
+						telefono: telefono,
+						fechaPago: fechaPago,
+						ultimoPago: ultimoPago,
+						lugarPago: lugarPago,
+						ultimoMesPago: ultimoMesPago,
+						fechaIngreso: fechaIngreso,
+						fechaBajaSocio: fechaBajaSocio,
+						rut: rut,
+						telefax: telefax,
+						tipo: tipoSocio,
+						email: email
+					};
+					let response = sendPost("updateSocio", data);
+					if(response.result == 2)
+						window.location.reload();
+					else
+						showReplyMessage(response.result, response.message, "Cliente", "modalUpdateSocio");
+				}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para modificarlo", "Cliente", "modalUpdateSocio");
 		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");
-	}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cédula requerida", "modalUpdateSocio");
+	}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
 }
 
 function setValues(inputFrom, socio){
