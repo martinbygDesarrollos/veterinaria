@@ -1,6 +1,7 @@
 var widthBySize = 'style="width:20%"';
 var lastIndexLimit = 0;
 var trSelected = null; //elemento en el que se da click a la lupa
+var calendarCategory = null;
 
 $(document).ready(()=>{
 	var sizeHeight = window.innerHeight;
@@ -9,10 +10,16 @@ $(document).ready(()=>{
 	if ( sizeWidth <= 768 ){
 		widthBySize = '';
 	}
+
+	if(window.location.pathname.includes("cirugia")){
+		calendarCategory = "cirugia";
+	}else if (window.location.pathname.includes("peluqueria")){
+		calendarCategory = "peluqueria";
+	}
 });
 
 function getCirugiasByDay( day ){
-	sendAsyncPost("getEventCalendarByDay",{day:day})
+	sendAsyncPost("getEventCalendarByDay",{day:day, type:"cirugia"})
 	.then(( response )=>{
 		if ( response.result == 2 ){
 			if ( response.listResult.length > 0){
@@ -73,7 +80,7 @@ function createRow( obj ){
 
 
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
-	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" placeholder="Mascota"></td>';
 
 	//boton ver mascota
 	buttonVerMascota = "";
@@ -84,14 +91,23 @@ function createRow( obj ){
 
 	//row += '<td class="notShowMobile">'+buttonVerMascota+'</td></tr>';
 	row += '<td class="notShowMobile" style="">'+buttonVerSocio+'</td>';
-	row += '<td class="notShowMobile"><button class="btn btn-info" onclick="openModalSearchClientOrPet(this.parentElement.parentElement)" ><i class="fas fa-search"></i></button></td>';
+	row += '<td class="notShowMobile"><button class="btn btn-info" title="Buscar cliente o mascota" onclick="openModalSearchClientOrPet(this.parentElement.parentElement)" ><i class="fas fa-search"></i></button></td>';
 	row += '</tr>';
 
 	return row;
 }
 
 function saveEventInCalendar( tr ){
-	let day = $("#idInputTodayCalendar").val();
+
+	console.log(calendarCategory);
+	let day = null;
+	if ( calendarCategory == "cirugia" ){
+		day = $("#idInputTodayCalendar").val();
+	}else if ( calendarCategory == "peluqueria" ){
+		day = $("#idInputTodayPelu").val();
+	}
+
+
 	let hours = tr.getElementsByTagName("input")[0].value;
 	let event = tr.getElementsByTagName("input")[1].value;
 	let client = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
@@ -113,7 +129,7 @@ function saveEventInCalendar( tr ){
 			});
 		}else{
 			data = {"fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
-			sendAsyncPost("saveEventCalendarByDay",{event:data})
+			sendAsyncPost("saveEventCalendarByDay",{event:data, type:calendarCategory})
 			.then(( response )=>{
 				if ( response.result != 2 ){
 					showReplyMessage(response.result, response.message, "Agenda", null);
@@ -125,12 +141,22 @@ function saveEventInCalendar( tr ){
 }
 
 function clearTableEvents(){
-	$("#tbodyCirugiasCalendar").empty();
+
+	if ( calendarCategory == "cirugia" ){
+		$("#tbodyCirugiasCalendar").empty();
+	}else if ( calendarCategory == "peluqueria" ){
+		$("#tbodyPeluqueriasCalendar").empty();
+	}
 }
 
-function newRowCirugiaCalendar(){
+function newRowToCalendar(){
 	row = createCleanRow();
-	$("#tbodyCirugiasCalendar").append(row);
+
+	if ( calendarCategory == "cirugia" ){
+		$("#tbodyCirugiasCalendar").append(row);
+	}else if ( calendarCategory == "peluqueria" ){
+		$("#tbodyPeluqueriasCalendar").append(row);
+	}
 }
 
 function createCleanRow(){
@@ -139,48 +165,12 @@ function createCleanRow(){
 	row += '<td><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Motivo"></td>'
 	row += '<td  class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Cliente"></td>'
 	row += '<td><select class="form-select form-control shadow-sm notShowMobile" style="" disabled></select></td>'
-	row += '<td class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" list="dataListPetCalendar" placeholder="Mascota"><datalist id="dataListPetCalendar"></datalist></td>';
+	row += '<td class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Mascota"></td>';
 	row += '<td class="notShowMobile" style=""><a class="btn btn-info" target="_blank" title="Ver cliente" disabled >Cliente</a></td>';
 	row += '<td class="notShowMobile" style="" onclick="openModalSearchClientOrPet(this.parentElement)" ><i class="btn btn-info fas fa-search"></i></td></tr>';
 
 	return row;
 }
-
-function searchClientByName( valueCli, tr ){
-	/*if ( valueCli.length > 0 ){
-		$('#dataListClientsCalendar').empty();
-		sendAsyncPost("searchClientByName", {value: valueCli})
-		.then((response)=>{
-			console.log(response);
-			if( response.result == 2 ){
-				let list = response.listResult;
-				for (let i = 0; i < list.length; i++) {
-					let option = "<option>"+list[i].idSocio+" - "+list[i].nombre+"</option>";
-					$('#dataListClientsCalendar').append(option);
-				}
-			}
-		})
-	else{
-		//cleanSelectContactList(tr.id);
-		$('#dataListClientsCalendar').empty();
-	}*/
-}
-
-function searchPetClientByName( valuePet, tr ){
-	let client = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
-	$('#dataListPetCalendar').empty();
-	sendAsyncPost("searchPetClientByName", {value: valuePet, client:client})
-	.then((response)=>{
-		if( response.result == 2 ){
-			let list = response.listMascotas;
-			for (let i = 0; i < list.length; i++) {
-				let option = "<option>"+list[i].idMascota+" - "+list[i].nombre+"</option>";
-				$('#dataListPetCalendar').append(option);
-			}
-		}
-	})
-}
-
 
 function loadClientContactData( telefono, telefax, direccion, email ){
 
@@ -235,7 +225,7 @@ function openModalSearchClientOrPet( tr ){
 function searchDataClienstOrPet( value ){
 	if (value.length > 0 ){
 		//$("#modalSearchClientOrPet tbody").empty();
-		console.log("indice previo a consultar", lastIndexLimit);
+		//console.log("indice previo a consultar", lastIndexLimit);
 		sendAsyncPost("getClientOrPetByInput", {value: value, indexLimit: lastIndexLimit})
 		.then(( response )=>{
 			$("#modalSearchClientOrPet tbody").empty();
@@ -324,3 +314,41 @@ $('#modalSearchClientOrPet .tableCustomScroll').on('scroll', function() {
 	//console.log($('#modalSearchClientOrPet input').val());
 	searchDataClienstOrPet($('#modalSearchClientOrPet input').val());
 })
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+var widthBySize = 'style="width:20%"';
+var lastIndexLimit = 0;
+var trSelected = null; //elemento en el que se da click a la lupa*/
+
+function getPeluqueriasByDay( day ){
+	sendAsyncPost("getEventCalendarByDay",{day:day, type:"peluqueria"})
+	.then(( response )=>{
+		console.log(response);
+		if ( response.result == 2 ){
+			if ( response.listResult.length > 0){
+				clearTableEvents();
+
+				for (var i = 0; i < response.listResult.length; i++) {
+					if (!response.listResult[i].hora)
+						hora = "00:00"
+					else hora = response.listResult[i].hora;
+					row = createRow(response.listResult[i]);
+					$("#tbodyPeluqueriasCalendar").append(row);
+				}
+			}else {
+				clearTableEvents();
+			}
+		}else{
+			clearTableEvents();
+		}
+	})
+}
+
+
+function newRowPeluqueriasCalendar(){
+	row = createCleanRow();
+	$("#tbodyPeluqueriasCalendar").append(row);
+}

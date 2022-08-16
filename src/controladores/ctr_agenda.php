@@ -7,8 +7,7 @@ require_once '../src/controladores/ctr_mascotas.php';
 
 class ctr_agenda {
 
-
-	public function getCirugiasByDay($day){
+	public function getCalendarDataByDay( $day, $calendarType ){
 		$response = new \stdClass();
 		$calendarClass = new agenda();
 		$formatClass = new formats();
@@ -24,7 +23,7 @@ class ctr_agenda {
 		}
 
 
-		$response = $calendarClass->getCirugiasByDay($day);
+		$response = $calendarClass->getCalDataByDayCategory($day, $calendarType);
 		if ( $response->result == 2 ){
 			foreach ($response->listResult as $value) {
 				//formato del dato de la hora para mostrar en el input
@@ -69,7 +68,7 @@ class ctr_agenda {
 		return $response;
 	}
 
-	public function modifyNewEventCirugias( $data, $idUser ){
+	public function modifyNewEvent( $data, $idUser ){
 		$response = new \stdClass();
 		$calendarClass = new agenda();
 
@@ -79,11 +78,11 @@ class ctr_agenda {
 		$client = isset($data['cliente']) && $data['cliente'] != "" ? $data['cliente'] : null;
 		$pet = isset($data['mascota']) && $data['mascota'] != "" ? $data['mascota'] : null;
 
-		$response = $calendarClass->modifyNewEventCirugias($idAgenda, $idUser, $time, $event, $client, $pet );
+		$response = $calendarClass->modifyNewEvent($idAgenda, $idUser, $time, $event, $client, $pet );
 		return $response;
 	}
 
-	public function saveNewEventCirugias( $data, $idUser ){
+	public function saveNewEvent( $data, $idUser, $category ){
 		$response = new \stdClass();
 		$calendarClass = new agenda();
 
@@ -92,7 +91,7 @@ class ctr_agenda {
 		$client = isset($data['cliente']) && $data['cliente'] != "" ? $data['cliente'] : null;
 		$pet = isset($data['mascota']) && $data['mascota'] != "" ? $data['mascota'] : null;
 
-		$response = $calendarClass->saveNewEventCirugias( $idUser, $time, $event, $client, $pet );
+		$response = $calendarClass->saveNewEvent( $idUser, $time, $event, $client, $pet, $category );
 		return $response;
 	}
 }

@@ -5,13 +5,13 @@
 <div class="d-flex justify-content-center">
 	<div class="card border-top-0 rounded-bottom border shadow w-100">
 		<div class="card-header d-flex justify-content-between bg-mycolor">
-			<h5 class="card-title">Cirugías</h5><div><input style="border: 1px solid #ced4da;border-radius: 0.25rem;padding: 0.375rem 0.75rem;" type="date" name="" id="idInputTodayCalendar" onchange="getCirugiasByDay(this.value)">
-			<button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Agendar nueva cirugía" onclick="newRowCirugiaCalendar()"><i class="fas fa-calendar-plus"></i></button></div>
+			<h5 class="card-title">Peluquería</h5><div><input style="border: 1px solid #ced4da;border-radius: 0.25rem;padding: 0.375rem 0.75rem;" type="date" name="" id="idInputTodayPelu" onchange="getPeluqueriasByDay(this.value)">
+			<button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Agendar nueva reserva de peluquería" onclick="newRowPeluqueriasCalendar()"><i class="fas fa-calendar-plus"></i></button></div>
 		</div>
 		<div class="card-body">
 			<div class="tableCustomScroll">
 				<table class="" style="width: 100%;">
-					<tbody id="tbodyCirugiasCalendar"></tbody>
+					<tbody id="tbodyPeluqueriasCalendar"></tbody>
 				</table>
 			</div>
 		</div>
@@ -24,8 +24,8 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
 
 <script type="text/javascript">
-	$("#idInputTodayCalendar").val(getCurrentDate());
-	getCirugiasByDay( $("#idInputTodayCalendar").val() );
+	$("#idInputTodayPelu").val(getCurrentDate());
+	getPeluqueriasByDay( $("#idInputTodayPelu").val() );
 </script>
 {% endblock %}
 {% endblock %}
