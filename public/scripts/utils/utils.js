@@ -1,9 +1,11 @@
 function validateCI(ci){
-	ci = ci.replace(/\D/g, '');
+	if ( ci ){
+		ci = ci.replace(/\D/g, '');
 
-	var dig = ci[ci.length - 1];
-	ci = ci.replace(/[0-9]$/, '');
-	return (dig == validation_digit(ci));
+		var dig = ci[ci.length - 1];
+		ci = ci.replace(/[0-9]$/, '');
+		return (dig == validation_digit(ci));
+	} return false;
 }
 
 function validation_digit(ci){
