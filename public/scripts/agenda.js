@@ -1,3 +1,6 @@
+//guardar la fecha en cookie cuando se cambia
+
+
 var widthBySize = 'style="width:20%"';
 var lastIndexLimit = 0;
 var trSelected = null; //elemento en el que se da click a la lupa
@@ -43,6 +46,10 @@ function getCirugiasByDay( day ){
 
 //funcion para cargar todas las filas cuando ya hay registros en la agenda
 function createRow( obj ){
+
+	let wppBtn = '<button class="btn btn-info" disabled><a class="btn-info" title="Enviar whatsapp"target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>';
+
+
 	//fila
 	let row = '<tr id="'+ obj.idAgenda +'" onchange="saveEventInCalendar(this)">';
 	//hora
@@ -55,11 +62,18 @@ function createRow( obj ){
 	contactClient = '';
 	if ( obj.socio ){
 		contactClient = '<select id="selectClientsCalendar'+obj.idAgenda+'" class="form-select form-control shadow-sm">';
-
-		if ( obj.socio.telefono )
+		if ( obj.socio.telefono ){
+			if ( obj.socio.telefono.length >= 9 ){
+				wppBtn = '<a class="btn btn-info" title="Enviar whatsapp al '+obj.socio.telefono+'" href="https://wa.me/'+obj.socio.telefono+'" target="_blank" value=""><i class="fab fa-whatsapp"></i></a>'
+			}
 			contactClient += '<option>'+obj.socio.telefono+'</option>';
-		if (obj.socio.telefax)
+		}
+		if (obj.socio.telefax){
+			if ( obj.socio.telefax.length >= 9 ){
+				wppBtn = '<a class="btn btn-info" title="Enviar whatsapp al '+obj.socio.telefax+'" href="https://wa.me/'+obj.socio.telefax+'" target="_blank" value=""><i class="fab fa-whatsapp"></i></a>'
+			}
 			contactClient += '<option>'+obj.socio.telefax+'</option>';
+		}
 		if (obj.socio.email)
 			contactClient += '<option>'+obj.socio.email+'</option>';
 		if (obj.socio.direccion)
@@ -72,7 +86,7 @@ function createRow( obj ){
 
 	row += '<td class="notShowMobile" style="" id="tdRowContactClient'+obj.idAgenda+'">'+contactClient+'</td>';
 	//boton ver cliente
-	buttonVerSocio = "";
+	buttonVerSocio = '<button class="btn btn-info" title="Ver cliente" disabled>Cliente</button>';
 	if ( obj.socio )
 		buttonVerSocio = '<a class="btn btn-info" title="Ver cliente" href="'+getSiteURL()+"ver-socio/"+obj.socio.idSocio+'" value="" target="_blank">Cliente</a>';
 	else
@@ -82,14 +96,7 @@ function createRow( obj ){
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
 	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" placeholder="Mascota"></td>';
 
-	//boton ver mascota
-	buttonVerMascota = "";
-	if ( obj.mascota )
-		buttonVerMascota = '<a class="btn btn-info" title="Ver mascota" href="'+getSiteURL()+"ver-mascota/"+obj.mascota.idMascota+'" value="" target="_blank">ver</a>';
-	else
-		buttonVerMascota = '<button class="btn btn-info" title="Ver mascota" disabled >ver</button>';
-
-	//row += '<td class="notShowMobile">'+buttonVerMascota+'</td></tr>';
+	row += '<td>'+wppBtn+'</td>';
 	row += '<td class="notShowMobile" style="">'+buttonVerSocio+'</td>';
 	row += '<td class="notShowMobile"><button class="btn btn-info" title="Buscar cliente o mascota" onclick="openModalSearchClientOrPet(this.parentElement.parentElement)" ><i class="fas fa-search"></i></button></td>';
 	row += '</tr>';
@@ -166,8 +173,10 @@ function createCleanRow(){
 	row += '<td  class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Cliente"></td>'
 	row += '<td><select class="form-select form-control shadow-sm notShowMobile" style="" disabled></select></td>'
 	row += '<td class="notShowMobile" style=""><input class="form-control text-center shadow-sm" type="text" name="" value="" placeholder="Mascota"></td>';
-	row += '<td class="notShowMobile" style=""><a class="btn btn-info" target="_blank" title="Ver cliente" disabled >Cliente</a></td>';
-	row += '<td class="notShowMobile" style="" onclick="openModalSearchClientOrPet(this.parentElement)" ><i class="btn btn-info fas fa-search"></i></td></tr>';
+	row += '<td><button class="btn btn-info" disabled><a class="btn-info" title="Enviar whatsapp"target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button></td>';
+	row += '<td class="notShowMobile" style=""><button class="btn btn-info" title="Ver cliente" disabled>Cliente</button></td>';
+	//row += '<td class="notShowMobile" onclick="openModalSearchClientOrPet(this.parentElement)" ><i class="btn btn-info fas fa-search"></i></td></tr>';
+	row += '<td class="notShowMobile" onclick="openModalSearchClientOrPet(this.parentElement)"><button class="btn btn-info" title="Buscar cliente o mascota" ><i class="fas fa-search"></i></button></td></tr>';
 
 	return row;
 }
