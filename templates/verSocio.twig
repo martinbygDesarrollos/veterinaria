@@ -15,13 +15,18 @@
 			{% if responseSocio.result == 2 %}
 			<div class="row">
 				<button id="{{ responseSocio.socio.idSocio }}" type="button" data-toggle="tooltip" data-placement="top" title="Modificar cliente" class="btn btn-dark mt-2 mr-4" onclick="openModalUpdateSocio(this)"><i class="fas fa-user-edit"></i></button>
-				<button class="btn btn-dark mt-2 mr-1" type="button" data-toggle="tooltip" data-placement="top" title="Activar/Desactivar cliente" onclick="openModalChangeState('{{ responseSocio.socio.idSocio }}')">
+				<button class="btn btn-dark mt-2 mr-4" type="button" data-toggle="tooltip" data-placement="top" title="Activar/Desactivar cliente" onclick="openModalChangeState('{{ responseSocio.socio.idSocio }}')">
 					{% if responseSocio.socio.estado == 1 %}
 					<i id="iconButtonState" class="fas fa-user-check"></i>
 					{% else %}
 					<i id="iconButtonState" class="fas fa-user-times"></i>
 					{% endif %}
 				</button>
+				{% if responseSocio.socio.telefax %}
+				<a class="btn btn-info mt-2 mr-1" target="_blank" title="Enviar whatsapp al {{responseSocio.socio.telefax}}" href="https://wa.me/{{responseSocio.socio.telefax}}" value=""><i class="fab fa-whatsapp"></i></a>
+				{% else %}
+				<button class="btn btn-info mt-2 mr-1" type="button" title="No se encontró número de whatsapp" disabled><a class="btn-info" target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>
+				{% endif %}
 			</div>
 			{% endif %}
 		</div>
@@ -35,18 +40,6 @@
 			<div class="tab-content mb-1" id="nav-tabContent">
 				<div class="tab-pane fade show active border boder-2 border-top-0 p-2" id="nav-informacion" role="tabpanel" aria-labelledby="nav-home-tab">
 					{% if responseSocio.result == 2 %}
-					<div class="row">
-						<div class="col">
-							<div class="form-group d-flex flex-row-reverse">
-								{% if responseSocio.socio.telefax %}
-								<a class="btn btn-info" target="_blank" title="Enviar whatsapp al {{responseSocio.socio.telefax}}" href="https://wa.me/{{responseSocio.socio.telefax}}" value=""><i class="fab fa-whatsapp"></i></a>
-								{% else %}
-								<button class="btn btn-info" title="No se encontró número de whatsapp" disabled><a class="btn-info" target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>
-
-								{% endif %}
-							</div>
-						</div>
-					</div>
 					<div class="row">
 						<div class="col">
 							<div class="form-group">
