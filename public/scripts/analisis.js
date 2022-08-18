@@ -141,6 +141,7 @@ function modificarAnalisis(idAnalisis){
 }
 
 function createRowAnalsis(idAnalisis, nombre, fecha, detalle, resultado){
+
 	let row = "<tr id='trA"+ idAnalisis +"'>";
 	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ fecha +"</td>";
 	row += "<td class='text-center' onclick='verAnalisis("+ idAnalisis +")'>"+ nombre +"</td>";
@@ -149,6 +150,14 @@ function createRowAnalsis(idAnalisis, nombre, fecha, detalle, resultado){
 	row += "<button class='btn btn-link' name='" + idAnalisis + "' onclick='openModalAnalaisis(this)'><i class='fas fa-edit text-dark'></i></button>";
 	row += "<button class='btn btn-link' onclick='openModalBorrarAnalisis("+ idAnalisis + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
 	row += "</td>";
+
+
+	buttonWhatsapp = '<td class="text-center"><button title="No se encontró número de whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>';
+	if ( phoneSocio )
+		buttonWhatsapp = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+
+
+	row += "<td class='text-center'>"+ buttonWhatsapp +"</td>";
 	row += "</tr>";
 
 	return row;
@@ -163,7 +172,7 @@ function verAnalisis(idAnalisis){
 		if ( !phoneSocio ){
 			console.log("pidiendo numero de tel del socio");
 			let responseSocio = sendPost("getSocioPorMascota", {idMascota: response.objectResult.idMascota});
-			phoneSocio = responseSocio.socio.telefono;
+			phoneSocio = responseSocio.socio.telefax;
 		}
 
 		$("#titleModalView").html("Análisis");
@@ -173,12 +182,12 @@ function verAnalisis(idAnalisis){
 		if ( analisis.archivos ){
 			$("#divFilesTableModalView table tbody").empty();
 			$("#divFilesTableModalView").attr("hidden", true);
-			$("#divFilesTableModalView").attr("disable", true);
+			$("#divFilesTableModalView").attr("disabled", true);
 
 			$("#thSendFilesTableModalView").attr("hidden", false);
-			$("#thSendFilesTableModalView").attr("disable", false);
+			$("#thSendFilesTableModalView").attr("disabled", false);
 
-			buttonWhatsapp = '<td class="text-center" title="No se encontró número de teléfono"></td>';
+			buttonWhatsapp = '<td class="text-center"><button title="No se encontró número de whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>';
 			if ( phoneSocio )
 				buttonWhatsapp = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 
@@ -189,12 +198,12 @@ function verAnalisis(idAnalisis){
 			}
 
 			$("#divFilesTableModalView").attr("hidden", false);
-			$("#divFilesTableModalView").attr("disable", false);
+			$("#divFilesTableModalView").attr("disabled", false);
 		}else{
 			$("#divFilesTableModalView table tbody").empty();
 
 			$("#divFilesTableModalView").attr("hidden", true);
-			$("#divFilesTableModalView").attr("disable", true);
+			$("#divFilesTableModalView").attr("disabled", true);
 		}
 		$('#modalView').modal();
 	}

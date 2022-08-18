@@ -157,20 +157,16 @@
 											<td class="text-center" scope="col">Nombre</td>
 											<td class="text-center" scope="col">Fecha dosificación</td>
 											<td class="text-center" scope="col">Próxima dosis</td>
-											<td class="text-center" scope="col"></td>
+											<td class="text-center" scope="col">Acción</td>
 										</tr>
 									</thead>
 									<tbody id="tbodyVacunas">
 										{% if responseVacunas.result == 2 %}
 										{% for vacuna in responseVacunas.listResult %}
 										<tr id="trV{{ vacuna.idVacunaMascota }}">
-											<td class="text-center notShowMobile"><button type="button" class="btn btn-link btn-sm" onclick="modalAplicarDosis('{{ vacuna.idVacunaMascota }}')"><i class="fas fa-syringe text-dark"></i></button></td>
+											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.nombreVacuna }} ({{ vacuna.intervaloDosis }} días)</td>
+											<td class="text-center notShowMobile" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaUltimaDosis }}</td>
 											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaProximaDosis }}</td>
-											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaUltimaDosis }}</td>
-											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.nombreVacuna }}</td>
-											<td class="text-center notShowMobile" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.intervaloDosis }} días</td>
-											<td class="text-center" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.numDosis }}</td>
-											<td class="text-center notShowMobile" onclick="openDescriptionVacuna('{{vacuna.idVacunaMascota }}')">{{ vacuna.fechaPrimerDosis }}</td>
 											<td class="text-center notShowMobile" style="min-width: 6em;">
 												<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalVacuna(this)"><i class="fas fa-edit text-dark"></i></button>
 												<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalBorrarVacuna('{{ vacuna.idVacunaMascota }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
@@ -196,7 +192,7 @@
 											<td class="text-center" scope="col">Diagnóstico</td>
 											<td class="text-center" scope="col">Nombre</td>
 											<td class="text-center" scope="col">Observaciones</td>
-											<td class="text-center notShowMobile" scope="col">Modificar</td>
+											<td class="text-center notShowMobile" scope="col">Acción</td>
 										</tr>
 									</thead>
 									<tbody id="tbodyEnfermedades">
@@ -225,6 +221,7 @@
 											<td class="text-center" scope="col">Fecha</td>
 											<td class="text-center" scope="col">Nombre</td>
 											<td class="text-center" scope="col">Acción</td>
+											<td class="text-center" scope="col"><i class="fab fa-whatsapp"></i></td>
 										</tr>
 									</thead>
 									<tbody id="tbodyAnalisis">
@@ -237,6 +234,11 @@
 												<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" name="{{ analisis.idAnalisis }}" onclick="openModalAnalaisis(this)"><i class="fas fa-edit text-dark"></i></button>
 												<button type="button" class="btn btn-link btn-sm" name="{{ analisis.idAnalisis }}" onclick="openModalBorrarAnalisis('{{ analisis.idAnalisis }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
 											</td>
+											{% if SocioMascota.socio.telefax %}
+											<td class="text-center"><a href="https://wa.me/{{SocioMascota.socio.telefax}}" target="_blank"><button title="Enviar archivo {{SocioMascota.socio.telefax}}" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>
+											{% else %}
+											<td class="text-center"><button title="No se encontró número de whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>
+											{% endif %}
 										</tr>
 										{% endfor %}
 										{% endif %}
@@ -252,6 +254,7 @@
 											<td class="text-center" scope="col">Fecha</td>
 											<td class="text-center" scope="col">Motivo de la consulta</td>
 											<td class="text-center" scope="col">Acción</td>
+											<td class="text-center" scope="col"><i class="fab fa-whatsapp"></i></td>
 										</tr>
 									</thead>
 									<tbody id="tbodyHistoriaClinica">
@@ -370,7 +373,7 @@
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
 				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button type="button" class="btn btn-success shadow-sm" onclick="modificarMascota('{{ SocioMascota.mascota.idMascota }}')">Confirmar</button>
+				<button type="button" class="btn btn-success shadow-sm" onclick="modificarMascota('{{ SocioMascota.mascota.idMascota }}')">Guardar</button>
 			</div>
 		</div>
 	</div>
@@ -420,7 +423,7 @@
 				</div>
 				<div class="modal-footer d-flex justify-content-between">
 					<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-					<button type="submit" class="btn btn-success shadow-sm" id="buttonConfirmModalAnalisis">Confirmar</button>
+					<button type="submit" class="btn btn-success shadow-sm" id="buttonConfirmModalAnalisis">Guardar</button>
 				</div>
 			</form>
 		</div>
@@ -480,7 +483,7 @@
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
 				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button type="button" id="buttonConfirmModalEnfermedad" class="btn btn-success shadow-sm">Confirmar</button>
+				<button type="button" id="buttonConfirmModalEnfermedad" class="btn btn-success shadow-sm">Guardar</button>
 			</div>
 		</div>
 	</div>
@@ -557,7 +560,7 @@
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
 				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>
-				<button type="button" id="modalButtonVacuna" class="btn btn-success shadow-sm">Confirmar</button>
+				<button type="button" id="modalButtonVacuna" class="btn btn-success shadow-sm">Guardar</button>
 			</div>
 		</div>
 	</div>

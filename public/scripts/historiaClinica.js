@@ -52,6 +52,9 @@ function cargarHistoriaClinica(idMascota){
 }
 
 function createRowHistorial(obj){
+
+
+
 	let motivoConsulta = obj.motivoConsulta;
 	let fecha = obj.fecha;
 	let idHistoriaClinica = obj.idHistoriaClinica;
@@ -71,8 +74,28 @@ function createRowHistorial(obj){
 	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+ detalle +"</td>";
 	row += "<td class='text-center' style='min-width: 6em;'>";
 	row += "<button class='btn btn-link' name='" + idHistoriaClinica + "' onclick='openModalHistoria(this)'><i class='fas fa-edit text-dark'></i></button>";
-	row += "<button class='btn btn-link' onclick='openModalBorrarHistoria("+ idHistoriaClinica + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
+	row += "<button class='btn btn-link' onclick='openModalBorrarHistoria("+ idHistoriaClinica + ")'><i class='fas fa-trash-alt text-dark'></i></button>";
 	row += "</td>";
+
+	if ( phoneSocio ){
+		if ( phoneSocio.length > 0 ){
+			wppBtn = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+		}
+	}else {
+		let responseSocio = sendPost("getSocioPorMascota", {idMascota: obj.idMascota});
+		phoneSocio = responseSocio.socio.telefax;
+
+		if ( phoneSocio ){
+			if ( phoneSocio.length > 0 ){
+				wppBtn = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+			}
+		}else {
+			wppBtn = '<td class="text-center"><button title="No se encontró número de whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>';
+		}
+	}
+
+
+	row += wppBtn;
 	row += "</tr>";
 
 	return row;

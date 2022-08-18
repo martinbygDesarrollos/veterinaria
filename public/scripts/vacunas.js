@@ -4,7 +4,7 @@ function openModalVacuna(inputButton){
 	if(inputButton.id == "NUEVAVACUNA"){
 		console.log("boton nueva vac",inputButton);
 		$('#modalTitleVacuna').html("Nueva vacuna/medicamento");
-		$('#labelInputDateVacuna').text("Fecha primer dosis");
+		$('#labelInputDateVacuna').text("Fecha dosificación");
 		clearModalVacuna();
 		$('#modalButtonVacuna').off('click');
 		$('#modalButtonVacuna').click(function(){
@@ -14,7 +14,7 @@ function openModalVacuna(inputButton){
 		$('#modalTitleVacuna').html("Modificar vacuna/medicamento");
 		let response = sendPost('getVacunaMascota', {idVacunaMascota: inputButton.name});
 		if(response.result == 2){
-			$('#labelInputDateVacuna').text('Fecha ultima dosis');
+			$('#labelInputDateVacuna').text('Fecha dosificación');
 			$('#inputNombreVacuna').val(response.objectResult.nombreVacuna);
 			$('#inputIntervaloVacuna').val(response.objectResult.intervaloDosis);
 			$('#inputPrimerDosisVacuna').val(response.objectResult.fechaUltimaDosis);
@@ -103,18 +103,13 @@ function createNewVacuna(idMascota){
 
 function createRowVacuna(idVacunaMascota, fechaProximaDosis, fechaUltimaDosis, nombreVacuna, observaciones, intervalo, numDosis, fechaPrimerDosis){
 	let row = "<tr id='trV"+ idVacunaMascota +"'>";
-	row += "<td class='text-center'><butto class='btn btn-link btn-sm' onclick='modalAplicarDosis("+ idVacunaMascota +")'><i class='fas fa-syringe text-dark'></i></butto></td>"
-	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + fechaProximaDosis + "</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + nombreVacuna + " ("+intervalo+")</td>";
 	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + fechaUltimaDosis + "</td>";
-	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + nombreVacuna + "</td>";
-	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + intervalo + "</td>";
-	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + numDosis + "</td>";
-	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + fechaPrimerDosis + "</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(" + idVacunaMascota + ")'>" + fechaProximaDosis + "</td>";
 	row += "<td class='text-center' style='min-width: 6em;'>";
 	row += "<button class='btn btn-link btn-sm' name='" + idVacunaMascota + "' onclick='openModalVacuna(this)'><i class='fas fa-edit text-dark'></i></button>";
 	row += "<button class='btn btn-link btn-sm' onclick='openModalBorrarVacuna("+ idVacunaMascota + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
 	row += "</tr>";
-
 	return row;
 }
 
@@ -160,8 +155,8 @@ function openDescriptionVacuna(idVacunaMascota){
 		}
 
 		$("#titleModalView").html("Vacuna");
-		$('#dateModalView').html("<b>Última dosis</b>: " + vacuna.fechaUltimaDosis);
-		$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Primer dosis:</b> " + vacuna.fechaPrimerDosis + "<hr><b>Proxima dosis:</b> " + vacuna.fechaProximaDosis +"<hr><b>Notificaciones enviadas: </b>" + fechas + "<hr>");
+		$('#dateModalView').html("<b>Fecha dosificación</b>: " + vacuna.fechaUltimaDosis + "<br><b>Próxima dosis:</b> " + vacuna.fechaProximaDosis);
+		$("#textModalView").html("<b>Nombre</b>: " + vacuna.nombreVacuna + "<hr><b>Intervalo:</b> " + vacuna.intervaloDosis + "<hr><b>Notificaciones enviadas: </b>" + fechas + "<hr>");
 
 		$("#divFilesTableModalView").attr("hidden", true);
 		$("#divFilesTableModalView").attr("disable", true);
