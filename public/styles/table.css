@@ -22,3 +22,7 @@
 .rowNosocio {
   background-color: var(--nosocio);
 }
+
+.rowDeadPet {
+  background-color: var(--mascota-muerta);
+}

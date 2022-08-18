@@ -33,7 +33,26 @@ function createRow(obj){
 	socioDeudor = obj.socioDeudor
 	socioTipo = obj.socioTipo;
 	socioActivo = obj.socioActivo;
-	console.log(socioActivo);
+	telefono = obj.telefono;
+	telefax = obj.telefax;
+
+	wppBtn = '<td class="text-center"><button title="Enviar whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>';
+
+	if ( telefono ){
+		if (telefono.length >= 9){
+			wppBtn = '<td class="text-center"><a href="https://wa.me/'+telefono+'" target="_blank"><button title="Enviar mensaje al '+telefono+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+		}
+	}
+
+
+
+	if ( telefax ){
+		if (telefax.length >= 9){
+			wppBtn = '<td class="text-center"><a href="https://wa.me/'+telefax+'" target="_blank"><button title="Enviar mensaje al '+telefax+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+		}
+	}
+
+
 
 	if ( socioActivo == 0 ) socioActivo = " (Inactivo)"; else socioActivo = "";
 
@@ -51,11 +70,18 @@ function createRow(obj){
 			classForClient = "rowExsocio";
 	}
 
-	let row = "<tr onclick='redirectToMascota("+ idMascota +")' class='"+classForClient+"' >";
-	row += "<td class='text-center'>" + nombre +"</td>";
-	row += "<td class='text-center'"
+	classForDeadPet = "";
+	if ( obj.fechaFallecimiento ){
+		if ( obj.fechaFallecimiento.length > 0 ){
+			classForDeadPet = "rowDeadPet";
+		}
+	}
 
-	//>" + socioNombre +"</td>";
+
+
+	let row = "<tr class='"+classForClient+"' >";
+	row += "<td class='text-center' onclick='redirectToMascota("+ idMascota +")'>" + nombre +"</td>";
+	row += "<td class='text-center' onclick='redirectToMascota("+ idMascota +")'"
 
 
 
@@ -71,10 +97,10 @@ function createRow(obj){
 		row+= ">"+socioNombre + socioActivo+"</td>";
 
 
-	row += "<td class='text-center notShowMobile'>" + especie +"</td>";
-	//row += "<td class='text-center'>" + raza + "</td>";
-	row += "<td class='text-center notShowMobile'>" + sexo +"</td>";
-	row += "<td class='text-center notShowMobile'>" + fechaNacimiento +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToMascota("+ idMascota +")'>" + especie +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToMascota("+ idMascota +")'>" + sexo +"</td>";
+	row += "<td class='text-center notShowMobile' onclick='redirectToMascota("+ idMascota +")'>" + fechaNacimiento +"</td>";
+	row += wppBtn;
 	row += "</tr>";
 
 	return row;

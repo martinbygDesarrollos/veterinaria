@@ -1,10 +1,11 @@
 :root {
-  --first-color: #79bcc5;         /**/
+  --first-color: #79bcc5;             /**/
   --socio: #ffffff40;                 /*identificar socio*/
-  --socio-warning: #ffee0040;     /*identificar socio deudor*/
-  --exsocio: #0299e340;                /*identificar exsocio*/
-  --exsocio-warning: #FF111199;        /*identificar exsocio deudor*/
-  --nosocio: #d1d1d1;                /*identificar NO socio*/
+  --socio-warning: #ffee0040;         /*identificar socio deudor*/
+  --exsocio: #0299e340;               /*identificar exsocio*/
+  --exsocio-warning: #FF111199;       /*identificar exsocio deudor*/
+  --nosocio: #d1d1d1;                 /*identificar NO socio*/
+  --mascota-muerta: #FF111199;        /*identificar NO socio*/
 }
 
 html,
