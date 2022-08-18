@@ -37,6 +37,18 @@
 					{% if responseSocio.result == 2 %}
 					<div class="row">
 						<div class="col">
+							<div class="form-group d-flex flex-row-reverse">
+								{% if responseSocio.socio.telefax %}
+								<a class="btn btn-info" target="_blank" title="Enviar whatsapp al {{responseSocio.socio.telefax}}" href="https://wa.me/{{responseSocio.socio.telefax}}" value=""><i class="fab fa-whatsapp"></i></a>
+								{% else %}
+								<button class="btn btn-info" title="No se encontró número de whatsapp" disabled><a class="btn-info" target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>
+
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
 							<div class="form-group">
 								<label for="inputNombre">Nombre</label>
 								<input type="text" class="form-control text-center shadow-sm" readonly id="inputNombre" value="{{ responseSocio.socio.nombre }}">
