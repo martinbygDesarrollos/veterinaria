@@ -126,6 +126,7 @@ function openModalHistoria(button){
 		$('#buttonConfirmHistoriaClinica').click(function(){
 			crearHistoriaClinica(button.name);
 		});
+		$('#inputHoraHistoria').val(getCurrentHours());
 		$('#modalHistoriaClinica').modal();
 	}else{
 		let response = sendPost("getHistoriaClinicaToEdit", {idHistoriaClinica: button.name });
@@ -137,6 +138,13 @@ function openModalHistoria(button){
 			$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
 			$("#inputPesoHistoria").val("");
 			$("#inputTemperaturaHistoria").val("");
+			if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
+				hora = "00:00"
+			else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
+
+
+			$('#inputHoraHistoria').val(hora);
+
 
 			let obj = response.objectResult;
 			if ( obj.peso || obj.temperatura || obj.fc || obj.fr || obj.tllc){
@@ -174,7 +182,6 @@ function openModalHistoria(button){
 				modificarHistoriaClinica(button.name);
 				idLastHistoriaClinica = button.name;
 			});
-
 			$('#modalHistoriaClinica').modal();
 		}
 	}
@@ -183,6 +190,7 @@ function openModalHistoria(button){
 function crearHistoriaClinica(idMascota){
 	idLastHistoriaClinica = null;
 	let fecha = $('#inputFechaHistoria').val() || null;
+	let hora = $('#inputHoraHistoria').val() || null;
 	let motivoConsulta = $('#inputMotivoConsultaHistoria').val() || null;
 	let diagnostico= $('#inputDiagnosticoHistoria').val() || null;
 	let observaciones = $('#inputObservacionesHistoria').val() || null;
@@ -192,9 +200,13 @@ function crearHistoriaClinica(idMascota){
 	let fr = $("#inputFRHistoria").val() || null;
 	let tllc = $("#inputTiempoLlenadoCapilarHistoria").val() || null;
 
+
+	hora = hora.replace(':', '')
+
 	let data = {
 		idMascota: idMascota,
 		fecha: fecha,
+		hora: hora,
 		motivoConsulta: motivoConsulta,
 		diagnostico: diagnostico,
 		observaciones: observaciones,
@@ -215,6 +227,7 @@ function crearHistoriaClinica(idMascota){
 
 function modificarHistoriaClinica(idHistoriaClinica){
 	let fecha = $('#inputFechaHistoria').val() || null;
+	let hora = $('#inputHoraHistoria').val() || null;
 	let motivoConsulta = $('#inputMotivoConsultaHistoria').val() || null;
 	let diagnostico= $('#inputDiagnosticoHistoria').val() || null;
 	let observaciones = $('#inputObservacionesHistoria').val() || null;
@@ -224,9 +237,12 @@ function modificarHistoriaClinica(idHistoriaClinica){
 	let fr = $("#inputFRHistoria").val() || null;
 	let tllc = $("#inputTiempoLlenadoCapilarHistoria").val() || null;
 
+	hora = hora.replace(':', '')
+
 	let data = {
 		idHistoriaClinica: idHistoriaClinica,
 		fecha: fecha,
+		hora: hora,
 		motivoConsulta: motivoConsulta,
 		diagnostico: diagnostico,
 		observaciones: observaciones,
@@ -246,22 +262,28 @@ function modificarHistoriaClinica(idHistoriaClinica){
 
 function clearModalHistoria(){
 	$('#inputFechaHistoria').val(getDateForInput());
+	$('#inputHoraHistoria').val(getCurrentHours());
 	$('#inputMotivoConsultaHistoria').val("");
 	$('#inputDiagnosticoHistoria').val("");
 	$('#inputObservacionesHistoria').val("");
 	$("#idInputFileResult").val('');
 	$("#inputPesoHistoria").val('');
 	$("#inputTemperaturaHistoria").val('');
+	$("#inputFrecuenciaCardiacaHistoria").val('');
+	$("#inputFRHistoria").val('');
+	$("#inputTiempoLlenadoCapilarHistoria").val('');
 }
 
 function verHistoriaClinica(idHistoria){
 	let response = sendPost("getHistoriaClinicaToShow", {idHistoriaClinica: idHistoria});
 	if(response.result == 2){
 		let historia = response.objectResult;
-
+		if( historia.hora === null || historia.hora.length < 4 )
+			hora = "00:00"
+		else hora = historia.hora.substr(0,2)+":"+ historia.hora.substr(2,2);
 
 		$("#titleModalView").html("Historia clínica");
-		$('#dateModalView').html(historia.fecha);
+		$('#dateModalView').html(historia.fecha+" "+hora);
 		$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Diagnóstico: </b>" + historia.diagnostico + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr>");
 
 		if ( historia.archivos ){

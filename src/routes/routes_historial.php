@@ -117,6 +117,7 @@ return function (App $app) {
 			$data = $request->getParams();
 			$idMascota = $data['idMascota'];
 			$fecha = $data['fecha'];
+			$hora = $data['hora'];
 			$motivoConsulta = $data['motivoConsulta'];
 			$diagnostico = $data['diagnostico'];
 			$observaciones = $data['observaciones'];
@@ -126,7 +127,7 @@ return function (App $app) {
 			$fr = $data['fr'];
 			$tllc = $data['tllc'];
 
-			return json_encode(ctr_historiales::agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc));
+			return json_encode(ctr_historiales::agregarHistoriaClinica($idMascota, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc));
 		}else return json_encode($responseSession);
 	});
 
@@ -136,6 +137,7 @@ return function (App $app) {
 			$data = $request->getParams();
 			$idHistoriaClinica = $data['idHistoriaClinica'];
 			$fecha = $data['fecha'];
+			$hora = $data['hora'];
 			$motivoConsulta = $data['motivoConsulta'];
 			$diagnostico = $data['diagnostico'];
 			$observaciones = $data['observaciones'];
@@ -144,7 +146,7 @@ return function (App $app) {
 			$fc = $data['fc'];
 			$fr = $data['fr'];
 			$tllc = $data['tllc'];
-			return json_encode(ctr_historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc));
+			return json_encode(ctr_historiales::modificarHistoriaClinica($idHistoriaClinica, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc));
 		}else return json_encode($responseSession);
 	});
 

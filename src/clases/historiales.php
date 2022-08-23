@@ -7,14 +7,14 @@ class historiales{
 	//===========================================HISTORIAL CLINICO================================================
 	//============================================================================================================
 
-	public function agregarHistoriaClinica($idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){
+	public function agregarHistoriaClinica($idMascota, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){
 		if(is_null($fecha) || $fecha == "")
 			$fecha = date("Ymd");
 
-		return DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, motivoConsulta, diagnostico, observaciones, peso, temperatura, fc, fr, tllc ) VALUES(?,?,?,?,?,?,?,?,?,?)", array('iisssddddd', $idMascota, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc), "BOOLE");
+		return DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, hora, motivoConsulta, diagnostico, observaciones, peso, temperatura, fc, fr, tllc ) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('iissssddddd', $idMascota, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc), "BOOLE");
 	}
 
-	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){
+	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){
 		if ( $peso == "" )
 			$peso = null;
 
@@ -36,7 +36,10 @@ class historiales{
 		if ( $tllc == "" )
 			$tllc = null;
 
-		$result = DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ?, peso = ?, temperatura = ?, fc = ?, fr = ?, tllc = ? WHERE idHistoriaClinica = ?", array('isssdddddi', $fecha, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc, $idHistoriaClinica), "BOOLE");
+		if ( $hora == "" )
+			$hora = null;
+
+		$result = DataBase::sendQuery("UPDATE historiasclinica SET fecha = ?, hora = ?, motivoConsulta = ?, diagnostico = ?, observaciones = ?, peso = ?, temperatura = ?, fc = ?, fr = ?, tllc = ? WHERE idHistoriaClinica = ?", array('issssdddddi', $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc, $idHistoriaClinica), "BOOLE");
 		return $result;
 	}
 

@@ -196,3 +196,24 @@ function calculateColorRowByClient(tipo, deudor){
 
 	return {tipo: tipoCliente, class:classForClient};
 }
+
+function getCurrentHours(){
+	var today = new Date();
+	var hour = today.getHours();
+	var minute = today.getMinutes();
+	var second = today.getSeconds();
+
+	if( hour.toString().length == 1 ) {
+		hour = '0'+(today.getHours())
+	}
+	if( minute.toString().length == 1 ) {
+		minute = '0'+(today.getMinutes())
+	}
+	if( second.toString().length == 1 ) {
+		second = '0'+(today.getSeconds())
+	}
+
+
+	date = hour+':'+minute;
+	return date;
+}
