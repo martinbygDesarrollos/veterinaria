@@ -284,7 +284,7 @@ function verHistoriaClinica(idHistoria){
 
 		$("#titleModalView").html("Historia clínica");
 		$('#dateModalView').html(historia.fecha+" "+hora);
-		$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Diagnóstico: </b>" + historia.diagnostico + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr>");
+		$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr><b>Tratamiento: </b>" + historia.diagnostico );
 
 		if ( historia.archivos ){
 			$("#divFilesTableModalView table tbody").empty();
