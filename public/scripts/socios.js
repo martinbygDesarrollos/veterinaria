@@ -77,14 +77,12 @@ function createRow(obj){
 	let selectMascotas = '<select class="form-select form-control shadow-sm">';
 	if ( mascotas.length > 0 ){
 		for (var i = 0; i < mascotas.length; i++) {
-			classDeadPet = "rowDeadPet"
-			mascotaestado = "Muerto"
+			classDeadPet = "disabled"
 			if ( !mascotas[i].fechaFallecimiento ){
 				classDeadPet = "";
-				mascotaestado = "Vivo";
 			}
 
-			selectMascotas += '<option class="'+classDeadPet+'">' + mascotas[i].nombre + ' - '+ mascotaestado +'</option>'
+			selectMascotas += '<option class="" '+classDeadPet+'>' + mascotas[i].nombre +'</option>'
 		}
 
 		selectMascotas += '</select>'

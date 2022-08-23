@@ -24,5 +24,11 @@
 }
 
 .rowDeadPet {
-  background-color: var(--mascota-muerta);
+  color: var(--mascota-muerta)!important;
+  background-color: white!important;
+}
+
+option[disabled]{
+  background-color: var(--mascota-muerta)!important;
+
 }

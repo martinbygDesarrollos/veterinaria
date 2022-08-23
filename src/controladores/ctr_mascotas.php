@@ -368,7 +368,8 @@ class ctr_mascotas {
 			$responseInsertVacuna = serviciosMascota::insertVacunaMascota($nombreVacuna, $idMascota, $intervalo, 1, $fechaDosis, $fechaDosis, $fechaProximaDosis, $observaciones);
 			if($responseInsertVacuna->result == 2){
 				//$responseInsertHistoriaClinica = ctr_historiales::
-				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se aplicó la primer dosis de " . $nombreVacuna, null, null, null, null, null, null, null);
+				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, date("Y-m-d"), date("His"), "Se aplicó la primer dosis de " . $nombreVacuna, null, null, null, null, null, null, null);
+
 				$response->result = 2;
 				if($responseInsertHistorial->result == 2)
 					$response->message = "La vacuna/medicamento fue insertada correctamente.";
@@ -446,7 +447,7 @@ class ctr_mascotas {
 				$dateDosis = fechas::getDateToINT($dateDosis);
 				$responseUpdateVacuna = serviciosMascota::aplicarDosisVacunaMascota($idVacunaMascota, $dateDosis, $responseGetVacunaMascota->objectResult->numDosis + 1, $fechaProximaDosis);
 				if($responseUpdateVacuna->result == 2){
-					$responseInsertHistoriaClinica = ctr_historiales::agregarHistoriaClinica($responseGetMascota->objectResult->idMascota, null, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna/medicamento " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".", null, null, null, null);
+					$responseInsertHistoriaClinica = ctr_historiales::agregarHistoriaClinica($responseGetMascota->objectResult->idMascota, date("Y-m-d"),date("His"),"Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna/medicamento " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".", null, null, null, null);
 					if($responseInsertHistoriaClinica->result == 2){
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Aplicar dosis", null, $responseGetMascota->objectResult->idMascota, "Se aplicó dosis N° " . ($responseGetVacunaMascota->objectResult->numDosis +1) . " de la vacuna/medicamento " . $responseGetVacunaMascota->objectResult->nombreVacuna . ".");
 						if($responseInsertHistorial->result == 2){
@@ -708,7 +709,7 @@ class ctr_mascotas {
 			$fechaDiagnostico = fechas::getDateToINT($fechaDiagnostico);
 			$responseInsertEnfermedad = serviciosMascota::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones);
 			if($responseInsertEnfermedad->result == 2){
-				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, null, "Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre, null, null, null, null);
+				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, date("Y-m-d"), date("His"),"Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre, null, null, null, null);
 				if($responseInsertHistorial->result == 2){
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nueva enfermedad mascota", null, $idMascota, "Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre);
 					$response->result = 2;

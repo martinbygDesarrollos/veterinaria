@@ -86,8 +86,8 @@ function createNewVacuna(idMascota){
 						}
 						//OBTENER DUEÑO CORRECTO MASCOTA CORRECTA
 						vacMessage = "Se agendó próxima dosis de "+vacuna.nombreVacuna+" para el día "+vacuna.fechaProximaDosis +" a "+ nombreMascotaVacunada;
-						if ( response.socio.telefono ){
-							redirectToWhatsapp( response.socio.telefono, vacMessage );
+						if ( response.socio.telefax ){
+							redirectToWhatsapp( response.socio.telefax, vacMessage );
 						}else{
 							redirectToWhatsapp( null, vacMessage );
 						}
