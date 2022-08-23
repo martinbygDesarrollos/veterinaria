@@ -91,7 +91,20 @@ class ctr_agenda {
 		$client = isset($data['cliente']) && $data['cliente'] != "" ? $data['cliente'] : null;
 		$pet = isset($data['mascota']) && $data['mascota'] != "" ? $data['mascota'] : null;
 
-		$response = $calendarClass->saveNewEvent( $idUser, $time, $event, $client, $pet, $category );
+		if ( $category == "calendario" ){
+			//si ya hay un registro para ese dia entonces se modifica sino se crea nuevo
+			$calNoteResult = $calendarClass->getCalDataByDayCategory($time, $category);
+			if ( $calNoteResult->result != 0 ){
+				if ( count($calNoteResult->listResult) >0 ){
+					$response = $calendarClass->modifyNoteCalendar($idUser, $time, $event, null, null, $category );
+				}else
+					$response = $calendarClass->saveNewEvent( $idUser, $time, $event, null,null, $category );
+
+			}else return $calNoteResult;
+		}
+		else $response = $calendarClass->saveNewEvent( $idUser, $time, $event, $client, $pet, $category );
+
+
 		return $response;
 	}
 }

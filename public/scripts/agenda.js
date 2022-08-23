@@ -18,6 +18,8 @@ $(document).ready(()=>{
 		calendarCategory = "cirugia";
 	}else if (window.location.pathname.includes("peluqueria")){
 		calendarCategory = "peluqueria";
+	}else if (window.location.pathname.includes("calendario")){
+		calendarCategory = "calendario";
 	}
 });
 
@@ -55,7 +57,7 @@ function createRow( obj ){
 	//hora
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value="'+ hora +'"></td>';
 	//motivo
-	row += '<td '+widthBySize+'><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
+	row += '<td '+widthBySize+'><input class="form-control text-c enter shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
 	//cliente
 	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" value="'+ obj.nombreCliente +'" placeholder="Cliente"></td>';
 	//contacto cliente
@@ -360,4 +362,36 @@ function getPeluqueriasByDay( day ){
 function newRowPeluqueriasCalendar(){
 	row = createCleanRow();
 	$("#tbodyPeluqueriasCalendar").append(row);
+}
+
+
+function saveNotesCalendarByDay(){
+	let value = $("#textareaCalendarNotes").val();
+	console.log(value);
+
+	calendarCategory = "calendario";
+	datetime = $("#idInputCalendarNotes").val();
+	datetime = datetime.replaceAll("-","");
+
+	data = {"fechaHora": datetime, "descripcion": value, "cliente": null, "mascota": null}
+	sendAsyncPost("saveEventCalendarByDay",{event:data, type:calendarCategory})
+	.then(( response )=>{
+		if ( response.result != 2 ){
+			showReplyMessage(response.result, response.message, "Agenda", null);
+		}
+		window.location.reload();
+	});
+}
+
+
+function getCalendarNotesByDay( day ){
+	sendAsyncPost("getEventCalendarByDay",{day:day, type:"calendario"})
+	.then(( response )=>{
+		if ( response.result == 2 ){
+			console.log(response);
+			if ( response.listResult.length >0 ){
+				$("#textareaCalendarNotes").val(response.listResult[0].descripcion)
+			}else $("#textareaCalendarNotes").val("");
+		}else $("#textareaCalendarNotes").val("");
+	})
 }

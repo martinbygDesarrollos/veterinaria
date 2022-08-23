@@ -1,0 +1,38 @@
+{% extends "base.twig" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center">
+	<div class="card border-top-0 rounded-bottom border shadow w-75">
+		<div class="card-header d-flex justify-content-between bg-mycolor">
+			<h5 class="card-title">Calendario</h5><div><input style="border: 1px solid #ced4da;border-radius: 0.25rem;padding: 0.375rem 0.75rem;" type="date" name="" id="idInputCalendarNotes" onchange="getCalendarNotesByDay(this.value)" ></div>
+		</div>
+		<div class="card-body">
+			<div class="tableCustomScroll">
+				<table class="" style="width: 100%;">
+					<thead><tr><th>Notas del día</th></tr></thead>
+					<tbody id="">
+						<tr><td><textarea id="textareaCalendarNotes" onchange="console.log(this.value);" rows="10" cols="100" class="" placeholder="Agregar nueva nota..."></textarea></td></tr>
+					</tbody>
+				</table>
+				<div class="d-flex flex-row-reverse">
+					<button class="btn btn-success" onclick="saveNotesCalendarByDay()" >Guardar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/agenda.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
+
+<script type="text/javascript">
+	$("#idInputCalendarNotes").val(getCurrentDate());
+
+	$(document).ready(()=>{
+		getCalendarNotesByDay( $("#idInputCalendarNotes").val() );
+	});
+</script>
+{% endblock %}
+{% endblock %}

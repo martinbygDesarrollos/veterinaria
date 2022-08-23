@@ -18,6 +18,12 @@ class agenda{
 		$database = new DataBase();
 		return $database->sendQuery("INSERT INTO `agenda` (`categoria`, `fechaHora`, `idUsuario`, `descripcion`, `idSocio`, `idMascota`) VALUES (?,?,?,?,?,?)", array('ssisss', $category, $time, $idUser, $event, $client, $pet), "BOOLE");
 	}
+
+	public function modifyNoteCalendar( $idUser, $time, $event, $client, $pet, $category ){
+		$database = new DataBase();
+		return $database->sendQuery("UPDATE `agenda` SET `idUsuario` = ?, `descripcion` = ?, `idSocio` = ?, `idMascota` = ? WHERE `agenda`.`fechaHora` = ? AND `agenda`.`categoria` = ?", array('isssss', $idUser, $event, $client, $pet, $time, $category), "BOOLE");
+	}
+
 }
 
 ?>

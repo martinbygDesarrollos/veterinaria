@@ -29,10 +29,19 @@ return function (App $app) {
 		}else return $response->withRedirect('iniciar-sesion');
 	})->setName("Peluqueria");
 
-	$app->get('/notas', function($request, $response, $args) use ($userController){
+	$app->get('/domicilios', function($request, $response, $args) use ($userController){
         $args['version'] = FECHA_ULTIMO_PUSH;
-		return $response->withRedirect('iniciar-sesion');
-	})->setName("Notas");
+        return $response->withRedirect('socios');
+	})->setName("Domicilios");
+
+	$app->get('/calendario', function($request, $response, $args) use ($userController){
+        $args['version'] = FECHA_ULTIMO_PUSH;
+		$responseSession = $userController->validateSession();
+		if($responseSession->result == 2){
+			$args['administrador'] = $responseSession->session;
+			return $this->view->render($response, "calendar.twig", $args);
+		}else return $response->withRedirect('iniciar-sesion');
+	})->setName("Calendario");
 
 	$app->post('/getEventCalendarByDay', function(Request $request, Response $response) use ($userController, $calendarController){
         $responseSession = $userController->validateSession();
