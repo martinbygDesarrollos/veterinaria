@@ -42,6 +42,7 @@ function createRow(obj){
 	let deudorFecha = obj.deudorFecha
 	let mascotas = obj.mascotas
 	let tipo = obj.tipo
+	let lugarPago = obj.lugarPago;
 	//console.log(idSocio, tipo, deudor);
 
 	if ( !telefono ){
@@ -63,6 +64,14 @@ function createRow(obj){
 		}
 	}
 
+	metodopago = "";
+	if ( lugarPago == 0 ){
+		metodopago = "Veterinaria";
+	}else if ( lugarPago == 1 ){
+		metodopago = "Cobrador";
+	}else if ( lugarPago == 2 ){
+		metodopago = "OCA";
+	}
 
 	let selectMascotas = '<select class="form-select form-control shadow-sm">';
 	if ( mascotas.length > 0 ){
@@ -124,6 +133,8 @@ function createRow(obj){
 	}
 	else
 		row+= fechaUltimaCuota + "</td>";
+
+	row += "<td class='text-center' onclick='redirectToSocio("+ idSocio +")'>"+ metodopago +"</td>";
 
 	//row += "<td class='text-center'><a class='text-dark' data-toggle='tooltip' data-placement='top' title='Agregar nueva mascota' href='" + getSiteURL() + "nueva-mascota/" + idSocio +"'><button class='btn btn-light' type='button'>Nueva masc.</button></a></td>";
 	row += '<td class="text-center"><a href="https://wa.me/'+telefax+'" target="_blank"><button title="Enviar mensaje a '+telefax+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';

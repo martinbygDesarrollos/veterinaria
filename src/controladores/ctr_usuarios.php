@@ -157,6 +157,8 @@ class ctr_usuarios{
 						//"lugar","C",15,0
 						if($socio['lugarPago'] == 1)
 							$stringList .= "Cobrador|";
+						if($socio['lugarPago'] == 2)
+							$stringList .= "OCA|";
 						else
 							$stringList .= "Veterinaria|";
 
@@ -818,7 +820,7 @@ class ctr_usuarios{
 
 				}else {
 					$response->result = 0;
-					$response->message = "El RUT ". $rut ." y nombre ".$nombre." ingresados corresponden al socio con identificador".$responseGetClientRut->objectResult->idSocio;
+					$response->message = "El RUT ". $rut ." y nombre ".$nombre." ingresados corresponden al socio con identificador ".$responseGetClientRut->objectResult->idSocio;
 
 				}
 			}else{

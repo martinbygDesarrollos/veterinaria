@@ -138,8 +138,11 @@ class socios{
 
 		if($socio['lugarPago'] == 0)
 			$socio['lugarPago'] = "Veterinaria";
-		else
+		else if( $socio['lugarPago'] == 1 ){
 			$socio['lugarPago'] = "Cobrador";
+		}else if( $socio['lugarPago'] == 2 ){
+			$socio['lugarPago'] = "OCA";
+		}
 
 		return $socio;
 	}
@@ -232,7 +235,10 @@ class socios{
 
 			if($socio->lugarPago == 0)
 				$socio->lugarPago = "Veterinaria";
-			else $socio->lugarPago = "Cobrador";
+			else if($socio->lugarPago == 1)
+				$socio->lugarPago = "Cobrador";
+			else if($socio->lugarPago == 2)
+				$socio->lugarPago = "OCA";
 
 			$socio->tipoSocio = $socio->tipo;
 			if($socio->tipo == 0)
