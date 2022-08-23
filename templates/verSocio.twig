@@ -32,6 +32,8 @@
 			<nav>
 				<div class="nav nav-tabs" id="nav-tab" role="tablist">
 					<a class="nav-item nav-link text-dark active" id="nav-home-tab" data-toggle="tab" href="#nav-informacion" role="tab">Información</a>
+					<a class="nav-item nav-link text-dark " id="nav-home-tab" data-toggle="tab" href="#nav-adicional" role="tab">Información adicional</a>
+					<a class="nav-item nav-link text-dark " id="nav-home-tab" data-toggle="tab" href="#nav-pago" role="tab">Información de pago</a>
 					<a class="nav-item nav-link text-dark" id="nav-home-tab" data-toggle="tab" href="#nav-historialSocio" role="tab">Historial</a>
 				</div>
 			</nav>
@@ -39,7 +41,7 @@
 				<div class="tab-pane fade show active border boder-2 border-top-0 p-2" id="nav-informacion" role="tabpanel" aria-labelledby="nav-home-tab">
 					{% if responseSocio.result == 2 %}
 					<div class="row">
-						<div class="col">
+						<div class="col-8">
 							<div class="form-group">
 								<label for="inputNombre">Nombre</label>
 								<input type="text" class="form-control text-center shadow-sm" readonly id="inputNombre" value="{{ responseSocio.socio.nombre }}">
@@ -70,22 +72,6 @@
 								<input type="text" class="form-control text-center shadow-sm" readonly id="inputTelefax" value="{{ responseSocio.socio.telefax }}">
 							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="col">
-							<div class="form-group">
-								<label for="inputDireccion">Dirección</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputDireccion" value="{{ responseSocio.socio.direccion }}">
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col">
-							<div class="form-group">
-								<label for="inputRut">RUT</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputRut" value="{{ responseSocio.socio.rut }}">
-							</div>
-						</div>
 						<div class="col">
 							<div class="form-group">
 								<label for="inputEmail">Email</label>
@@ -93,68 +79,20 @@
 							</div>
 						</div>
 					</div>
-					<br>
-					<hr>
-					<h6 class="card-subtitle mb-3 text-muted">Información adicional</h6>
 					<div class="row">
-						<div class="col">
+						<div class="col-8">
 							<div class="form-group">
-								<label for="selectTipoSocio">Tipo de cliente</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="selectTipoSocio" value="{{ responseSocio.socio.tipo }}">
+								<label for="inputDireccion">Dirección</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputDireccion" value="{{ responseSocio.socio.direccion }}">
 							</div>
 						</div>
 						<div class="col">
 							<div class="form-group">
-								<label for="inputFechaIngreso">Fecha de alta</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaIngreso" value="{{ responseSocio.socio.fechaIngreso }}">
-							</div>
-						</div>
-						<div class="col">
-							<div class="form-group">
-								<label for="inputFechaBaja">Fecha de baja</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaBaja" value="{{ responseSocio.socio.fechaBajaSocio }}">
+								<label for="inputRut">RUT</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputRut" value="{{ responseSocio.socio.rut }}">
 							</div>
 						</div>
 					</div>
-					<br>
-					<hr>
-					<h6 class="card-subtitle mb-3 text-muted">Información de pago</h6>
-					<div class="row">
-						<div class="col">
-							<label for="inputCuota">Cuota</label>
-							<div class="input-group">
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputCuota" value="{{ responseSocio.socio.cuota }}">
-								<div class="input-group-prepend">
-									<button class="btn btn-success shadow-sm" data-toggle="tooltip" data-placement="top" title="Actualizar cuota" onclick="calculateQuotaSocio('{{ responseSocio.socio.idSocio }}')"><i class="fas fa-sync-alt"></i></button>
-								</div>
-							</div>
-						</div>
-						<div class="col">
-							<div class="form-group">
-								<label for="inputFechaPago">Fecha pago</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaPago" value="{{ responseSocio.socio.fechaPago }}">
-							</div>
-						</div>
-						<div class="col">
-							<div class="form-group">
-								<label for="inputUltimoPago">Último pago</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoPago" value="{{ responseSocio.socio.fechaUltimoPago }}">
-							</div>
-						</div>
-						<div class="col">
-							<div class="form-group">
-								<label for="inputUltimoMesPago">Último mes pago</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoMesPago" value="{{ responseSocio.socio.fechaUltimaCuota }}">
-							</div>
-						</div>
-						<div class="col">
-							<div class="form-group">
-								<label for="inputLugarPago">Lugar de pago</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputLugarPago" value="{{ responseSocio.socio.lugarPago }}">
-							</div>
-						</div>
-					</div>
-					{% endif %}
 					<br>
 					<div class="d-flex justify-content-between mb-1">
 						<h6 class="card-subtitle mb-3 text-muted mt-2">Mascotas</h6>
@@ -203,6 +141,72 @@
 							</table>
 						</div>
 					</div>
+				</div>
+				<div class="tab-pane fade show border boder-2 border-top-0 p-2" id="nav-adicional" role="tabpanel" aria-labelledby="nav-home-tab">
+					<h6 class="card-subtitle mb-3 text-muted">Información adicional</h6>
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<label for="selectTipoSocio">Tipo de cliente</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="selectTipoSocio" value="{{ responseSocio.socio.tipo }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputFechaIngreso">Fecha de alta</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaIngreso" value="{{ responseSocio.socio.fechaIngreso }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputFechaBaja">Fecha de baja</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaBaja" value="{{ responseSocio.socio.fechaBajaSocio }}">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane fade show border boder-2 border-top-0 p-2" id="nav-pago" role="tabpanel" aria-labelledby="nav-home-tab">
+					<h6 class="card-subtitle mb-3 text-muted">Información de pago</h6>
+					<div class="row">
+						<div class="col-6">
+							<label for="inputCuota">Cuota</label>
+							<div class="input-group">
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputCuota" value="{{ responseSocio.socio.cuota }}">
+								<div class="input-group-prepend">
+									<button class="btn btn-success shadow-sm" data-toggle="tooltip" data-placement="top" title="Actualizar cuota" onclick="calculateQuotaSocio('{{ responseSocio.socio.idSocio }}')"><i class="fas fa-sync-alt"></i></button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<label for="inputFechaPago">Fecha pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputFechaPago" value="{{ responseSocio.socio.fechaPago }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputUltimoPago">Último pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoPago" value="{{ responseSocio.socio.fechaUltimoPago }}">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<label for="inputUltimoMesPago">Último mes pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoMesPago" value="{{ responseSocio.socio.fechaUltimaCuota }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<label for="inputLugarPago">Lugar de pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputLugarPago" value="{{ responseSocio.socio.lugarPago }}">
+							</div>
+						</div>
+					</div>
+					{% endif %}
 				</div>
 				<div class="tab-pane fade show  border boder-2 border-top-0 p-3" id="nav-historialSocio" role="tabpanel" aria-labelledby="nav-home-tab" style="min-height: 300px;">
 					<div class="d-flex flex-row-reverse mb-1">
