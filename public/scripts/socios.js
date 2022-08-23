@@ -73,6 +73,7 @@ function createRow(obj){
 		metodopago = "OCA";
 	}
 
+
 	let selectMascotas = '<select class="form-select form-control shadow-sm">';
 	if ( mascotas.length > 0 ){
 		for (var i = 0; i < mascotas.length; i++) {
