@@ -787,4 +787,32 @@ class ctr_mascotas {
 		$serviciosClass = new serviciosMascota();
 		return $serviciosClass->getListadoVacunas();
 	}
+
+
+	public function newPetHospitalized($idMascota, $place){
+		$response = new \stdClass();
+		$mascotasClass = new mascotas();
+
+		if ( $place != "vet" && $place != "casa" ){
+			$response->result = 1;
+			$response->message = "Debe seleccionar modalidad.";
+		}
+
+		return $mascotasClass->petHospitalizedIn($idMascota, $place);
+	}
+
+
+
+	public function petHospitalizedOut($idMascota){
+		$response = new \stdClass();
+		$mascotasClass = new mascotas();
+
+		if ( isset($idMascota) ) {
+			return $mascotasClass->petHospitalizedOut($idMascota);
+		}else{
+			$response->result = 1;
+			$response->result = "No se reconoce el identificador de la mascota que se ingresó.";
+			return $response;
+		}
+	}
 }

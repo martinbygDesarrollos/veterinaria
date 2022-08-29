@@ -1,0 +1,51 @@
+{% extends "base.twig" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center">
+	<div class="card border-top-0 rounded-bottom border shadow w-75">
+		<div class="card-header d-flex justify-content-between bg-mycolor">
+			<h5 class="card-title">Internación</h5>
+		</div>
+		<div class="card-body">
+			<div class="d-flex justify-content-between mb-2">
+				<div class="mr-3">
+					<select>
+						<option value=""></option>
+						<option value="vet">En veterinaria</option>
+						<option value="casa">En domicilio</option>
+					</select>
+				</div>
+			</div>
+			<div class="containerTable">
+				<table class="table">
+					<thead class="bg-mycolor">
+						<tr>
+							<td class="text-center" scope="col">Mascota</td>
+							<td class="text-center" scope="col">Dueño</td>
+							<td class="text-center" scope="col">Modalidad</td>
+							<td class="text-center" scope="col"><i class="fab fa-whatsapp"></i></td>
+							<td class="text-center" scope="col">Dar alta</td>
+						</tr>
+					</thead>
+					<tbody id="tbodyInternacion"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{%block script%}
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/internacion.js?{{version}}"></script>
+<script type="text/javascript">
+	cargarTablaInternacion();
+	$('.containerTable').on('scroll', function() {
+		if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+			cargarTablaInternacion();
+		}
+	});
+</script>
+{% endblock %}
+{% endblock %}

@@ -46,6 +46,15 @@
 					<div class="d-flex justify-content-center mb-2">
 						<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>historia<br>clínica</button>
 					</div>
+					{% if SocioMascota.mascota.internado %}
+					<div class="d-flex justify-content-center mb-2">
+						<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="outPetHospitalized({{ SocioMascota.mascota.idMascota }})">Dar alta</button>
+					</div>
+					{% else %}
+					<div class="d-flex justify-content-center mb-2">
+						<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalInternacion({{ SocioMascota.mascota.idMascota }})">Internar</button>
+					</div>
+					{%endif%}
 				</div>
 				<div class="col">
 					<nav>
@@ -567,6 +576,7 @@
 </div>
 
 {% include("modalViewMascota.twig") %}
+{% include("modalInternacion.twig") %}
 {%block script%}
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
@@ -575,6 +585,7 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/enfermedades.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/analisis.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/historiaClinica.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/internacion.js?{{version}}"></script>
 <script type="text/javascript">
 	$('#inputPrimerDosisVacuna').val(getDateForInput());
 	$('#inputFechaDiagnostico').val(getDateForInput());

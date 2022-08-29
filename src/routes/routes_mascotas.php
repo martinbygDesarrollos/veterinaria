@@ -410,5 +410,59 @@ return function (App $app) {
 
     //------------------------------------------------------------------------------------------
 
+
+    $app->post('/newPetHospitalized', function(Request $request, Response $response) use ($userController, $mascotaController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $place = $data['place'];
+            $date = $data['date'];
+            $hour = $data['hour'];
+            $idMascota = $data['idMascota'];
+
+
+            $responseInsert = $mascotaController->newPetHospitalized($idMascota, $place);
+            if ( $responseInsert->result == 2 ) {
+
+                $modalidad = "";
+                if ( $place == "vet" ){
+                    $modalidad = "mascota internada en veterinaria.";
+                }else if ($place == "casa"){
+                    $modalidad = "se realiza seguimiento.";
+                }
+
+                $responseHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, $date, $hour, "Mascota internada", null, "Modalidad: ".$modalidad, null, null, null, null, null);
+
+                if ( $responseHistorial->result != 2 ){
+                    return json_encode($responseHistorial);
+                }else return json_encode($responseInsert);
+            }
+            return json_encode($responseInsert);
+        }else return json_encode($responseSession);
+    });
+
+
+    $app->post('/petHospitalizedOut', function(Request $request, Response $response) use ($userController, $mascotaController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+
+            $date = $data['date'];
+            $hour = $data['hour'];
+            $idMascota = $data['idMascota'];
+
+            $responseInsert = $mascotaController->petHospitalizedOut($idMascota);
+            if ( $responseInsert->result == 2 ) {
+
+                $responseHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, $date, $hour, "Alta de internación", null, null, null, null, null, null, null);
+
+                if ( $responseHistorial->result != 2 ){
+                    return json_encode($responseHistorial);
+                }else return json_encode($responseInsert);
+            }
+            return json_encode($responseInsert);
+        }else return json_encode($responseSession);
+    });
+
 }
 ?>

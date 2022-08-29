@@ -313,4 +313,14 @@ class mascotas{
 	public function getMascotasIds(){
 		return DataBase::sendQuery("SELECT MS.idMascota, M.nombre, S.numSocio FROM socios AS S, mascotasocio AS MS, mascotas AS M WHERE S.idSocio = MS.idSocio AND MS.idMascota = M.idMascota", null, "LIST");
 	}
+
+
+	public function petHospitalizedIn($idMascota, $hospitalized){
+		return DataBase::sendQuery("UPDATE `mascotas` SET `internado` = ? WHERE `mascotas`.`idMascota` = ?;", array('si', $hospitalized, $idMascota), "BOOLE");
+	}
+
+
+	public function petHospitalizedOut($idMascota){
+		return DataBase::sendQuery("UPDATE `mascotas` SET `internado` = null WHERE `mascotas`.`idMascota` = ?;", array('i', $idMascota), "BOOLE");
+	}
 }
