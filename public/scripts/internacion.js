@@ -1,6 +1,19 @@
+$("#petHospitalizedMode").change(function() {
+
+	$('#tbodyInternacion').empty();
+	cargarTablaInternacion();
+});
+
+
 function cargarTablaInternacion(){
 
-	sendAsyncPost('getHospitalizedPet', {hospitalizedPlace:null})
+	let mode = $("#petHospitalizedMode").val()
+
+	if ( mode !== "vet" && mode !== "casa" ){
+		mode = null;
+	}
+
+	sendAsyncPost('getHospitalizedPet', {hospitalizedPlace:mode})
 	.then((response)=>{
 
 		if(response.result == 2){
