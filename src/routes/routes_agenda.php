@@ -103,8 +103,9 @@ return function (App $app) {
         if($responseSession->result == 2){
             $data = $request->getParams();
             $hospitalizedPlace = $data['hospitalizedPlace'];
+            $lastId = $data['lastId'];
 
-			return json_encode($hospitalizedPetController->getHospitalizedPet($hospitalizedPlace));
+			return json_encode($hospitalizedPetController->getHospitalizedPet($hospitalizedPlace, $lastId));
         }else return json_encode($responseSession);
     });
 }

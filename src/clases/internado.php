@@ -2,7 +2,7 @@
 class internado{
 
 
-	public function getAllHospitalizedPet($place){
+	public function getAllHospitalizedPet($place, $lastId){
 
 		$where = " WHERE m.internado is not null ";
 		if ($place == "vet"){
@@ -15,8 +15,8 @@ class internado{
 		$database = new DataBase();
 		return $database->sendQuery("SELECT m.*, s.nombre as nomCliente, s.fechaUltimaCuota, s.telefax, s.tipo FROM `mascotas` as m
 		LEFT JOIN mascotasocio AS ms ON m.idMascota = ms.idMascota
-		LEFT JOIN socios AS s ON ms.idSocio = s.idSocio ".$where."
-		ORDER BY m.`idMascota` DESC LIMIT 30",array(), "LIST");
+		LEFT JOIN socios AS s ON ms.idSocio = s.idSocio ".$where." AND m.idMascota < ?
+		ORDER BY m.`idMascota` DESC LIMIT 20",array('i',$lastId), "LIST");
 
 	}
 

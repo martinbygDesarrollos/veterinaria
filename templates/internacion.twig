@@ -17,7 +17,7 @@
 					</select>
 				</div>
 			</div>
-			<div class="containerTable">
+			<div class="tableCustomScroll">
 				<table class="table">
 					<thead class="bg-mycolor">
 						<tr>
@@ -41,7 +41,7 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/internacion.js?{{version}}"></script>
 <script type="text/javascript">
 	cargarTablaInternacion();
-	$('.containerTable').on('scroll', function() {
+	$('.tableCustomScroll').on('scroll', function() {
 		if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
 			cargarTablaInternacion();
 		}

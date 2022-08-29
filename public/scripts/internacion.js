@@ -1,3 +1,5 @@
+var lastId = 0;
+
 $("#petHospitalizedMode").change(function() {
 
 	$('#tbodyInternacion').empty();
@@ -12,12 +14,15 @@ function cargarTablaInternacion(){
 	if ( mode !== "vet" && mode !== "casa" ){
 		mode = null;
 	}
-
-	sendAsyncPost('getHospitalizedPet', {hospitalizedPlace:mode})
+	console.log(lastId);
+	sendAsyncPost('getHospitalizedPet', {hospitalizedPlace:mode, lastId:lastId})
 	.then((response)=>{
 
 		if(response.result == 2){
 
+
+			if(response.lastId != lastId)
+			lastId = response.lastId;
 
 			let list = response.listResult;
 
@@ -30,8 +35,6 @@ function cargarTablaInternacion(){
 
 				$('#tbodyInternacion').append(row);
 			}
-		}else {
-			$('#tbodyInternacion').empty();
 		}
 
 	})
@@ -40,7 +43,6 @@ function cargarTablaInternacion(){
 
 
 function createRowHospitalized(obj){
-	console.log(obj);
 	if ( !obj.fechaFallecimiento ){
 		internado = "";
 		if ( obj.internado == "vet" ){
