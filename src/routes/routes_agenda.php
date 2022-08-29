@@ -5,11 +5,13 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 require_once '../src/controladores/ctr_agenda.php';
+require_once '../src/controladores/ctr_internado.php';
 
 return function (App $app) {
 
 	$calendarController = new ctr_agenda();
 	$userController = new ctr_usuarios();
+	$hospitalizedPetController = new ctr_internado();
 
 	$app->get('/cirugia', function($request, $response, $args) use ($userController, $calendarController){
         $args['version'] = FECHA_ULTIMO_PUSH;
@@ -31,7 +33,11 @@ return function (App $app) {
 
 	$app->get('/domicilios', function($request, $response, $args) use ($userController){
         $args['version'] = FECHA_ULTIMO_PUSH;
-        return $response->withRedirect('socios');
+        $responseSession = $userController->validateSession();
+		if($responseSession->result == 2){
+			$args['administrador'] = $responseSession->session;
+			return $this->view->render($response, "domicilios.twig", $args);
+		}else return $response->withRedirect('iniciar-sesion');
 	})->setName("Domicilios");
 
 	$app->get('/calendario', function($request, $response, $args) use ($userController){
@@ -42,6 +48,15 @@ return function (App $app) {
 			return $this->view->render($response, "calendar.twig", $args);
 		}else return $response->withRedirect('iniciar-sesion');
 	})->setName("Calendario");
+
+	$app->get('/internacion', function($request, $response, $args) use ($userController){
+        $args['version'] = FECHA_ULTIMO_PUSH;
+		$responseSession = $userController->validateSession();
+		if($responseSession->result == 2){
+			$args['administrador'] = $responseSession->session;
+			return $this->view->render($response, "internacion.twig", $args);
+		}else return $response->withRedirect('iniciar-sesion');
+	})->setName("Internacion");
 
 	$app->post('/getEventCalendarByDay', function(Request $request, Response $response) use ($userController, $calendarController){
         $responseSession = $userController->validateSession();
@@ -77,6 +92,19 @@ return function (App $app) {
             $idUser = $responseSession->session['IDENTIFICADOR'];
 
 			return json_encode($calendarController->saveNewEvent($newEvents, $idUser, $type));
+        }else return json_encode($responseSession);
+    });
+
+
+
+
+    $app->post('/getHospitalizedPet', function(Request $request, Response $response) use ($userController, $hospitalizedPetController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $hospitalizedPlace = $data['hospitalizedPlace'];
+
+			return json_encode($hospitalizedPetController->getHospitalizedPet($hospitalizedPlace));
         }else return json_encode($responseSession);
     });
 }

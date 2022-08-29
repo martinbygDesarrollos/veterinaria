@@ -95,7 +95,7 @@ class ctr_agenda {
 			//si ya hay un registro para ese dia entonces se modifica sino se crea nuevo
 			$calNoteResult = $calendarClass->getCalDataByDayCategory($time, $category);
 			if ( $calNoteResult->result != 0 ){
-				if ( count($calNoteResult->listResult) >0 ){
+				if ( $calNoteResult->result == 2 ){
 					$response = $calendarClass->modifyNoteCalendar($idUser, $time, $event, null, null, $category );
 				}else
 					$response = $calendarClass->saveNewEvent( $idUser, $time, $event, null,null, $category );

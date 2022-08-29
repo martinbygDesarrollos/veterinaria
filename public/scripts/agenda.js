@@ -18,6 +18,8 @@ $(document).ready(()=>{
 		calendarCategory = "cirugia";
 	}else if (window.location.pathname.includes("peluqueria")){
 		calendarCategory = "peluqueria";
+	}else if (window.location.pathname.includes("domicilios")){
+		calendarCategory = "domicilios";
 	}else if (window.location.pathname.includes("calendario")){
 		calendarCategory = "calendario";
 	}
@@ -91,8 +93,6 @@ function createRow( obj ){
 	buttonVerSocio = '<button class="btn btn-info" title="Ver cliente" disabled>Cliente</button>';
 	if ( obj.socio )
 		buttonVerSocio = '<a class="btn btn-info" title="Ver cliente" href="'+getSiteURL()+"ver-socio/"+obj.socio.idSocio+'" value="" target="_blank">Cliente</a>';
-	else
-		buttonVerSocio = '<a class="btn btn-info" target="_blank" title="Ver cliente" disabled >Cliente</a>';
 
 
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
@@ -114,6 +114,8 @@ function saveEventInCalendar( tr ){
 		day = $("#idInputTodayCalendar").val();
 	}else if ( calendarCategory == "peluqueria" ){
 		day = $("#idInputTodayPelu").val();
+	}else if ( calendarCategory == "domicilios" ){
+		day = $("#idInputTodayDomi").val();
 	}
 
 
@@ -155,6 +157,8 @@ function clearTableEvents(){
 		$("#tbodyCirugiasCalendar").empty();
 	}else if ( calendarCategory == "peluqueria" ){
 		$("#tbodyPeluqueriasCalendar").empty();
+	}else if ( calendarCategory == "domicilios" ){
+		$("#tbodyDomiciliosCalendar").empty();
 	}
 }
 
@@ -165,6 +169,8 @@ function newRowToCalendar(){
 		$("#tbodyCirugiasCalendar").append(row);
 	}else if ( calendarCategory == "peluqueria" ){
 		$("#tbodyPeluqueriasCalendar").append(row);
+	}else if ( calendarCategory == "domicilios" ){
+		$("#tbodyDomiciliosCalendar").append(row);
 	}
 }
 
@@ -393,5 +399,29 @@ function getCalendarNotesByDay( day ){
 				$("#textareaCalendarNotes").val(response.listResult[0].descripcion)
 			}else $("#textareaCalendarNotes").val("");
 		}else $("#textareaCalendarNotes").val("");
+	})
+}
+
+
+function getDomiciliosByDay( day ){
+	sendAsyncPost("getEventCalendarByDay",{day:day, type:"domicilios"})
+	.then(( response )=>{
+		if ( response.result == 2 ){
+			if ( response.listResult.length > 0){
+				clearTableEvents();
+
+				for (var i = 0; i < response.listResult.length; i++) {
+					if (!response.listResult[i].hora)
+						hora = "00:00"
+					else hora = response.listResult[i].hora;
+					row = createRow(response.listResult[i]);
+					$("#tbodyDomiciliosCalendar").append(row);
+				}
+			}else {
+				clearTableEvents();
+			}
+		}else{
+			clearTableEvents();
+		}
 	})
 }
