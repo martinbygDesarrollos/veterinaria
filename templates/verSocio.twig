@@ -32,8 +32,8 @@
 			<nav>
 				<div class="nav nav-tabs" id="nav-tab" role="tablist">
 					<a class="nav-item nav-link text-dark active" id="nav-home-tab" data-toggle="tab" href="#nav-informacion" role="tab">Información</a>
-					<a class="nav-item nav-link text-dark " id="nav-home-tab" data-toggle="tab" href="#nav-adicional" role="tab">Información adicional</a>
-					<a class="nav-item nav-link text-dark " id="nav-home-tab" data-toggle="tab" href="#nav-pago" role="tab">Información de pago</a>
+					<a class="nav-item nav-link text-dark " id="nav-home-tab" data-toggle="tab" href="#nav-adicional" role="tab">Tipo de cliente</a>
+					<a class="nav-item nav-link text-dark " id="nav-home-tab" data-toggle="tab" href="#nav-pago" role="tab">Pago</a>
 					<a class="nav-item nav-link text-dark" id="nav-home-tab" data-toggle="tab" href="#nav-historialSocio" role="tab">Historial</a>
 				</div>
 			</nav>
@@ -187,6 +187,12 @@
 						</div>
 						<div class="col">
 							<div class="form-group">
+								<label for="inputLugarPago">Lugar de pago</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="inputLugarPago" value="{{ responseSocio.socio.lugarPago }}">
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
 								<label for="inputUltimoPago">Último pago</label>
 								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoPago" value="{{ responseSocio.socio.fechaUltimoPago }}">
 							</div>
@@ -197,12 +203,6 @@
 							<div class="form-group">
 								<label for="inputUltimoMesPago">Último mes pago</label>
 								<input type="text" class="form-control text-center shadow-sm" readonly id="inputUltimoMesPago" value="{{ responseSocio.socio.fechaUltimaCuota }}">
-							</div>
-						</div>
-						<div class="col">
-							<div class="form-group">
-								<label for="inputLugarPago">Lugar de pago</label>
-								<input type="text" class="form-control text-center shadow-sm" readonly id="inputLugarPago" value="{{ responseSocio.socio.lugarPago }}">
 							</div>
 						</div>
 					</div>
