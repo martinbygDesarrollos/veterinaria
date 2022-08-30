@@ -1,4 +1,4 @@
-var lastId = 0;
+var thelastid = 0;
 
 $("#petHospitalizedMode").change(function() {
 
@@ -14,15 +14,15 @@ function cargarTablaInternacion(){
 	if ( mode !== "vet" && mode !== "casa" ){
 		mode = null;
 	}
-	console.log(lastId);
-	sendAsyncPost('getHospitalizedPet', {hospitalizedPlace:mode, lastId:lastId})
+	console.log(thelastid);
+	sendAsyncPost('getHospitalizedPet', {hospitalizedPlace:mode, lastId:thelastid})
 	.then((response)=>{
 
 		if(response.result == 2){
 
 
-			if(response.lastId != lastId)
-			lastId = response.lastId;
+			if(response.lastId != thelastid)
+			thelastid = response.lastId;
 
 			let list = response.listResult;
 

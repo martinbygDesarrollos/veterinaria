@@ -11,6 +11,7 @@ class internado{
 			$where = " WHERE m.internado = 'casa' ";
 		}
 
+		$lastId = $lastId +1;
 
 		$database = new DataBase();
 		return $database->sendQuery("SELECT m.*, s.nombre as nomCliente, s.fechaUltimaCuota, s.telefax, s.tipo FROM `mascotas` as m
