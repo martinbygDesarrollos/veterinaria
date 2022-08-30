@@ -845,7 +845,7 @@ class ctr_usuarios{
 				$responseValidateData = ctr_usuarios::validateInfoSocio($nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax);
 				if($responseValidateData->result == 2){
 
-					if ( !isset($fechaIngreso) ){
+					if ( !isset($fechaIngreso) || $fechaIngreso == "" ){
 						$fechaIngreso = $responseGetSocio->objectResult->fechaIngreso;
 					}
 
@@ -862,14 +862,14 @@ class ctr_usuarios{
 
 						$fechasTipoSocio = $sociosClass->clientTypeChangesDate( $tipoSocio, $tipoSocioNuevo );
 						if ( $fechasTipoSocio->result == 2 ){
-							if ( isset($fechasTipoSocio->dateInit) && isset($fechaIngreso))
+							if ( isset($fechasTipoSocio->dateInit) )
 								$fechaIngreso = $fechasTipoSocio->dateInit;
 
 							if ( isset($fechasTipoSocio->dateFinish) )
 								$fechaBajaSocio = $fechasTipoSocio->dateFinish;
 						}
 
-						if ($tipoSocio == 3 && $tipoSocioNuevo == 1)
+						if ($tipoSocioNuevo == 1 || $tipoSocioNuevo == 2)
 							$fechaBajaSocio = null;
 
 

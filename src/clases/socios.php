@@ -368,8 +368,11 @@ class socios{
 					$response->dateInit = null;
 					$response->dateFinish = null;
 					$response->result = 2;
+				}elseif ( $currentClientType == 2 && $newClientType == 1 ){
+					$response->dateInit = null;
+					$response->dateFinish = null;
+					$response->result = 2;
 				}else{
-
 					error_log("funcion clientTypeChangesDate tipo cliente actual ".$currentClientType." - ".$newClientType." tipo cliente nuevo");
 					$response->result = 1;
 				}
