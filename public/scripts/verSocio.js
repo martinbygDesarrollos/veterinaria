@@ -20,9 +20,8 @@ function createRowHistorial(idHistorialSocio, idSocio, idMascota, mascota, fecha
 	if(mascota)
 		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>"+ mascota +"</td>";
 	else
-		row += "<td class='text-center'>No especificado</td>";
-	row += "<td class='text-center' >"+ importe +"</td>";
-	row += "<td class='text-center' >"+ observaciones +"</td></tr>";
+		row += "<td class='text-center'></td>";
+	row += "<td class='text-center' >"+ importe +"</td></tr>";
 
 	return row;
 }

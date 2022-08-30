@@ -853,7 +853,13 @@ class ctr_usuarios{
 						$fechaBajaSocio = $responseGetSocio->objectResult->fechaBajaSocio;
 					}
 
+					$newClientHistory = false;
 					if ( $tipoSocio != $tipoSocioNuevo ){
+
+						$tipoSocioDesc = ctr_usuarios::getDescriptionClientType( $tipoSocio );
+						$tipoSocioNuevoDesc = ctr_usuarios::getDescriptionClientType( $tipoSocioNuevo );
+
+
 						$fechasTipoSocio = $sociosClass->clientTypeChangesDate( $tipoSocio, $tipoSocioNuevo );
 						if ( $fechasTipoSocio->result == 2 ){
 							if ( isset($fechasTipoSocio->dateInit) )
@@ -868,6 +874,7 @@ class ctr_usuarios{
 
 
 						//crear datos para registrar en el historial de socio si es necesario
+						$newClientHistory = true;
 					}
 
 					if(!is_null($fechaIngreso)){
@@ -899,6 +906,16 @@ class ctr_usuarios{
 							}
 							//$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
 							$responseHistorial = ctr_historiales::insertHistorialUsuario("Modificación de socio", $idSocio, null, "La informacion del socio " . $nombre . " fue actualizada en el sistema.");
+
+							if ( $newClientHistory ){
+
+								$responseHistorialClient = ctr_historiales::crearHistorialSocio($idSocio, null, date("Y-m-d"), "Cambio en el tipo de cliente, pasó de ".$tipoSocioDesc. " a ".$tipoSocioNuevoDesc.".", null, null);
+								if ( $responseHistorialClient->result != 2 ){
+									return $responseHistorialClient;
+								}
+
+							}
+
 							if($responseHistorial->result == 2){
 								$response->result = 2;
 								$response->message = "Se actualizó la información del socio.";
@@ -1187,4 +1204,20 @@ class ctr_usuarios{
 
 		return $response;
 	}
+
+
+	public function getDescriptionClientType( $type ){
+		if($type == 0)
+			return "Cliente";
+
+		else if($type == 1)
+			return "Socio";
+
+		else if($type == 2)
+			return "ONG";
+
+		else if($type == 3)
+			return "Ex socio";
+	}
+
 }

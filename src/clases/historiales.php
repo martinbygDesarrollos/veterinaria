@@ -192,10 +192,10 @@ class historiales{
 				if(!is_null($row['importe']))
 					$row['importe'] = number_format($row['importe'],2, ",", ".");
 				else
-					$row['importe'] = "No especificado";
+					$row['importe'] = "";
 
 				if(is_null($row['observaciones']))
-					$row['observaciones'] = "No especificado";
+					$row['observaciones'] = "";
 
 				$arrayResult[] = $row;
 			}
@@ -221,7 +221,7 @@ class historiales{
 			$responseQuery->objectResult->fechaEmision = fechas::dateTimeToFormatBar($responseQuery->objectResult->fechaEmision);
 			$responseQuery->objectResult->importe = number_format($responseQuery->objectResult->importe,2, ",", ".");
 			if(is_null($responseQuery->objectResult->observaciones) || strlen($responseQuery->objectResult->observaciones) == 0)
-				$responseQuery->objectResult->observaciones = "No especificado";
+				$responseQuery->objectResult->observaciones = "";
 		}else if($responseQuery->result == 1) $responseQuery->message = "El identificador seleccionado no corresponde a un registro del historial.";
 
 		return $responseQuery;
