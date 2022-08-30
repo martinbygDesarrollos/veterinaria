@@ -15,14 +15,13 @@ function cargarTablaHistorialSocios(idSocio){
 
 function createRowHistorial(idHistorialSocio, idSocio, idMascota, mascota, fechaEmision, asunto, importe, fecha, observaciones){
 	let row = "<tr id='"+ idHistorialSocio +"'>";
-	row += "<td class='text-center' >"+ fechaEmision +"</td>";
+	row += "<td class='text-center' >"+ fecha +"</td>";
 	row += "<td class='text-center' >"+ asunto +"</td>";
 	if(mascota)
 		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>"+ mascota +"</td>";
 	else
 		row += "<td class='text-center'>No especificado</td>";
 	row += "<td class='text-center' >"+ importe +"</td>";
-	row += "<td class='text-center' >"+ fecha +"</td>";
 	row += "<td class='text-center' >"+ observaciones +"</td></tr>";
 
 	return row;
@@ -204,7 +203,7 @@ function saveChangeSocio(buttonConfirm){
 	let telefax = $('#inputModalTelefax').val() || null;
 	let email = $('#inputModalEmail').val() || null;
 
-	if( cedula || rut ){
+	//if( cedula || rut ){
 		if(validateCI(cedula) || !cedula){
 			if(nombre){
 				if(!email || validateEmail(email)){
@@ -233,7 +232,7 @@ function saveChangeSocio(buttonConfirm){
 				}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para modificarlo", "Cliente", "modalUpdateSocio");
 		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");
-	}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
+	//}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
 }
 
 function setValues(inputFrom, socio){

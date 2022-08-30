@@ -350,7 +350,7 @@ class socios{
 		 *
 		 * socio(1) a cualquier otra excepto ong(2) se guarda la fecha de baja
 		 *
-		 * de exsocio a socio, se puede? se guarda algo?
+		 * de exsocio (3) a socio (1), fecha de alta no cambia, fecha de baja se limpia
 		 */
 
 		$response = new \stdClass();
@@ -364,7 +364,12 @@ class socios{
 					$response->dateInit = null;
 					$response->dateFinish = date("Y-m-d");
 					$response->result = 2;
+				}elseif ( $currentClientType == 3 && $newClientType == 1 ){
+					$response->dateInit = null;
+					$response->dateFinish = null;
+					$response->result = 2;
 				}else{
+
 					error_log("funcion clientTypeChangesDate tipo cliente actual ".$currentClientType." - ".$newClientType." tipo cliente nuevo");
 					$response->result = 1;
 				}

@@ -862,6 +862,12 @@ class ctr_usuarios{
 							if ( isset($fechasTipoSocio->dateFinish) )
 								$fechaBajaSocio = $fechasTipoSocio->dateFinish;
 						}
+
+						if ($tipoSocio == 3 && $tipoSocioNuevo == 1)
+							$fechaBajaSocio = null;
+
+
+						//crear datos para registrar en el historial de socio si es necesario
 					}
 
 					if(!is_null($fechaIngreso)){
@@ -929,8 +935,10 @@ class ctr_usuarios{
 		}
 
 		if(is_null($cedula)){
-			$response->result = 1;
-			$response->message = "La cédula no puede ser ingresada nula.";
+			$response->result = 2;
+
+			/*$response->result = 1;
+			$response->message = "La cédula no puede ser ingresada nula.";*/
 		}else if(!ctype_digit($cedula)){
 			$response->result = 1;
 			$response->message = "La cédula solo permite caracteres alfanuméricos.";
