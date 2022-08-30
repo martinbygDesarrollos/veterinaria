@@ -40,6 +40,65 @@ class ctr_historiales {
 		return configuracionSistema::getQuota();
 	}
 
+
+
+	public function eliminarClientesBasura($user){
+		$migrarClass = new migrateDB();
+		if(strcmp($user, "admin") == 0){
+
+			//PROCESO PARA ELIMINAR
+			//obtener todos los id de todos los socios arrayClientes
+			//obtener todos los id de todas las mascotas arrayMascotas
+
+			//de las mascotas de los clientes enfermedadesmascota idMascota
+			//de las mascotas de los clientes historiasclinica idMascota
+			//de las mascotas de los clientes vacunasmascota idMascota
+
+			//registro de mascotasocio idMascota and idSocio
+
+			//mascotas idMascota
+			//historialsocios idSocio
+			//socios idSocio
+
+			echo "<pre>";
+			$arrayClientes = $migrarClass->getSociosNoDeudores(); //array con todos los ids de los clientes que no se encuentran en gestcom
+			foreach ($arrayClientes->listResult as $idSocio) {
+				$arrayMascotas = $migrarClass->getPetsByClient($idSocio);
+				foreach ($arrayMascotas->listResult as $idMascota) {
+					//eliminar todo en enfermedadesmascota
+					$migrarClass->deleteEnfermedad($idMascota);
+					//eliminar todo en historiasclinica
+					$migrarClass->deleteHistoriaClinica($idMascota);
+					//eliminar todo en vacunasmascota
+					$migrarClass->deleteVacuna($idMascota);
+
+					//eliminar en mascotasocio
+					$migrarClass->desvincularMascotaCliente($idMascota, $idSocio);
+				}
+
+				$migrarClass->deleteMascota($idMascota);
+				$migrarClass->deleteHistorialCliente($idSocio);
+				$migrarClass->deleteSocio($idSocio);
+				echo "socio eliminado ".$idSocio."\n";
+			}
+
+
+
+			$response->result = 2;
+			$response->message = "Se analizaron e ingresaron los registros del sistema anterior.";
+		}else{
+			$response->result = 0;
+			$response->message = "Usted no es un usuarios con privilegios para ejecutar esta operación";
+		}
+		return $response;
+
+
+
+	}
+
+
+
+
 	//----------------------------------- FUNCIONES DE HISTORIAL CLINICO ------------------------------------------
 
 	public function agregarHistoriaClinica($idMascota, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){

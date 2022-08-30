@@ -18,6 +18,21 @@ return function (App $app) {
 	// 	}else return json_encode($responseSession);
 	// });
 
+
+
+
+	$app->post('/eliminar', function(Request $request, Response $response){
+	$responseSession = ctr_usuarios::validateSession();
+		if($responseSession->result == 2){
+	 		return json_encode(ctr_historiales::eliminarClientesBasura($responseSession->session['USUARIO']));
+	 	}else return json_encode($responseSession);
+	});
+
+
+
+
+
+
     //-------------------------- VISTAS ------------------------------------------
 
 	$app->get('/settings', function($request, $response, $args) use ($container){

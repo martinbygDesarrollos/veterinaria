@@ -469,4 +469,81 @@ class migrateDB{
             return $fechaArray[2] . $mes;
         else return null;
     }
+
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //ELIMINAR DATOS INCONSISTENTES
+
+
+    public function getSociosNoDeudores(){
+        $dataBaseClass = new DataBase();
+        $sql = "SELECT idSocio FROM `socios`
+            WHERE idSocio not IN (SELECT idDeudor FROM deudores)";
+        $response = $dataBaseClass->sendQuery($sql, array(), "LIST");
+        if ( $response->result != 2 ){
+            $response->listResult = array();
+        }
+
+        return $response;
+    }
+
+
+    public function getPetsByClient($idSocio){
+        $dataBaseClass = new DataBase();
+        $sql = "SELECT idMascota FROM `mascotasocio` WHERE idSocio = ?";
+        $response = $dataBaseClass->sendQuery($sql, array('i', $idSocio), "LIST");
+        if ( $response->result != 2 ){
+            $response->listResult = array();
+        }
+
+        return $response;
+    }
+
+
+    public function deleteEnfermedad( $idMascota ){
+        $dataBaseClass = new DataBase();
+        $sql = "DELETE FROM `enfermedadesmascota` WHERE `enfermedadesmascota`.`idMascota` = ?";
+        return $dataBaseClass->sendQuery($sql, array('i', $idMascota), "BOOLE");
+    }
+
+
+    public function deleteHistoriaClinica($idMascota){
+        $dataBaseClass = new DataBase();
+        $sql = "DELETE FROM `historiasclinica` WHERE `historiasclinica`.`idMascota` = ?";
+        return $dataBaseClass->sendQuery($sql, array('i', $idMascota), "BOOLE");
+    }
+
+
+
+    public function deleteVacuna($idMascota){
+        $dataBaseClass = new DataBase();
+        $sql = "DELETE FROM `vacunasmascota` WHERE `vacunasmascota`.`idMascota` = ?";
+        return $dataBaseClass->sendQuery($sql, array('i', $idMascota), "BOOLE");
+    }
+
+
+    public function desvincularMascotaCliente($idMascota, $idSocio){
+        $dataBaseClass = new DataBase();
+        $sql = "DELETE FROM `mascotasocio` WHERE `mascotasocio`.`idMascota` = ? AND `mascotasocio`.`idMascota` = ?";
+        return $dataBaseClass->sendQuery($sql, array('ii', $idMascota, $idSocio), "BOOLE");
+    }
+    public function deleteMascota(){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery($sql, array(), "BOOLE");
+    }
+    public function deleteHistorialCliente(){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery($sql, array(), "BOOLE");
+    }
+    public function deleteSocio(){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery($sql, array(), "BOOLE");
+    }
+
+
+
 }
