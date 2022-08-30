@@ -317,7 +317,7 @@ function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel,
 
 //SCROLL TABLA BODY RESULTADOS PARA AGREGAR CLIENTE A SECCION CIRUGIAS
 $('#modalSearchClientOrPet .tableCustomScroll').on('scroll', function() {
-	console.log("el datos del last index ", lastIndexLimit);
+	/*console.log("el datos del last index ", lastIndexLimit);
 	console.log("en el scroll");
 	console.log("antes de cambiar el lastIndexLimit ", lastIndexLimit);
 
@@ -325,11 +325,11 @@ $('#modalSearchClientOrPet .tableCustomScroll').on('scroll', function() {
 		console.log(response.newIndexLimit);
 		lastIndexLimit = response.newIndexLimit;
 	}*/
-	lastIndexLimit = $('#modalSearchClientOrPet tbody').children().length;
+	/*lastIndexLimit = $('#modalSearchClientOrPet tbody').children().length;
 	console.log("se cambio el lastIndexLimit ", lastIndexLimit);
 
 	//console.log($('#modalSearchClientOrPet input').val());
-	searchDataClienstOrPet($('#modalSearchClientOrPet input').val());
+	searchDataClienstOrPet($('#modalSearchClientOrPet input').val());*/
 })
 
 
