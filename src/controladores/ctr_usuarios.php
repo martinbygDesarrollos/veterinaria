@@ -862,7 +862,7 @@ class ctr_usuarios{
 
 						$fechasTipoSocio = $sociosClass->clientTypeChangesDate( $tipoSocio, $tipoSocioNuevo );
 						if ( $fechasTipoSocio->result == 2 ){
-							if ( isset($fechasTipoSocio->dateInit) )
+							if ( isset($fechasTipoSocio->dateInit) && isset($fechaIngreso))
 								$fechaIngreso = $fechasTipoSocio->dateInit;
 
 							if ( isset($fechasTipoSocio->dateFinish) )
