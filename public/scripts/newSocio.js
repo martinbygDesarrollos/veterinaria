@@ -11,7 +11,7 @@ function insertarNuevoSocio(){
 	let tipoSocio = $('#inputTipoSocio').val() || null;
 	let fechaIngreso = $('#inputFechaIngresoSocio').val() || null;
 
-	//if( cedula || rut ){
+	if( cedula || rut ){
 		if(validateCI(cedula) || !cedula){
 			if(nombre){
 				if(!email || validateEmail(email)){
@@ -40,7 +40,7 @@ function insertarNuevoSocio(){
 				}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para agregarlo", "Cliente", "modalUpdateSocio");
 		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");
-	//}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
+	}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
 }
 
 
