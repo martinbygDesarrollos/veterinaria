@@ -274,6 +274,10 @@ return function (App $app) {
             $ultimoPago = $data['ultimoPago'];
             $fechaPago =  $data['fechaPago'];
             $ultimoMesPago = $data['ultimoMesPago'];
+
+            if ( $cedula == "" ){
+                $cedula = null;
+            }
             return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $fechaBaja, $ultimoPago, $fechaPago, $ultimoMesPago));
         }else return json_encode($responseSession);
     });
