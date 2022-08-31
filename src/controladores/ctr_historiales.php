@@ -43,6 +43,7 @@ class ctr_historiales {
 
 
 	public function eliminarClientesBasura($user){
+		$response = new \stdClass();
 		$migrarClass = new migrateDB();
 		if(strcmp($user, "admin") == 0){
 
@@ -62,30 +63,31 @@ class ctr_historiales {
 
 			echo "<pre>";
 			$arrayClientes = $migrarClass->getSociosNoDeudores(); //array con todos los ids de los clientes que no se encuentran en gestcom
+			//var_dump($arrayClientes);exit;
 			foreach ($arrayClientes->listResult as $idSocio) {
-				$arrayMascotas = $migrarClass->getPetsByClient($idSocio);
+				$arrayMascotas = $migrarClass->getPetsByClient($idSocio['idSocio']);
 				foreach ($arrayMascotas->listResult as $idMascota) {
 					//eliminar todo en enfermedadesmascota
-					$migrarClass->deleteEnfermedad($idMascota);
+					$migrarClass->deleteEnfermedad($idMascota['idMascota']);
 					//eliminar todo en historiasclinica
-					$migrarClass->deleteHistoriaClinica($idMascota);
+					$migrarClass->deleteHistoriaClinica($idMascota['idMascota']);
 					//eliminar todo en vacunasmascota
-					$migrarClass->deleteVacuna($idMascota);
+					$migrarClass->deleteVacuna($idMascota['idMascota']);
 
 					//eliminar en mascotasocio
-					$migrarClass->desvincularMascotaCliente($idMascota, $idSocio);
+					$migrarClass->desvincularMascotaCliente($idMascota['idMascota'], $idSocio['idSocio']);
+					$migrarClass->deleteMascota($idMascota['idMascota']);
 				}
 
-				$migrarClass->deleteMascota($idMascota);
-				$migrarClass->deleteHistorialCliente($idSocio);
-				$migrarClass->deleteSocio($idSocio);
-				echo "socio eliminado ".$idSocio."\n";
+				$migrarClass->deleteHistorialCliente($idSocio['idSocio']);
+				$migrarClass->deleteSocio($idSocio['idSocio']);
+				//echo "socio eliminado ".$idSocio['idSocio']."\n";
 			}
 
 
 
 			$response->result = 2;
-			$response->message = "Se analizaron e ingresaron los registros del sistema anterior.";
+			$response->message = "Se eliminaron los registros.";
 		}else{
 			$response->result = 0;
 			$response->message = "Usted no es un usuarios con privilegios para ejecutar esta operación";

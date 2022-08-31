@@ -528,20 +528,31 @@ class migrateDB{
 
     public function desvincularMascotaCliente($idMascota, $idSocio){
         $dataBaseClass = new DataBase();
-        $sql = "DELETE FROM `mascotasocio` WHERE `mascotasocio`.`idMascota` = ? AND `mascotasocio`.`idMascota` = ?";
+        $sql = "DELETE FROM `mascotasocio` WHERE `mascotasocio`.`idMascota` = ? AND `mascotasocio`.`idSocio` = ?";
         return $dataBaseClass->sendQuery($sql, array('ii', $idMascota, $idSocio), "BOOLE");
     }
-    public function deleteMascota(){
+
+
+
+    public function deleteMascota($idMascota){
         $dataBaseClass = new DataBase();
-        return $dataBaseClass->sendQuery($sql, array(), "BOOLE");
+
+        $sql = "DELETE FROM `mascotas` WHERE `mascotas`.`idMascota` = ?";
+        return $dataBaseClass->sendQuery($sql, array('i', $idMascota), "BOOLE");
     }
-    public function deleteHistorialCliente(){
+
+
+    public function deleteHistorialCliente($idSocio){
         $dataBaseClass = new DataBase();
-        return $dataBaseClass->sendQuery($sql, array(), "BOOLE");
+        $sql = "DELETE FROM `historialsocios` WHERE `historialsocios`.`idSocio` = ?";
+        return $dataBaseClass->sendQuery($sql, array('i',$idSocio), "BOOLE");
     }
-    public function deleteSocio(){
+
+
+    public function deleteSocio($idSocio){
         $dataBaseClass = new DataBase();
-        return $dataBaseClass->sendQuery($sql, array(), "BOOLE");
+        $sql = "DELETE FROM `socios` WHERE `socios`.`idSocio` = ?";
+        return $dataBaseClass->sendQuery($sql, array('i',$idSocio), "BOOLE");
     }
 
 
