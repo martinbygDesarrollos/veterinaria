@@ -3,46 +3,43 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
-        <div class="row">
-            <ul class="navbar-nav mr-auto">
-                {% if administrador %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link active" href="{{ path_for('Socios')}}" role="button" >Clientes</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active" href="{{ path_for('Mascotas')}}">Mascotas</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active" href="{{ path_for('Cirugias')}}">Cirugías</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active" href="{{ path_for('Peluqueria')}}">Peluquería</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active" href="{{ path_for('Domicilios')}}">Domicilios</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active" href="{{ path_for('Calendario')}}">Calendario</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active" href="{{ path_for('Internacion')}}">Internación</a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-        <div class="row">
+    <!--div class="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent"-->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
             {% if administrador %}
-            <ul class="navbar-nav mr-2">
-                <li class="nav-item active">
-                    <a class="nav-link active" href="{{path_for('HistorialUsuario')}}">Historial</a>
-                </li>
-            </ul>
-            <a class="btn btn-info mr-2" href="{{path_for('Inicio')}}settings" type="submit"><i class="fas fa-cogs"></i></a>
-            <a class="btn btn-danger my-2 my-sm-0" href="{{path_for('LogOut')}}" type="submit">Cerrar sesión</a>
-            {% else %}
-            <a class="btn btn-success my-2 my-sm-0" href="{{path_for('Login')}}" type="submit">Iniciar sesion</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link active" href="{{ path_for('Socios')}}" role="button" >Clientes</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link active" href="{{ path_for('Mascotas')}}">Mascotas</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link active" href="{{ path_for('Cirugias')}}">Cirugías</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link active" href="{{ path_for('Peluqueria')}}">Peluquería</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link active" href="{{ path_for('Domicilios')}}">Domicilios</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link active" href="{{ path_for('Calendario')}}">Calendario</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link active" href="{{ path_for('Internacion')}}">Internación</a>
+            </li>
             {% endif %}
-        </div>
+        </ul>
+        {% if administrador %}
+        <ul class="navbar-nav mr-2">
+            <li class="nav-item active">
+                <a class="nav-link active" href="{{path_for('HistorialUsuario')}}">Historial</a>
+            </li>
+        </ul>
+        <a class="btn btn-info mr-2" href="{{path_for('Inicio')}}settings" type="submit"><i class="fas fa-cogs"></i></a>
+        <a class="btn btn-danger my-2 my-sm-0" href="{{path_for('LogOut')}}" type="submit">Cerrar sesión</a>
+        {% else %}
+        <a class="btn btn-success my-2 my-sm-0" href="{{path_for('Login')}}" type="submit">Iniciar sesion</a>
+        {% endif %}
     </div>
 </nav>
