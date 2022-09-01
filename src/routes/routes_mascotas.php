@@ -45,16 +45,20 @@ return function (App $app) {
             $args['SocioMascota'] = $mascotaController->getMascotaWithSocio($idMascota);
             if ( $args['SocioMascota'] ){
                 $args['rowColorClientType'] = "rowSocio";
-                if ( $args['SocioMascota']->socio->tipoSocio == 0 ){ //NO SOCIO
+                if ( isset($args['SocioMascota']->socio) ){
+                    if ( $args['SocioMascota']->socio->tipoSocio == 0 ){ //NO SOCIO
+                        $args['rowColorClientType'] = "rowNosocio";
+                    }else if ( $args['SocioMascota']->socio->tipoSocio == 1 ){ //SOCIO
+                        if ( $args['SocioMascota']->socio->deudor )
+                            $args['rowColorClientType'] = "rowWarning";
+                    }else if ( $args['SocioMascota']->socio->tipoSocio == 3 ){ //EX SOCIO
+                        if ( $args['SocioMascota']->socio->deudor )
+                            $args['rowColorClientType'] = "rowExsocioWarning";
+                        else
+                            $args['rowColorClientType'] = "rowExsocio";
+                    }
+                }else{
                     $args['rowColorClientType'] = "rowNosocio";
-                }else if ( $args['SocioMascota']->socio->tipoSocio == 1 ){ //SOCIO
-                    if ( $args['SocioMascota']->socio->deudor )
-                        $args['rowColorClientType'] = "rowWarning";
-                }else if ( $args['SocioMascota']->socio->tipoSocio == 3 ){ //EX SOCIO
-                    if ( $args['SocioMascota']->socio->deudor )
-                        $args['rowColorClientType'] = "rowExsocioWarning";
-                    else
-                        $args['rowColorClientType'] = "rowExsocio";
                 }
             }
 

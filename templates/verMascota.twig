@@ -15,7 +15,7 @@
 					<h5 >Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>&nbsp;
 				{% endif %}
 			{% else %}
-				<h5 class="card-title mt-2"></h5>
+				<h5 class="card-title mt-2">{{SocioMascota.mascota.nombre}}</h5>
 			{% endif %}
 
 
@@ -73,50 +73,46 @@
 									<i class="fas fa-edit text-dark"></i>
 								</button>
 							</div>
-							<div class="row d-flex justify-content-center m-3">
+							<div class="row d-flex justify-content-center mr-1 ml-1">
 								<div class="col">
 									<div class="form-group">
 										<label for="inputNombre">Nombre</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputNombre" readonly value="{{ SocioMascota.mascota.nombre }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputNombre" readonly value="{{ SocioMascota.mascota.nombre }}" onkeypress="return keyEnterPress(event, this.value, 50)" placeholder="Nombre">
 									</div>
 								</div>
-							</div>
-							<hr>
-							<div class="row d-flex justify-content-center m-3">
 								<div class="col">
 									<div class="form-group">
 										<label for="inputEspecie">Especie</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputEspecie" readonly value="{{ SocioMascota.mascota.especie }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputEspecie" readonly value="{{ SocioMascota.mascota.especie }}" onkeypress="return keyEnterPress(event, this.value, 50)" placeholder="Especie">
 									</div>
 								</div>
 								<div class="col">
 									<div class="form-group">
 										<label for="inputRaza">Raza</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputRaza" readonly value="{{ SocioMascota.mascota.raza }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputRaza" readonly value="{{ SocioMascota.mascota.raza }}" onkeypress="return keyEnterPress(event, this.value, 50)" placeholder="Raza">
 									</div>
 								</div>
-							</div>
-							<div class="row d-flex justify-content-center m-3">
 								<div class="col">
 									<div class="form-group">
 										<label for="inputSexo">Sexo</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputSexo" readonly value="{{ SocioMascota.mascota.sexo }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputSexo" readonly value="{{ SocioMascota.mascota.sexo }}" onkeypress="return keyEnterPress(event, this.value, 50)" placeholder="Sexo">
 									</div>
 								</div>
+							</div>
+							<hr>
+							<div class="row d-flex justify-content-center mr-1 ml-1">
 								<div class="col">
 									<div class="form-group">
 										<label for="inputPelo">Pelo</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputPelo" readonly value="{{ SocioMascota.mascota.pelo }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputPelo" readonly value="{{ SocioMascota.mascota.pelo }}" onkeypress="return keyEnterPress(event, this.value, 50)" placeholder="Pelo">
 									</div>
 								</div>
 								<div class="col">
 									<div class="form-group">
 										<label for="inputColor">Color</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputColor" readonly value="{{ SocioMascota.mascota.color }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputColor" readonly value="{{ SocioMascota.mascota.color }}" onkeypress="return keyEnterPress(event, this.value, 50)" placeholder="Color">
 									</div>
 								</div>
-							</div>
-							<div class="row d-flex justify-content-center m-3">
 								<div class="col">
 									<div class="form-group" hidden disabled>
 										<label for="inputPedigree">Pedigree</label>
@@ -124,7 +120,7 @@
 									</div>
 									<div class="form-group">
 										<label for="inputPeso">Peso (Kg)</label>
-										<input type="text" class="form-control text-center shadow-sm" id="inputPeso" readonly value="{{ SocioMascota.mascota.peso }}" onkeypress="return keyEnterPress(event, this.value, 50)">
+										<input type="text" class="form-control text-center shadow-sm" id="inputPeso" readonly value="{{ SocioMascota.mascota.peso }}" onkeypress="return keyEnterPress(event, this.value, 50)" placeholder="Peso (Kg)">
 									</div>
 								</div>
 								<div class="col">
@@ -135,7 +131,7 @@
 								</div>
 							</div>
 							<hr>
-							<div class="row d-flex justify-content-center m-3">
+							<div class="row d-flex justify-content-center mr-1 ml-1">
 								<div class="col">
 									<div class="form-group">
 										<label for="inputNacimiento">Nacimiento</label>
@@ -148,12 +144,10 @@
 										<input type="text" class="form-control text-center shadow-sm" id="inputFallecimiento" readonly value="{{ SocioMascota.mascota.fechaFallecimiento }}">
 									</div>
 								</div>
-							</div>
-							<div class="row d-flex justify-content-center m-3">
-								<div class="col">
+								<div class="col-6">
 									<div class="form-group">
 										<label for="inputObservaciones">Observaciones</label>
-										<textarea id="inputObservaciones" class="form-control shadow-sm rounded-0" maxlength="200" readonly style="resize: none;" rows="3" disabled>{{ SocioMascota.mascota.observaciones }}</textarea>
+										<textarea id="inputObservaciones" class="form-control shadow-sm rounded-0" maxlength="200" readonly style="resize: none;" rows="2" disabled>{{ SocioMascota.mascota.observaciones }}</textarea>
 									</div>
 								</div>
 							</div>
