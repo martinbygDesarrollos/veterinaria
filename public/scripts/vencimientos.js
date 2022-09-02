@@ -25,9 +25,11 @@ function createRowCuotas(idSocio, fechaUltimaCuota, fechaPago, nombre, cuota, lu
 	row += "<td class='text-center notShowMobile'>"+ lugarPago +"</td>";
 	//row += "<td class='text-center'>"+ telefono +"</td>";
 
+	mensajePredeterminadoCuotas = "Estimado socio, Veterinaria Nan le recuerda que posee cuota/s vencidas. Al tercer mes de vencido, perderá todos los beneficios de socio, los cuales podrá recuperar al momento de cancelar la deuda. Este mensaje es automático. Por cualquier consulta comunicarse al 472- 34039 en nuestros horarios de atención. Muchas gracias!";
+
 	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
 		if( telefono.length >= 8 )
-			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://wa.me/'+telefono+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a href="https://wa.me/'+telefono+'?text='+mensajePredeterminadoCuotas+'" target="_blank"><button title="Notificar cliente '+telefono+'" class="btn btn-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 		else
 			row += '<td class="text-center">'+telefono+'</td>';
 	}
@@ -111,9 +113,12 @@ function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosi
 	}else
 			row += "<td class='text-center'><i class='fas fa-times'></i></td>";
 
+	vacMessage = "Estimado cliente Veterinaria Nan le recuerda que su mascota "+nombre+" tiene el antiparasitario/vacuna "+nombreVacuna+" vencido. Saluda atte, equipo médico de Veterinaria Nan. Este mensaje es automático. Por cualquier consulta comunicarse al 472- 34039 en nuestros horarios de atención. Muchas gracias!";
+
+
 	if(telefono != "No especificado" && telefono != "No corresponde" && telefono != "" && telefono){
 		if( telefono.length >= 8 )
-			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a target="_blank" href="https://wa.me/'+telefono+'"><button title="Notificar cliente '+telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
+			row += '<td class="text-center" title="Notificar cliente '+telefono+'"><a target="_blank" href="https://wa.me/'+telefono+'?text='+vacMessage+'"><button title="Notificar cliente '+telefono+'" class="btn btn-light" onclick="thenNotifyVacunaByWhatsapp('+idVacunaMascota+')"><i class="fab fa-whatsapp"></i></button></a></td>';
 		else
 			row += '<td class="text-center">'+telefono+'</td>';
 	}
