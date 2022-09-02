@@ -36,7 +36,7 @@ function getSiteURL(){
 	if(url.includes("localhost") || url.includes("intranet.gargano.com.uy") )
 		return '/veterinarianan/public/';
 	else
-		return '/';
+		return '/veterinarianan/public/';
 }
 
 function getDateForInput(){
