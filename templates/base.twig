@@ -13,9 +13,7 @@
 
 	<link rel="stylesheet" type="text/css" media="(max-width: 800px)" href="{{ path_for('Inicio')}}styles/responsiveTablet.css?{{version}}">
 
-	<title>Veterinaria Nan {% block title %}
-		{% endblock %}
-	</title>
+	<title>Veterinaria Nan{% if administrador.USUARIO %} - {{administrador.USUARIO}}{%endif%}</title>
 	{% block head %}
 	{% endblock %}
 </head>
