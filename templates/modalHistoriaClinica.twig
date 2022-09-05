@@ -1,5 +1,5 @@
 <div class="modal fade" id="modalHistoriaClinica" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
-	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-dialog modal-dialog-historia-clinica modal-dialog-centered" style="width: 70%;" role="document">
 		<div class="modal-content">
 			<div class="modal-header bg-mycolor" >
 				<span class="modal-title" id="titleHistoriaClinica"></span>
@@ -10,15 +10,11 @@
 			<div class="modal-body">
 				<div class="row">
 					<div class="form-group col">
-						<label for="inputFechaHistoria">Fecha</label>
 						<input type="date" class="form-control text-center shadow-sm" id="inputFechaHistoria">
 					</div>
 					<div class="form-group col">
-						<label for="inputHoraHistoria">Hora</label>
 						<input type="time" class="form-control text-center shadow-sm" id="inputHoraHistoria">
 					</div>
-				</div>
-				<div class="row">
 					<div class="form-group col">
 						<table class="table-hover table-bordered" style="width: 100%;">
 							<thead>
@@ -46,8 +42,7 @@
 				<div class="row">
 					<div class="col">
 						<div class="form-group">
-							<label for="">Motivo consulta</label>
-							<textarea id="inputMotivoConsultaHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="1"></textarea>
+							<textarea id="inputMotivoConsultaHistoria" class="form-control shadow-sm rounded-0" rows="1" placeholder="Motivo consulta"></textarea>
 						</div>
 					</div>
 				</div>
@@ -55,15 +50,13 @@
 					<div class="col">
 						<div class="form-group">
 							<label for="">Observaciones</label>
-							<textarea id="inputObservacionesHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="3"></textarea>
+							<textarea id="inputObservacionesHistoria" class="form-control shadow-sm rounded-0" rows="15"></textarea>
 						</div>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col">
 						<div class="form-group">
 							<label for="">Tratamiento</label>
-							<textarea id="inputDiagnosticoHistoria" class="form-control shadow-sm rounded-0" maxlength="200" rows="1"></textarea>
+							<textarea id="inputDiagnosticoHistoria" class="form-control shadow-sm rounded-0" rows="15"></textarea>
 						</div>
 					</div>
 				</div>
