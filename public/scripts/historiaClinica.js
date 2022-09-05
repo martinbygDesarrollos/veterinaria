@@ -377,30 +377,26 @@ function modificarMascota(idMascota){
 	let observaciones = $('#inputObservacionesMascota').val() || null;
 
 	if(nombre){
-		if(especie){
-			if(raza){
-				let data = {
-					idMascota: idMascota,
-					nombre: nombre,
-					especie: especie,
-					raza: raza,
-					sexo: sexo,
-					pelo: pelo,
-					color: color,
-					pedigree: pedigree,
-					peso: peso,
-					chip: chip,
-					fechaNacimiento: nacimiento,
-					fechaFallecimiento: muerte,
-					observaciones: observaciones
-				}
-				let response = sendPost("modificarMascota", data);
-				showReplyMessage(response.result, response.message, "Mascota", "modalModificarMascota");
-				if(response.result == 2)
-					updateInformacionMascota("", response.updatedMascota);
-			}else showReplyMessage(1, "Debe ingresar el nombre de la mascota para modificarla.", "Mascota", "modalModificarMascota");
-		}else showReplyMessage(1, "Debe ingresar la especie de la mascota para modificarla.", "Mascota", "modalModificarMascota");
-	}else showReplyMessage(1, "Debe ingresar la raza de la mascota para modificarla.", "Mascota", "modalModificarMascota");
+		let data = {
+			idMascota: idMascota,
+			nombre: nombre,
+			especie: especie,
+			raza: raza,
+			sexo: sexo,
+			pelo: pelo,
+			color: color,
+			pedigree: pedigree,
+			peso: peso,
+			chip: chip,
+			fechaNacimiento: nacimiento,
+			fechaFallecimiento: muerte,
+			observaciones: observaciones
+		}
+		let response = sendPost("modificarMascota", data);
+		showReplyMessage(response.result, response.message, "Mascota", "modalModificarMascota");
+		if(response.result == 2)
+			updateInformacionMascota("", response.updatedMascota);
+	}else showReplyMessage(1, "Debe ingresar nombre de la mascota para modificarla.", "Mascota", "modalModificarMascota");
 }
 
 function updateInformacionMascota(inputFrom, mascota){
