@@ -951,7 +951,7 @@ class ctr_usuarios{
 			$response->message = "El nombre de usuario debe tener al menos un caracter.";
 		}
 
-		if(is_null($cedula)){
+		if(is_null($cedula) || $cedula == ""){
 			$response->result = 2;
 
 			/*$response->result = 1;
