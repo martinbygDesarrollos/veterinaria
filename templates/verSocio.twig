@@ -41,7 +41,13 @@
 				<div class="tab-pane fade show active border boder-2 border-top-0 p-2" id="nav-informacion" role="tabpanel" aria-labelledby="nav-home-tab">
 					{% if responseSocio.result == 2 %}
 					<div class="row">
-						<div class="col-8">
+						<div class="col-2">
+							<div class="form-group">
+								<label for="">Nro. cliente</label>
+								<input type="text" class="form-control text-center shadow-sm" readonly id="" value="{{ responseSocio.socio.idSocio }}">
+							</div>
+						</div>
+						<div class="col-6">
 							<div class="form-group">
 								<label for="inputNombre">Nombre</label>
 								<input type="text" class="form-control text-center shadow-sm" readonly id="inputNombre" value="{{ responseSocio.socio.nombre }}">
