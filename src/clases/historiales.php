@@ -11,7 +11,9 @@ class historiales{
 		if(is_null($fecha) || $fecha == "")
 			$fecha = date("Ymd");
 
-		return DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, hora, motivoConsulta, diagnostico, observaciones, peso, temperatura, fc, fr, tllc ) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('iissssddddd', $idMascota, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc), "BOOLE");
+		$idUserLogued = $_SESSION['ADMIN']['IDENTIFICADOR'];
+
+		return DataBase::sendQuery("INSERT INTO historiasclinica(idMascota, fecha, hora, motivoConsulta, diagnostico, observaciones, peso, temperatura, fc, fr, tllc, idUsuario ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", array('iissssdddddi', $idMascota, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc, $idUserLogued), "BOOLE");
 	}
 
 	public function modificarHistoriaClinica($idHistoriaClinica, $fecha, $hora, $motivoConsulta, $diagnostico, $observaciones, $peso, $temperatura, $fc, $fr, $tllc){
@@ -48,6 +50,8 @@ class historiales{
 	}
 
 	public function getHistoriaClinicaToShow($idHistoriaClinica){
+		$usersClass = new usuarios();
+
 		$responseQuery = historiales::getHistoriaClinica($idHistoriaClinica);
 		if($responseQuery->result == 2){
 			$historia = $responseQuery->objectResult;
@@ -63,6 +67,16 @@ class historiales{
 
 			if(is_null($historia->diagnostico) ||  strlen($historia->diagnostico) < 2)
 				$historia->diagnostico = "";
+
+
+			$historia->usuario = "";
+			if ( $historia->idUsuario ){
+				$user = $usersClass->getUser($historia->idUsuario);
+				if ($user->result == 2){
+
+					$historia->usuario = $user->objectResult->nombre;
+				}
+			}
 
 			$responseQuery->objectResult = $historia;
 		}

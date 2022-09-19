@@ -277,13 +277,21 @@ function clearModalHistoria(){
 function verHistoriaClinica(idHistoria){
 	let response = sendPost("getHistoriaClinicaToShow", {idHistoriaClinica: idHistoria});
 	if(response.result == 2){
+		console.log(response);
 		let historia = response.objectResult;
 		if( historia.hora === null || historia.hora.length < 4 )
 			hora = "00:00"
 		else hora = historia.hora.substr(0,2)+":"+ historia.hora.substr(2,2);
 
+
+		histUsuario = "";
+		if ( historia.idUsuario == 0){
+			histUsuario = "Veterinaria";
+		}else histUsuario = historia.usuario;
+
+
 		$("#titleModalView").html("Historia clínica");
-		$('#dateModalView').html(historia.fecha+" "+hora);
+		$('#dateModalView').html(histUsuario+" - "+historia.fecha+" "+hora);
 		$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr><b>Tratamiento: </b>" + historia.diagnostico );
 
 		if ( historia.archivos ){
