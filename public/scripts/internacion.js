@@ -2,6 +2,7 @@ var thelastid = 0;
 
 $("#petHospitalizedMode").change(function() {
 
+	thelastid = 0;
 	$('#tbodyInternacion').empty();
 	cargarTablaInternacion();
 });
@@ -68,11 +69,11 @@ function createRowHospitalized(obj){
 				botonwpp = '<a class="btn btn-info" title="Enviar whatsapp al '+obj.telefax+'" href="https://wa.me/'+obj.telefax+'" target="_blank" value=""><i class="fab fa-whatsapp"></i></a>'
 		}
 
-
+console.log(obj);
 		let row = "<tr id='trinternado"+ obj.idMascota +"' class='"+colorForClient.class+"'>";
-		row += "<td class='text-center' onclick='redirectToMascota("+ obj.idMascota +")'>"+ obj.nombre +"</td>";
-		row += "<td class='text-center' onclick='redirectToMascota("+ obj.idMascota +")'>"+obj.nomCliente+"</td>";
-		row += "<td class='text-center' onclick='redirectToMascota("+ obj.idMascota +")'>"+ internado +"</td>";
+		row += "<td class='text-center'><a  class='divasanchor' onclick='redirectToMascota("+ obj.idMascota +")'>"+ obj.nombre +"</a></td>";
+		row += "<td class='text-center'><a  class='divasanchor' onclick='redirectToSocio("+ obj.idSocio +")'>"+obj.nomCliente+"</a></td>";
+		row += "<td class='text-center'>"+ internado +"</td>";
 		row += "<td class='text-center d-flex justify-content-between '>"+telefax+ botonwpp+"</td>";
 		row += "<td class='text-center'><button class='btn btn-warning' onclick='outPetHospitalized("+obj.idMascota+")'>Dar alta</button></td></tr>";
 
@@ -128,4 +129,10 @@ function outPetHospitalized(idMascota){
 		else window.location.reload();
 	})
 
+}
+
+
+
+function redirectToSocio(idSocio){
+	window.location.href = getSiteURL() + "ver-socio/"+ idSocio;
 }
