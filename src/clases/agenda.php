@@ -5,7 +5,7 @@ class agenda{
 
 	public function getCalDataByDayCategory($day, $type){
 		$database = new DataBase();
-		return $database->sendQuery("SELECT * FROM `agenda` WHERE `categoria` = ? AND `fechaHora` like '%".$day."%' ORDER BY fechaHora ASC LIMIT 30", array('s', $type), "LIST");
+		return $database->sendQuery("SELECT * FROM `agenda` WHERE `categoria` = ? AND `fechaHora` like '%".$day."%' AND (`estado` <> 'eliminado' OR `estado` IS NULL ) ORDER BY fechaHora ASC LIMIT 30", array('s', $type), "LIST");
 
 	}
 
@@ -22,6 +22,13 @@ class agenda{
 	public function modifyNoteCalendar( $idUser, $time, $event, $client, $pet, $category ){
 		$database = new DataBase();
 		return $database->sendQuery("UPDATE `agenda` SET `idUsuario` = ?, `descripcion` = ?, `idSocio` = ?, `idMascota` = ? WHERE `agenda`.`fechaHora` = ? AND `agenda`.`categoria` = ?", array('isssss', $idUser, $event, $client, $pet, $time, $category), "BOOLE");
+	}
+
+
+
+	public function deleteEvent( $idAgenda ){
+		$database = new DataBase();
+		return $database->sendQuery("UPDATE `agenda` SET `estado` = 'eliminado' WHERE `agenda`.`idAgenda` = ?", array('i', $idAgenda), "BOOLE");
 	}
 
 }

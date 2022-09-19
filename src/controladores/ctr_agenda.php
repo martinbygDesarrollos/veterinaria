@@ -107,5 +107,16 @@ class ctr_agenda {
 
 		return $response;
 	}
+
+
+
+
+	public function deleteEvent( $idevent ){
+		$response = new \stdClass();
+		$calendarClass = new agenda();
+
+		$response = $calendarClass->deleteEvent($idevent );
+		return $response;
+	}
 }
 ?>

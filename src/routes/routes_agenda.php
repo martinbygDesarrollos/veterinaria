@@ -108,5 +108,18 @@ return function (App $app) {
 			return json_encode($hospitalizedPetController->getHospitalizedPet($hospitalizedPlace, $lastId));
         }else return json_encode($responseSession);
     });
+
+
+
+
+    $app->post('/deleteEvent', function(Request $request, Response $response) use ($userController, $calendarController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idevent = $data['idEvent'];
+
+			return json_encode($calendarController->deleteEvent($idevent));
+        }else return json_encode($responseSession);
+    });
 }
 ?>

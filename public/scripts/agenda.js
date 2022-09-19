@@ -101,6 +101,7 @@ function createRow( obj ){
 	row += '<td>'+wppBtn+'</td>';
 	row += '<td class="notShowMobile" style="">'+buttonVerSocio+'</td>';
 	row += '<td class="notShowMobile"><button class="btn btn-info" title="Buscar cliente o mascota" onclick="openModalSearchClientOrPet(this.parentElement.parentElement)" ><i class="fas fa-search"></i></button></td>';
+	row += '<td class="notShowMobile"><button class="btn btn-info" title="Eliminar este evento" onclick="deleteEvent(`'+obj.idAgenda+'`)" ><i class="fas fa-trash"></i></button></td>';
 	row += '</tr>';
 
 	return row;
@@ -184,7 +185,10 @@ function createCleanRow(){
 	row += '<td><button class="btn btn-info" disabled><a class="btn-info" title="Enviar whatsapp"target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button></td>';
 	row += '<td class="notShowMobile" style=""><button class="btn btn-info" title="Ver cliente" disabled>Cliente</button></td>';
 	//row += '<td class="notShowMobile" onclick="openModalSearchClientOrPet(this.parentElement)" ><i class="btn btn-info fas fa-search"></i></td></tr>';
-	row += '<td class="notShowMobile" onclick="openModalSearchClientOrPet(this.parentElement)"><button class="btn btn-info" title="Buscar cliente o mascota" ><i class="fas fa-search"></i></button></td></tr>';
+	row += '<td class="notShowMobile" onclick="openModalSearchClientOrPet(this.parentElement)"><button class="btn btn-info" title="Buscar cliente o mascota" ><i class="fas fa-search"></i></button></td>'
+
+	row += '<td class="notShowMobile"><button class="btn btn-info" title="Eliminar este evento" disabled ><i class="fas fa-trash"></i></button></td>';
+	row += '</tr>';
 
 	return row;
 }
@@ -422,6 +426,22 @@ function getDomiciliosByDay( day ){
 			}
 		}else{
 			clearTableEvents();
+		}
+	})
+}
+
+
+
+function deleteEvent( idEvent ){
+
+	console.log("eliminando evento ", idEvent);
+
+
+	sendAsyncPost("deleteEvent", {idEvent:idEvent})
+	.then(( response )=>{
+		console.log(response);
+		if ( response.result == 2 ){
+			window.location.reload();
 		}
 	})
 }
