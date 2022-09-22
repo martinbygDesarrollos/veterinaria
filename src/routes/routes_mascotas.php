@@ -19,7 +19,7 @@ return function (App $app) {
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
             return $this->view->render($response, "mascotas.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName('Mascotas');
 
     $app->get('/nueva-mascota/{idSocio}', function($request, $response, $args) use ($container){
@@ -32,7 +32,7 @@ return function (App $app) {
             if($responseGetSocio->result == 2)
                 $args['socio'] = $responseGetSocio->socio;
             return $this->view->render($response, "newMascota.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName('NuevaMascota');
 
     $app->get('/ver-mascota/{idMascota}', function($request, $response, $args) use ($container, $mascotaController){
@@ -73,7 +73,7 @@ return function (App $app) {
             }
 
             return $this->view->render($response, "verMascota.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("verMascota");
 
     $app->get('/vencimientos', function($request, $response, $args) use($container){
@@ -83,7 +83,7 @@ return function (App $app) {
             $args['administrador'] = $responseSession->session;
             $args['responseVencimientos'] = ctr_mascotas::getFechasVacunasVencimiento();
             return $this->view->render($response, "vencimientos.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName('VacunasVencidas');
 
     //------------------------------------------------------------------------------------------

@@ -19,7 +19,7 @@ return function (App $app) {
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;
 			return $this->view->render($response, "cirugias.twig", $args);
-		}else return $response->withRedirect('iniciar-sesion');
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("Cirugias");
 
 	$app->get('/peluqueria', function($request, $response, $args) use ($userController){
@@ -28,7 +28,7 @@ return function (App $app) {
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;
 			return $this->view->render($response, "peluquerias.twig", $args);
-		}else return $response->withRedirect('iniciar-sesion');
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("Peluqueria");
 
 	$app->get('/domicilios', function($request, $response, $args) use ($userController){
@@ -37,7 +37,7 @@ return function (App $app) {
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;
 			return $this->view->render($response, "domicilios.twig", $args);
-		}else return $response->withRedirect('iniciar-sesion');
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("Domicilios");
 
 	$app->get('/calendario', function($request, $response, $args) use ($userController){
@@ -46,7 +46,7 @@ return function (App $app) {
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;
 			return $this->view->render($response, "calendar.twig", $args);
-		}else return $response->withRedirect('iniciar-sesion');
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("Calendario");
 
 	$app->get('/internacion', function($request, $response, $args) use ($userController){
@@ -55,7 +55,7 @@ return function (App $app) {
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;
 			return $this->view->render($response, "internacion.twig", $args);
-		}else return $response->withRedirect('iniciar-sesion');
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("Internacion");
 
 	$app->post('/getEventCalendarByDay', function(Request $request, Response $response) use ($userController, $calendarController){

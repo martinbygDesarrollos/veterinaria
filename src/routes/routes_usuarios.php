@@ -29,7 +29,7 @@ return function (App $app) {
         if($responseSession->result == 2)
             session_destroy();
 
-        return $response->withRedirect('iniciar-sesion');
+        return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("LogOut");
 
     $app->get('/agregar-socio', function($request, $response, $args) use ($container){
@@ -38,7 +38,7 @@ return function (App $app) {
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
             return $this->view->render($response, "newSocio.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("NewSocio");
 
     $app->get('/socios', function($request, $response, $args) use ($container){
@@ -47,7 +47,7 @@ return function (App $app) {
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
             return $this->view->render($response, "socios.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("Socios");
 
     $app->get('/asignarSocioMascota/{idMascota}', function($request, $response, $args) use ($container){
@@ -58,7 +58,7 @@ return function (App $app) {
             $idMascota = $args['idMascota'];
             $args['mascota'] = ctr_mascotas::getMascota($idMascota);
             return $this->view->render($response, "asignarSocioMascota.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("asignarSocioMascota");
 
     $app->get('/ver-socio/{idSocio}', function($request, $response, $args) use ($container){
@@ -86,7 +86,7 @@ return function (App $app) {
             }
             else return $response->withRedirect('socios');
             return $this->view->render($response, "verSocio.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("VerSocio");
 
     $app->get('/modificar-socio/{idSocio}', function($request, $response, $args) use ($container){
@@ -97,7 +97,7 @@ return function (App $app) {
             $idSocio = $args['idSocio'];
             $args['responseSocio'] = ctr_usuarios::getSocioWithMascotaToShow($idSocio);
             return $this->view->render($response, "editSocio.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("EditarSocio");
 
     $app->get('/cuotasVencidas', function($request, $response, $args) use ($container){
@@ -106,7 +106,7 @@ return function (App $app) {
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
             return $this->view->render($response, "vencimientosCuota.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("CuotasVencidas");
 
     $app->get('/notificaciones', function($request, $response, $args) use ($container){
@@ -115,7 +115,7 @@ return function (App $app) {
         if($responseSession->result == 2){
             $args['administrador'] = $responseSession->session;
             return $this->view->render($response, "notifPendientes.twig", $args);
-        }else return $response->withRedirect('iniciar-sesion');
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
     })->setName("Notificaciones");
 
     //------------------------------------------------------------------------------------------

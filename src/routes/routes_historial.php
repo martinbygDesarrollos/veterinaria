@@ -44,7 +44,7 @@ return function (App $app) {
 			if($responseGetUsers->result == 2)
 				$args['listUsuarios'] = $responseGetUsers->listResult;
 			return $this->view->render($response, "settings.twig", $args);
-		}else return $response->withRedirect('iniciar-sesion');
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("settings");
 
 	$app->get('/historialUsuario', function($request, $response, $args) use ($container){
@@ -53,7 +53,7 @@ return function (App $app) {
 		if($responseSession->result == 2){
 			$args['administrador'] = $responseSession->session;
 			return $this->view->render($response, "historialUsuario.twig", $args);
-		}else return $response->withRedirect('iniciar-sesion');
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("HistorialUsuario");
 
     //-----------------------------------------------------------------------------
