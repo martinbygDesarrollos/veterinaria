@@ -313,8 +313,8 @@ function verHistoriaClinica(idHistoria){
 
 
 	$('#modalView').modal("hide");
-	$('#modalView .modal-dialog').css('height', '100%');
-	$('#modalView .modal-content').css('height', '100%');
+	//$('#modalView .modal-dialog').css('height', '100%');
+	//$('#modalView .modal-content').css('height', '100%');
 
 
 	let pos = listAllIds.findIndex((obj)=>{
@@ -329,7 +329,7 @@ function verHistoriaClinica(idHistoria){
 	$("#divButtonLeftModalView").*/
 
 
-
+/*
 	$("#divButtonLeftModalView").empty();
 	let buttonl = '<button type="button" class="btn" disabled ><i class="fas fa-arrow-left"></i></button>';
 	$("#divButtonLeftModalView").append(buttonl);
@@ -353,7 +353,7 @@ function verHistoriaClinica(idHistoria){
 		$("#divButtonRightModalView").empty();
 		buttonr = '<button type="button" class="btn" onclick="verHistoriaClinica('+idHistoriaClinicaPrevia+')" ><i class="fas fa-arrow-right"></i></button>';
 		$("#divButtonRightModalView").append(buttonr);
-	}
+	}*/
 
 
 
