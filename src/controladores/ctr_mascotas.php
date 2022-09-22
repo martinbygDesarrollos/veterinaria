@@ -709,7 +709,7 @@ class ctr_mascotas {
 			$fechaDiagnostico = fechas::getDateToINT($fechaDiagnostico);
 			$responseInsertEnfermedad = serviciosMascota::insertEnfermedadMascota($idMascota, $nombre, $fechaDiagnostico, $observaciones);
 			if($responseInsertEnfermedad->result == 2){
-				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, date("Y-m-d"), date("His"),"Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre, null, null, null, null);
+				$responseInsertHistorial = ctr_historiales::agregarHistoriaClinica($idMascota, date("Y-m-d"), date("His"),"Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre, null, null, null, null, null, null, null);
 				if($responseInsertHistorial->result == 2){
 					$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nueva enfermedad mascota", null, $idMascota, "Se agregó la enfermedad " . $nombre . " a la mascota " . $responseGetMascota->objectResult->nombre);
 					$response->result = 2;
