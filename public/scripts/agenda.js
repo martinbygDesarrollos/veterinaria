@@ -26,6 +26,11 @@ $(document).ready(()=>{
 });
 
 function getCirugiasByDay( day ){
+
+
+	document.cookie = "fechaciru="+$("#idInputTodayCalendar").val()
+
+
 	sendAsyncPost("getEventCalendarByDay",{day:day, type:"cirugia"})
 	.then(( response )=>{
 		if ( response.result == 2 ){
@@ -345,6 +350,10 @@ var lastIndexLimit = 0;
 var trSelected = null; //elemento en el que se da click a la lupa*/
 
 function getPeluqueriasByDay( day ){
+
+	document.cookie = "fechapelu="+$("#idInputTodayPelu").val()
+
+
 	sendAsyncPost("getEventCalendarByDay",{day:day, type:"peluqueria"})
 	.then(( response )=>{
 		console.log(response);
@@ -395,6 +404,11 @@ function saveNotesCalendarByDay(){
 
 
 function getCalendarNotesByDay( day ){
+
+
+	document.cookie = "fechacal="+$("#idInputCalendarNotes").val()
+
+
 	sendAsyncPost("getEventCalendarByDay",{day:day, type:"calendario"})
 	.then(( response )=>{
 		if ( response.result == 2 ){
@@ -408,6 +422,11 @@ function getCalendarNotesByDay( day ){
 
 
 function getDomiciliosByDay( day ){
+
+
+	document.cookie = "fechadomi="+$("#idInputTodayDomi").val()
+
+
 	sendAsyncPost("getEventCalendarByDay",{day:day, type:"domicilios"})
 	.then(( response )=>{
 		if ( response.result == 2 ){

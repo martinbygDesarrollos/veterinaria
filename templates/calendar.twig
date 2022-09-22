@@ -28,7 +28,17 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
 
 <script type="text/javascript">
-	$("#idInputCalendarNotes").val(getCurrentDate());
+
+
+	const cookieValue = document.cookie
+	  .split('; ')
+	  .find((row) => row.startsWith('fechacal='))
+	  ?.split('=')[1];
+
+	if ( cookieValue ){
+		$("#idInputCalendarNotes").val(cookieValue);
+	}else $("#idInputCalendarNotes").val(getCurrentDate());
+
 
 	$(document).ready(()=>{
 		getCalendarNotesByDay( $("#idInputCalendarNotes").val() );

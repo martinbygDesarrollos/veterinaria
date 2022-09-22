@@ -24,8 +24,19 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
 
 <script type="text/javascript">
-	$("#idInputTodayPelu").val(getCurrentDate());
+
+	const cookieValue = document.cookie
+	  .split('; ')
+	  .find((row) => row.startsWith('fechapelu='))
+	  ?.split('=')[1];
+
+	if ( cookieValue ){
+		$("#idInputTodayPelu").val(cookieValue);
+	}else $("#idInputTodayPelu").val(getCurrentDate());
+
 	getPeluqueriasByDay( $("#idInputTodayPelu").val() );
+
+
 </script>
 {% endblock %}
 {% endblock %}

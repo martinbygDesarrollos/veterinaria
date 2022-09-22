@@ -27,7 +27,19 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
 
 <script type="text/javascript">
-	$("#idInputTodayCalendar").val(getCurrentDate());
+
+
+	const cookieValue = document.cookie
+	  .split('; ')
+	  .find((row) => row.startsWith('fechaciru='))
+	  ?.split('=')[1];
+
+	if ( cookieValue ){
+		$("#idInputTodayCalendar").val(cookieValue);
+	}else $("#idInputTodayCalendar").val(getCurrentDate());
+
+
+
 	getCirugiasByDay( $("#idInputTodayCalendar").val() );
 </script>
 {% endblock %}

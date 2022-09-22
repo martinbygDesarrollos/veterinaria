@@ -24,7 +24,17 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
 
 <script type="text/javascript">
-	$("#idInputTodayDomi").val(getCurrentDate());
+
+	const cookieValue = document.cookie
+	  .split('; ')
+	  .find((row) => row.startsWith('fechadomi='))
+	  ?.split('=')[1];
+
+	if ( cookieValue ){
+		$("#idInputTodayDomi").val(cookieValue);
+	}else $("#idInputTodayDomi").val(getCurrentDate());
+
+
 	getDomiciliosByDay( $("#idInputTodayDomi").val() );
 </script>
 {% endblock %}
