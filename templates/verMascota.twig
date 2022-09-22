@@ -609,6 +609,32 @@
 		completeDataVacunas($("#modalVacuna select").val());
 	})
 
+
+	$("#modalView").bind('hide.bs.modal', function (event) {
+		$("#divButtonLeftModalView").empty();
+		$("#divButtonRightModalView").empty();
+	})
+
+
+	$(document).keydown(function(e) {
+		let code = (e.keyCode ? e.keyCode : e.which);
+		if(code == 37){
+			if ($("#divButtonLeftModalView").children().length > 0){
+				$("#divButtonLeftModalView button").trigger( "click" );
+			}
+			code = null;
+		}
+		else if (code == 39){
+
+			if ($("#divButtonRightModalView").children().length > 0){
+				$("#divButtonRightModalView button").trigger( "click" );
+			}
+
+			code = null;
+		}
+	});
+
+
 </script>
 {% endblock %}
 {% endblock %}

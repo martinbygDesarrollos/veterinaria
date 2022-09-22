@@ -161,6 +161,20 @@ function openDescriptionVacuna(idVacunaMascota){
 		$("#divFilesTableModalView").attr("hidden", true);
 		$("#divFilesTableModalView").attr("disable", true);
 
+		$("#divButtonLeftModalView").attr("hidden",true);
+		$("#divButtonLeftModalView").attr("disable",true);
+		$("#divButtonRightModalView").attr("hidden",true);
+		$("#divButtonRightModalView").attr("disable",true);
+
+
+		var modal = document.getElementById("modalViewDialog");
+		modal.className = "modal-dialog modal-dialog-centered";
+
+
+		$('#modalView .modal-dialog').css('height', '');
+		$('#modalView .modal-content').css('height', '');
+
+
 		$('#modalView').modal();
 	}
 }

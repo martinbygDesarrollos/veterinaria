@@ -1,6 +1,8 @@
-let lastId = 0;
+let limitHisto = 0;
 var idLastHistoriaClinica = null;
 var phoneSocio = null;
+
+var listAllIds = [];
 
 $("#formConfirmFileHistory").submit(function(e) {
     e.preventDefault();
@@ -37,18 +39,47 @@ $("#formConfirmFileHistory").submit(function(e) {
 	}
 });
 
-function cargarHistoriaClinica(idMascota){
-	let response = sendPost("getHistoriaClinicaMascota", {lastId: lastId, idMascota: idMascota });
-	if(response.result == 2){
-		if(lastId != response.lastId)
-			lastId = response. lastId;
 
-		let list = response.listResult;
-		for (let i = 0; i < list.length; i++) {
-			let row = createRowHistorial(list[i]);
-			$('#tbodyHistoriaClinica').append(row);
+
+function getAllIdListHistory(id){
+	console.log("buscar todos los ids");
+
+	sendAsyncPost("getAllIdListHistory", {idMascota:id})
+	.then(( response )=>{
+		console.log(response);
+		if ( response.result == 2 ){
+			console.log("se recuperaron todos los ids del los historiales");
+			listAllIds = response.listResult;
 		}
-	}
+	})
+
+}
+
+
+
+
+
+function cargarHistoriaClinica(idMascota){
+
+	if ( listAllIds.length <= 0 )
+		getAllIdListHistory(idMascota);
+
+	sendAsyncPost("getHistoriaClinicaMascota", {lastId: limitHisto, idMascota: idMascota })
+	.then(( response )=>{
+
+		if(response.result == 2){
+			if(limitHisto != response.lastId)
+				limitHisto = response. lastId;
+
+			let list = response.listResult;
+			for (let i = 0; i < list.length; i++) {
+				let row = createRowHistorial(list[i]);
+				$('#tbodyHistoriaClinica').append(row);
+			}
+		}
+
+	})
+
 }
 
 function createRowHistorial(obj){
@@ -219,9 +250,12 @@ function crearHistoriaClinica(idMascota){
 	let response = sendPost("agregarHistoriaClinica", data);
 	showReplyMessage(response.result, response.message, "Historia clínica", "modalHistoriaClinica");
 	if(response.result == 2){
-		idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
+		limitHisto = 0;
+		$('#tbodyHistoriaClinica').empty();
+		cargarHistoriaClinica(idMascota);
+		/*idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
 		let newHistoria = response.newHistoria;
-		$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));
+		$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));*/
 	}
 }
 
@@ -274,91 +308,146 @@ function clearModalHistoria(){
 	$("#inputTiempoLlenadoCapilarHistoria").val('');
 }
 
+
 function verHistoriaClinica(idHistoria){
-	let response = sendPost("getHistoriaClinicaToShow", {idHistoriaClinica: idHistoria});
-	if(response.result == 2){
-		console.log(response);
-		let historia = response.objectResult;
-		if( historia.hora === null || historia.hora.length < 4 )
-			hora = "00:00"
-		else hora = historia.hora.substr(0,2)+":"+ historia.hora.substr(2,2);
 
 
-		histUsuario = "";
-		if ( historia.idUsuario == 0){
-			histUsuario = "Veterinaria";
-		}else histUsuario = historia.usuario;
+	$('#modalView').modal("hide");
+	$('#modalView .modal-dialog').css('height', '100%');
+	$('#modalView .modal-content').css('height', '100%');
 
 
-		$("#titleModalView").html("Historia clínica");
-		$('#dateModalView').html(histUsuario+" - "+historia.fecha+" "+hora);
-		$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr><b>Tratamiento: </b>" + historia.diagnostico );
+	let pos = listAllIds.findIndex((obj)=>{
+		return obj.idHistoriaClinica == idHistoria;
+	});
 
-		if ( historia.archivos ){
-			$("#divFilesTableModalView table tbody").empty();
-			$("#divFilesTableModalView").attr("hidden", true);
-			$("#divFilesTableModalView").attr("disable", true);
+	let idHistoriaClinicaSiguiente = null; let idHistoriaClinicaPrevia = null;
 
-			$("#thSendFilesTableModalView").attr("hidden", true);
-			$("#thSendFilesTableModalView").attr("disable", true);
+	/*$("#divButtonLeftModalView").
+	$("#divButtonLeftModalView").
+	$("#divButtonLeftModalView").
+	$("#divButtonLeftModalView").*/
 
-			//divFilesTableModalView
-			for (var i = 0; i < historia.archivos.length; i++) {
-				let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"></td></tr>';
 
-				$("#divFilesTableModalView table tbody").append(row);
+
+	$("#divButtonLeftModalView").empty();
+	let buttonl = '<button type="button" class="btn" disabled ><i class="fas fa-arrow-left"></i></button>';
+	$("#divButtonLeftModalView").append(buttonl);
+
+
+	$("#divButtonRightModalView").empty();
+	let buttonr = '<button type="button" class="btn" disabled ><i class="fas fa-arrow-right"></i></button>';
+	$("#divButtonRightModalView").append(buttonr);
+
+
+	if ( listAllIds[pos -1] ){
+		idHistoriaClinicaSiguiente = listAllIds[pos -1].idHistoriaClinica;
+		$("#divButtonLeftModalView").empty();
+		buttonl = '<button type="button" class="btn" onclick="verHistoriaClinica('+idHistoriaClinicaSiguiente+')"><i class="fas fa-arrow-left"></i></button>';
+		$("#divButtonLeftModalView").append(buttonl);
+	}
+
+
+	if ( listAllIds[pos +1] ){
+		idHistoriaClinicaPrevia = listAllIds[pos +1].idHistoriaClinica;
+		$("#divButtonRightModalView").empty();
+		buttonr = '<button type="button" class="btn" onclick="verHistoriaClinica('+idHistoriaClinicaPrevia+')" ><i class="fas fa-arrow-right"></i></button>';
+		$("#divButtonRightModalView").append(buttonr);
+	}
+
+
+
+	sendAsyncPost("getHistoriaClinicaToShow", {idHistoriaClinica: idHistoria})
+	.then(( response )=>{
+
+		if(response.result == 2){
+			let historia = response.objectResult;
+			if( historia.hora === null || historia.hora.length < 4 )
+				hora = "00:00"
+			else hora = historia.hora.substr(0,2)+":"+ historia.hora.substr(2,2);
+
+
+			histUsuario = "";
+			if ( historia.idUsuario == 0){
+				histUsuario = "Veterinaria";
+			}else histUsuario = historia.usuario;
+
+
+			var modal = document.getElementById("modalViewDialog");
+			modal.className = "modal-dialog modal-dialog-historia-clinica";
+
+
+			$("#titleModalView").html("Historia clínica");
+			$('#dateModalView').html(histUsuario+" - "+historia.fecha+" "+hora);
+			$("#textModalView").html("<b>Motivo consulta:</b> " + historia.motivoConsulta + "<hr><b>Observaciones: </b>" + historia.observaciones + "<hr><b>Tratamiento: </b>" + historia.diagnostico );
+
+			if ( historia.archivos ){
+				$("#divFilesTableModalView table tbody").empty();
+				$("#divFilesTableModalView").attr("hidden", true);
+				$("#divFilesTableModalView").attr("disable", true);
+
+				$("#thSendFilesTableModalView").attr("hidden", true);
+				$("#thSendFilesTableModalView").attr("disable", true);
+
+				//divFilesTableModalView
+				for (var i = 0; i < historia.archivos.length; i++) {
+					let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"></td></tr>';
+
+					$("#divFilesTableModalView table tbody").append(row);
+				}
+
+				$("#divFilesTableModalView").attr("hidden", false);
+				$("#divFilesTableModalView").attr("disable", false);
+			}else{
+				$("#divFilesTableModalView table tbody").empty();
+
+				$("#divFilesTableModalView").attr("hidden", true);
+				$("#divFilesTableModalView").attr("disable", true);
 			}
 
-			$("#divFilesTableModalView").attr("hidden", false);
-			$("#divFilesTableModalView").attr("disable", false);
-		}else{
-			$("#divFilesTableModalView table tbody").empty();
+			if ( historia.peso || historia.temperatura || historia.fc || historia.fr || historia.tllc){
+				$("#divDetailsTableModalView table tbody").empty();
 
-			$("#divFilesTableModalView").attr("hidden", true);
-			$("#divFilesTableModalView").attr("disable", true);
+				//divDetailsTableModalView
+				let auxPeso = "";
+				let auxTemperatura = "";
+				let auxFc = "";
+				let auxFr = "";
+				let auxTllc = "";
+
+				if ( historia.peso )
+					auxPeso = historia.peso
+
+				if ( historia.temperatura )
+					auxTemperatura = historia.temperatura
+
+				if ( historia.fc )
+					auxFc = historia.fc
+
+				if ( historia.fr )
+					auxFr = historia.fr
+
+				if ( historia.tllc )
+					auxTllc = historia.tllc
+
+				let row = '<tr><td hidden disabled>'+auxPeso+'</td><td>'+auxTemperatura+'</td><td>'+auxFc+'</td><td>'+auxFr+'</td><td>'+auxTllc+'</td></tr>';
+
+				$("#divDetailsTableModalView table tbody").append(row);
+
+				$("#divDetailsTableModalView").attr("hidden", false);
+				$("#divDetailsTableModalView").attr("disable", false);
+			}else{
+				$("#divDetailsTableModalView table tbody").empty();
+
+				$("#divDetailsTableModalView").attr("hidden", true);
+				$("#divDetailsTableModalView").attr("disable", true);
+			}
+
+
+			$('#modalView').modal("show");
 		}
 
-		if ( historia.peso || historia.temperatura || historia.fc || historia.fr || historia.tllc){
-			$("#divDetailsTableModalView table tbody").empty();
-
-			//divDetailsTableModalView
-			let auxPeso = "";
-			let auxTemperatura = "";
-			let auxFc = "";
-			let auxFr = "";
-			let auxTllc = "";
-
-			if ( historia.peso )
-				auxPeso = historia.peso
-
-			if ( historia.temperatura )
-				auxTemperatura = historia.temperatura
-
-			if ( historia.fc )
-				auxFc = historia.fc
-
-			if ( historia.fr )
-				auxFr = historia.fr
-
-			if ( historia.tllc )
-				auxTllc = historia.tllc
-
-			let row = '<tr><td hidden disabled>'+auxPeso+'</td><td>'+auxTemperatura+'</td><td>'+auxFc+'</td><td>'+auxFr+'</td><td>'+auxTllc+'</td></tr>';
-
-			$("#divDetailsTableModalView table tbody").append(row);
-
-			$("#divDetailsTableModalView").attr("hidden", false);
-			$("#divDetailsTableModalView").attr("disable", false);
-		}else{
-			$("#divDetailsTableModalView table tbody").empty();
-
-			$("#divDetailsTableModalView").attr("hidden", true);
-			$("#divDetailsTableModalView").attr("disable", true);
-		}
-
-
-		$('#modalView').modal();
-	}
+	});
 }
 
 
@@ -423,6 +512,15 @@ function updateInformacionMascota(inputFrom, mascota){
 }
 
 
-function paginacionHistoriaClinica(){
-	console.log("scroll historia");
+
+function showNextHistoriaClinica(){
+	verHistoriaClinica(idHistoria)
+
+}
+
+
+
+function showPreviousHistoriaClinica(){
+	verHistoriaClinica(idHistoria)
+
 }

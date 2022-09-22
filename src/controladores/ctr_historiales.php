@@ -334,6 +334,16 @@ class ctr_historiales {
 		return $responseQuery;
    	}
 
+
+   	public function getAllIdListHistory( $idMascota ){
+
+		$historialesClass = new historiales();
+		$response = new \stdClass();
+
+
+		$response = $historialesClass->getAllIdListHistory( $idMascota );
+		return $response;
+   	}
 }
 
 ?>

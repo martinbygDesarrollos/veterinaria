@@ -130,21 +130,25 @@ class historiales{
 	}
 
 	public function getHistoriaClinicaMascota($lastId, $idMascota){
-		if($lastId == 0){
-			$responseGetMaxId = historiales::getHistoriaClinicaMascotaMaxID($idMascota);
-			if($responseGetMaxId->result == 2)
-				$lastId = $responseGetMaxId->objectResult->idMaximo + 1;
-			else return $responseGetMaxId;
-		}
 
-		$responseQuery = DataBase::sendQuery("SELECT * FROM historiasclinica WHERE idMascota=? AND idHistoriaClinica< ? ORDER BY idHistoriaClinica DESC LIMIT 14", array('ii', $idMascota, $lastId), "LIST");
+		$historialesClass = new historiales();
+		$dataBaseClass = new DataBase();
+
+		$responseQuery = $dataBaseClass->sendQuery("
+
+			SELECT * FROM historiasclinica
+			WHERE idMascota=?
+			ORDER BY fecha DESC LIMIT ".$lastId.", 14",
+
+			array('i', $idMascota), "LIST");
+
 		if($responseQuery->result == 2){
 			$arrayResult = array();
 			$newLastId = $lastId;
 			//$noData = "No especificado";
 			$noData = "";
 			foreach ($responseQuery->listResult as $key => $row) {
-				if($newLastId > $row['idHistoriaClinica']) $newLastId = $row['idHistoriaClinica'];
+				$newLastId = $newLastId +1;
 
 				if(!is_null($row['fecha']) && strlen($row['fecha']) == 8)
 					$row['fecha'] = fechas::dateToFormatBar($row['fecha']);
@@ -328,4 +332,26 @@ class historiales{
 	//============================================================================================================
 	//============================================================================================================
 	//============================================================================================================
+
+	public function getAllIdListHistory($idMascota){
+
+		$dataBaseClass = new DataBase();
+
+		$sql = "SELECT idHistoriaClinica FROM `historiasclinica`
+			WHERE idMascota = ?
+			ORDER BY `fecha`  DESC";
+
+
+
+		$responseQuery = $dataBaseClass->sendQuery($sql, array('i', $idMascota), "LIST");
+		if( $responseQuery->result == 1 ){
+			$responseQuery->listResult = array();
+		}
+
+		return $responseQuery;
+
+	}
+
+
+
 }

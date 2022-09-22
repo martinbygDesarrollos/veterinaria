@@ -10,6 +10,10 @@ require_once '../src/controladores/ctr_usuarios.php';
 
 return function (App $app) {
 	$container = $app->getContainer();
+	$historialesController = new ctr_historiales();
+	$userController = new ctr_usuarios();
+
+
 
 	// $app->post('/prueba', function(Request $request, Response $response){
 	// 	$responseSession = ctr_usuarios::validateSession();
@@ -168,5 +172,18 @@ return function (App $app) {
 
     //-----------------------------------------------------------------------------
 
+
+
+
+    $app->post('/getAllIdListHistory', function(Request $request, Response $response) use ($userController, $historialesController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idMascota = $data["idMascota"];
+
+            $response = $historialesController->getAllIdListHistory($idMascota);
+            return json_encode($response);
+        }else return json_encode($responseSession);
+    });
 }
 ?>
