@@ -22,20 +22,22 @@ function cargarTablaInternacion(){
 		if(response.result == 2){
 
 
-			if(response.lastId != thelastid)
-			thelastid = response.lastId;
+			if(response.lastId != thelastid){
+				thelastid = response.lastId;
 
-			let list = response.listResult;
-
-
-			for (var i = 0; i < list.length; i++) {
+				let list = response.listResult;
 
 
-				let row = createRowHospitalized(list[i]);
+				for (var i = 0; i < list.length; i++) {
 
 
-				$('#tbodyInternacion').append(row);
+					let row = createRowHospitalized(list[i]);
+
+
+					$('#tbodyInternacion').append(row);
+				}
 			}
+
 		}
 
 	})
