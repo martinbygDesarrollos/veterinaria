@@ -29,14 +29,21 @@ function insertarNuevoSocio(){
 						email: email
 					};
 
-					let response = sendPost("insertNewSocio", data);
-					if(response.result == 2){
-						$('#modalResultNewSocio').modal();
-						$('#modalResultNewSocio').modal();
-						$('#modalButtonNewSocio').click(function(){
-							window.location.href = getSiteURL() + "nueva-mascota/" + response.newIdSocio;
-						});
-					}else showReplyMessage(response.result, response.message, "Cliente", null);
+					sendAsyncPost("insertNewSocio", data)
+					.then((response)=>{
+						console.log(response);
+						if(response.result == 2){
+							$('#modalResultNewSocio').modal();
+							$('#modalResultNewSocio').modal();
+							$('#modalButtonNewSocio').click(function(){
+								window.location.href = getSiteURL() + "nueva-mascota/" + response.newIdSocio;
+							});
+
+							$("#modalButtonCancelNewSocio").click(function(){
+								window.location.href = getSiteURL() + "ver-socio/" + response.newIdSocio;
+							});
+						}else showReplyMessage(response.result, response.message, "Cliente", null);
+					})
 				}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para agregarlo", "Cliente", "modalUpdateSocio");
 		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");

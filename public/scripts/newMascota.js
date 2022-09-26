@@ -29,10 +29,17 @@ function insertNewMascota(inputButton){
 					pedigree: pedigree,
 					peso: peso
 				};
-				let response = sendPost("insertNewMascota", data);
-				showReplyMessage(response.result, response.message, "Mascota", null);
-				if(response.result == 2)
-					clearComponents();
+				sendAsyncPost("insertNewMascota", data)
+				.then((response)=>{
+					if(response.result == 2){
+						clearComponents();
+						url = getSiteURL()+"ver-mascota/"+response.idMascota;
+						window.location.href = url;
+					}else{
+						showReplyMessage(response.result, response.message, "Mascota", null);
+					}
+				})
+
 			}else showReplyMessage(1, "Debe ingresar raza de la mascota para agregarla", "Mascota", null);
 		}else showReplyMessage(1, "Debe ingresar especie de la mascota para agregarla", "Mascota", null);
 	}else showReplyMessage(1, "Debe ingresar nombre de la mascota para agregarla", "Mascota", null);

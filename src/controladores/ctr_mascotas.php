@@ -73,6 +73,11 @@ class ctr_mascotas {
 			}else return $responseInsertMascota;
 		}else return $responseGetSocio;
 
+
+		$response->idMascota = 0;
+		if (isset($responseInsertMascota->id)){
+			$response->idMascota = $responseInsertMascota->id;
+		}
 		return $response;
 	}
 
