@@ -15,7 +15,8 @@ function cargarTablaInternacion(){
 	if ( mode !== "vet" && mode !== "casa" ){
 		mode = null;
 	}
-	console.log(thelastid);
+
+
 	sendAsyncPost('getHospitalizedPet', {hospitalizedPlace:mode, lastId:thelastid})
 	.then((response)=>{
 

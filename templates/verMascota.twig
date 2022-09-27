@@ -8,19 +8,42 @@
 			<div class="row ml-1" style="text-transform: uppercase;">
 			{% if SocioMascota.socio %}
 				{% if BackTo != "VerSocio" %}
-					<h5 class="card-title mt-2">{{SocioMascota.mascota.nombre}} &nbsp; - &nbsp;
-					<a href="{{ path_for('VerSocio', {idSocio: SocioMascota.socio.idSocio }) }}" style="color:black; ">{{SocioMascota.socio.nombre}}</a>&nbsp;
-					</h5>
+
+					{% if SocioMascota.mascota.fechaFallecimiento %}
+						<p class="subtexto m-3" style="color:#db0000; font-weight: bold;">FALLECIDO</p>
+						<h5 class="card-title mt-2" style="color:#db0000;">{{SocioMascota.mascota.nombre}} &nbsp; - &nbsp;
+						<a href="{{ path_for('VerSocio', {idSocio: SocioMascota.socio.idSocio }) }}" style="color:#db0000; ">{{SocioMascota.socio.nombre}}</a>&nbsp;
+						</h5>
+					{% else %}
+						<h5 class="card-title mt-2">{{SocioMascota.mascota.nombre}} &nbsp; - &nbsp;
+						<a href="{{ path_for('VerSocio', {idSocio: SocioMascota.socio.idSocio }) }}" style="color:black; ">{{SocioMascota.socio.nombre}}</a>&nbsp;
+						</h5>
+					{%endif%}
 				{% else %}
-					<h5 >Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>&nbsp;
+
+					{% if SocioMascota.mascota.fechaFallecimiento %}
+						<h5 style="color:#db0000;">Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>&nbsp;
+					{% else %}
+						<h5 >Mascota de&nbsp;{{SocioMascota.socio.nombre}}</h5>&nbsp;
+					{% endif %}
 				{% endif %}
 			{% else %}
-				<h5 class="card-title mt-2">{{SocioMascota.mascota.nombre}}</h5>
+				{% if SocioMascota.mascota.fechaFallecimiento %}
+					<h5 class="card-title mt-2" style="color:#db0000;">{{SocioMascota.mascota.nombre}}</h5>
+				{% else %}
+					<h5 class="card-title mt-2">{{SocioMascota.mascota.nombre}}</h5>
+				{%endif%}
 			{% endif %}
 
 
 			{% if SocioMascota.socio.deudor == true %}
-				<h5 class="card-title mt-2" style="float: right !important;"><i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
+
+				{% if SocioMascota.mascota.fechaFallecimiento %}
+					<h5 class="card-title mt-2" style="float: right !important; color:#db0000;"><i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
+				{% else %}
+					<h5 class="card-title mt-2" style="float: right !important;"><i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
+				{%endif%}
+
 			{% endif %}
 			</div>
 			<div class="row mr-1" name="divbuttonwppmascota">
@@ -34,26 +57,52 @@
 		<div class="card-body">
 			<div class="row">
 				<div class="col-2 notShowMobile" style="min-width: 10em;">
-					<div class="d-flex justify-content-center mb-2">
-						<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna o medicamento</button>
-					</div>
-					<div class="d-flex justify-content-center mb-2">
-						<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)">Nueva <br>enfermedad</button>
-					</div>
-					<div class="d-flex justify-content-center mb-2">
-						<button type="button" id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)">Nuevo<br>análisis</button>
-					</div>
-					<div class="d-flex justify-content-center mb-2">
-						<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>historia<br>clínica</button>
-					</div>
-					{% if SocioMascota.mascota.internado %}
-					<div class="d-flex justify-content-center mb-2">
-						<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="outPetHospitalized({{ SocioMascota.mascota.idMascota }})">Dar alta</button>
-					</div>
+					{% if SocioMascota.mascota.fechaFallecimiento %}
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)" disabled >Nueva<br> vacuna o medicamento</button>
+						</div>
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)" disabled>Nueva <br>enfermedad</button>
+						</div>
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)" disabled>Nuevo<br>análisis</button>
+						</div>
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)" disabled>Nueva<br>historia<br>clínica</button>
+						</div>
+						{% if SocioMascota.mascota.internado %}
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="outPetHospitalized({{ SocioMascota.mascota.idMascota }})">Dar alta</button>
+						</div>
+						{% else %}
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalInternacion({{ SocioMascota.mascota.idMascota }})" disabled>Internar</button>
+						</div>
+						{%endif%}
+
 					{% else %}
-					<div class="d-flex justify-content-center mb-2">
-						<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalInternacion({{ SocioMascota.mascota.idMascota }})">Internar</button>
-					</div>
+
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna o medicamento</button>
+						</div>
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)">Nueva <br>enfermedad</button>
+						</div>
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)">Nuevo<br>análisis</button>
+						</div>
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>historia<br>clínica</button>
+						</div>
+						{% if SocioMascota.mascota.internado %}
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="outPetHospitalized({{ SocioMascota.mascota.idMascota }})">Dar alta</button>
+						</div>
+						{% else %}
+						<div class="d-flex justify-content-center mb-2">
+							<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalInternacion({{ SocioMascota.mascota.idMascota }})">Internar</button>
+						</div>
+						{%endif%}
 					{%endif%}
 				</div>
 				<div class="col">

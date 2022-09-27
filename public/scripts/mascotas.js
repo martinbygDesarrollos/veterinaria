@@ -70,17 +70,23 @@ function createRow(obj){
 			classForClient = "rowExsocio";
 	}
 
-	classForDeadPet = "";
+
+	let row = "";
+
+
+
 	if ( obj.fechaFallecimiento ){
 		if ( obj.fechaFallecimiento.length > 0 ){
-			classForDeadPet = "rowDeadPet";
+			row = "<tr class='"+classForClient+" subtexto col-1' style='color:red; font-weight: bold;' >";
+
+			row += "<td class='text-center col-1' onclick='redirectToMascota("+ idMascota +")'>FALLECIDO ";
 		}
+	}else{
+		row = "<tr class='"+classForClient+"' >";
+		row += "<td class='text-center' onclick='redirectToMascota("+ idMascota +")'>";
 	}
 
-
-
-	let row = "<tr class='"+classForClient+"' >";
-	row += "<td class='text-center' onclick='redirectToMascota("+ idMascota +")'>" + nombre +"</td>";
+	row += nombre +"</td>";
 	row += "<td class='text-center' onclick='redirectToMascota("+ idMascota +")'"
 
 
@@ -100,6 +106,7 @@ function createRow(obj){
 	row += "<td class='text-center notShowMobile' onclick='redirectToMascota("+ idMascota +")'>" + especie +"</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToMascota("+ idMascota +")'>" + sexo +"</td>";
 	row += "<td class='text-center notShowMobile' onclick='redirectToMascota("+ idMascota +")'>" + fechaNacimiento +"</td>";
+
 	row += wppBtn;
 	row += "</tr>";
 
