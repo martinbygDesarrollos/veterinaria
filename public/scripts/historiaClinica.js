@@ -156,9 +156,9 @@ function openModalHistoria(button){
 	if ( muerto ){
 
 		if(button.id == "NUEVAHISTORIA"){
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar registro de historia clínica igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea agregar registro de historia clínica igualmente?", "FALLECIDO", null);
 		}else{
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
 		}
 
 		$("#modalButtonResponse").click(function(){
@@ -542,7 +542,7 @@ function openModalModificarMascota(idMascota){
 		console.log(response);
 		if(response.result == 2){
 			if ( response.objectResult.fechaFallecimiento ){
-				showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+				showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
 				$("#modalButtonResponse").click(function(){
 					updateInformacionMascota("Mascota", response.objectResult);
 					$('#modalModificarMascota').modal();
@@ -589,9 +589,12 @@ function modificarMascota(idMascota){
 			observaciones: observaciones
 		}
 		let response = sendPost("modificarMascota", data);
-		showReplyMessage(response.result, response.message, "Mascota", "modalModificarMascota");
 		if(response.result == 2)
-			updateInformacionMascota("", response.updatedMascota);
+			window.location.reload();
+		else
+			showReplyMessage(response.result, response.message, "Mascota", "modalModificarMascota");
+
+			//updateInformacionMascota("", response.updatedMascota);
 	}else showReplyMessage(1, "Debe ingresar nombre de la mascota para modificarla.", "Mascota", "modalModificarMascota");
 }
 

@@ -5,9 +5,9 @@ function openModalEnfermedad(button){
 	if ( muerto ){
 
 		if(button.id == "NUEVAENFERMEDAD"){
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar enfermedad igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea agregar enfermedad igualmente?", "FALLECIDO", null);
 		}else{
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
 		}
 
 		$("#modalButtonResponse").click(function(){

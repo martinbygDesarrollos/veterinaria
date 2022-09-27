@@ -5,9 +5,9 @@ function openModalVacuna(inputButton){
 	if ( muerto ){
 
 		if(inputButton.id == "NUEVAVACUNA"){
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar vacuna/medicamento igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea agregar vacuna/medicamento igualmente?", "FALLECIDO", null);
 		}else{
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
 		}
 
 		$("#modalButtonResponse").click(function(){

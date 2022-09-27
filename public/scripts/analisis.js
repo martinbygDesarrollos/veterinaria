@@ -49,13 +49,12 @@ function openModalAnalaisis(button){
 	if ( muerto ){
 
 		if(button.id == "NUEVOANALISIS"){
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar análisis igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea agregar análisis igualmente?", "FALLECIDO", null);
 		}else{
-			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+			showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
 		}
 
 		$("#modalButtonResponse").click(function(){
-
 			if(button.id == "NUEVOANALISIS"){
 				$('#titleModalAnalisis').html("Nuevo análisis");
 				clearComponents();
