@@ -150,72 +150,157 @@ function borrarHistoriaClinica(idHistoriaClinica){
 }
 
 function openModalHistoria(button){
-	if(button.id == "NUEVAHISTORIA"){
-		$('#titleHistoriaClinica').html("Nueva historia clínica");
-		clearModalHistoria();
-		$('#buttonConfirmHistoriaClinica').off('click');
-		$('#buttonConfirmHistoriaClinica').click(function(){
-			crearHistoriaClinica(button.name);
-		});
-		$('#inputHoraHistoria').val(getCurrentHours());
-		$('#modalHistoriaClinica').modal();
-	}else{
-		let response = sendPost("getHistoriaClinicaToEdit", {idHistoriaClinica: button.name });
-		if(response.result == 2){
-			$('#titleHistoriaClinica').html("Modificar historia clínica");
-			$('#inputFechaHistoria').val(response.objectResult.fecha);
-			$('#inputMotivoConsultaHistoria').val(response.objectResult.motivoConsulta);
-			$('#inputDiagnosticoHistoria').val(response.objectResult.diagnostico);
-			$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
-			$("#inputPesoHistoria").val("");
-			$("#inputTemperaturaHistoria").val("");
-			if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
-				hora = "00:00"
-			else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
 
 
-			$('#inputHoraHistoria').val(hora);
+	let muerto = $("#inputFallecimiento").val() || null;
+	if ( muerto ){
+
+		if(button.id == "NUEVAHISTORIA"){
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar registro de historia clínica igualmente?", "FALLECIDO", null);
+		}else{
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+		}
+
+		$("#modalButtonResponse").click(function(){
+			if(button.id == "NUEVAHISTORIA"){
+				$('#titleHistoriaClinica').html("Nueva historia clínica");
+				clearModalHistoria();
+				$('#buttonConfirmHistoriaClinica').off('click');
+				$('#buttonConfirmHistoriaClinica').click(function(){
+					crearHistoriaClinica(button.name);
+				});
+				$('#inputHoraHistoria').val(getCurrentHours());
+				$('#modalHistoriaClinica').modal();
+			}else{
+				let response = sendPost("getHistoriaClinicaToEdit", {idHistoriaClinica: button.name });
+				if(response.result == 2){
+					$('#titleHistoriaClinica').html("Modificar historia clínica");
+					$('#inputFechaHistoria').val(response.objectResult.fecha);
+					$('#inputMotivoConsultaHistoria').val(response.objectResult.motivoConsulta);
+					$('#inputDiagnosticoHistoria').val(response.objectResult.diagnostico);
+					$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
+					$("#inputPesoHistoria").val("");
+					$("#inputTemperaturaHistoria").val("");
+					if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
+						hora = "00:00"
+					else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
 
 
-			let obj = response.objectResult;
-			if ( obj.peso || obj.temperatura || obj.fc || obj.fr || obj.tllc){
+					$('#inputHoraHistoria').val(hora);
 
-				let auxPeso = "";
-				let auxTemperatura = "";
-				let auxFc = "";
-				let auxFr = "";
-				let auxTllc = "";
 
-				if ( obj.peso )
-					auxPeso = obj.peso
+					let obj = response.objectResult;
+					if ( obj.peso || obj.temperatura || obj.fc || obj.fr || obj.tllc){
 
-				if ( obj.temperatura )
-					auxTemperatura = obj.temperatura
+						let auxPeso = "";
+						let auxTemperatura = "";
+						let auxFc = "";
+						let auxFr = "";
+						let auxTllc = "";
 
-				if ( obj.fc )
-					auxFc = obj.fc
+						if ( obj.peso )
+							auxPeso = obj.peso
 
-				if ( obj.fr )
-					auxFr = obj.fr
+						if ( obj.temperatura )
+							auxTemperatura = obj.temperatura
 
-				if ( obj.tllc )
-					auxTllc = obj.tllc
+						if ( obj.fc )
+							auxFc = obj.fc
 
-				$("#inputPesoHistoria").val(auxPeso);
-				$("#inputTemperaturaHistoria").val(auxTemperatura);
-				$("#inputFrecuenciaCardiacaHistoria").val(auxFc);
-				$("#inputFRHistoria").val(auxFr);
-				$("#inputTiempoLlenadoCapilarHistoria").val(auxTllc);
+						if ( obj.fr )
+							auxFr = obj.fr
+
+						if ( obj.tllc )
+							auxTllc = obj.tllc
+
+						$("#inputPesoHistoria").val(auxPeso);
+						$("#inputTemperaturaHistoria").val(auxTemperatura);
+						$("#inputFrecuenciaCardiacaHistoria").val(auxFc);
+						$("#inputFRHistoria").val(auxFr);
+						$("#inputTiempoLlenadoCapilarHistoria").val(auxTllc);
+					}
+
+					$('#buttonConfirmHistoriaClinica').off('click');
+					$('#buttonConfirmHistoriaClinica').click(function(){
+						modificarHistoriaClinica(button.name);
+						idLastHistoriaClinica = button.name;
+					});
+					$('#modalHistoriaClinica').modal();
+				}
 			}
+		});
 
+
+	}else{
+		if(button.id == "NUEVAHISTORIA"){
+			$('#titleHistoriaClinica').html("Nueva historia clínica");
+			clearModalHistoria();
 			$('#buttonConfirmHistoriaClinica').off('click');
 			$('#buttonConfirmHistoriaClinica').click(function(){
-				modificarHistoriaClinica(button.name);
-				idLastHistoriaClinica = button.name;
+				crearHistoriaClinica(button.name);
 			});
+			$('#inputHoraHistoria').val(getCurrentHours());
 			$('#modalHistoriaClinica').modal();
+		}else{
+			let response = sendPost("getHistoriaClinicaToEdit", {idHistoriaClinica: button.name });
+			if(response.result == 2){
+				$('#titleHistoriaClinica').html("Modificar historia clínica");
+				$('#inputFechaHistoria').val(response.objectResult.fecha);
+				$('#inputMotivoConsultaHistoria').val(response.objectResult.motivoConsulta);
+				$('#inputDiagnosticoHistoria').val(response.objectResult.diagnostico);
+				$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
+				$("#inputPesoHistoria").val("");
+				$("#inputTemperaturaHistoria").val("");
+				if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
+					hora = "00:00"
+				else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
+
+
+				$('#inputHoraHistoria').val(hora);
+
+
+				let obj = response.objectResult;
+				if ( obj.peso || obj.temperatura || obj.fc || obj.fr || obj.tllc){
+
+					let auxPeso = "";
+					let auxTemperatura = "";
+					let auxFc = "";
+					let auxFr = "";
+					let auxTllc = "";
+
+					if ( obj.peso )
+						auxPeso = obj.peso
+
+					if ( obj.temperatura )
+						auxTemperatura = obj.temperatura
+
+					if ( obj.fc )
+						auxFc = obj.fc
+
+					if ( obj.fr )
+						auxFr = obj.fr
+
+					if ( obj.tllc )
+						auxTllc = obj.tllc
+
+					$("#inputPesoHistoria").val(auxPeso);
+					$("#inputTemperaturaHistoria").val(auxTemperatura);
+					$("#inputFrecuenciaCardiacaHistoria").val(auxFc);
+					$("#inputFRHistoria").val(auxFr);
+					$("#inputTiempoLlenadoCapilarHistoria").val(auxTllc);
+				}
+
+				$('#buttonConfirmHistoriaClinica').off('click');
+				$('#buttonConfirmHistoriaClinica').click(function(){
+					modificarHistoriaClinica(button.name);
+					idLastHistoriaClinica = button.name;
+				});
+				$('#modalHistoriaClinica').modal();
+			}
 		}
 	}
+
+
 }
 
 function crearHistoriaClinica(idMascota){
@@ -452,11 +537,25 @@ function verHistoriaClinica(idHistoria){
 
 
 function openModalModificarMascota(idMascota){
-	let response = sendPost("getMascotaToEdit", {idMascota: idMascota});
-	if(response.result == 2){
-		updateInformacionMascota("Mascota", response.objectResult);
-		$('#modalModificarMascota').modal();
-	}
+	sendAsyncPost("getMascotaToEdit", {idMascota: idMascota})
+	.then((response)=>{
+		console.log(response);
+		if(response.result == 2){
+			if ( response.objectResult.fechaFallecimiento ){
+				showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+				$("#modalButtonResponse").click(function(){
+					updateInformacionMascota("Mascota", response.objectResult);
+					$('#modalModificarMascota').modal();
+				});
+
+			}else{
+				updateInformacionMascota("Mascota", response.objectResult);
+				$('#modalModificarMascota').modal();
+			}
+
+		}
+
+	})
 }
 
 function modificarMascota(idMascota){

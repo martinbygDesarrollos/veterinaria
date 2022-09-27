@@ -1,33 +1,84 @@
 function openModalVacuna(inputButton){
-	$("#dataListNombreVacuna").empty();
 
-	if(inputButton.id == "NUEVAVACUNA"){
-		console.log("boton nueva vac",inputButton);
-		$('#modalTitleVacuna').html("Nueva vacuna/medicamento");
-		$('#labelInputDateVacuna').text("Fecha dosificación");
-		clearModalVacuna();
-		$('#modalButtonVacuna').off('click');
-		$('#modalButtonVacuna').click(function(){
-			createNewVacuna(inputButton.name);
+	let muerto = $("#inputFallecimiento").val() || null;
+
+	if ( muerto ){
+
+		if(inputButton.id == "NUEVAVACUNA"){
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar vacuna/medicamento igualmente?", "FALLECIDO", null);
+		}else{
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+		}
+
+		$("#modalButtonResponse").click(function(){
+
+			if(inputButton.id == "NUEVAVACUNA"){
+				console.log("boton nueva vac",inputButton);
+				$('#modalTitleVacuna').html("Nueva vacuna/medicamento");
+				$('#labelInputDateVacuna').text("Fecha dosificación");
+				clearModalVacuna();
+				$('#modalButtonVacuna').off('click');
+				$('#modalButtonVacuna').click(function(){
+					createNewVacuna(inputButton.name);
+				});
+			}else{
+				$('#modalTitleVacuna').html("Modificar vacuna/medicamento");
+				let response = sendPost('getVacunaMascota', {idVacunaMascota: inputButton.name});
+				if(response.result == 2){
+					$('#labelInputDateVacuna').text('Fecha dosificación');
+					$('#inputNombreVacuna').val(response.objectResult.nombreVacuna);
+					$('#inputIntervaloVacuna').val(response.objectResult.intervaloDosis);
+					$('#inputPrimerDosisVacuna').val(response.objectResult.fechaUltimaDosis);
+					$('#inputObservacionesVacuna').html(response.objectResult.observacion);
+
+					$('#modalButtonVacuna').off('click');
+					$('#modalButtonVacuna').click(function(){
+						updateVacunaMascota(inputButton.name);
+					});
+				}
+			}
+
+			$('#modalVacuna').modal();
+
+
 		});
-	}else{
-		$('#modalTitleVacuna').html("Modificar vacuna/medicamento");
-		let response = sendPost('getVacunaMascota', {idVacunaMascota: inputButton.name});
-		if(response.result == 2){
-			$('#labelInputDateVacuna').text('Fecha dosificación');
-			$('#inputNombreVacuna').val(response.objectResult.nombreVacuna);
-			$('#inputIntervaloVacuna').val(response.objectResult.intervaloDosis);
-			$('#inputPrimerDosisVacuna').val(response.objectResult.fechaUltimaDosis);
-			$('#inputObservacionesVacuna').html(response.objectResult.observacion);
 
+
+	}else{
+
+
+		if(inputButton.id == "NUEVAVACUNA"){
+			console.log("boton nueva vac",inputButton);
+			$('#modalTitleVacuna').html("Nueva vacuna/medicamento");
+			$('#labelInputDateVacuna').text("Fecha dosificación");
+			clearModalVacuna();
 			$('#modalButtonVacuna').off('click');
 			$('#modalButtonVacuna').click(function(){
-				updateVacunaMascota(inputButton.name);
+				createNewVacuna(inputButton.name);
 			});
+		}else{
+			$('#modalTitleVacuna').html("Modificar vacuna/medicamento");
+			let response = sendPost('getVacunaMascota', {idVacunaMascota: inputButton.name});
+			if(response.result == 2){
+				$('#labelInputDateVacuna').text('Fecha dosificación');
+				$('#inputNombreVacuna').val(response.objectResult.nombreVacuna);
+				$('#inputIntervaloVacuna').val(response.objectResult.intervaloDosis);
+				$('#inputPrimerDosisVacuna').val(response.objectResult.fechaUltimaDosis);
+				$('#inputObservacionesVacuna').html(response.objectResult.observacion);
+
+				$('#modalButtonVacuna').off('click');
+				$('#modalButtonVacuna').click(function(){
+					updateVacunaMascota(inputButton.name);
+				});
+			}
 		}
+
+		$('#modalVacuna').modal();
+
+
 	}
 
-	$('#modalVacuna').modal();
+
 }
 
 function createNewVacuna(idMascota){

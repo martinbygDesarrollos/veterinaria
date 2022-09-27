@@ -1,28 +1,77 @@
 function openModalEnfermedad(button){
-	if(button.id == "NUEVAENFERMEDAD"){
-		clearComponentEnfermedad();
-		$('#titleModalEnfermedad').html("Nueva enfermedad");
-		$('#buttonConfirmModalEnfermedad').off('click');
-		$('#buttonConfirmModalEnfermedad').click(function(){
-			createNewEnfermedad(button.name);
+
+	let muerto = $("#inputFallecimiento").val() || null;
+
+	if ( muerto ){
+
+		if(button.id == "NUEVAENFERMEDAD"){
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar enfermedad igualmente?", "FALLECIDO", null);
+		}else{
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+		}
+
+		$("#modalButtonResponse").click(function(){
+
+
+			if(button.id == "NUEVAENFERMEDAD"){
+				clearComponentEnfermedad();
+				$('#titleModalEnfermedad').html("Nueva enfermedad");
+				$('#buttonConfirmModalEnfermedad').off('click');
+				$('#buttonConfirmModalEnfermedad').click(function(){
+					createNewEnfermedad(button.name);
+				});
+				$('#modalEnfermedad').modal();
+			}else{
+				let response = sendPost("getEnfermedad", {idEnfermedad: button.name});
+				if(response.result == 2){
+					$('#titleModalEnfermedad').html("Modificar enfermedad");
+
+					$('#inputNombreEnfermedad').val(response.objectResult.nombreEnfermedad);
+					$('#inputFechaDiagnosticoEnfermedad').val(response.objectResult.fechaDiagnostico);
+					$('#inputObservacionesEnfermedad').val(response.objectResult.observaciones);
+
+					$('#buttonConfirmModalEnfermedad').off('click');
+					$('#buttonConfirmModalEnfermedad').click(function(){
+						updateEnfermedad(button.name);
+					});
+
+					$('#modalEnfermedad').modal();
+				}
+			}
+
+
 		});
-		$('#modalEnfermedad').modal();
+
+
+
 	}else{
-		let response = sendPost("getEnfermedad", {idEnfermedad: button.name});
-		if(response.result == 2){
-			$('#titleModalEnfermedad').html("Modificar enfermedad");
 
-			$('#inputNombreEnfermedad').val(response.objectResult.nombreEnfermedad);
-			$('#inputFechaDiagnosticoEnfermedad').val(response.objectResult.fechaDiagnostico);
-			$('#inputObservacionesEnfermedad').val(response.objectResult.observaciones);
-
+		if(button.id == "NUEVAENFERMEDAD"){
+			clearComponentEnfermedad();
+			$('#titleModalEnfermedad').html("Nueva enfermedad");
 			$('#buttonConfirmModalEnfermedad').off('click');
 			$('#buttonConfirmModalEnfermedad').click(function(){
-				updateEnfermedad(button.name);
+				createNewEnfermedad(button.name);
 			});
-
 			$('#modalEnfermedad').modal();
+		}else{
+			let response = sendPost("getEnfermedad", {idEnfermedad: button.name});
+			if(response.result == 2){
+				$('#titleModalEnfermedad').html("Modificar enfermedad");
+
+				$('#inputNombreEnfermedad').val(response.objectResult.nombreEnfermedad);
+				$('#inputFechaDiagnosticoEnfermedad').val(response.objectResult.fechaDiagnostico);
+				$('#inputObservacionesEnfermedad').val(response.objectResult.observaciones);
+
+				$('#buttonConfirmModalEnfermedad').off('click');
+				$('#buttonConfirmModalEnfermedad').click(function(){
+					updateEnfermedad(button.name);
+				});
+
+				$('#modalEnfermedad').modal();
+			}
 		}
+
 	}
 }
 

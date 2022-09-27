@@ -57,19 +57,21 @@
 		<div class="card-body">
 			<div class="row">
 				<div class="col-2 notShowMobile" style="min-width: 10em;">
+					<div class="d-flex justify-content-center mb-2">
+						<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)" >Nueva<br> vacuna o medicamento</button>
+					</div>
+					<div class="d-flex justify-content-center mb-2">
+						<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)">Nueva <br>enfermedad</button>
+					</div>
+					<div class="d-flex justify-content-center mb-2">
+						<button type="button" id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)">Nuevo<br>análisis</button>
+					</div>
+					<div class="d-flex justify-content-center mb-2">
+						<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>historia<br>clínica</button>
+					</div>
+
+
 					{% if SocioMascota.mascota.fechaFallecimiento %}
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)" disabled >Nueva<br> vacuna o medicamento</button>
-						</div>
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)" disabled>Nueva <br>enfermedad</button>
-						</div>
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)" disabled>Nuevo<br>análisis</button>
-						</div>
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)" disabled>Nueva<br>historia<br>clínica</button>
-						</div>
 						{% if SocioMascota.mascota.internado %}
 						<div class="d-flex justify-content-center mb-2">
 							<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="outPetHospitalized({{ SocioMascota.mascota.idMascota }})">Dar alta</button>
@@ -79,21 +81,7 @@
 							<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalInternacion({{ SocioMascota.mascota.idMascota }})" disabled>Internar</button>
 						</div>
 						{%endif%}
-
 					{% else %}
-
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVAVACUNA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalVacuna(this)">Nueva<br> vacuna o medicamento</button>
-						</div>
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVAENFERMEDAD" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalEnfermedad(this)">Nueva <br>enfermedad</button>
-						</div>
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVOANALISIS" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalAnalaisis(this)">Nuevo<br>análisis</button>
-						</div>
-						<div class="d-flex justify-content-center mb-2">
-							<button type="button" id="NUEVAHISTORIA" class="btn btn-dark w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="openModalHistoria(this)">Nueva<br>historia<br>clínica</button>
-						</div>
 						{% if SocioMascota.mascota.internado %}
 						<div class="d-flex justify-content-center mb-2">
 							<button type="button" class="btn btn-warning w-100" name="{{ SocioMascota.mascota.idMascota }}" onclick="outPetHospitalized({{ SocioMascota.mascota.idMascota }})">Dar alta</button>

@@ -43,33 +43,83 @@ $("#formConfirmFileAnalisisMasc").submit(function(e) {
 
 //funciones con nombre
 function openModalAnalaisis(button){
-	if(button.id == "NUEVOANALISIS"){
-		$('#titleModalAnalisis').html("Nuevo análisis");
-		clearComponents();
 
-		$('#buttonConfirmModalAnalisis').off('click');
-		$('#buttonConfirmModalAnalisis').click(function(){
-			crearAnalisis(button.name);
+	let muerto = $("#inputFallecimiento").val() || null;
+
+	if ( muerto ){
+
+		if(button.id == "NUEVOANALISIS"){
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea agregar análisis igualmente?", "FALLECIDO", null);
+		}else{
+			showReplyMessage(1, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
+		}
+
+		$("#modalButtonResponse").click(function(){
+
+			if(button.id == "NUEVOANALISIS"){
+				$('#titleModalAnalisis').html("Nuevo análisis");
+				clearComponents();
+
+				$('#buttonConfirmModalAnalisis').off('click');
+				$('#buttonConfirmModalAnalisis').click(function(){
+					crearAnalisis(button.name);
+				});
+				$('#modalAnalisis').modal();
+			}else{
+
+				//modificando datos del analisis
+				let response = sendPost("getAnalisis", {idAnalisis: button.name});
+				if(response.result == 2){
+					$('#titleModalAnalisis').html("Modificar análisis");
+
+					$('#inputNombreAnalisis').val(response.objectResult.nombre);
+					$('#inputFechaAnalisis').val(response.objectResult.fecha);
+					$('#inputDetalleAnalisis').val(response.objectResult.detalle);
+					$('#inputResultadoAnalisis').val(response.objectResult.resultado);
+
+					$('#buttonConfirmModalAnalisis').off('click');
+					$('#buttonConfirmModalAnalisis').click(function(){
+						modificarAnalisis(button.name);
+						idLastAnalisis = button.name;
+					});
+					$('#modalAnalisis').modal();
+				}
+			}
+
 		});
-		$('#modalAnalisis').modal();
-	}else{
 
-		//modificando datos del analisis
-		let response = sendPost("getAnalisis", {idAnalisis: button.name});
-		if(response.result == 2){
-			$('#titleModalAnalisis').html("Modificar análisis");
+	}
+	else{
 
-			$('#inputNombreAnalisis').val(response.objectResult.nombre);
-			$('#inputFechaAnalisis').val(response.objectResult.fecha);
-			$('#inputDetalleAnalisis').val(response.objectResult.detalle);
-			$('#inputResultadoAnalisis').val(response.objectResult.resultado);
+
+		if(button.id == "NUEVOANALISIS"){
+			$('#titleModalAnalisis').html("Nuevo análisis");
+			clearComponents();
 
 			$('#buttonConfirmModalAnalisis').off('click');
 			$('#buttonConfirmModalAnalisis').click(function(){
-				modificarAnalisis(button.name);
-				idLastAnalisis = button.name;
+				crearAnalisis(button.name);
 			});
 			$('#modalAnalisis').modal();
+		}else{
+
+			//modificando datos del analisis
+			let response = sendPost("getAnalisis", {idAnalisis: button.name});
+			if(response.result == 2){
+				$('#titleModalAnalisis').html("Modificar análisis");
+
+				$('#inputNombreAnalisis').val(response.objectResult.nombre);
+				$('#inputFechaAnalisis').val(response.objectResult.fecha);
+				$('#inputDetalleAnalisis').val(response.objectResult.detalle);
+				$('#inputResultadoAnalisis').val(response.objectResult.resultado);
+
+				$('#buttonConfirmModalAnalisis').off('click');
+				$('#buttonConfirmModalAnalisis').click(function(){
+					modificarAnalisis(button.name);
+					idLastAnalisis = button.name;
+				});
+				$('#modalAnalisis').modal();
+			}
 		}
 	}
 }
