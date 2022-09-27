@@ -141,30 +141,47 @@ function asignarMascota(buttonAsignar){
 	let idSocio = buttonAsignar.id;
 	let idMascota = buttonAsignar.name;
 
-	let response = sendPost("asignarMascotaSocio", {idSocio: idSocio, idMascota: idMascota});
-	showReplyMessage(response.result, response.message, "Cliente", "modalSetNewMascota");
-	if(response.result != 0){
-		$('#trM' +  idMascota).remove();
-		let newMascota = response.newMascota;
-		let row = createRowMascotasSocio(newMascota.idMascota, newMascota.nombre, newMascota.raza, newMascota.especie, newMascota.sexo, newMascota.fechaNacimiento, newMascota.estado);
-		$('#tbodyMascotasSocio').prepend(row);
-		$('#tbodyMascotasNoSocio').empty();
-		$('#inputTextToSearch').val("");
-		$('#inputCuota').val(response.newQuota);
-	}
+	sendAsyncPost("asignarMascotaSocio", {idSocio: idSocio, idMascota: idMascota})
+
+	.then((response)=>{
+
+		showReplyMessage(response.result, response.message, "Cliente", "modalSetNewMascota");
+		if(response.result != 0){
+			$('#trM' +  idMascota).remove();
+			let newMascota = response.newMascota;
+			let row = createRowMascotasSocio(newMascota.idMascota, newMascota.nombre, newMascota.raza, newMascota.especie, newMascota.sexo, newMascota.fechaNacimiento, newMascota.fechaFallecimiento);
+			$('#tbodyMascotasSocio').prepend(row);
+			$('#tbodyMascotasNoSocio').empty();
+			$('#inputTextToSearch').val("");
+			$('#inputCuota').val(response.newQuota);
+		}
+
+	})
+
 }
 
-function createRowMascotasSocio(idMascota, nombre, raza, especie, sexo, nacimiento, estado){
-	let row = "<tr id='trM2"+ idMascota +"'>";
-	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + nombre + "</td>";
+function createRowMascotasSocio(idMascota, nombre, raza, especie, sexo, nacimiento, fallecimiento){
+
+	let row = "";
+
+	if ( fallecimiento ){
+		row = "<tr id='trM2"+ idMascota +"' class='subtexto' style='color:red; font-weight: bold;'>";
+		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>FALLECIDO " + nombre + "</td>";
+
+	}
+	else{
+
+		row = "<tr id='trM2"+ idMascota +"'>";
+		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + nombre + "</td>";
+
+	}
+
+
 	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + raza + "</td>";
 	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + especie + "</td>";
 	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>" + sexo + "</td>";
 	row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>"+ nacimiento + "</td>";
-	if(estado == 1)
-		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>Si</td>";
-	else
-		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>No</td>";
+
 	row += "<td class='text-center'><button class='btn btn-link' onclick='desvincularMascota("+ idMascota + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
 
 	row += "</tr>";

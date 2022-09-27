@@ -112,18 +112,32 @@
 							<table class="table table-sm">
 								<thead class="bg-mycolor">
 									<tr>
-										<td class="text-center" scope="col">Nombre</td>
-										<td class="text-center notShowMobile"abbr="" scope="col">Raza</td>
-										<td class="text-center" scope="col">Especie</td>
-										<td class="text-center notShowMobile" scope="col">Sexo</td>
-										<td class="text-center notShowMobile" scope="col">Nacimiento</td>
-										<td class="text-center" scope="col">Vivo</td>
-										<td class="text-center" scope="col">Desvincular</td>
+										<td class="text-center col-5" >Nombre</td>
+										<td class="text-center notShowMobile col-1"abbr="" >Raza</td>
+										<td class="text-center col-2" >Especie</td>
+										<td class="text-center col-1 notShowMobile" >Sexo</td>
+										<td class="text-center col-2 notShowMobile" >Nacimiento</td>
+										<td class="text-center col-1" >Desvincular</td>
 									</tr>
 								</thead>
 								<tbody id="tbodyMascotasSocio">
 									{% for mascota in responseSocio.mascotas.listMascotas %}
-									<tr id="trM2{{mascota.idMascota}}">
+
+										{% if mascota.fechaFallecimiento %}
+										<tr id="trM2{{mascota.idMascota}}" class='subtexto' style='color:red; font-weight: bold;' >
+										<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">FALLECIDO {{ mascota.nombre }}</td>
+										<td class="text-center notShowMobile" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.raza }}</td>
+										<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.especie }}</td>
+										{% if mascota.sexo == 0 %}
+										<td class="text-center notShowMobile" onclick="verMascota('{{ mascota.idMascota }}')">Hembra</td>
+										{% else %}
+										<td class="text-center notShowMobile" onclick="verMascota('{{ mascota.idMascota }}')">Macho</td>
+										{% endif %}
+										<td class="text-center notShowMobile" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.fechaNacimiento }}</td>
+										<td class="text-center"><button class="btn btn-link" onclick="desvincularMascota('{{ mascota.idMascota }}')"><i class="fas fa-trash-alt text-dark"></i></button></td>
+										</tr>
+										{% else %}
+										<tr id="trM2{{mascota.idMascota}}">
 										<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.nombre }}</td>
 										<td class="text-center notShowMobile" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.raza }}</td>
 										<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.especie }}</td>
@@ -133,15 +147,11 @@
 										<td class="text-center notShowMobile" onclick="verMascota('{{ mascota.idMascota }}')">Macho</td>
 										{% endif %}
 										<td class="text-center notShowMobile" onclick="verMascota('{{ mascota.idMascota }}')">{{ mascota.fechaNacimiento }}</td>
-										<td class="text-center" onclick="verMascota('{{ mascota.idMascota }}')">
-											{% if mascota.fechaFallecimiento == "" %}
-											Si
-											{% else %}
-											No
-											{% endif %}
-										</td>
 										<td class="text-center"><button class="btn btn-link" onclick="desvincularMascota('{{ mascota.idMascota }}')"><i class="fas fa-trash-alt text-dark"></i></button></td>
-									</tr>
+										</tr>
+										{% endif %}
+
+
 									{% endfor %}
 								</tbody>
 							</table>
