@@ -176,7 +176,10 @@ class socios{
 	}
 
 	public function getSociosWithMascotas(){
-		return DataBase::sendQuery("SELECT S.idSocio, S.estado, S.tipo, COUNT(MS.idMascota) AS cantMascotas FROM socios AS S, mascotasocio AS MS WHERE S.idSocio = MS.idSocio AND S.estado = 1 GROUP BY MS.idSocio", null, "LIST");
+		return DataBase::sendQuery("SELECT S.idSocio, S.estado, S.tipo, COUNT(m.idMascota) AS cantMascotas FROM socios AS S, mascotasocio AS MS
+			LEFT JOIN mascotas as m on ms.idMascota = m.idMascota
+			WHERE S.idSocio = MS.idSocio AND S.estado = 1 AND m.fechaFallecimiento IS null
+			GROUP BY MS.idSocio", null, "LIST");
 	}
 
 	public function getSocioToShow($idSocio){
