@@ -279,11 +279,7 @@ function createRowDataClientOrPet( obj ){
 	//agregar color a la fila de la tabla según la deuda del cliente
 	tipoClient = calculateColorRowByClient(obj.tipo, obj.deudor);
 
-	//si hay fecha de muerte agregar que esta fallecida la mascota
-	mascotaViva = "";
-	if ( obj.fechaFallecimiento != null && obj.fechaFallecimiento != "" ){
-		mascotaViva = "(falleció)";
-	}
+
 
 	let nomMascota = "";
 	let hrefMascota = "";
@@ -292,15 +288,37 @@ function createRowDataClientOrPet( obj ){
 		hrefMascota = 'href="'+getSiteURL()+'ver-mascota/'+obj.idMascota+'"';
 	}
 
+	let row = "";
+
+	//si hay fecha de muerte agregar que esta fallecida la mascota
+	mascotaViva = "";
+	if ( obj.fechaFallecimiento != null && obj.fechaFallecimiento != "" ){
+		mascotaViva = "FALLECIDO ";
+		row = '<tr class="'+tipoClient.class+' subtexto"  style="color:red; font-weight: bold;">';
+
+		row += '<td class="">'+obj.idSocio+'</td>';
+		row += '<td><a href="'+getSiteURL()+'ver-socio/'+obj.idSocio+'" style="color:red; font-weight: bold;" >'+obj.nomSocio+'</a></td>';
+		row += '<td><a '+hrefMascota+' style="color:red; font-weight: bold;" >'+mascotaViva+nomMascota+'</a></td>';
+	}else {
+		row = '<tr class="'+tipoClient.class+'">';
+		row += '<td class="subtexto">'+obj.idSocio+'</td>';
+		row += '<td><a href="'+getSiteURL()+'ver-socio/'+obj.idSocio+'" >'+obj.nomSocio+'</a></td>';
+		row += '<td><a '+hrefMascota+' >'+mascotaViva+nomMascota+'</a></td>';
+	}
 
 
-	let row = '<tr class="'+tipoClient.class+'">';
-	row += '<td class="subtexto">'+obj.idSocio+'</td>';
+	/*row += '<td class="subtexto">'+obj.idSocio+'</td>';
 	row += '<td><a href="'+getSiteURL()+'ver-socio/'+obj.idSocio+'" >'+obj.nomSocio+'</a></td>';
-	row += '<td><a '+hrefMascota+' >'+nomMascota+'</a> '+mascotaViva+'</td>';
+	row += '<td><a '+hrefMascota+' >'+mascotaViva+nomMascota+'</a></td>';*/
 	row += '<td>'+telefono+' '+telefax+'</td>';
 	row += '<td>'+direccion+'</td>';
-	row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+obj.nomSocio+'`, '+obj.idMascota+', `'+obj.nomMascota+'`, `'+obj.telefono+'`, `'+obj.telefax+'`, `'+obj.direccion+'`, `'+obj.email+'`)" ><i class="fas fa-plus-circle"></i></button></td></tr>';
+
+	if ( obj.fechaFallecimiento != null && obj.fechaFallecimiento != "" )
+		row += '<td><button class="btn btn-info subtexto" disabled ><i class="fas fa-plus-circle"></i></button></td></tr>';
+	else
+		row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+obj.nomSocio+'`, '+obj.idMascota+', `'+obj.nomMascota+'`, `'+obj.telefono+'`, `'+obj.telefax+'`, `'+obj.direccion+'`, `'+obj.email+'`)" ><i class="fas fa-plus-circle"></i></button></td></tr>';
+
+
 	//console.log(row);
 	return row;
 }
