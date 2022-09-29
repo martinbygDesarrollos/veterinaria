@@ -157,7 +157,7 @@ class ctr_usuarios{
 						//"lugar","C",15,0
 						if($socio['lugarPago'] == 1)
 							$stringList .= "Cobrador|";
-						if($socio['lugarPago'] == 2)
+						else if($socio['lugarPago'] == 2)
 							$stringList .= "OCA|";
 						else
 							$stringList .= "Veterinaria|";
