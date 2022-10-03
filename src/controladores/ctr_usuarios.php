@@ -81,34 +81,55 @@ class ctr_usuarios{
 
 						//"nombre","C",30,0
 						if(is_null($socio['nombre'])) $stringList .= "''|";
-						else $stringList .= $socio['nombre']. "|";
+						else {
+							$socio['nombre'] = str_replace("|","",$socio['nombre']);
+							$stringList .= $socio['nombre']. "|";
+						}
 
 						//"calle","C",55,0
 						if(is_null($socio['direccion']) || $socio['direccion'] == "") $stringList .= "''|";
-						else $stringList .= $socio['direccion'] . "|";
+						else {
+							$socio['direccion'] = str_replace("|","",$socio['direccion']);
+							$stringList .= $socio['direccion'] . "|";
+						}
 
 						//"email"
 						if (is_null($socio['email']) || $socio['email'] == "" || !strpos( $socio['email'], '@')){
 							$stringList .= "''|";
-						}else $stringList .= $socio['email']."|";
+						}else {
+							$socio['email'] = str_replace("|","",$socio['email']);
+							$stringList .= $socio['email']."|";
+						}
 
 						//"celular"
 						if (is_null($socio['telefax']) || $socio['telefax'] == "" || !ctype_digit($socio['telefax'])){
 							$stringList .= "''|";
-						}else $stringList .= $socio['telefax']."|";
+						}else {
+							$socio['telefax'] = str_replace("|","",$socio['telefax']);
+							$stringList .= $socio['telefax']."|";
+						}
 
 						//"telefijo"
 						if (is_null($socio['telefono']) || $socio['telefono'] == "" || !ctype_digit($socio['telefono'])){
 							$stringList .= "''|";
-						}else $stringList .= $socio['telefono']."|";
+						}else {
+							$socio['telefono'] = str_replace("|","",$socio['telefono']);
+							$stringList .= $socio['telefono']."|";
+						}
 
 						//"rut","C",12,0
-						if($socio['rut']>0) $stringList .= $socio['rut']."|";
+						if($socio['rut']>0){
+							$socio['rut'] = str_replace("|","",$socio['rut']);
+							$stringList .= $socio['rut']."|";
+						}
 						else $stringList .= "''|";
 
 
 						//"cedula","C",8,0
-						if($socio['cedula']>0) $stringList .= $socio['cedula']."|";
+						if($socio['cedula']>0) {
+							$socio['cedula'] = str_replace("|","",$socio['cedula']);
+							$stringList .= $socio['cedula']."|";
+						}
 						else $stringList .= "''|";
 
 
