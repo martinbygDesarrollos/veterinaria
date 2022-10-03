@@ -91,12 +91,12 @@ function createNewVacuna(idMascota){
 		if(primerDosis){
 			let data ={idMascota: idMascota, nombreVacuna: nombre, intervalo: intervalo, fechaDosis: primerDosis, observaciones: observaciones};
 			let response = sendPost("aplicarNuevaVacunaMascota", data);
-			//showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
+			showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
 			if(response.result == 2){
 				let vacuna = response.newVacuna;
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
-
-				showMessageConfirm(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
+				$("#modalVacuna").modal("hide");
+				/*showMessageConfirm(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
 				$('#modalMessageConfirmBtnSi').off('click');
 				$('#modalMessageConfirmBtnSi').click(function(){
 					$('#modalMessageConfirmBtnSi').attr("disable", true);
@@ -125,7 +125,7 @@ function createNewVacuna(idMascota){
 					$('#modalMessageConfirm').modal("hide");
 				});
 				//buscar dueño de la mascota y sus datos
-				sendAsyncPost("getSocioDataByMacota", {id: idMascota})
+				/*sendAsyncPost("getSocioDataByMacota", {id: idMascota})
 				.then((response)=>{
 					if ( response.result == 2 ){
 //no se controla si hay o no mascotas porque ya se pide de antemano los datos del dueño de la mascota idMascota por lo que si o si response tiene que tener mascotas
@@ -143,7 +143,7 @@ function createNewVacuna(idMascota){
 							redirectToWhatsapp( null, vacMessage );
 						}
 					}else console.log( "al buscar datos del dueño de la mascota no se dio resultado 2", response );
-				})
+				})*/
 			}else {
 				console.log( "al crear nueva vacuna de la mascota no se dio resultado 2", response );
 				showReplyMessage(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
