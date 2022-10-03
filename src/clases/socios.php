@@ -36,6 +36,7 @@ class socios{
 	}
 
 	public function getSociosPagina($lastId, $estado, $textToSearch){
+		$sociosClass = new socios();
 		if($lastId == 0){
 			$responseGetMaxID = socios::getSocioMaxId();
 			if($responseGetMaxID->result == 2)
@@ -55,12 +56,16 @@ class socios{
 				if($row['idSocio'] < $newLastId) $newLastId = $row['idSocio'];
 				$row['deudorFecha'] = "";
 				$row['cuota'] = number_format($row['cuota'],2,",",".");
+
+				$responseDeudor = $sociosClass->socioDeudor($row['fechaUltimaCuota']);
+
+				$row['deudor'] = $responseDeudor->deudor;
 				if(!is_null($row['fechaUltimaCuota']) && strlen($row['fechaUltimaCuota']) == 6)
 					$row['fechaUltimaCuota'] = fechas::getYearMonthFormatBar($row['fechaUltimaCuota']);
 				else
 					$row['fechaUltimaCuota'] = "";//"No especificado";
 
-				if ( $row['fechaUltimaCuota'] != "" ){
+				/*if ( $row['fechaUltimaCuota'] != "" ){
 					$dateToCompare = date('Ym', strtotime(date('Ym')." -3 month"));
 					$date = substr($row['fechaUltimaCuota'], 3, 4) . substr($row['fechaUltimaCuota'], 0, 2);
 					if ( $date < $dateToCompare ){
@@ -71,7 +76,7 @@ class socios{
 				}else{
 					$row['deudorFecha'] = "";
 					$row['deudor'] = false;
-				}
+				}*/
 
 				if ( $row['fechaUltimoPago'] != "" && $row['fechaUltimoPago'] != null ){
 					$row['deudorFecha'] = substr($row['fechaUltimoPago'], 6, 2)."/".substr($row['fechaUltimoPago'], 4, 2)."/".substr($row['fechaUltimoPago'], 0, 4);
@@ -183,6 +188,7 @@ class socios{
 	}
 
 	public function getSocioToShow($idSocio){
+		$sociosClass = new socios();
 		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE idSocio = ?", array('i', $idSocio), "OBJECT");
 		if($responseQuery->result == 2){
 			$socio = $responseQuery->objectResult;
@@ -253,24 +259,20 @@ class socios{
 			else if($socio->tipo == 3)
 				$socio->tipo = "Ex socio";
 
-			$socio->deudorFecha = "";
-			if ( $socio->fechaUltimaCuota != "" ){
-				$dateToCompare = date('Ym', strtotime(date('Ym')." -3 month"));
+			$date = null;
+			if ( isset($socio->fechaUltimaCuota) && $socio->fechaUltimaCuota != "" ){
 				$date = substr($socio->fechaUltimaCuota, 3, 4) . substr($socio->fechaUltimaCuota,0, 2);
-				if ( $date < $dateToCompare ){
-					$socio->deudor = true;
-				}else{
-					$socio->deudor = false;
-				}
-			}else{
-				$socio->deudorFecha = "";
-				$socio->deudor = false;
 			}
+			$responseDeudor = $sociosClass->socioDeudor($date);
+			$socio->deudor = $responseDeudor->deudor;
 
+
+			$socio->deudorFecha = "";
 			if ( $socio->fechaUltimoPago != "" && $socio->fechaUltimoPago != null ){
 				$socio->deudorFecha = $socio->fechaUltimoPago;
 			}
 			$responseQuery->objectResult = $socio;
+
 		}else if($responseQuery->result == 1) $responseQuery->message = "No fue encontrado el socio seleccionado.";
 
 		return $responseQuery;

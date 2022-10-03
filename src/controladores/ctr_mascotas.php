@@ -768,7 +768,7 @@ class ctr_mascotas {
 
 			//calcular si el cliente es deudor
 			foreach ($response->listResult as $key => $value) {
-				if ( isset($value['fechaUltimaCuota']) && $value['fechaUltimaCuota'] != "" ){
+				/*if ( isset($value['fechaUltimaCuota']) && $value['fechaUltimaCuota'] != "" ){
 					$resultClientDeudor = $usersController->calculateSocioDeudor($value['fechaUltimaCuota']);
 					if ( $resultClientDeudor->result == 2 ){
 						$response->listResult[$key]["deudor"] = $resultClientDeudor->deudor;
@@ -777,7 +777,10 @@ class ctr_mascotas {
 						$response->listResult[$key]["deudor"] = false;
 				}
 				else
-					$response->listResult[$key]["deudor"] = false;
+					$response->listResult[$key]["deudor"] = false;*/
+
+				$responseDeudor = $usersController->calculateSocioDeudor($value['fechaUltimaCuota']);
+				$response->listResult[$key]["deudor"] = $responseDeudor->deudor;
 			}
 
 

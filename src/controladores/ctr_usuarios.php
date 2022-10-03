@@ -28,29 +28,23 @@ class ctr_usuarios{
 		$currentDate = fechas::getCurrentDateInt();
 		$myToken = base64_encode($currentDate . "gestcom1213");
 		if(strcmp($token, $myToken) == 0){
-			if(is_null($idSocio) || is_null($ultimoPago) || is_null($ultimaCuota)){
-				$response->result = 0;
-				$response->message = "Se espera recibir los campos: 'ultimoCuota', 'ultimoPago', 'numSocio' para procesar la consulta.";
-			}else{
-				$responseGetSocio = socios::getSocio($idSocio);
-				if($responseGetSocio->result == 2){
-					if(!ctype_digit($ultimoPago) || strlen($ultimoPago) != 8){
-						$response->result = 0;
-						$response->message = "La fecha 'ultimoPago' debe ser numérica y con formato yyyymmdd.";
-					}else if(!ctype_digit($ultimaCuota) || strlen($ultimaCuota) !=  6){
-						$response->result = 0;
-						$response->message = "La fecha 'ultimaCuota' debe ser numérica y con formato yyyymm.";
-					}else{
-						$responseUpdateSocio = socios::updateGestcomSocio($idSocio, $ultimoPago, $ultimaCuota);
-						if($responseUpdateSocio->result == 2){
-							$response->result = 2;
-							$response->message = "Socio actualizado!.";
-						}else return $responseUpdateSocio;
-					}
-				}else{
-					$response->result = 0;
-					$response->message = "El 'numSocio' ingresado no corresponde a un socio en la base de datos.";
+			$responseGetSocio = socios::getSocio($idSocio);
+			if($responseGetSocio->result == 2){
+				if ( $ultimoPago == "" ){
+					$ultimoPago = null;
 				}
+
+				if ( $ultimaCuota == "" ){
+					$ultimaCuota = null;
+				}
+				$responseUpdateSocio = socios::updateGestcomSocio($idSocio, $ultimoPago, $ultimaCuota);
+				if($responseUpdateSocio->result == 2){
+					$response->result = 2;
+					$response->message = "Socio actualizado!.";
+				}else return $responseUpdateSocio;
+			}else{
+				$response->result = 0;
+				$response->message = "El 'numSocio' ingresado no corresponde a un socio en la base de datos.";
 			}
 		}else{
 			$response->result = 0;
