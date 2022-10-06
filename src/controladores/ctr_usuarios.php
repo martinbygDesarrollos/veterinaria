@@ -1209,8 +1209,8 @@ class ctr_usuarios{
 		$response = new \stdClass();
 		$sociosClass = new socios();
 
-		$response->result = 1;
-		$response->message = "Ocurrió un error al procesar la fecha del último pago";
+		$response->result = 2;
+		$response->deudor = false;
 
 		if ( isset($value) && $value != "" ){
 			$response = $sociosClass->socioDeudor($value);
