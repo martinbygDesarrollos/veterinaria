@@ -93,7 +93,7 @@ function createRow(obj){
 
 	if ( fechaUltimaCuota != "" ){
 		if ( socioDeudor && fechaUltimoPago != "" )
-			row += ' title="Último mes pago '+ fechaUltimaCuota +' el día '+ fechaUltimoPago +'" >'+socioNombre+ socioActivo+' <i class="fas fa-exclamation-triangle"></i></td>';
+			row += ' title="Pago pendiente '+ fechaUltimaCuota +', último movimiento el día '+ fechaUltimoPago +'" >'+socioNombre+ socioActivo+' <i class="fas fa-exclamation-triangle"></i></td>';
 		else if (socioDeudor && fechaUltimoPago == "" )
 			row += ' title="No se encontró fecha del último pago" >'+socioNombre+socioActivo+' <i class="fas fa-exclamation-triangle"></i></td>';
 		else if ( !socioDeudor )

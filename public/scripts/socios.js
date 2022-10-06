@@ -127,7 +127,7 @@ function createRow(obj){
 
 	if ( fechaUltimaCuota != "" ){
 		if ( deudor && deudorFecha != "" )
-			row += ' title="Último mes pago '+ fechaUltimaCuota +' el día '+ deudorFecha +'" ><i class="fas fa-exclamation-triangle"></i> '+fechaUltimaCuota+'</td>';
+			row += ' title="Pago pendiente '+ fechaUltimaCuota +' último movimiento el día '+ deudorFecha +'" ><i class="fas fa-exclamation-triangle"></i> '+fechaUltimaCuota+'</td>';
 		else if (deudor && deudorFecha == "" )
 			row += ' title="No se encontró fecha del último pago" ><i class="fas fa-exclamation-triangle"></i>'+fechaUltimaCuota+'</td>';
 		else if ( !deudor )

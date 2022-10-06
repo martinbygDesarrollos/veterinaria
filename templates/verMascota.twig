@@ -39,9 +39,9 @@
 			{% if SocioMascota.socio.deudor == true %}
 
 				{% if SocioMascota.mascota.fechaFallecimiento %}
-					<h5 class="card-title mt-2" style="float: right !important; color:#db0000;"><i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
+					<h5 class="card-title mt-2" style="float: right !important; color:#db0000;"><i class="fas fa-exclamation-triangle" title="Pago pendiente &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} último movimiento el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
 				{% else %}
-					<h5 class="card-title mt-2" style="float: right !important;"><i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
+					<h5 class="card-title mt-2" style="float: right !important;"><i class="fas fa-exclamation-triangle" title="Pago pendiente &nbsp;{{SocioMascota.socio.fechaUltimaCuota}} último movimiento el día &nbsp;{{SocioMascota.socio.fechaUltimoPago}}"></i></h5>
 				{%endif%}
 
 			{% endif %}

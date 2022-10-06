@@ -8,7 +8,7 @@
 			<div class="row" style="text-transform: uppercase;">
 				<h5 class="card-title mt-2 ml-2">{{ responseSocio.socio.nombre }}
 				{% if responseSocio.socio.deudor == true %}
-				<i class="fas fa-exclamation-triangle" title="Último mes pago &nbsp; {{responseSocio.socio.fechaUltimaCuota}} el día &nbsp; {{responseSocio.socio.fechaUltimoPago}}"></i>
+				<i class="fas fa-exclamation-triangle" title="Pago pendiente &nbsp; {{responseSocio.socio.fechaUltimaCuota}} último movimiento el día &nbsp; {{responseSocio.socio.fechaUltimoPago}}"></i>
 				{% endif %}
 				</h5>
 			</div>
@@ -456,13 +456,13 @@
 						</div>
 						<div class="col">
 							<div class="form-group">
-								<label for="inputUltimoPago">Último pago</label>
+								<label for="inputUltimoPago">Último movimiento</label>
 								<input type="date" class="form-control text-center shadow-sm"id="inputModalUltimoPago" onkeypress="return keyEnterPress(event, null, null)">
 							</div>
 						</div>
 						<div class="col">
 							<div class="form-group">
-								<label for="inputUltimoMesPago">Último mes pago</label>
+								<label for="inputUltimoMesPago">Cuota pendiente</label>
 								<input type="month" class="form-control text-center shadow-sm"  id="inputModalUltimoMesPago" onkeypress="return keyEnterPress(event, null, null)">
 							</div>
 						</div>
