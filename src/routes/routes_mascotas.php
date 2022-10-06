@@ -468,5 +468,20 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
+
+
+
+    $app->post('/unifyPetCards', function(Request $request, Response $response) use ($userController, $mascotaController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+
+            $data = $request->getParams();
+            $petone = $data['nameUnifyPetOne'];
+            $pettwo = $data['nameUnifyPetTwo'];
+
+            $response = $mascotaController->unifyPetCards($petone, $pettwo);
+            return json_encode($response);
+        }else return json_encode($responseSession);
+    });
 }
 ?>

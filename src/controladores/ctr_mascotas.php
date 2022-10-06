@@ -823,4 +823,225 @@ class ctr_mascotas {
 			return $response;
 		}
 	}
+
+
+
+	public function unifyPetCards($idPetOne, $idPetTwo){
+		$response = new \stdClass();
+		$response->result = 1;
+		$response->message = "Proceso terminado.";
+		$mascotasController = new ctr_mascotas();
+
+		if ( !isset($idPetOne) || !isset($idPetTwo) || $idPetOne == "" || $idPetTwo == "" ){
+			$response->result = 1;
+			$response->message = "No se encontraron indentificadores de las mascotas(".$idPetOne.", ".$idPetTwo.").";
+			return $response;
+		}
+
+
+		$basicData = $mascotasController->unifyPetsBasicData($idPetOne, $idPetTwo);
+		if ( $basicData->result != 2 ){
+			return $basicData;
+		}else{
+			$response->result = 2;
+			$response->message = $response->message . "<br>Datos de la mascota procesados correctamente.";
+		}
+
+
+
+		$analisis = $mascotasController->unifyPetsAnalisis($idPetOne, $idPetTwo);
+		if ( $analisis->result != 2 ){
+			return $analisis;
+		}else{
+			$response->result = 2;
+			$response->message = $response->message . "<br>Todos los análisis procesados correctamente.";
+		}
+
+
+
+		$vacunas = $mascotasController->unifyPetsVacunas($idPetOne, $idPetTwo);
+		if ( $vacunas->result != 2 ){
+			return $vacunas;
+		}else{
+			$response->result = 2;
+			$response->message = $response->message . "<br>Todas las vacunas y medicamentos procesados correctamente.";
+		}
+
+		/*$enfermedades = $mascotasController->unifyPetsEnfermedades($idPetOne, $idPetTwo);
+		if ( $enfermedades->result != 2 ){
+			return $enfermedades;
+		}
+
+
+		$histClinica = $mascotasController->unifyPetsClinica($idPetOne, $idPetTwo);
+		if ( $histClinica->result != 2 ){
+			return $histClinica;
+		}
+
+		$historialUsuario = $mascotasController->unifyPetsHistoryUsers($idPetOne, $idPetTwo);
+		if ( $historialUsuario->result != 2 ){
+			return $historialUsuario;
+		}
+
+		$historialSocio = $mascotasController->unifyPetsHistoryClients($idPetOne, $idPetTwo);
+		if ( $historialSocio->result != 2 ){
+			return $historialSocio;
+		}*/
+
+		//todas las agendas
+		//eliminar vinculo con el socio
+		//actualizar cuotas de los dos socios, dueños de cada mascota
+
+		return $response;
+	}
+
+
+	public function unifyPetsBasicData($idPetOne, $idPetTwo){
+		$mascotasClass = new mascotas();
+
+
+		$objPetOne = $mascotasClass->getMascota($idPetOne);
+		$objPetTwo = $mascotasClass->getMascota($idPetTwo);
+
+		if ( $objPetOne->result != 2 ){
+			return $objPetOne;
+		}
+
+		if ( $objPetTwo->result != 2 ){
+			return $objPetTwo;
+		}
+
+
+		$idMascota = $objPetOne->objectResult->idMascota;//no se modifica
+		$nombre = $objPetOne->objectResult->nombre;//no se modifica
+		$especie = $objPetOne->objectResult->especie;
+		$raza = $objPetOne->objectResult->raza;
+		$sexo = $objPetOne->objectResult->sexo;
+		$color = $objPetOne->objectResult->color;
+		$pedigree = $objPetOne->objectResult->pedigree;
+		$fechaNacimiento = $objPetOne->objectResult->fechaNacimiento;
+		$muerte = $objPetOne->objectResult->fechaFallecimiento;
+		$pelo = $objPetOne->objectResult->pelo;
+		$chip = $objPetOne->objectResult->chip;
+		$observaciones = $objPetOne->objectResult->observaciones;
+		$peso = $objPetOne->objectResult->peso;
+		$internado = $objPetOne->objectResult->internado;
+
+		if ( isset($especie) || $especie == "" ){
+			$especie = $objPetTwo->objectResult->especie;
+		}
+
+		if ( isset($raza) || $raza == "" ){
+			$raza = $objPetTwo->objectResult->raza;
+		}
+
+		if ( isset($sexo) || $sexo == "" ){
+			$sexo = $objPetTwo->objectResult->sexo;
+		}
+
+		if ( isset($color) || $color == "" ){
+			$color = $objPetTwo->objectResult->color;
+		}
+
+		if ( isset($pedigree) || $pedigree == "" ){
+			$pedigree = $objPetTwo->objectResult->pedigree;
+		}
+
+		if ( isset($fechaNacimiento) || $fechaNacimiento == "" ){
+			$fechaNacimiento = $objPetTwo->objectResult->fechaNacimiento;
+		}
+
+		if ( isset($muerte) || $muerte == "" ){
+			$muerte = $objPetTwo->objectResult->fechaFallecimiento;
+		}
+
+		if ( (isset($internado) || $internado == "") && (isset($muerte) || $muerte == "") ){
+			$modifyInternado = $mascotasClass->petHospitalizedIn($objPetOne->objectResult->idMascota, $objPetTwo->objectResult->internado);
+			if ( $modifyInternado->result != 2 ){
+				return $modifyInternado;
+			}
+		}
+
+		if ( isset($pelo) || $pelo == "" ){
+			$pelo = $objPetTwo->objectResult->pelo;
+		}
+
+		if ( isset($chip) || $chip == "" ){
+			$chip = $objPetTwo->objectResult->chip;
+		}
+
+		if ( isset($observaciones) || $observaciones == "" ){
+			$observaciones = $objPetTwo->objectResult->observaciones;
+		}
+
+		if ( isset($peso) || $peso == "" ){
+			$peso = $objPetTwo->objectResult->peso;
+		}
+
+		return $mascotasClass->updateMascota($idMascota, $nombre, $especie, $raza, $sexo, $color, $pedigree, $fechaNacimiento, $muerte, $pelo, $chip, $observaciones, $peso);
+
+	}
+
+
+	public function unifyPetsAnalisis($idPetOne, $idPetTwo){
+
+		$serviciosMascotaClass = new serviciosMascota();
+		$arrayErrors = array();
+		$response = new stdClass();
+
+
+		$listAnalisis = $serviciosMascotaClass->getAllAnalisisByMascota($idPetTwo);
+
+		if ($listAnalisis->result == 2){
+			foreach ( $listAnalisis->listResult as $analisis ) {
+
+				$changeAnalisis = $serviciosMascotaClass->changeAnalisisFromMascota($analisis["idAnalisis"], $idPetOne);
+				if ( $changeAnalisis->result != 2 ){
+					array_push($arrayErrors, $changeAnalisis->message);
+				}
+
+			}
+		}
+
+		if ( count($arrayErrors) == 0 ){
+			$response->result = 2;
+		}else{
+			$response->result = 2;
+			$response->message = $arrayErrors;
+		}
+
+		return $response;
+
+	}
+
+	public function unifyPetsVacunas($idPetOne, $idPetTwo){
+
+		$serviciosMascotaClass = new serviciosMascota();
+		$arrayErrors = array();
+		$response = new stdClass();
+
+
+		$listVacunas = $serviciosMascotaClass->getAllVacunasByMascota($idPetTwo);
+		if ($listVacunas->result == 2){
+			foreach ( $listVacunas->listResult as $vacuna ) {
+
+				$changeVacuna = $serviciosMascotaClass->changeVacunaFromMascota($vacuna["idVacunaMascota"], $idPetOne);
+				if ( $changeVacuna->result != 2 ){
+					array_push($arrayErrors, $changeVacuna->message);
+				}
+
+			}
+		}
+
+		if ( count($arrayErrors) == 0 ){
+			$response->result = 2;
+		}else{
+			$response->result = 2;
+			$response->message = $arrayErrors;
+		}
+
+		return $response;
+
+	}
+
 }

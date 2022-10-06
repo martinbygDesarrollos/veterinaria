@@ -3,7 +3,7 @@
 {% endblock %}
 {% block content %}
 <div class="d-flex justify-content-center">
-	<div class="card border-top-0 rounded-bottom border shadow w-50">
+	<div class="card border-top-0 rounded-bottom border shadow w-75">
 		<div class="card-header d-flex justify-content-between bg-mycolor">
 			<div class="row">
 				<h5 class="card-title mt-2 ml-2">Configuraciones</h5>
@@ -14,6 +14,7 @@
 				<div class="nav nav-tabs" id="nav-tab" role="tablist">
 					<a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-cuota" role="tab" aria-controls="nav-profile" aria-selected="false">Cuota</a>
 					<a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-usuario" role="tab" aria-controls="nav-profile" aria-selected="false">Usuarios</a>
+					<!--a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-mascota" role="tab" aria-controls="nav-profile" aria-selected="false">Mascotas</a-->
 				</div>
 			</nav>
 			<div class="tab-content" id="nav-tabContent">
@@ -114,6 +115,49 @@
 						</div>
 					</div>
 				</div>
+
+				<!--div class="tab-pane fade  border boder-2 border-top-0 p-3" id="nav-mascota" role="tabpanel" aria-labelledby="nav-profile-tab">
+					<div class="row">
+						<div class="col-7">
+							<input type="search" class="form-control" onsearch="searchClientOrPetToUnify(this.value)" id="idInputPetsToUnify" onkeyup="this.onsearch()" placeholder="Escriba algo..." >
+							<div class="tableCustomScroll">
+
+								<table class="table table-hover">
+									<thead style="background-color: white;">
+										<tr>
+											<th>Nro. mascota</th>
+											<th>Nombre</th>
+											<th>Nro. cliente</th>
+											<th>Cliente</th>
+											<th>Seleccionar</th>
+										</tr>
+									</thead>
+									<tbody id="tbodyUnifyPets" ></tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-5">
+
+							<h5>Mascotas a unificar</h5>
+							<hr>
+							<p>Ficha donde quedarán todos los datos: </p>
+							<h6 id="idUnifyPetOneName"></h6>
+							<hr>
+							<p>Ficha a borrar: </p>
+							<h6 id="idUnifyPetTwoName"></h6>
+
+
+							<form id="formUnifyPets">
+								<input type="text" name="nameUnifyPetOne" id="idUnifyPetOne" hidden>
+								<input type="text" name="nameUnifyPetTwo" id="idUnifyPetTwo" hidden>
+								<div class="d-flex flex-row-reverse">
+									<button type="submit" class="btn btn-success m-1" >Cofirmar</button>
+									<button type="button" onclick="cleanUnifyPetsForm()" class="btn btn-danger m-1" >Cancelar</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div-->
 			</div>
 		</div>
 	</div>

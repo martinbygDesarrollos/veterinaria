@@ -109,3 +109,118 @@ function createRow(idUsuario, nombre, email){
 
 	return row;
 }
+
+
+
+
+function searchClientOrPetToUnify( value ){
+	if (value.length > 0 ){
+		sendAsyncPost("getClientOrPetByInput", {value: value, indexLimit: 0})
+		.then(( response )=>{
+			$("#tbodyUnifyPets").empty();
+			if ( response.result == 2 ){
+				let list = response.listResult;
+				for (var i = 0; i < list.length; i++) {
+					let row = createRowUnifyPets(list[i]);
+					$("#tbodyUnifyPets").append(row);
+				}
+			}
+		})
+	} else
+		$("#tbodyUnifyPets").empty();
+}
+
+
+function createRowUnifyPets(obj){
+
+	idmascota = "";
+	if ( obj.idMascota ){
+		idmascota = obj.idMascota;
+	}
+
+	nommascota = "";
+	if ( obj.nomMascota ){
+		nommascota = obj.nomMascota;
+	}
+
+	idsocio = "";
+	if ( obj.idSocio ){
+		idsocio = obj.idSocio;
+	}
+
+	nomsocio = "";
+	if ( obj.nomSocio ){
+		nomsocio = obj.nomSocio;
+	}
+
+
+	//agregar color a la fila de la tabla según la deuda del cliente
+	tipoClient = calculateColorRowByClient(obj.tipo, obj.deudor);
+
+	mascotaViva = "";
+	if ( obj.fechaFallecimiento != null && obj.fechaFallecimiento != "" ){
+		mascotaViva = "FALLECIDO ";
+		row = '<tr class="'+tipoClient.class+' subtexto"  style="color:red; font-weight: bold;">';
+	}else {
+		row = '<tr class="'+tipoClient.class+'">';
+	}
+
+	row += '<td>'+idmascota+'</td>';
+	row += '<td>'+mascotaViva+nommascota+'</td>';
+	row += '<td>'+idsocio+'</td>';
+	row += '<td>'+nomsocio+'</td>';
+
+	if ( idmascota != "" ){
+		row += '<td><button type="button" onclick="selectPetsToUnify(`'+idmascota+'`, `'+nommascota+'`)" class="btn btn-info"><i class="fas fa-plus-circle" ></i></button></td>';
+	}else{
+		row += '<td><button type="button" class="btn btn-info" disabled><i class="fas fa-plus-circle" ></i></button></td>';
+	}
+
+
+	row += '</tr>';
+
+	return row;
+}
+
+
+
+function selectPetsToUnify(idmascota, nommascota){
+	let petone = $("#idUnifyPetOne").val();
+	if( petone ){
+		$("#idUnifyPetTwo").val(idmascota);
+		$("#idUnifyPetTwoName").text(idmascota+" - "+nommascota);
+	}else{
+		$("#idUnifyPetOne").val(idmascota);
+		$("#idUnifyPetOneName").text(idmascota+" - "+nommascota);
+	}
+
+
+}
+
+
+function cleanUnifyPetsForm(){
+
+	$("#idUnifyPetTwo").val("");
+	$("#idUnifyPetTwoName").text("");
+	$("#idUnifyPetOne").val("");
+	$("#idUnifyPetOneName").text("");
+	$("#idInputPetsToUnify").val("");
+	$("#tbodyUnifyPets").empty();
+}
+
+
+
+$("#formUnifyPets").submit((e)=>{
+	e.preventDefault();
+
+
+	//poner pantalla de carga
+	var formData = new FormData(document.getElementById("formUnifyPets"));
+	sendAsyncPostFiles("unifyPetCards", formData)
+	.then((response)=>{
+
+		showReplyMessage(response.result,response.message,"Unificar mascotas", null );
+		console.log(response);
+	})
+
+})

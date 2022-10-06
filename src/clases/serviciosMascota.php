@@ -88,7 +88,16 @@ class serviciosMascota {
         return $responseQuery;
     }
 
+    public function getAllAnalisisByMascota($idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("SELECT * FROM analisismascota WHERE idMascota = ?", array('i', $idMascota), "LIST");
+    }
 
+
+    public function changeAnalisisFromMascota($idAnalisis, $idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `analisismascota` SET `idMascota` = ? WHERE `idAnalisis` = ?", array('ii',$idMascota, $idAnalisis), "BOOLE");
+    }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -331,6 +340,19 @@ class serviciosMascota {
     public function getLastIdVacunasMascotas(){
         $responseQuery = DataBase::sendQuery("SELECT MAX(idVacunaMascota) AS lastID FROM vacunasmascota", array(), "OBJECT");
         if($responseQuery->result == 2) return ($responseQuery->objectResult->lastID +1);
+    }
+
+
+
+    public function getAllVacunasByMascota($idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("SELECT * FROM vacunasmascota WHERE idMascota = ?", array('i', $idMascota), "LIST");
+    }
+
+
+    public function changeVacunaFromMascota($idVacuna, $idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `vacunasmascota` SET `idMascota` = ? WHERE `idVacunaMascota` = ?", array('ii',$idMascota, $idVacuna), "BOOLE");
     }
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
