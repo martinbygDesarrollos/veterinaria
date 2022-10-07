@@ -251,6 +251,7 @@ return function (App $app) {
             $rut = $data['rut'];
             $telefax = $data['telefax'];
             $tipoSocio = $data['tipo'];
+
             return json_encode(ctr_usuarios::insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio));
         }else return json_encode($responseSession);
     });

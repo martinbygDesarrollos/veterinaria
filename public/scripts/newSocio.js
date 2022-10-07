@@ -11,6 +11,16 @@ function insertarNuevoSocio(){
 	let tipoSocio = $('#inputTipoSocio').val() || null;
 	let fechaIngreso = $('#inputFechaIngresoSocio').val() || null;
 
+
+	if(nombre) nombre = nombre.replaceAll('|', '');
+	if(cedula) cedula = cedula.replaceAll('|', '');
+	if(telefono) telefono = telefono.replaceAll('|', '');
+	if(telefax) telefax = telefax.replaceAll('|', '');
+	if(direccion) direccion = direccion.replaceAll('|', '');
+	if(email) email = email.replaceAll('|', '');
+	if(rut) rut = rut.replaceAll('|', '');
+
+
 	//if( cedula || rut ){
 		if(validateCI(cedula) || !cedula){
 			if(nombre){
@@ -29,6 +39,7 @@ function insertarNuevoSocio(){
 						email: email
 					};
 
+					console.log(data);
 					sendAsyncPost("insertNewSocio", data)
 					.then((response)=>{
 						console.log(response);

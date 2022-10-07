@@ -219,6 +219,23 @@ function saveChangeSocio(buttonConfirm){
 	let telefax = $('#inputModalTelefax').val() || null;
 	let email = $('#inputModalEmail').val() || null;
 
+	if (cedula) cedula.replaceAll('|', '');
+	if (nombre) nombre.replaceAll('|', '');
+	if (direccion) direccion.replaceAll('|', '');
+	if (telefono) telefono.replaceAll('|', '');
+	if (fechaPago) fechaPago.replaceAll('|', '');
+	if (ultimoPago) ultimoPago.replaceAll('|', '');
+	if (ultimoMesPago) ultimoMesPago.replaceAll('|', '');
+	if (fechaIngreso) fechaIngreso.replaceAll('|', '');
+	if (fechaBajaSocio) fechaBajaSocio.replaceAll('|', '');
+	if (lugarPago) lugarPago.replaceAll('|', '');
+	if (tipoSocio) tipoSocio.replaceAll('|', '');
+	if (rut) rut.replaceAll('|', '');
+	if (telefax) telefax.replaceAll('|', '');
+	if (email) email.replaceAll('|', '');
+
+
+
 	//if( cedula || rut ){
 		if(validateCI(cedula) || !cedula){
 			if(nombre){

@@ -849,6 +849,22 @@ class ctr_usuarios{
 
 	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $fechaBajaSocio, $ultimoPago, $fechaPago, $ultimoMesPago){
 
+		//$idSocio = str_replace("|","",$idSocio);
+		$nombre = str_replace("|","",$nombre);
+		$cedula = str_replace("|","",$cedula);
+		$direccion = str_replace("|","",$direccion);
+		$telefono = str_replace("|","",$telefono);
+		$email = str_replace("|","",$email);
+		$rut = str_replace("|","",$rut);
+		$telefax = str_replace("|","",$telefax);
+		//$tipoSocioNuevo = str_replace("|","",$tipoSocioNuevo);
+		//$lugarPago = str_replace("|","",$lugarPago);
+		//$fechaIngreso = str_replace("|","",$fechaIngreso);
+		//$fechaBajaSocio = str_replace("|","",$fechaBajaSocio);
+		//$ultimoPago = str_replace("|","",$ultimoPago);
+		//$fechaPago = str_replace("|","",$fechaPago);
+		//$ultimoMesPago = str_replace("|","",$ultimoMesPago);
+
 		$response = new \stdClass();
 		$sociosClass = new socios();
 		$responseGetSocio = socios::getSocio($idSocio);
