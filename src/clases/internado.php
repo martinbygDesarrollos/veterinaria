@@ -16,8 +16,8 @@ class internado{
 		$database = new DataBase();
 		return $database->sendQuery("SELECT m.*, s.idSocio, s.nombre as nomCliente, s.fechaUltimaCuota, s.telefax, s.tipo FROM `mascotas` as m
 		LEFT JOIN mascotasocio AS ms ON m.idMascota = ms.idMascota
-		LEFT JOIN socios AS s ON ms.idSocio = s.idSocio ".$where." AND m.idMascota < ?
-		ORDER BY m.`idMascota` DESC LIMIT 20",array('i',$lastId), "LIST");
+		LEFT JOIN socios AS s ON ms.idSocio = s.idSocio ".$where." AND m.idMascota < ? AND m.fechaFallecimiento IS null
+		ORDER BY m.`idMascota` DESC LIMIT 30",array('i',$lastId), "LIST");
 
 	}
 
