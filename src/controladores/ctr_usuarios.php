@@ -30,13 +30,12 @@ class ctr_usuarios{
 		if(strcmp($token, $myToken) == 0){
 			$responseGetSocio = socios::getSocio($idSocio);
 			if($responseGetSocio->result == 2){
-				if ( $ultimoPago == "" ){
-					$ultimoPago = null;
+
+				$cliente = $responseGetSocio->objectResult;
+				if ( $ultimoPago == "" || !isset($ultimoPago)){
+					$ultimoPago = $cliente->fechaUltimoPago;
 				}
 
-				if ( $ultimaCuota == "" ){
-					$ultimaCuota = null;
-				}
 				$responseUpdateSocio = socios::updateGestcomSocio($idSocio, $ultimoPago, $ultimaCuota);
 				if($responseUpdateSocio->result == 2){
 					$response->result = 2;
