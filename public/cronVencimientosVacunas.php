@@ -30,7 +30,7 @@ Muchas gracias
 
 */
 <?php
-
+exit;
 require_once "../src/config.php";
 require_once '../src/connection/open_connection.php';
 require_once '../src/utils/whatsapp.php';
