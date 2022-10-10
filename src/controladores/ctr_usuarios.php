@@ -34,8 +34,15 @@ class ctr_usuarios{
 				$cliente = $responseGetSocio->objectResult;
 				if ( $ultimoPago == "" || !isset($ultimoPago)){
 					$ultimoPago = $cliente->fechaUltimoPago;
+				}else{
+
+					if ( $cliente->fechaUltimoPago > (int)$ultimoPago ){
+						$ultimoPago = $cliente->fechaUltimoPago;
+					}
 				}
 
+				//$ultimoPago siempre tiene que tener una fecha
+				//$ultimaCuota puede o no tener periodo, si no hay nada significa que el cliente está al día
 				$responseUpdateSocio = socios::updateGestcomSocio($idSocio, $ultimoPago, $ultimaCuota);
 				if($responseUpdateSocio->result == 2){
 					$response->result = 2;
