@@ -66,15 +66,16 @@ function cargarHistoriaClinica(idMascota){
 
 	sendAsyncPost("getHistoriaClinicaMascota", {lastId: limitHisto, idMascota: idMascota })
 	.then(( response )=>{
-
 		if(response.result == 2){
-			if(limitHisto != response.lastId)
+			if(limitHisto != response.lastId){
 				limitHisto = response. lastId;
 
-			let list = response.listResult;
-			for (let i = 0; i < list.length; i++) {
-				let row = createRowHistorial(list[i]);
-				$('#tbodyHistoriaClinica').append(row);
+				let list = response.listResult;
+				for (let i = 0; i < list.length; i++) {
+					let row = createRowHistorial(list[i]);
+					$('#tbodyHistoriaClinica').append(row);
+				}
+
 			}
 		}
 
