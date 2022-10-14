@@ -78,7 +78,10 @@ function getDateForShow(){
 function downloadFile( id ){
 
 	let url = getSiteURL() + 'descargar/' + id;
-  	window.location.href = url;
+  	//window.location.href = url;
+
+    window.open(url, '_blank');
+
 }
 
 function getCurrentDate(){

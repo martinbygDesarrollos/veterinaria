@@ -477,7 +477,7 @@ function verHistoriaClinica(idHistoria){
 
 				//divFilesTableModalView
 				for (var i = 0; i < historia.archivos.length; i++) {
-					let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Descargar archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')"><i class="fas fa-download"></i></button></td><td class="text-center"></td></tr>';
+					let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Ver archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')">ver</button></td><td class="text-center"></td></tr>';
 
 					$("#divFilesTableModalView table tbody").append(row);
 				}

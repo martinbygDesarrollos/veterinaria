@@ -380,13 +380,13 @@ return function (App $app) {
             $content = $response->getBody();
             $content->write($fichero->objectResult->archivo);
 
-            return $response->withHeader('Content-Type', 'image/png')
-                ->withHeader('Content-Type', 'application/download')
-                ->withHeader('Content-Transfer-Encoding', 'binary')
-                ->withHeader('Content-Disposition', 'inline; filename="' . $fichero->objectResult->nombre . '"')
-                ->withHeader('Expires', '0')
-                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
-                ->withHeader('Pragma', 'public');
+            return $response
+                ->withHeader('Content-Type', '*/*')
+                //->withHeader('Content-Transfer-Encoding', 'binary')
+                ->withHeader('Content-Disposition', 'inline; filename="' . $fichero->objectResult->nombre . '"');
+                //->withHeader('Expires', '0')
+                //->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                //->withHeader('Pragma', 'public');
         }else return $response->withRedirect($request->getUri()->getBaseUrl());
     });
 
