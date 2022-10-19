@@ -78,6 +78,39 @@ Muchas gracias!";
 }
 
 
+$sql = 'SELECT m.nombre AS nomMascota, s.telefax, vm.idVacunaMascota, vm.nombreVacuna FROM `vacunasmascota` AS vm
+		LEFT JOIN `mascotas` AS m ON vm.idMascota = m.idMascota
+        LEFT JOIN `mascotasocio` AS ms ON ms.idMascota = m.idMascota
+        LEFT JOIN `socios` AS s ON ms.idSocio = s.idSocio
+		WHERE vm.fechaProximaDosis = ? AND
+		(m.fechaFallecimiento IS null OR m.fechaFallecimiento = "") AND
+		s.estado = 1 AND
+		vm.nombreVacuna not like "%vacuna%" ';
+
+
+$database = new DataBase();
+$whatsappClass = new whatsapp();
+$vacunasList = $database->sendQuery($sql,array('i',$sevenDays), "LIST");
+if ( $vacunasList->result == 2 ){
+	foreach ($vacunasList->listResult as $vacuna) {
+		$messageSevenDays = "Estimado cliente Veterinaria Nan le recuerda que su mascota ".$vacuna['nomMascota']." tiene el antiparasitario ".$vacuna['nombreVacuna']." vencido.
+
+Saluda atte, equipo médico de Veterinaria Nan.
+
+Este mensaje es automático. Por cualquier consulta comunicarse al 472- 34039 en nuestros horarios de atención.
+
+Muchas gracias!";
+
+		$clientWppNumber = $vacuna['telefax'];
+
+		$path = "message/txt";
+		$data = 'id='.WHATSAPP_API_USER.'&content='.$messageSevenDays.'&to='.$clientWppNumber.'&token='.TOKEN_API;
+		$send = $whatsappClass->apiConection($path, $data);
+		if ( $send->result != 2 ){
+			echo "Vacuna ".$vacuna['idVacunaMascota'].': error: '.$send->error;
+		}
+	}
+}
 
 //(el dia del vencimiento)enviar wpp si hoy se vence una vacuna
 $sql = 'SELECT m.nombre AS nomMascota, s.telefax, vm.idVacunaMascota, vm.nombreVacuna FROM `vacunasmascota` AS vm
