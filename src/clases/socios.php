@@ -43,12 +43,39 @@ class socios{
 				$lastId = $responseGetMaxID->objectResult->idMaximo + 1;
 		}
 
+
+		$sqlquery = "SELECT DISTINCT(s.idSocio), s.* FROM socios AS s";
+		$join = " LEFT JOIN mascotasocio AS ms ON s.idSocio = ms.idSocio
+				LEFT JOIN mascotas AS m ON  m.idMascota = ms.idMascota ";
+		$where = "WHERE s.estado = ? AND s.idSocio < ? " ;
 		$sqlToSearch = "";
-		if(!is_null($textToSearch)){
-			$sqlToSearch = " AND nombre LIKE '%" . $textToSearch . "%' ";
+
+		if(!is_null($textToSearch) && $textToSearch != ""){
+
+			$arrayTextSearch = explode(" ", $textToSearch);
+			foreach ($arrayTextSearch as $value) {
+
+				if ($value != $arrayTextSearch[0]){
+					if ( $value != "" ){
+						$sqlToSearch .= " OR ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+					}
+				}else{
+					if ( $value != "" ){
+						$sqlToSearch = " AND ( ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+					}
+				}
+
+			}
+
+			if ( strlen($sqlToSearch) > 0 ){
+				$sqlToSearch .= " ) ";
+			}
 		}
 
-		$responseQuery = DataBase::sendQuery("SELECT * FROM socios WHERE estado = ? AND idSocio < ? " . $sqlToSearch . " ORDER BY idSocio DESC LIMIT 14", array('ii', $estado, $lastId), "LIST");
+
+		$orderAndLimit = " ORDER BY s.idSocio DESC LIMIT 14";
+
+		$responseQuery = DataBase::sendQuery($sqlquery . $join . $where . $sqlToSearch . $orderAndLimit, array('ii', $estado, $lastId), "LIST");
 		if($responseQuery->result == 2){
 			$newLastId = $lastId;
 			$arrayResult = array();
