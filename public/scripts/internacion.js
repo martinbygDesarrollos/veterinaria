@@ -68,14 +68,20 @@ function createRowHospitalized(obj){
 
 
 		if ( obj.telefax ){
-			if ( obj.telefax.length >=9 )
+			if ( obj.telefax.length >= 9 )
 				botonwpp = '<a class="btn btn-info" title="Enviar whatsapp al '+obj.telefax+'" href="https://wa.me/'+obj.telefax+'" target="_blank" value=""><i class="fab fa-whatsapp"></i></a>'
 		}
 
 
 		let row = "<tr id='trinternado"+ obj.idMascota +"' class='"+colorForClient.class+"'>";
 		row += "<td class='text-center'><a  class='divAsAnchor' onclick='redirectToMascota("+ obj.idMascota +")'>"+ obj.nombre +"</a></td>";
-		row += "<td class='text-center'><a  class='divAsAnchor' onclick='redirectToSocio("+ obj.idSocio +")'>"+obj.nomCliente+"</a></td>";
+
+		if ( obj.idSocio ){
+			row += "<td class='text-center'><a  class='divAsAnchor' onclick='redirectToSocio("+ obj.idSocio +")'>"+obj.nomCliente+"</a></td>";
+		}else
+			row += "<td class='text-center'></td>";
+
+
 		row += "<td class='text-center'>"+ internado +"</td>";
 		row += "<td class='text-center d-flex justify-content-between '>"+telefax+ botonwpp+"</td>";
 		row += "<td class='text-center'><button class='btn btn-warning' onclick='outPetHospitalized("+obj.idMascota+")'>Dar alta</button></td></tr>";
