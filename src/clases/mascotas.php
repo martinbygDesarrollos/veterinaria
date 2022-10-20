@@ -114,8 +114,28 @@ class mascotas{
 		}
 
 		$sqlToSearch = "";
-		if(!is_null($textToSearch))
-			$sqlToSearch = " AND m.nombre LIKE '". $textToSearch ."%' ";
+		if(!is_null($textToSearch) && $textToSearch != ""){
+
+			$arrayTextSearch = explode(" ", $textToSearch);
+			foreach ($arrayTextSearch as $value) {
+
+				if ($value != $arrayTextSearch[0]){
+					if ( $value != "" ){
+						$sqlToSearch .= " OR ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+					}
+				}else{
+					if ( $value != "" ){
+						$sqlToSearch = " AND ( ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+					}
+				}
+
+			}
+
+			if ( strlen($sqlToSearch) > 0 ){
+				$sqlToSearch .= " ) ";
+			}
+		}
+
 
 		$select = "SELECT m.*, ms.idSocio, s.nombre AS nombreSocio, s.fechaUltimoPago, s.fechaUltimaCuota, s.tipo as socioTipo, s.estado as socioActivo, s.telefono, s.telefax FROM mascotas AS m ";
 		$join = " LEFT JOIN mascotasocio AS ms ON m.idMascota = ms.idMascota
