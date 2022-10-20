@@ -1,3 +1,6 @@
+<?php
+
+
 /* SE NOTIFICA LO SIGUIENTE
 VACUNAS
 
@@ -29,7 +32,7 @@ Este mensaje es automático. Por cualquier consulta comunicarse al 472- 34039 en
 Muchas gracias
 
 */
-<?php
+
 exit;
 require_once "../src/config.php";
 require_once '../src/connection/open_connection.php';
@@ -70,10 +73,16 @@ Muchas gracias!";
 
 		$path = "message/txt";
 		$data = 'id='.WHATSAPP_API_USER.'&content='.$messageSevenDays.'&to='.$clientWppNumber.'&token='.TOKEN_API;
-		$send = $whatsappClass->apiConection($path, $data);
-		if ( $send->result != 2 ){
+		//$send = $whatsappClass->apiConection($path, $data);
+		if ( $send->result == 2 ){
+			$sql = 'UPDATE `vacunasmascota` SET `notifEnviada` = ? WHERE `idVacunaMascota` = ?';
+			$notif = $database->sendQuery($sql,array('si', date("YmdHis"), $vacuna['idVacunaMascota']), "BOOLE");
+			if ( $notif->result != 2 ){
+				echo "Vacuna ".$vacuna['idVacunaMascota'].': no se puedo guardar la fecha de notificacion '. date("YmdHis");
+			}
+		}else
 			echo "Vacuna ".$vacuna['idVacunaMascota'].': error: '.$send->error;
-		}
+
 	}
 }
 
@@ -105,10 +114,18 @@ Muchas gracias!";
 
 		$path = "message/txt";
 		$data = 'id='.WHATSAPP_API_USER.'&content='.$messageSevenDays.'&to='.$clientWppNumber.'&token='.TOKEN_API;
-		$send = $whatsappClass->apiConection($path, $data);
-		if ( $send->result != 2 ){
+		//$send = $whatsappClass->apiConection($path, $data);
+
+
+		if ( $send->result == 2 ){
+			$sql = 'UPDATE `vacunasmascota` SET `notifEnviada` = ? WHERE `idVacunaMascota` = ?';
+			$notif = $database->sendQuery($sql,array('si', date("YmdHis"), $vacuna['idVacunaMascota']), "BOOLE");
+			if ( $notif->result != 2 ){
+				echo "Vacuna ".$vacuna['idVacunaMascota'].': no se puedo guardar la fecha de notificacion '. date("YmdHis");
+			}
+		}else
 			echo "Vacuna ".$vacuna['idVacunaMascota'].': error: '.$send->error;
-		}
+
 	}
 }
 
@@ -142,10 +159,18 @@ Muchas gracias!";
 
 		$path = "message/txt";
 		$data = 'id='.WHATSAPP_API_USER.'&content='.$messageToday.'&to='.$clientWppNumber.'&token='.TOKEN_API;
-		$send = $whatsappClass->apiConection($path, $data);
-		if ( $send->result != 2 ){
+		//$send = $whatsappClass->apiConection($path, $data);
+
+		if ( $send->result == 2 ){
+			$sql = 'UPDATE `vacunasmascota` SET `notifEnviada` = ? WHERE `idVacunaMascota` = ?';
+			$notif = $database->sendQuery($sql,array('si', date("YmdHis"), $vacuna['idVacunaMascota']), "BOOLE");
+			if ( $notif->result != 2 ){
+				echo "Vacuna ".$vacuna['idVacunaMascota'].': no se puedo guardar la fecha de notificacion '. date("YmdHis");
+			}
+		}else
 			echo "Vacuna ".$vacuna['idVacunaMascota'].': error: '.$send->error;
-		}
+
+
 	}
 }
 
