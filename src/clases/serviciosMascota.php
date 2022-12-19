@@ -354,6 +354,57 @@ class serviciosMascota {
         $dataBaseClass = new DataBase();
         return $dataBaseClass->sendQuery("UPDATE `vacunasmascota` SET `idMascota` = ? WHERE `idVacunaMascota` = ?", array('ii',$idMascota, $idVacuna), "BOOLE");
     }
+
+
+
+    public function getAllEnfermedadesByMascota($idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("SELECT * FROM enfermedadesmascota WHERE idMascota = ?", array('i', $idMascota), "LIST");
+    }
+
+
+    public function changeEnfermedadesFromMascota($idEnfermedad, $idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `enfermedadesmascota` SET `idMascota` = ? WHERE `idEnfermedad` = ?", array('ii',$idMascota, $idEnfermedad), "BOOLE");
+    }
+
+
+
+    public function getAllHistoriaByMascota($idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("SELECT * FROM historiasclinica WHERE idMascota = ?", array('i', $idMascota), "LIST");
+    }
+
+
+    public function changeHistoriaFromMascota($idHistoriaClinica, $idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `historiasclinica` SET `idMascota` = ? WHERE `idHistoriaClinica` = ?", array('ii',$idMascota, $idHistoriaClinica), "BOOLE");
+    }
+
+
+    public function getAllHistoriaUsuarioByMascota($idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("SELECT * FROM historialusuarios WHERE idMascota = ?", array('i', $idMascota), "LIST");
+    }
+
+
+    public function changeHistoriaUsuarioFromMascota($idHistorialUsuario, $idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `historialusuarios` SET `idMascota` = ? WHERE `idHistorialUsuario` = ?", array('ii',$idMascota, $idHistorialUsuario), "BOOLE");
+    }
+
+
+    public function getAllHistorialClienteByMascota($idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("SELECT * FROM historialsocios WHERE idMascota = ?", array('i', $idMascota), "LIST");
+    }
+
+
+    public function changeHistorialClienteFromMascota($idHistorialSocio, $idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `historialsocios` SET `idMascota` = ? WHERE `idHistorialSocio` = ?", array('ii',$idMascota, $idHistorialSocio), "BOOLE");
+    }
+
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------ENFERMEDADES------------------------------------------------------------------------

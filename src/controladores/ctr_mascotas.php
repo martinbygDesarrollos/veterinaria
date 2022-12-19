@@ -365,6 +365,8 @@ class ctr_mascotas {
 		$response = new \stdClass();
 
 		$responseGetMascota = mascotas::getMascota($idMascota);
+		var_dump("getsociobymascota");exit;
+		var_dump($responseGetMascota);exit;
 		if($responseGetMascota->result == 2){
 			$fechaDosis = fechas::getDateToINT($fechaDosis);
 			$fechaProximaDosis = null;
@@ -839,6 +841,8 @@ class ctr_mascotas {
 		}
 
 
+
+		//estos son los datos generales ejemplo peso, color, raza.. lo unico que no se cambia es el id y el nombre
 		$basicData = $mascotasController->unifyPetsBasicData($idPetOne, $idPetTwo);
 		if ( $basicData->result != 2 ){
 			return $basicData;
@@ -854,7 +858,7 @@ class ctr_mascotas {
 			return $analisis;
 		}else{
 			$response->result = 2;
-			$response->message = $response->message . "<br>Todos los análisis procesados correctamente.";
+			$response->message = $response->message . "<br>Datos de análisis procesados correctamente.";
 		}
 
 
@@ -864,29 +868,41 @@ class ctr_mascotas {
 			return $vacunas;
 		}else{
 			$response->result = 2;
-			$response->message = $response->message . "<br>Todas las vacunas y medicamentos procesados correctamente.";
+			$response->message = $response->message . "<br>Datos de vacunas y medicamentos procesados correctamente.";
 		}
 
-		/*$enfermedades = $mascotasController->unifyPetsEnfermedades($idPetOne, $idPetTwo);
+		$enfermedades = $mascotasController->unifyPetsEnfermedades($idPetOne, $idPetTwo);
 		if ( $enfermedades->result != 2 ){
 			return $enfermedades;
+		}else{
+			$response->result = 2;
+			$response->message = $response->message . "<br>Datos de enfermedades procesadas correctamente.";
 		}
 
 
 		$histClinica = $mascotasController->unifyPetsClinica($idPetOne, $idPetTwo);
 		if ( $histClinica->result != 2 ){
 			return $histClinica;
+		}else{
+			$response->result = 2;
+			$response->message = $response->message . "<br>Datos del historial clínico procesados correctamente.";
 		}
 
 		$historialUsuario = $mascotasController->unifyPetsHistoryUsers($idPetOne, $idPetTwo);
 		if ( $historialUsuario->result != 2 ){
 			return $historialUsuario;
+		}else{
+			$response->result = 2;
+			$response->message = $response->message . "<br>Datos de la bitácora de usuario procesados correctamente.";
 		}
 
 		$historialSocio = $mascotasController->unifyPetsHistoryClients($idPetOne, $idPetTwo);
 		if ( $historialSocio->result != 2 ){
 			return $historialSocio;
-		}*/
+		}else{
+			$response->result = 2;
+			$response->message = $response->message . "<br>Datos del historial de cliente procesados correctamente.";
+		}
 
 		//todas las agendas
 		//eliminar vinculo con el socio
@@ -1028,6 +1044,135 @@ class ctr_mascotas {
 				$changeVacuna = $serviciosMascotaClass->changeVacunaFromMascota($vacuna["idVacunaMascota"], $idPetOne);
 				if ( $changeVacuna->result != 2 ){
 					array_push($arrayErrors, $changeVacuna->message);
+				}
+
+			}
+		}
+
+		if ( count($arrayErrors) == 0 ){
+			$response->result = 2;
+		}else{
+			$response->result = 2;
+			$response->message = $arrayErrors;
+		}
+
+		return $response;
+
+	}
+
+
+
+
+	public function unifyPetsEnfermedades($idPetOne, $idPetTwo){
+
+
+
+		$serviciosMascotaClass = new serviciosMascota();
+		$arrayErrors = array();
+		$response = new stdClass();
+
+
+		$listEnfermedades = $serviciosMascotaClass->getAllEnfermedadesByMascota($idPetTwo);
+		if ($listEnfermedades->result == 2){
+			foreach ( $listEnfermedades->listResult as $enfermedades ) {
+
+				$changeEnfermedades = $serviciosMascotaClass->changeEnfermedadesFromMascota($enfermedades["idEnfermedad"], $idPetOne);
+				if ( $changeEnfermedades->result != 2 ){
+					array_push($arrayErrors, $changeEnfermedades->message);
+				}
+
+			}
+		}
+
+		if ( count($arrayErrors) == 0 ){
+			$response->result = 2;
+		}else{
+			$response->result = 2;
+			$response->message = $arrayErrors;
+		}
+
+		return $response;
+
+	}
+
+
+
+	public function unifyPetsClinica($idPetOne, $idPetTwo){
+
+		$serviciosMascotaClass = new serviciosMascota();
+		$arrayErrors = array();
+		$response = new stdClass();
+
+
+		$listHistoria = $serviciosMascotaClass->getAllHistoriaByMascota($idPetTwo);
+		if ($listHistoria->result == 2){
+			foreach ( $listHistoria->listResult as $historia ) {
+
+				$changeHistoria = $serviciosMascotaClass->changeHistoriaFromMascota($historia["idHistoriaClinica"], $idPetOne);
+				if ( $changeHistoria->result != 2 ){
+					array_push($arrayErrors, $changeHistoria->message);
+				}
+
+			}
+		}
+
+		if ( count($arrayErrors) == 0 ){
+			$response->result = 2;
+		}else{
+			$response->result = 2;
+			$response->message = $arrayErrors;
+		}
+
+		return $response;
+
+	}
+
+
+	public function unifyPetsHistoryUsers($idPetOne, $idPetTwo){
+
+		$serviciosMascotaClass = new serviciosMascota();
+		$arrayErrors = array();
+		$response = new stdClass();
+
+
+		$listHistoria = $serviciosMascotaClass->getAllHistoriaUsuarioByMascota($idPetTwo);
+		if ($listHistoria->result == 2){
+			foreach ( $listHistoria->listResult as $historia ) {
+
+				$changeHistoria = $serviciosMascotaClass->changeHistoriaUsuarioFromMascota($historia["idHistorialUsuario"], $idPetOne);
+				if ( $changeHistoria->result != 2 ){
+					array_push($arrayErrors, $changeHistoria->message);
+				}
+
+			}
+		}
+
+		if ( count($arrayErrors) == 0 ){
+			$response->result = 2;
+		}else{
+			$response->result = 2;
+			$response->message = $arrayErrors;
+		}
+
+		return $response;
+
+	}
+
+
+	public function unifyPetsHistoryClients($idPetOne, $idPetTwo){
+
+		$serviciosMascotaClass = new serviciosMascota();
+		$arrayErrors = array();
+		$response = new stdClass();
+
+
+		$listHistoria = $serviciosMascotaClass->getAllHistorialClienteByMascota($idPetTwo);
+		if ($listHistoria->result == 2){
+			foreach ( $listHistoria->listResult as $historia ) {
+
+				$changeHistoria = $serviciosMascotaClass->changeHistorialClienteFromMascota($historia["idHistorialSocio"], $idPetOne);
+				if ( $changeHistoria->result != 2 ){
+					array_push($arrayErrors, $changeHistoria->message);
 				}
 
 			}
