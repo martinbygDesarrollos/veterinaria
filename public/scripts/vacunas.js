@@ -91,59 +91,12 @@ function createNewVacuna(idMascota){
 		if(primerDosis){
 			let data ={idMascota: idMascota, nombreVacuna: nombre, intervalo: intervalo, fechaDosis: primerDosis, observaciones: observaciones};
 			let response = sendPost("aplicarNuevaVacunaMascota", data);
+			console.log(data, response);
 			showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
 			if(response.result == 2){
 				let vacuna = response.newVacuna;
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 				$("#modalVacuna").modal("hide");
-				/*showMessageConfirm(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
-				$('#modalMessageConfirmBtnSi').off('click');
-				$('#modalMessageConfirmBtnSi').click(function(){
-					$('#modalMessageConfirmBtnSi').attr("disable", true);
-					let timestamp = getTimestamp();
-					if ( timestamp.length == 14 ){
-						if ( vacuna.notifEnviada ){
-							obs = vacuna.notifEnviada + ","+timestamp;
-						}else obs = timestamp;
-					}else obs = vacuna.notifEnviada;
-
-					let data = {
-						idVacunaMascota: vacuna.idVacunaMascota,
-						nombre: vacuna.nombreVacuna,
-						intervalo: vacuna.intervaloDosis,
-						fechaUltimaDosis: vacuna.fechaUltimaDosis,
-						observaciones: obs
-					};
-					sendAsyncPost("updateVacunaMascota", data)
-					.then((response)=>{
-						console.log(response);
-						if (response.result != 2){
-							showReplyMessage(response.result, response.message, "Vacuna/medicamento", null);
-						}
-					})
-					$('#modalMessageConfirmBtnSi').attr("disable", false);
-					$('#modalMessageConfirm').modal("hide");
-				});
-				//buscar dueño de la mascota y sus datos
-				/*sendAsyncPost("getSocioDataByMacota", {id: idMascota})
-				.then((response)=>{
-					if ( response.result == 2 ){
-//no se controla si hay o no mascotas porque ya se pide de antemano los datos del dueño de la mascota idMascota por lo que si o si response tiene que tener mascotas
-						let nombreMascotaVacunada = "";
-						for (var i = 0; i < response.mascotas.listMascotas.length; i++) {
-							if ( response.mascotas.listMascotas[i].idMascota == idMascota ){
-								nombreMascotaVacunada = response.mascotas.listMascotas[i].nombre;
-							}
-						}
-						//OBTENER DUEÑO CORRECTO MASCOTA CORRECTA
-						vacMessage = "Se agendó próxima dosis de "+vacuna.nombreVacuna+" para el día "+vacuna.fechaProximaDosis +" a "+ nombreMascotaVacunada;
-						if ( response.socio.telefax ){
-							redirectToWhatsapp( response.socio.telefax, vacMessage );
-						}else{
-							redirectToWhatsapp( null, vacMessage );
-						}
-					}else console.log( "al buscar datos del dueño de la mascota no se dio resultado 2", response );
-				})*/
 			}else {
 				console.log( "al crear nueva vacuna de la mascota no se dio resultado 2", response );
 				showReplyMessage(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
@@ -160,6 +113,7 @@ function createRowVacuna(idVacunaMascota, fechaProximaDosis, fechaUltimaDosis, n
 	row += "<td class='text-center' style='min-width: 6em;'>";
 	row += "<button class='btn btn-link btn-sm' name='" + idVacunaMascota + "' onclick='openModalVacuna(this)'><i class='fas fa-edit text-dark'></i></button>";
 	row += "<button class='btn btn-link btn-sm' onclick='openModalBorrarVacuna("+ idVacunaMascota + ")'><i class='fas fa-trash-alt text-dark'></i></button></td>";
+	row += "<td><a class='btn btn-info mt-2 mr-1' target='_blank' title='Enviar whatsapp al ' href='https://wa.me/' value=''><i class='fab fa-whatsapp'></i></a></td>";
 	row += "</tr>";
 	return row;
 }
