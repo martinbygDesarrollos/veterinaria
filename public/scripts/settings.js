@@ -224,3 +224,29 @@ $("#formUnifyPets").submit((e)=>{
 	})
 
 })
+
+
+
+function whatsappGetNewQr(element){
+
+	element.disabled = true;
+	document.getElementById("spinnerWhatsappLogin").hidden = false;
+	document.getElementById("imageWhatsappLogin").hidden = true;
+	sendAsyncPost("whatsappGetNewQr")
+	.then((response)=>{
+		element.disabled = false;
+		document.getElementById("spinnerWhatsappLogin").hidden = true;
+		document.getElementById("imageWhatsappLogin").hidden = false;
+
+
+		console.log(response);
+		console.log(response.obj);
+		$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+response.obj);
+
+
+	})
+	.catch((err)=>{
+		console.log("catch", err);
+	})
+
+}
