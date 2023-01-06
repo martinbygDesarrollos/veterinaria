@@ -250,3 +250,46 @@ function whatsappGetNewQr(element){
 	})
 
 }
+
+
+
+$("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
+	console.log("cargar todos los clientes");
+
+	sendAsyncPost("getAllWhatsappSocios")
+	.then((response)=>{
+		if ( response.result == 2 ){
+			$("#pClientsWhatsapp").text("Total socios:  "+response.listResult.length);
+
+			response.listResult.map((socio)=>{
+
+				$("#tbodyClientsWhatsapp").append('<tr id="trWhatsapp'+socio.idSocio+'" data-wa1="'+socio.telefax+'" data-wa2="'+socio.telefono+'" ><td><a href="./ver-socio/'+socio.idSocio+'">'+socio.nombre+'</a></td><td>'+socio.telefono+'</td><td>'+socio.telefax+'</td><td></td></tr>');
+			})
+		}
+	})
+
+});
+
+var noEnviados = [];
+$("#btnEnviarWhatsapp").on( "click", ()=>{
+	let message = $("#nav-whatsapp textarea" ).val();
+	$("#tbodyClientsWhatsapp tr").map((index, element)=>{
+
+		let phone = element.dataset.wa1;
+		sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
+		.then((response)=>{
+			if( response.result != 2 ){
+				phone = element.dataset.wa2;
+				sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
+				.then((response)=>{
+					if( response.result == 2 ){
+
+						$("#"+element.id+" td")[3].append('<i class="fas fa-check"></i>');
+					}
+				})
+			}else{
+				$("#"+element.id+" td")[3].append('<i class="fas fa-check"></i>');
+			}
+		})
+	})
+})

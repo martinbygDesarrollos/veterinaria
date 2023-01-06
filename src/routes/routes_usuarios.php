@@ -439,5 +439,26 @@ return function (App $app) {
         }
         else return json_encode($responseSession);
     });
+
+
+
+    $app->post('/getAllWhatsappSocios', function(Request $request, Response $response) use ($userController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            return json_encode($userController->getAllWhatsappSocios());
+        }
+        else return json_encode($responseSession);
+    });
+
+
+
+    $app->post('/enviarWhatsapp', function(Request $request, Response $response) use ($userController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            return json_encode(array("result"=>2));
+        }
+        else return json_encode($responseSession);
+    });
+
 }
 ?>

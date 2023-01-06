@@ -433,4 +433,17 @@ class socios{
 
 		return $response;
 	}
+
+
+	function getAllWhatsappSocios(){
+		$dataBaseCLass = new DataBase();
+
+		$fechaDeudor = date('Ym', strtotime(date('Ym')." -3 month"));
+		$response = $dataBaseCLass->sendQuery('SELECT idSocio, nombre, telefono, telefax FROM `socios`
+			WHERE estado = 1 and tipo = 1 and (fechaUltimaCuota >= ? OR fechaUltimaCuota = "" OR fechaUltimaCuota is null) ', array('s', $fechaDeudor), "LIST");
+		if($response->result == 1)
+			$response->listResult = array();
+
+		return $response;
+	}
 }

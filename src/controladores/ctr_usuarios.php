@@ -1257,4 +1257,14 @@ class ctr_usuarios{
 			return "Ex socio";
 	}
 
+
+	function getAllWhatsappSocios(){
+		$response = new \stdClass();
+		$sociosClass = new socios();
+
+		$response = $sociosClass->getAllWhatsappSocios();
+
+		return $response;
+	}
+
 }
