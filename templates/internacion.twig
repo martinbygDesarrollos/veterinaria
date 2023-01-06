@@ -44,7 +44,7 @@
 	cargarTablaInternacion();
 	$('.tableCustomScroll').on('scroll', function() {
 
-		if($(this).scrollTop() + $(this).innerHeight() >= ($(this)[0].scrollHeight - 5)) {
+		if($(this).scrollTop() + $(this).innerHeight() >= ($(this)[0].scrollHeight - 10)) {
 			cargarTablaInternacion();
 		}
 	});

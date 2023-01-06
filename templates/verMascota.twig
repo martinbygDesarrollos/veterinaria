@@ -212,6 +212,7 @@
 											<td class="text-center" scope="col">Fecha dosificación</td>
 											<td class="text-center" scope="col">Próxima dosis</td>
 											<td class="text-center" scope="col">Acción</td>
+											<td class="text-center" scope="col">Whatsapp</td>
 										</tr>
 									</thead>
 									<tbody id="tbodyVacunas">
@@ -224,6 +225,11 @@
 											<td class="text-center notShowMobile" style="min-width: 6em;">
 												<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalVacuna(this)"><i class="fas fa-edit text-dark"></i></button>
 												<button type="button" class="btn btn-link btn-sm" name="{{ vacuna.idVacunaMascota }}" onclick="openModalBorrarVacuna('{{ vacuna.idVacunaMascota }}')" ><i class="fas fa-trash-alt text-dark"></i></button>
+											</td>
+											<td>
+												{% if SocioMascota.socio.telefax %}
+												<a class="btn btn-info mt-2 mr-1" target="_blank" title="Enviar whatsapp al {{SocioMascota.socio.telefax}}" href="https://wa.me/{{SocioMascota.socio.telefax}}" value=""><i class="fab fa-whatsapp"></i></a>
+												{% endif %}
 											</td>
 										</tr>
 										{% endfor %}
@@ -637,7 +643,7 @@
 
 	cargarHistoriaClinica('{{ SocioMascota.mascota.idMascota }}');
 	$('#containerTable').on('scroll', function() {
-		if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+		if($(this).scrollTop() + $(this).innerHeight() >= ($(this)[0].scrollHeight -10) ) {
 			cargarHistoriaClinica('{{ SocioMascota.mascota.idMascota }}');
 		}
 	});
