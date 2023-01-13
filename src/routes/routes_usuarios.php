@@ -452,10 +452,18 @@ return function (App $app) {
 
 
 
-    $app->post('/enviarWhatsapp', function(Request $request, Response $response) use ($userController){
+    $app->post('/enviarWhatsapp', function(Request $request, Response $response) use ($userController, $whatsappClass){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
-            return json_encode(array("result"=>2));
+
+            $data = $request->getParams();
+            $content = $data['message'];
+            $phone = $data['to'];
+
+            $params = 'id='.WHATSAPP_API_USER.'&content='.$content.'&to='.$phone.'&token='.TOKEN_API;
+            $path = 'message/txt';
+
+            return json_encode($whatsappClass->enviarWhatsapp($path, $params));
         }
         else return json_encode($responseSession);
     });

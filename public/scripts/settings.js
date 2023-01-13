@@ -234,14 +234,20 @@ function whatsappGetNewQr(element){
 	document.getElementById("imageWhatsappLogin").hidden = true;
 	sendAsyncPost("whatsappGetNewQr")
 	.then((response)=>{
-		element.disabled = false;
-		document.getElementById("spinnerWhatsappLogin").hidden = true;
-		document.getElementById("imageWhatsappLogin").hidden = false;
+		if ( response ){
+			element.disabled = false;
+			document.getElementById("spinnerWhatsappLogin").hidden = true;
+			document.getElementById("imageWhatsappLogin").hidden = false;
 
 
-		console.log(response);
-		console.log(response.obj);
-		$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+response.obj);
+			console.log(response);
+			console.log(response.obj);
+			$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+response.obj);
+		}else{
+			element.disabled = false;
+			document.getElementById("spinnerWhatsappLogin").hidden = true;
+			showReplyMessage(1, "No se puedo establecer conexión!", "Whatsapp", null);
+		}
 
 
 	})
@@ -259,11 +265,12 @@ $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
 	sendAsyncPost("getAllWhatsappSocios")
 	.then((response)=>{
 		if ( response.result == 2 ){
+			$("#tbodyClientsWhatsapp").empty();
 			$("#pClientsWhatsapp").text("Total socios:  "+response.listResult.length);
 
 			response.listResult.map((socio)=>{
 
-				$("#tbodyClientsWhatsapp").append('<tr id="trWhatsapp'+socio.idSocio+'" data-wa1="'+socio.telefax+'" data-wa2="'+socio.telefono+'" ><td><a href="./ver-socio/'+socio.idSocio+'">'+socio.nombre+'</a></td><td>'+socio.telefono+'</td><td>'+socio.telefax+'</td><td></td></tr>');
+				$("#tbodyClientsWhatsapp").append('<tr id="trWhatsapp'+socio.idSocio+'" data-wa1="'+socio.telefax+'" data-wa2="'+socio.telefono+'" ><td><a href="./ver-socio/'+socio.idSocio+'">'+socio.nombre+'</a></td><td>'+socio.telefono+'</td><td>'+socio.telefax+'</td><td></td><td><button type="button" class="btn btn-light" onclick="enviarWhatsappIndividual(this)" >Enviar</button></td></tr>');
 			})
 		}
 	})
@@ -272,24 +279,72 @@ $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
 
 var noEnviados = [];
 $("#btnEnviarWhatsapp").on( "click", ()=>{
+
+	document.getElementById("spinnerWhatsappLogin").hidden = false;
+	document.getElementById("btnEnviarWhatsapp").disabled = true;
+
 	let message = $("#nav-whatsapp textarea" ).val();
 	$("#tbodyClientsWhatsapp tr").map((index, element)=>{
 
 		let phone = element.dataset.wa1;
 		sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 		.then((response)=>{
+			//console.log(response);
+			if (response){
+				if( response.result != 2 ){
+					phone = element.dataset.wa2;
+					sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
+					.then((response)=>{
+						if( response.result == 2 ){
+							$("#"+element.id+" td")[3].append("OK");
+						}
+					})
+				}else{
+					$("#"+element.id+" td")[3].append("OK");
+				}
+			}else{
+				showReplyMessage(1, "No se puedo establecer conexión.", "Whatsapp", null);
+			}
+
+		})
+	})
+
+	document.getElementById("btnEnviarWhatsapp").disabled = false;
+
+})
+
+
+function enviarWhatsappIndividual(button){
+	let message = $("#nav-whatsapp textarea" ).val();
+
+	button.disabled = true;
+	document.getElementById("spinnerWhatsappLogin").hidden = false;
+
+
+	element = button.parentNode.parentNode;
+
+	let phone = element.dataset.wa1;
+	sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
+	.then((response)=>{
+		button.disabled = false;
+		document.getElementById("spinnerWhatsappLogin").hidden = true;
+
+		if (response){
+			console.log("enviarWhatsappIndividual", response);
 			if( response.result != 2 ){
-				phone = element.dataset.wa2;
+				let phone = element.dataset.wa2;
 				sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 				.then((response)=>{
 					if( response.result == 2 ){
-
-						$("#"+element.id+" td")[3].append('<i class="fas fa-check"></i>');
+						$("#"+element.id+" td")[3].append("OK");
 					}
 				})
 			}else{
-				$("#"+element.id+" td")[3].append('<i class="fas fa-check"></i>');
+				$("#"+element.id+" td")[3].append("OK");
 			}
-		})
+		}else{
+			showReplyMessage(1, "No se puedo establecer conexión.", "Whatsapp", null);
+		}
+
 	})
-})
+}
