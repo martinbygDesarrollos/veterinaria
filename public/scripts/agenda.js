@@ -56,6 +56,10 @@ function getCirugiasByDay( day ){
 //funcion para cargar todas las filas cuando ya hay registros en la agenda
 function createRow( obj ){
 
+	let descripcion = obj.descripcion.replaceAll('"', '\'');
+	let nomClient = obj.nombreCliente.replaceAll('"', '\'');
+	let nomMascota = obj.nombreMascota.replaceAll('"', '\'');
+
 	let wppBtn = '<button class="btn btn-info" disabled><a class="btn-info" title="Enviar whatsapp"target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>';
 
 
@@ -64,9 +68,9 @@ function createRow( obj ){
 	//hora
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value="'+ hora +'"></td>';
 	//motivo
-	row += '<td '+widthBySize+'><input class="form-control text-c enter shadow-sm" type="text" name="" value="'+ obj.descripcion +'" placeholder="Motivo" ></td>';
+	row += '<td '+widthBySize+'><input class="form-control text-c enter shadow-sm" type="text" name="" value="'+ descripcion +'" placeholder="Motivo" ></td>';
 	//cliente
-	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" value="'+ obj.nombreCliente +'" placeholder="Cliente"></td>';
+	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" value="'+ nomClient +'" placeholder="Cliente"></td>';
 	//contacto cliente
 	contactClient = '';
 	if ( obj.socio ){
@@ -101,7 +105,7 @@ function createRow( obj ){
 
 
 	//row += '<td class="notShowMobile">'+buttonVerSocio+'</td>';
-	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" name="" value="'+ obj.nombreMascota +'" placeholder="Mascota"></td>';
+	row += '<td class="notShowMobile" style="width:25%; "><input class="form-control text-center shadow-sm" type="text" name="" value="'+ nomMascota +'" placeholder="Mascota"></td>';
 
 	row += '<td>'+wppBtn+'</td>';
 	row += '<td class="notShowMobile" style="">'+buttonVerSocio+'</td>';
@@ -315,8 +319,16 @@ function createRowDataClientOrPet( obj ){
 
 	if ( obj.fechaFallecimiento != null && obj.fechaFallecimiento != "" )
 		row += '<td><button class="btn btn-info subtexto" disabled ><i class="fas fa-plus-circle"></i></button></td></tr>';
-	else
-		row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+obj.nomSocio+'`, '+obj.idMascota+', `'+obj.nomMascota+'`, `'+obj.telefono+'`, `'+obj.telefax+'`, `'+obj.direccion+'`, `'+obj.email+'`)" ><i class="fas fa-plus-circle"></i></button></td></tr>';
+	else{
+		let nom = encodeURI(obj.nomSocio) //escapa las comillas y otros caracteres que pueda haber
+		let nomMascota = encodeURI(obj.nomMascota);
+		let telefono = encodeURI(obj.telefono);
+		let telefax = encodeURI(obj.telefax);
+		let direccion = encodeURI(obj.direccion);
+		let email = encodeURI(obj.email);
+
+		row += '<td><button class="btn btn-info subtexto" onclick="addClientsCalendarRow('+obj.idSocio+', `'+nom+'`, '+obj.idMascota+', `'+nomMascota+'`, `'+telefono+'`, `'+telefax+'`, `'+direccion+'`, `'+email+'`)" ><i class="fas fa-plus-circle"></i></button></td></tr>';
+	}
 
 
 	//console.log(row);
@@ -324,6 +336,14 @@ function createRowDataClientOrPet( obj ){
 }
 
 function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email ){
+
+	nomClient = decodeURI(nomClient)
+	nomMascota = decodeURI(nomMascota)
+	tel = encodeURI(tel);
+	telefax = encodeURI(telefax);
+	direccion = encodeURI(direccion);
+	email = encodeURI(email);
+
 	trSelected.getElementsByTagName("input")[2].value = idClient +" - "+nomClient;
 	if ( idMascota != null && idMascota  )
 		trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
