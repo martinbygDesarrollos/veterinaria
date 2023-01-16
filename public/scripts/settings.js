@@ -270,7 +270,7 @@ $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
 
 			response.listResult.map((socio)=>{
 
-				$("#tbodyClientsWhatsapp").append('<tr id="trWhatsapp'+socio.idSocio+'" data-wa1="'+socio.telefax+'" data-wa2="'+socio.telefono+'" ><td><a href="./ver-socio/'+socio.idSocio+'">'+socio.nombre+'</a></td><td>'+socio.telefono+'</td><td>'+socio.telefax+'</td><td></td><td><button type="button" class="btn btn-light" onclick="enviarWhatsappIndividual(this)" >Enviar</button></td></tr>');
+				$("#tbodyClientsWhatsapp").append('<tr id="trWhatsapp'+socio.idSocio+'" data-wa1="'+socio.telefax+'" data-wa2="'+socio.telefono+'" ><td><a href="./ver-socio/'+socio.idSocio+'">'+socio.nombre+'</a></td><td>'+socio.telefono+'</td><td>'+socio.telefax+'</td><td></td><td><button type="button" class="btn btn-light" onclick="enviarWhatsappIndividual(this)" >Enviar</button><div id="trWhatsappSpinner'+socio.idSocio+'" class="spinner-border" role="status" hidden><span class="sr-only">Loading...</span></div></td></tr>');
 			})
 		}
 	})
@@ -289,12 +289,16 @@ $("#btnEnviarWhatsapp").on( "click", ()=>{
 		let phone = element.dataset.wa1;
 		sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 		.then((response)=>{
+			response = JSON.parse(response);
+
 			//console.log(response);
 			if (response){
 				if( response.result != 2 ){
 					phone = element.dataset.wa2;
 					sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 					.then((response)=>{
+						response = JSON.parse(response);
+
 						if( response.result == 2 ){
 							$("#"+element.id+" td")[3].append("OK");
 						}
@@ -326,6 +330,9 @@ function enviarWhatsappIndividual(button){
 	let phone = element.dataset.wa1;
 	sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 	.then((response)=>{
+		response = JSON.parse(response);
+		console.log(response);
+		console.log(response.result);
 		button.disabled = false;
 		document.getElementById("spinnerWhatsappLogin").hidden = true;
 
@@ -335,6 +342,7 @@ function enviarWhatsappIndividual(button){
 				let phone = element.dataset.wa2;
 				sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 				.then((response)=>{
+					response = JSON.parse(response);
 					if( response.result == 2 ){
 						$("#"+element.id+" td")[3].append("OK");
 					}

@@ -27,10 +27,15 @@ function sendAsyncPost(nameFunction, parameters){
 			type: "POST",
 			data: parameters,
 			success: function (response) {
-				response = response.trim();
-				var response = jQuery.parseJSON(response);
+				if ( response ){
+					response = response.trim();
+					var response = jQuery.parseJSON(response);
 
-				resolve(response);
+					resolve(response);
+				}else{
+
+					resolve(response, {result:1, message: "timeout"});
+				}
 			},
 			error: function (response) {
 				result = "error"
