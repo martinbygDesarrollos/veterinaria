@@ -431,7 +431,7 @@ return function (App $app) {
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
 
-            $data = 'id=1&token=45ek2wrhgr3rg33m';
+            $data = 'id='.WHATSAPP_API_USER.'&token='.TOKEN_API;
             $path = 'client/qr';
 
             //return json_encode($whatsappClass->nuevoQr($value));

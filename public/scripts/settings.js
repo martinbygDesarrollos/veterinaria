@@ -235,6 +235,7 @@ function whatsappGetNewQr(element){
 	sendAsyncPost("whatsappGetNewQr")
 	.then((response)=>{
 		if ( response ){
+
 			element.disabled = false;
 			document.getElementById("spinnerWhatsappLogin").hidden = true;
 			document.getElementById("imageWhatsappLogin").hidden = false;
@@ -242,7 +243,13 @@ function whatsappGetNewQr(element){
 
 			console.log(response);
 			console.log(response.obj);
-			$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+response.obj);
+
+			if ( response.result != 1 ){
+				$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+response.obj);
+
+			}else{
+				showReplyMessage(response.result, response.message, "Autenticar whatsapp", null);
+			}
 		}else{
 			element.disabled = false;
 			document.getElementById("spinnerWhatsappLogin").hidden = true;
