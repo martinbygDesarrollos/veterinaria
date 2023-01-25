@@ -460,10 +460,9 @@ return function (App $app) {
             $content = $data['message'];
             $phone = $data['to'];
 
-            $params = 'id='.WHATSAPP_API_USER.'&content='.$content.'&to='.$phone.'&token='.TOKEN_API;
             $path = 'message/txt';
 
-            return json_encode($whatsappClass->enviarWhatsapp($path, $params));
+            return json_encode($whatsappClass->enviarWhatsapp($path, $content, $phone));
         }
         else return json_encode($responseSession);
     });
