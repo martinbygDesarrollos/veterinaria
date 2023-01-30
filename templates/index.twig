@@ -8,11 +8,6 @@
 	<a  id="hayVencimientosHoy" class="btn btn-warning" href="{{path_for('VacunasVencidas')}}">Vacunas vencidas</a>
 </div>
 {% endif %}
-{% if responseVencimientosSocio.result == 2 %}
-<div class="d-flex flex-row-reverse mt-2">
-	<a id="hayCuotasVencidas" class="btn btn-warning" href="{{path_for('CuotasVencidas')}}">Cuotas vencidas</a>
-</div>
-{% endif %}
 <div class="d-flex flex-row-reverse mt-2">
 	<a id="hayNotifPendientes" class="btn btn-warning" href="{{path_for('Notificaciones')}}">Notificaciones pendientes</a>
 </div>
