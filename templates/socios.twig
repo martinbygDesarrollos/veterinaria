@@ -10,8 +10,20 @@
 		</div>
 		<div class="card-body">
 			<div class="d-flex justify-content-between mb-2">
-				<div class="input-group mb-3 w-50">
-					<input id="textToSearch" type="text" class="form-control shadow-sm" onchange="buscarSocio(this)" onkeyup="this.onchange()" placeholder="Ingresar nombre de cliente o nombre de mascota...">
+				<div class="input-group mb-3 w-75">
+					<input id="textToSearch" type="text" class="form-control shadow-sm w-50 mr-3" onchange="buscarSocio(this)" onkeyup="this.onchange()" placeholder="Ingresar nombre de cliente o nombre de mascota...">
+					<select class="form-control mr-3" onchange="changeTipoCliente(this.value)" >
+						<option value="" >Seleccionar</option>
+						<option value="1">Socio</option>
+						<option value="3">Ex socio</option>
+						<option value="0">No socio</option>
+						<option value="2">ONG</option>
+					</select>
+					<select class="form-control mr-3" onchange="changeTipoDeuda(this.value)" >
+						<option value="" >Seleccionar</option>
+						<option value="deuda" >Con deuda</option>
+						<option value="sindeuda" >Al día</option>
+					</select>
 				</div>
 				<div class="mr-3">
 					<div class="form-check">

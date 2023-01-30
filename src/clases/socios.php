@@ -35,7 +35,7 @@ class socios{
 		return DataBase::sendQuery("SELECT MAX(idSocio) AS idMaximo FROM socios", null, "OBJECT");
 	}
 
-	public function getSociosPagina($lastId, $estado, $textToSearch){
+	public function getSociosPagina($lastId, $estado, $textToSearch, $tipoCliente, $deudor){
 		$sociosClass = new socios();
 		if($lastId == 0){
 			$responseGetMaxID = socios::getSocioMaxId();
@@ -73,6 +73,11 @@ class socios{
 		}
 
 
+		if ( isset($tipoCliente) && strcmp($tipoCliente, "") != 0 ){
+			$where .= " AND tipo = " .$tipoCliente ." ";
+		}
+
+
 		$orderAndLimit = " ORDER BY s.idSocio DESC LIMIT 14";
 
 		$responseQuery = DataBase::sendQuery($sqlquery . $join . $where . $sqlToSearch . $orderAndLimit, array('ii', $estado, $lastId), "LIST");
@@ -90,20 +95,7 @@ class socios{
 				if(!is_null($row['fechaUltimaCuota']) && strlen($row['fechaUltimaCuota']) == 6)
 					$row['fechaUltimaCuota'] = fechas::getYearMonthFormatBar($row['fechaUltimaCuota']);
 				else
-					$row['fechaUltimaCuota'] = "";//"No especificado";
-
-				/*if ( $row['fechaUltimaCuota'] != "" ){
-					$dateToCompare = date('Ym', strtotime(date('Ym')." -3 month"));
-					$date = substr($row['fechaUltimaCuota'], 3, 4) . substr($row['fechaUltimaCuota'], 0, 2);
-					if ( $date < $dateToCompare ){
-						$row['deudor'] = true;
-					}else{
-						$row['deudor'] = false;
-					}
-				}else{
-					$row['deudorFecha'] = "";
-					$row['deudor'] = false;
-				}*/
+					$row['fechaUltimaCuota'] = "";
 
 				if ( $row['fechaUltimoPago'] != "" && $row['fechaUltimoPago'] != null ){
 					$row['deudorFecha'] = substr($row['fechaUltimoPago'], 6, 2)."/".substr($row['fechaUltimoPago'], 4, 2)."/".substr($row['fechaUltimoPago'], 0, 4);

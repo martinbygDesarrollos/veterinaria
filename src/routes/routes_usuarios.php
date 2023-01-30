@@ -348,7 +348,11 @@ return function (App $app) {
             $lastId = $data['lastId'];
             $estado= $data['estado'];
             $textToSearch = $data['textToSearch'];
-            return json_encode(ctr_usuarios::getSociosPagina($lastId, $estado, $textToSearch));
+            $tipoCliente = $data['tipo'];
+            $deudor = $data['deudor'];
+
+
+            return json_encode(ctr_usuarios::getSociosPagina($lastId, $estado, $textToSearch, $tipoCliente, $deudor));
         }else return json_encode($responseSession);
     });
 

@@ -1,6 +1,8 @@
 let lastId = 0;
 let textToSearch = null;
 let estado = 1;
+let tipocliente = null;
+let deudor = null;
 
 $(document).ready(()=>{
 
@@ -15,7 +17,7 @@ $(document).ready(()=>{
 
 function cargarTablaSocios(){
 
-	let response = sendPost("getSociosPagina", {lastId: lastId, textToSearch: textToSearch, estado: estado});
+	let response = sendPost("getSociosPagina", {lastId: lastId, textToSearch: textToSearch, estado: estado, tipo:tipocliente, deudor:deudor});
 	if(response.result == 2){
 		if(response.lastId !=  lastId){
 			lastId = response.lastId;
@@ -181,4 +183,38 @@ function changeSociosState(){
 	lastId = 0;
 	$('#tbodySocios').empty();
 	cargarTablaSocios();
+}
+
+
+
+function changeTipoCliente(value){
+
+	//recordar en las cookies
+
+	if(value){
+		console.log("cliente seleccionado", value)
+		tipocliente = value;
+		lastId = 0;
+		$('#tbodySocios').empty();
+		cargarTablaSocios();
+	}
+
+}
+
+
+
+function changeTipoDeuda(value){
+
+	//recordar en las cookies
+
+	if(value){
+		console.log("filtro deuda", value)
+
+		deudor = value;
+		lastId = 0;
+		$('#tbodySocios').empty();
+		cargarTablaSocios();
+	}
+
+
 }

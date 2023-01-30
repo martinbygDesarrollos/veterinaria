@@ -1024,10 +1024,10 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function getSociosPagina($lastId, $estado, $textToSearch){
+	public function getSociosPagina($lastId, $estado, $textToSearch, $tipoCliente, $deudor){
 		$response = new \stdClass;
 
-		$responseGetSocios = socios::getSociosPagina($lastId, $estado, $textToSearch);
+		$responseGetSocios = socios::getSociosPagina($lastId, $estado, $textToSearch, $tipoCliente, $deudor);
 		if($responseGetSocios->result == 2){
 			$response->result = 2;
 			$response->lastId = $responseGetSocios->lastId;
