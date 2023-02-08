@@ -53,22 +53,27 @@ function createRow(obj){
 	}
 
 
+	let  tipoCliente = "";
 
-	if ( socioActivo == 0 ) socioActivo = " (Inactivo)"; else socioActivo = "";
+	if ( tipoCliente == 0 ) tipoCliente = "<br>(Inactivo)";
 
 	classForClient = "";
 
 	if ( socioTipo == 0 ){ //NO SOCIO
+		tipoCliente = "<br>(Cliente)";
 		classForClient = "rowNosocio";
 	}else if ( socioTipo == 1 ){ //SOCIO
+		tipoCliente = "<br>(Socio)";
 		if ( socioDeudor )
 			classForClient = "rowWarning";
 	}else if ( socioTipo == 3 ){ //EX SOCIO
+		tipoCliente = "<br>(Ex socio)";
 		if ( socioDeudor )
 			classForClient = "rowExsocioWarning";
 		else
 			classForClient = "rowExsocio";
-	}
+	}else if ( socioTipo == 2 ) //ONG
+		tipoCliente = "<br>(ONG)";
 
 
 	let row = "";
@@ -93,14 +98,14 @@ function createRow(obj){
 
 	if ( fechaUltimaCuota != "" ){
 		if ( socioDeudor && fechaUltimoPago != "" )
-			row += ' title="Pago pendiente '+ fechaUltimaCuota +', último movimiento el día '+ fechaUltimoPago +'" >'+socioNombre+ socioActivo+' <i class="fas fa-exclamation-triangle"></i></td>';
+			row += ' title="Pago pendiente '+ fechaUltimaCuota +', último movimiento el día '+ fechaUltimoPago +'" >'+socioNombre+ tipoCliente+' <i class="fas fa-exclamation-triangle"></i></td>';
 		else if (socioDeudor && fechaUltimoPago == "" )
-			row += ' title="No se encontró fecha del último pago" >'+socioNombre+socioActivo+' <i class="fas fa-exclamation-triangle"></i></td>';
+			row += ' title="No se encontró fecha del último pago" >'+socioNombre+tipoCliente+' <i class="fas fa-exclamation-triangle"></i></td>';
 		else if ( !socioDeudor )
-			row += ">"+socioNombre+socioActivo+'</td>';
+			row += ">"+socioNombre+tipoCliente+'</td>';
 	}
 	else
-		row+= ">"+socioNombre + socioActivo+"</td>";
+		row+= ">"+socioNombre + tipoCliente+"</td>";
 
 
 	row += "<td class='text-center notShowMobile' onclick='redirectToMascota("+ idMascota +")'>" + especie +"</td>";
