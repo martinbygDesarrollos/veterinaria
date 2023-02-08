@@ -121,11 +121,11 @@ class mascotas{
 
 				if ($value != $arrayTextSearch[0]){
 					if ( $value != "" ){
-						$sqlToSearch .= " OR ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+						$sqlToSearch .= " AND ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' OR s.idSocio LIKE '%".$value."%' ) ";
 					}
 				}else{
 					if ( $value != "" ){
-						$sqlToSearch = " AND ( ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+						$sqlToSearch = " AND ( ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' OR s.idSocio LIKE '%".$value."%' ) ";
 					}
 				}
 
@@ -142,6 +142,8 @@ class mascotas{
 				LEFT JOIN socios AS s ON s.idSocio = ms.idSocio ";
 		$where = " WHERE m.idMascota < ? ";
 		$orderAndList = " ORDER BY m.idMascota DESC LIMIT 14 ";
+
+		//var_dump($select . $join . $where . $sqlToSearch . $orderAndList);exit;
 
 		$responseQuery = DataBase::sendQuery($select . $join . $where . $sqlToSearch . $orderAndList, array('i', $lastId), "LIST");
 		if($responseQuery->result == 2){

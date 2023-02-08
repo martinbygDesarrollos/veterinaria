@@ -57,7 +57,7 @@ class socios{
 
 				if ($value != $arrayTextSearch[0]){
 					if ( $value != "" ){
-						$sqlToSearch .= " OR ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' OR s.idSocio LIKE '%".$value."%' ) ";
+						$sqlToSearch .= " AND ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' OR s.idSocio LIKE '%".$value."%' ) ";
 					}
 				}else{
 					if ( $value != "" ){
