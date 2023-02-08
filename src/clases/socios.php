@@ -57,11 +57,11 @@ class socios{
 
 				if ($value != $arrayTextSearch[0]){
 					if ( $value != "" ){
-						$sqlToSearch .= " OR ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+						$sqlToSearch .= " OR ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' OR s.idSocio LIKE '%".$value."%' ) ";
 					}
 				}else{
 					if ( $value != "" ){
-						$sqlToSearch = " AND ( ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' ) ";
+						$sqlToSearch = " AND ( ( m.nombre LIKE '%".$value."%' OR s.nombre LIKE '%".$value."%' OR s.idSocio LIKE '%".$value."%' ) ";
 					}
 				}
 
@@ -73,9 +73,9 @@ class socios{
 		}
 
 
-		if ( isset($tipoCliente) && strcmp($tipoCliente, "") != 0 ){
+		/*if ( isset($tipoCliente) && strcmp($tipoCliente, "") != 0 ){
 			$where .= " AND tipo = " .$tipoCliente ." ";
-		}
+		}*/
 
 
 		$orderAndLimit = " ORDER BY s.idSocio DESC LIMIT 14";
