@@ -115,15 +115,22 @@ function createRowHistorial(obj){
 		}
 	}else {
 		let responseSocio = sendPost("getSocioPorMascota", {idMascota: obj.idMascota});
-		phoneSocio = responseSocio.socio.telefax;
+		console.log("response socio", responseSocio, responseSocio.socio);
 
-		if ( phoneSocio ){
-			if ( phoneSocio.length > 0 ){
-				wppBtn = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+		if ( responseSocio.socio ){
+			phoneSocio = responseSocio.socio.telefax;
+
+			if ( phoneSocio ){
+				if ( phoneSocio.length > 0 ){
+					wppBtn = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
+				}
+			}else {
+				wppBtn = '<td class="text-center"><button title="No se encontró número de whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>';
 			}
 		}else {
 			wppBtn = '<td class="text-center"><button title="No se encontró número de whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>';
 		}
+
 	}
 
 
