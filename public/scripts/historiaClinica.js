@@ -30,25 +30,25 @@ $("#formConfirmFileHistory").submit(function(e) {
 		    })
 	    }else{
 	    	setTimeout(()=>{
-	    		console.log("no se ha cargado id de historia, se llama al submit nuevamente");
+	    		//console.log("no se ha cargado id de historia, se llama al submit nuevamente");
 	    		$("#formConfirmFileHistory").trigger("submit");
 	    	}, 200);
 	    }
 	}else{
-		console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
+		//console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
 	}
 });
 
 
 
 function getAllIdListHistory(id){
-	console.log("buscar todos los ids");
+	//console.log("buscar todos los ids");
 
 	sendAsyncPost("getAllIdListHistory", {idMascota:id})
 	.then(( response )=>{
-		console.log(response);
+		//console.log(response);
 		if ( response.result == 2 ){
-			console.log("se recuperaron todos los ids del los historiales");
+			//console.log("se recuperaron todos los ids del los historiales");
 			listAllIds = response.listResult;
 		}
 	})
@@ -115,7 +115,7 @@ function createRowHistorial(obj){
 		}
 	}else {
 		let responseSocio = sendPost("getSocioPorMascota", {idMascota: obj.idMascota});
-		console.log("response socio", responseSocio, responseSocio.socio);
+		//console.log("response socio", responseSocio, responseSocio.socio);
 
 		if ( responseSocio.socio ){
 			phoneSocio = responseSocio.socio.telefax;
@@ -547,7 +547,7 @@ function verHistoriaClinica(idHistoria){
 function openModalModificarMascota(idMascota){
 	sendAsyncPost("getMascotaToEdit", {idMascota: idMascota})
 	.then((response)=>{
-		console.log(response);
+		//console.log(response);
 		if(response.result == 2){
 			if ( response.objectResult.fechaFallecimiento ){
 				showReplyMessage(0, "Mascota con fecha de fallecimiento<br>¿Desea editar los datos igualmente?", "FALLECIDO", null);
