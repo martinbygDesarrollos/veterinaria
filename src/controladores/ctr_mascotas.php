@@ -365,8 +365,8 @@ class ctr_mascotas {
 		$response = new \stdClass();
 
 		$responseGetMascota = mascotas::getMascota($idMascota);
-		var_dump("getsociobymascota");exit;
-		var_dump($responseGetMascota);exit;
+		//var_dump("getsociobymascota");exit;
+		//var_dump($responseGetMascota);exit;
 		if($responseGetMascota->result == 2){
 			$fechaDosis = fechas::getDateToINT($fechaDosis);
 			$fechaProximaDosis = null;

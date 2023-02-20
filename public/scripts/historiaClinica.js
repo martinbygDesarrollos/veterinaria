@@ -85,12 +85,12 @@ function cargarHistoriaClinica(idMascota){
 
 function createRowHistorial(obj){
 
-
-
 	let motivoConsulta = obj.motivoConsulta;
 	let fecha = obj.fecha;
 	let idHistoriaClinica = obj.idHistoriaClinica;
 	let observaciones = obj.observaciones;
+
+	let nomUsuario = obj.nomUsuario+": " ?? "";
 
 	let detalle = "";
 	if ( motivoConsulta.length > 0 && observaciones.length > 0)
@@ -103,7 +103,7 @@ function createRowHistorial(obj){
 
 	let row = "<tr id='trH"+ idHistoriaClinica +"'>";
 	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+ fecha +"</td>";
-	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+ detalle +"</td>";
+	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+nomUsuario+ detalle +"</td>";
 	row += "<td class='text-center' style='min-width: 6em;'>";
 	row += "<button class='btn btn-link' name='" + idHistoriaClinica + "' onclick='openModalHistoria(this)'><i class='fas fa-edit text-dark'></i></button>";
 	row += "<button class='btn btn-link' onclick='openModalBorrarHistoria("+ idHistoriaClinica + ")'><i class='fas fa-trash-alt text-dark'></i></button>";
