@@ -74,10 +74,10 @@ function createRowHospitalized(obj){
 
 
 		let row = "<tr id='trinternado"+ obj.idMascota +"' class='"+colorForClient.class+"'>";
-		row += "<td class='text-center'><a  class='divAsAnchor' onclick='redirectToMascota("+ obj.idMascota +")'>"+ obj.nombre +"</a></td>";
+		row += "<td class='text-center'><a href='"+getSiteURL() + "ver-mascota/" + obj.idMascota+"'>"+ obj.nombre +"</a></td>";
 
 		if ( obj.idSocio ){
-			row += "<td class='text-center'><a  class='divAsAnchor' onclick='redirectToSocio("+ obj.idSocio +")'>"+obj.nomCliente+"</a></td>";
+			row += "<td class='text-center'><a href='"+getSiteURL() + "ver-socio/" + obj.idSocio+"'>"+obj.nomCliente+"</a></td>";
 		}else
 			row += "<td class='text-center'></td>";
 
