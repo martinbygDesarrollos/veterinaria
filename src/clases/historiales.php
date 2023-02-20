@@ -138,7 +138,7 @@ class historiales{
 
 			SELECT * FROM historiasclinica
 			WHERE idMascota=?
-			ORDER BY fecha DESC LIMIT ".$lastId.", 14",
+			ORDER BY fecha DESC, idHistoriaClinica DESC LIMIT ".$lastId.", 14",
 
 			array('i', $idMascota), "LIST");
 
