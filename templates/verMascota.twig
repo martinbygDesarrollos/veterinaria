@@ -587,6 +587,18 @@
 				</button>
 			</div>
 			<div class="modal-body">
+				<label>Registrar nueva</label>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<input id="inputNombreNuevaVacuna" class="form-control shadow-sm" type="text" name="nameNombreNuevaVacuna" placeholder="Nombre">
+						</div>
+						<div class="form-group">
+						</div>
+					</div>
+				</div>
+				<hr>
+				<label>Seleccionar</label>
 				<div class="row">
 					<div class="col">
 						<!--div class="form-group">
@@ -607,13 +619,21 @@
 					<div class="col">
 						<div class="form-group">
 							<label id="labelInputDateVacuna" for="inputPrimerDosisVacuna"></label>
-							<input type="date" class="form-control text-center shadow-sm" id="inputPrimerDosisVacuna">
+							<input type="date" class="form-control text-center shadow-sm" id="inputPrimerDosisVacuna" onchange="calularFechaProxDosis()">
 						</div>
 					</div>
 					<div class="col">
 						<div class="form-group">
 							<label for="inputIntervaloVacuna">Intervalo (en días)</label>
-							<input type="number" class="form-control text-center shadow-sm" id="inputIntervaloVacuna">
+							<input type="number" class="form-control text-center shadow-sm" id="inputIntervaloVacuna" onchange="calularFechaProxDosis()">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6">
+						<div class="form-group">
+							<label id="labelInputDateVacuna" for="inputPrimerDosisVacuna">Próxima dosis</label>
+							<input type="date" class="form-control text-center shadow-sm" id="inputProximaDosisVacuna" onchange="calularIntervaloDosis()">
 						</div>
 					</div>
 				</div>
@@ -648,7 +668,9 @@
 		}
 	});
 
-	$(document).ready(( )=>{
+
+	$('#modalVacuna').on('shown.bs.modal', function () {
+		console.log("cuando se carga el modal de la vacuna");
 		completeDataVacunas($("#modalVacuna select").val());
 	})
 

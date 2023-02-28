@@ -220,3 +220,30 @@ function getCurrentHours(){
 	date = hour+':'+minute;
 	return date;
 }
+
+
+function dateAddDays( dateString, daysToAdd ){ //ej datestring tiene el formato YYYY-mm-dd a esa fecha se suman daysToAdd dias
+
+console.log(dateString);
+	var today = new Date(dateString);
+	var date = null;
+	var day = null;
+	var month = null;
+	var year = null;
+
+	today.setDate(today.getDate() +1 + parseInt(daysToAdd) );
+	day = today.getDate();
+	month = today.getMonth()+1;
+	year = today.getFullYear();
+
+	if( day.toString().length == 1 ){
+		day = '0'+day;
+	}
+
+	if( month.toString().length == 1 ) {
+		month = '0'+month;
+	}
+
+	date = year+'-'+month+'-'+day;
+	return date;
+}

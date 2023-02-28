@@ -278,8 +278,30 @@ function completeDataVacunas( value ){
 		if( response.result == 2 ){
 			let obj = response.objectResult
 			$("#inputIntervaloVacuna").val(obj.intervalo)
-			//console.log(response)
+			calularFechaProxDosis();
+			console.log(response)
 		}
 
 	})
+}
+
+
+
+function calularFechaProxDosis(){
+
+	let intervalo = $("#inputIntervaloVacuna").val() ?? 0;
+	let fechaDosis = $("#inputPrimerDosisVacuna").val() ?? getCurrentDate();
+
+	let proximaDosis = dateAddDays( fechaDosis, intervalo ) ?? getCurrentDate();
+	$("#inputProximaDosisVacuna").val(proximaDosis);
+
+}
+
+
+
+function calularIntervaloDosis(){
+
+
+
+console.log("funcion calularIntervaloDosis calcular dias del intervalo");
 }
