@@ -165,7 +165,6 @@ function getTimestamp(){
 
 function redirectToWhatsapp( phone, message ){
 
-	console.log("utils function redirectToWhatsapp", phone, message);
 	if ( phone ){
 		window.open("https://wa.me/"+phone+"?text="+message, '_blank');
 	}else
@@ -224,7 +223,6 @@ function getCurrentHours(){
 
 function dateAddDays( dateString, daysToAdd ){ //ej datestring tiene el formato YYYY-mm-dd a esa fecha se suman daysToAdd dias
 
-console.log(dateString);
 	var today = new Date(dateString);
 	var date = null;
 	var day = null;
@@ -246,4 +244,17 @@ console.log(dateString);
 
 	date = year+'-'+month+'-'+day;
 	return date;
+}
+
+
+
+
+function differenceDays( date1, date2 ){
+	let dateone = new Date(date1);
+	let datetwo = new Date(date2);
+
+	let diff = dateone.getTime() - datetwo.getTime();
+	let diff_nro = diff / (1000 * 3600 * 24);
+
+	return diff_nro > 0 ? diff_nro : 0;
 }

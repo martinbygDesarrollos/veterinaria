@@ -1,3 +1,21 @@
+$("#inputNombreNuevaVacuna").keyup(()=>{
+
+	if ( $("#inputNombreNuevaVacuna").val().length >0 ){
+
+		$("#inputNombreVacuna").val("");
+		$("#inputNombreVacuna").attr("readonly", true);
+		$("#inputNombreVacuna").attr("disabled", true);
+		$("#inputIntervaloVacuna").val(1);
+		$("#inputProximaDosisVacuna").val("");
+
+	}else {
+		$("#inputNombreVacuna").removeAttr("readonly");
+		$("#inputNombreVacuna").removeAttr("disabled");
+	}
+})
+
+
+
 function openModalVacuna(inputButton){
 
 	let muerto = $("#inputFallecimiento").val() || null;
@@ -13,7 +31,6 @@ function openModalVacuna(inputButton){
 		$("#modalButtonResponse").click(function(){
 
 			if(inputButton.id == "NUEVAVACUNA"){
-				console.log("boton nueva vac",inputButton);
 				$('#modalTitleVacuna').html("Nueva vacuna/medicamento");
 				$('#labelInputDateVacuna').text("Fecha dosificación");
 				clearModalVacuna();
@@ -23,6 +40,10 @@ function openModalVacuna(inputButton){
 				});
 			}else{
 				$('#modalTitleVacuna').html("Modificar vacuna/medicamento");
+				$('#inputNombreNuevaVacuna').attr("disabled", true);
+				$('#inputNombreNuevaVacuna').attr("readonly", true);
+				$('#divNombreNuevaVacuna').hide();
+
 				let response = sendPost('getVacunaMascota', {idVacunaMascota: inputButton.name});
 				if(response.result == 2){
 					$('#labelInputDateVacuna').text('Fecha dosificación');
@@ -48,7 +69,6 @@ function openModalVacuna(inputButton){
 
 
 		if(inputButton.id == "NUEVAVACUNA"){
-			console.log("boton nueva vac",inputButton);
 			$('#modalTitleVacuna').html("Nueva vacuna/medicamento");
 			$('#labelInputDateVacuna').text("Fecha dosificación");
 			clearModalVacuna();
@@ -58,6 +78,10 @@ function openModalVacuna(inputButton){
 			});
 		}else{
 			$('#modalTitleVacuna').html("Modificar vacuna/medicamento");
+			$('#inputNombreNuevaVacuna').attr("disabled", true);
+			$('#inputNombreNuevaVacuna').attr("readonly", true);
+			$('#divNombreNuevaVacuna').hide();
+
 			let response = sendPost('getVacunaMascota', {idVacunaMascota: inputButton.name});
 			if(response.result == 2){
 				$('#labelInputDateVacuna').text('Fecha dosificación');
@@ -86,19 +110,19 @@ function createNewVacuna(idMascota){
 	let intervalo = $('#inputIntervaloVacuna').val() || null;
 	let primerDosis = $('#inputPrimerDosisVacuna').val() || null;
 	let observaciones = $('#inputObservacionesVacuna').html() || null;
-	//console.log(intervalo);
+
 	if(nombre){
 		if(primerDosis){
 			let data ={idMascota: idMascota, nombreVacuna: nombre, intervalo: intervalo, fechaDosis: primerDosis, observaciones: observaciones};
 			let response = sendPost("aplicarNuevaVacunaMascota", data);
-			console.log(data, response);
+
 			showReplyMessage(response.result, response.message, "Agregar vacuna/medicamento", "modalVacuna");
 			if(response.result == 2){
 				let vacuna = response.newVacuna;
 				$('#tbodyVacunas').prepend(createRowVacuna(vacuna.idVacunaMascota ,vacuna.fechaProximaDosis ,vacuna.fechaUltimaDosis ,vacuna.nombreVacuna ,vacuna.observacion, vacuna.intervaloDosis ,vacuna.numDosis ,vacuna.fechaPrimerDosis));
 				$("#modalVacuna").modal("hide");
 			}else {
-				console.log( "al crear nueva vacuna de la mascota no se dio resultado 2", response );
+
 				showReplyMessage(response.result, response.message, "Vacuna/medicamento", "modalVacuna");
 			}
 		}else showReplyMessage(1, "La fecha de la primer dosis no puede ser ingresada vacia", "Vacuna/medicamento", "modalVacuna");
@@ -185,9 +209,19 @@ function openDescriptionVacuna(idVacunaMascota){
 }
 
 function clearModalVacuna(){
+	$('#inputNombreNuevaVacuna').val("");
+	$('#inputNombreNuevaVacuna').removeAttr("disabled");
+	$('#inputNombreNuevaVacuna').removeAttr("readonly");
+	$('#divNombreNuevaVacuna').show();
+
 	$('#inputNombreVacuna').val("");
+	$("#inputNombreVacuna").removeAttr("readonly");
+	$("#inputNombreVacuna").removeAttr("disabled");
+
 	$('#inputIntervaloVacuna').val(1);
 	$('#inputPrimerDosisVacuna').val(getDateForInput());
+	$('#inputProximaDosisVacuna').val("");
+
 	$('#inputObservacionesVacuna').html("");
 }
 
@@ -254,7 +288,7 @@ function removeVacunaMascota(idVacunaMascota){
 }
 
 function getDataVacunas(valueInput){
-	//console.log(valueInput);
+
 
 	if ( valueInput.length > 0 ){
 		sendAsyncPost("getVacunasByInput", {value: valueInput})
@@ -279,7 +313,6 @@ function completeDataVacunas( value ){
 			let obj = response.objectResult
 			$("#inputIntervaloVacuna").val(obj.intervalo)
 			calularFechaProxDosis();
-			console.log(response)
 		}
 
 	})
@@ -298,10 +331,11 @@ function calularFechaProxDosis(){
 }
 
 
-
+//cuando se cambia la fecha de la próxima dosis de la vacuna, se calcula el intervalo según la fecha que se tenga de que se dió la primer dosis que puede ser el dia de hoy o no
 function calularIntervaloDosis(){
+	let fechaDosis = $("#inputPrimerDosisVacuna").val() ?? getCurrentDate();
+	let proximaDosis = $("#inputProximaDosisVacuna").val() ?? getCurrentDate();
 
-
-
-console.log("funcion calularIntervaloDosis calcular dias del intervalo");
+	let intervaloVacuna = parseInt( differenceDays( proximaDosis, fechaDosis) );
+	$("#inputIntervaloVacuna").val( intervaloVacuna );
 }

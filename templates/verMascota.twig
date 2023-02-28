@@ -587,25 +587,22 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<label>Registrar nueva</label>
-				<div class="row">
-					<div class="col">
-						<div class="form-group">
-							<input id="inputNombreNuevaVacuna" class="form-control shadow-sm" type="text" name="nameNombreNuevaVacuna" placeholder="Nombre">
-						</div>
-						<div class="form-group">
+				<div id="divNombreNuevaVacuna">
+					<label>Registrar nueva</label>
+					<div class="row">
+						<div class="col">
+							<div class="form-group">
+								<input id="inputNombreNuevaVacuna" class="form-control shadow-sm" type="text" name="nameNombreNuevaVacuna" placeholder="Nombre">
+							</div>
+							<div class="form-group">
+							</div>
 						</div>
 					</div>
+					<hr>
 				</div>
-				<hr>
 				<label>Seleccionar</label>
 				<div class="row">
 					<div class="col">
-						<!--div class="form-group">
-							<label for="inputNombreVacuna">Nombre</label>
-							<input type="text" class="form-control text-center shadow-sm" list="dataListNombreVacuna" id="inputNombreVacuna" onsearch="getDataVacunas(this.value)" onchange="completeDataVacunas(this.value)" onkeyup="this.onsearch()" autocomplete="off" placeholder="Escriba algo...">
-							<datalist id="dataListNombreVacuna"></datalist>
-						</div-->
 						<div class="form-group">
 							<select id="inputNombreVacuna" class="form-select form-control shadow-sm" onchange="completeDataVacunas(this.value)">
 								{% for item in responseListVacunas %}
@@ -632,7 +629,7 @@
 				<div class="row">
 					<div class="col-6">
 						<div class="form-group">
-							<label id="labelInputDateVacuna" for="inputPrimerDosisVacuna">Próxima dosis</label>
+							<label id="labelInputDateVacuna" for="inputProximaDosisVacuna">Próxima dosis</label>
 							<input type="date" class="form-control text-center shadow-sm" id="inputProximaDosisVacuna" onchange="calularIntervaloDosis()">
 						</div>
 					</div>
@@ -659,6 +656,8 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/internacion.js?{{version}}"></script>
 <script type="text/javascript">
 	$('#inputPrimerDosisVacuna').val(getDateForInput());
+	$('#inputProximaDosisVacuna').val("");
+
 	$('#inputFechaDiagnostico').val(getDateForInput());
 
 	cargarHistoriaClinica('{{ SocioMascota.mascota.idMascota }}');
@@ -670,7 +669,6 @@
 
 
 	$('#modalVacuna').on('shown.bs.modal', function () {
-		console.log("cuando se carga el modal de la vacuna");
 		completeDataVacunas($("#modalVacuna select").val());
 	})
 
