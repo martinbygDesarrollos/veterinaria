@@ -143,7 +143,7 @@ function createRow(obj){
 	//row += "<td class='text-center'><a class='text-dark' data-toggle='tooltip' data-placement='top' title='Agregar nueva mascota' href='" + getSiteURL() + "nueva-mascota/" + idSocio +"'><button class='btn btn-light' type='button'>Nueva masc.</button></a></td>";
 	btnwpp = '<td class="text-center"><button title="No se encontró número de whatsapp" disabled class="btn bg-light"><i class="fab fa-whatsapp"></i></button></td>';
 
-	if (telefax.length >= 9)
+	if (telefax.length >= 7)
 		btnwpp = '<td class="text-center"><a href="https://wa.me/'+telefax+'" target="_blank"><button title="Enviar mensaje a '+telefax+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 	row += btnwpp;
 	row += "</tr>";
