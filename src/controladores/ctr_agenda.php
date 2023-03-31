@@ -118,5 +118,15 @@ class ctr_agenda {
 		$response = $calendarClass->deleteEvent($idevent );
 		return $response;
 	}
+
+
+
+	public function changeStatusEvent( $idevent, $status ){
+		$response = new \stdClass();
+		$calendarClass = new agenda();
+
+		$response = $calendarClass->changeStatusEvent($idevent, $status );
+		return $response;
+	}
 }
 ?>

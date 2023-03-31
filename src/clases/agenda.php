@@ -31,6 +31,11 @@ class agenda{
 		return $database->sendQuery("UPDATE `agenda` SET `estado` = 'eliminado' WHERE `agenda`.`idAgenda` = ?", array('i', $idAgenda), "BOOLE");
 	}
 
+	public function changeStatusEvent( $idAgenda, $status ){
+		$database = new DataBase();
+		return $database->sendQuery("UPDATE `agenda` SET `estado` = ? WHERE `agenda`.`idAgenda` = ?", array('si', $status, $idAgenda), "BOOLE");
+	}
+
 }
 
 ?>

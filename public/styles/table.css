@@ -32,3 +32,10 @@ option[disabled]{
   background-color: var(--mascota-muerta)!important;
 
 }
+
+
+
+
+.tareaCompletada input{
+  background-color:#17a2b840;
+}

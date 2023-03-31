@@ -121,5 +121,17 @@ return function (App $app) {
 			return json_encode($calendarController->deleteEvent($idevent));
         }else return json_encode($responseSession);
     });
+
+
+    $app->post('/changeStatusEvent', function(Request $request, Response $response) use ($userController, $calendarController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idevent = $data['idEvent'];
+            $status = $data['status'];
+
+			return json_encode($calendarController->changeStatusEvent($idevent, $status));
+        }else return json_encode($responseSession);
+    });
 }
 ?>

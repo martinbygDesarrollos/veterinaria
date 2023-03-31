@@ -55,16 +55,19 @@ function getCirugiasByDay( day ){
 
 //funcion para cargar todas las filas cuando ya hay registros en la agenda
 function createRow( obj ){
-
+	console.log(obj);
 	let descripcion = obj.descripcion.replaceAll('"', '\'');
 	let nomClient = obj.nombreCliente.replaceAll('"', '\'');
 	let nomMascota = obj.nombreMascota.replaceAll('"', '\'');
 
 	let wppBtn = '<button class="btn btn-info" disabled><a class="btn-info" title="Enviar whatsapp"target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>';
 
+	let tareaCompletada = "";
+	if (obj.estado == "hecho")
+		tareaCompletada = "tareaCompletada";
 
 	//fila
-	let row = '<tr id="'+ obj.idAgenda +'" onchange="saveEventInCalendar(this)">';
+	let row = '<tr id="'+ obj.idAgenda +'" class="'+tareaCompletada+'" onchange="saveEventInCalendar(this)">';
 	//hora
 	row += '<td><input class="form-control text-center shadow-sm" type="time" name="" value="'+ hora +'"></td>';
 	//motivo
@@ -110,7 +113,14 @@ function createRow( obj ){
 	row += '<td>'+wppBtn+'</td>';
 	row += '<td class="notShowMobile" style="">'+buttonVerSocio+'</td>';
 	row += '<td class="notShowMobile"><button class="btn btn-info" title="Buscar cliente o mascota" onclick="openModalSearchClientOrPet(this.parentElement.parentElement)" ><i class="fas fa-search"></i></button></td>';
-	row += '<td class="notShowMobile"><button class="btn btn-info" title="Eliminar este evento" onclick="deleteEvent(`'+obj.idAgenda+'`)" ><i class="fas fa-trash"></i></button></td>';
+
+	if (obj.estado == "hecho")
+		row += '<td class="notShowMobile"><button class="btn btn-info" title="Tarea terminada" onclick="changeStatusEvent(`'+obj.idAgenda+'`, ``)" ><i class="fas fa-undo"></i></button></td>';
+	else
+		row += '<td class="notShowMobile"><button class="btn btn-success" title="Tarea terminada" onclick="changeStatusEvent(`'+obj.idAgenda+'`, `hecho`)" ><i class="fas fa-check"></i></button></td>';
+
+
+	row += '<td class="notShowMobile"><button class="btn btn-danger" title="Eliminar este evento" onclick="deleteEvent(`'+obj.idAgenda+'`)" ><i class="fas fa-trash"></i></button></td>';
 	row += '</tr>';
 
 	return row;
@@ -195,8 +205,8 @@ function createCleanRow(){
 	row += '<td class="notShowMobile" style=""><button class="btn btn-info" title="Ver cliente" disabled>Cliente</button></td>';
 	//row += '<td class="notShowMobile" onclick="openModalSearchClientOrPet(this.parentElement)" ><i class="btn btn-info fas fa-search"></i></td></tr>';
 	row += '<td class="notShowMobile" onclick="openModalSearchClientOrPet(this.parentElement)"><button class="btn btn-info" title="Buscar cliente o mascota" ><i class="fas fa-search"></i></button></td>'
-
-	row += '<td class="notShowMobile"><button class="btn btn-info" title="Eliminar este evento" disabled ><i class="fas fa-trash"></i></button></td>';
+	row += '<td class="notShowMobile"><button class="btn btn-warning" title="Tarea terminada" disabled ><i class="fas fa-check"></i></button></td>';
+	row += '<td class="notShowMobile"><button class="btn btn-danger" title="Eliminar este evento" disabled ><i class="fas fa-trash"></i></button></td>';
 	row += '</tr>';
 
 	return row;
@@ -501,4 +511,15 @@ function deleteEvent( idEvent ){
 			window.location.reload();
 		}
 	})
+}
+
+
+
+function changeStatusEvent( idAgenda, estado ){
+
+	sendAsyncPost("changeStatusEvent", {idEvent:idAgenda, status:estado})
+	.then((response)=>{
+		window.location.reload();
+	})
+
 }
