@@ -65,32 +65,37 @@ class whatsapp{
 			$response->result = 1;
 			return json_encode($response);
 		}else{
+			//var_dump(URL_WHATSAPP_API.$path, $content, $phone);exit;
 			$exist = $whatsappClass->apiConection("client/exist", "num=".$phone);
-			var_dump($exist);
-			exit;
+			if ( $exist && $exist->result == 2 && strcmp($exist->message, "ok") == 0 ){
+				//var_dump(URL_WHATSAPP_API.$path, $data);exit;
+				$curl = curl_init();
+				curl_setopt_array($curl, array(
+				  CURLOPT_URL => URL_WHATSAPP_API.$path,
+				  CURLOPT_RETURNTRANSFER => true,
+				  CURLOPT_ENCODING => '',
+				  CURLOPT_MAXREDIRS => 10,
+				  CURLOPT_TIMEOUT => 90,
+				  CURLOPT_FOLLOWLOCATION => true,
+				  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+				  CURLOPT_CUSTOMREQUEST => 'POST',
+				  CURLOPT_POSTFIELDS => $params = 'id='.WHATSAPP_API_USER.'&content='.$content.'&to='.$phone.'&token='.TOKEN_API,
+				  CURLOPT_HTTPHEADER => array(
+				    'Content-Type: application/x-www-form-urlencoded'
+				  ),
+				));
 
-			//var_dump(URL_WHATSAPP_API.$path, $data);exit;
-			$curl = curl_init();
-			curl_setopt_array($curl, array(
-			  CURLOPT_URL => URL_WHATSAPP_API.$path,
-			  CURLOPT_RETURNTRANSFER => true,
-			  CURLOPT_ENCODING => '',
-			  CURLOPT_MAXREDIRS => 10,
-			  CURLOPT_TIMEOUT => 90,
-			  CURLOPT_FOLLOWLOCATION => true,
-			  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			  CURLOPT_CUSTOMREQUEST => 'POST',
-			  CURLOPT_POSTFIELDS => $params = 'id='.WHATSAPP_API_USER.'&content='.$content.'&to='.$phone.'&token='.TOKEN_API,
-			  CURLOPT_HTTPHEADER => array(
-			    'Content-Type: application/x-www-form-urlencoded'
-			  ),
-			));
+				$response = curl_exec($curl);
 
-			$response = curl_exec($curl);
+				curl_close($curl);
+				return $response;
+				//return json_decode($response);
 
-			curl_close($curl);
-			return $response;
-			//return json_decode($response);
+			}else{
+				$response = new stdClass();
+				$response->result = 1;
+				return json_encode($response);
+			}
 
 
 		} //cerrando el else

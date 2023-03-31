@@ -277,7 +277,10 @@ $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
 
 			response.listResult.map((socio)=>{
 
-				$("#tbodyClientsWhatsapp").append('<tr id="trWhatsapp'+socio.idSocio+'" data-wa1="'+socio.telefax+'" data-wa2="'+socio.telefono+'" ><td><a href="./ver-socio/'+socio.idSocio+'">'+socio.nombre+'</a></td><td>'+socio.telefono+'</td><td>'+socio.telefax+'</td><td></td><td><button type="button" class="btn btn-light" onclick="enviarWhatsappIndividual(this)" >Enviar</button><div id="trWhatsappSpinner'+socio.idSocio+'" class="spinner-border" role="status" hidden><span class="sr-only">Loading...</span></div></td></tr>');
+				let tel = socio.telefax || "";
+				let cel = socio.telefono || "";
+
+				$("#tbodyClientsWhatsapp").append('<tr id="trWhatsapp'+socio.idSocio+'" data-wa1="'+tel+'" data-wa2="'+cel+'" ><td><a href="./ver-socio/'+socio.idSocio+'">'+socio.nombre+'</a></td><td>'+cel+'</td><td>'+tel+'</td><td></td><td><button type="button" class="btn btn-light" onclick="enviarWhatsappIndividual(this)" >Enviar</button><div id="trWhatsappSpinner'+socio.idSocio+'" class="spinner-border" role="status" hidden><span class="sr-only">Loading...</span></div></td></tr>');
 			})
 		}
 	})
@@ -287,19 +290,24 @@ $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
 var noEnviados = [];
 $("#btnEnviarWhatsapp").on( "click", ()=>{
 
-	document.getElementById("spinnerWhatsappLogin").hidden = false;
-	document.getElementById("btnEnviarWhatsapp").disabled = true;
+	//document.getElementById("spinnerWhatsappLogin").hidden = false;
+	//document.getElementById("btnEnviarWhatsapp").disabled = true;
+
 
 	let message = $("#nav-whatsapp textarea" ).val();
+	let length = $("#tbodyClientsWhatsapp tr").length;
 	$("#tbodyClientsWhatsapp tr").map((index, element)=>{
+
 
 		let phone = element.dataset.wa1;
 		sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 		.then((response)=>{
+
 			response = JSON.parse(response);
 
 			//console.log(response);
 			if (response){
+
 				if( response.result != 2 ){
 					phone = element.dataset.wa2;
 					sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
@@ -308,6 +316,8 @@ $("#btnEnviarWhatsapp").on( "click", ()=>{
 
 						if( response.result == 2 ){
 							$("#"+element.id+" td")[3].append("OK");
+						}else{
+							$("#"+element.id+" td")[3].append("error");
 						}
 					})
 				}else{
@@ -319,8 +329,6 @@ $("#btnEnviarWhatsapp").on( "click", ()=>{
 
 		})
 	})
-
-	document.getElementById("btnEnviarWhatsapp").disabled = false;
 
 })
 
@@ -338,13 +346,10 @@ function enviarWhatsappIndividual(button){
 	sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
 	.then((response)=>{
 		response = JSON.parse(response);
-		console.log(response);
-		console.log(response.result);
 		button.disabled = false;
 		document.getElementById("spinnerWhatsappLogin").hidden = true;
 
 		if (response){
-			console.log("enviarWhatsappIndividual", response);
 			if( response.result != 2 ){
 				let phone = element.dataset.wa2;
 				sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
@@ -352,6 +357,8 @@ function enviarWhatsappIndividual(button){
 					response = JSON.parse(response);
 					if( response.result == 2 ){
 						$("#"+element.id+" td")[3].append("OK");
+					}else{
+						$("#"+element.id+" td")[3].append("error");
 					}
 				})
 			}else{
@@ -360,6 +367,11 @@ function enviarWhatsappIndividual(button){
 		}else{
 			showReplyMessage(1, "No se puedo establecer conexión.", "Whatsapp", null);
 		}
+
+	})
+	.then(()=>{
+		button.disabled = false;
+		document.getElementById("spinnerWhatsappLogin").hidden = true;
 
 	})
 }
