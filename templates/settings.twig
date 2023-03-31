@@ -15,8 +15,8 @@
 					<a class="nav-item nav-link active" id="nav-profile-tab-cuota" data-toggle="tab" href="#nav-cuota" role="tab" aria-controls="nav-profile" aria-selected="false">Cuota</a>
 					<a class="nav-item nav-link" id="nav-profile-tab-usuario" data-toggle="tab" href="#nav-usuario" role="tab" aria-controls="nav-profile" aria-selected="false">Usuarios</a>
 
-					{% if administrador['IDENTIFICADOR'] == 15 %}
-					<a class="nav-item nav-link" id="nav-profile-tab-mascota" data-toggle="tab" href="#nav-mascota" role="tab" aria-controls="nav-profile" aria-selected="false">Mascotas</a>
+					{% if administrador['IDENTIFICADOR'] == 15 or administrador['IDENTIFICADOR'] == 12 or administrador['IDENTIFICADOR'] == 13 %}
+					<!--a class="nav-item nav-link" id="nav-profile-tab-mascota" data-toggle="tab" href="#nav-mascota" role="tab" aria-controls="nav-profile" aria-selected="false">Mascotas</a-->
 					<a class="nav-item nav-link" id="nav-profile-tab-whatsapp" data-toggle="tab" href="#nav-whatsapp" role="tab" aria-controls="nav-profile" aria-selected="false">Whatsapp</a>
 					{%endif%}
 				</div>
@@ -120,8 +120,8 @@
 					</div>
 				</div>
 
-				{% if administrador['IDENTIFICADOR'] == 15 %}
-				<div class="tab-pane fade  border boder-2 border-top-0 p-3" id="nav-mascota" role="tabpanel" aria-labelledby="nav-profile-tab">
+				{% if administrador['IDENTIFICADOR'] == 15 or administrador['IDENTIFICADOR'] == 12 or administrador['IDENTIFICADOR'] == 13 %}
+				<!--div class="tab-pane fade  border boder-2 border-top-0 p-3" id="nav-mascota" role="tabpanel" aria-labelledby="nav-profile-tab">
 					<div class="row">
 						<div class="col-7">
 							<input type="search" class="form-control" onsearch="searchClientOrPetToUnify(this.value)" id="idInputPetsToUnify" onkeyup="this.onsearch()" placeholder="Buscar mascotas..." >
@@ -162,7 +162,7 @@
 							</form>
 						</div>
 					</div>
-				</div>
+				</div-->
 
 
 				<div class="tab-pane fade  border boder-2 border-top-0 p-3" id="nav-whatsapp" role="tabpanel" aria-labelledby="nav-profile-tab">
