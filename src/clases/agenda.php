@@ -32,6 +32,10 @@ class agenda{
 	}
 
 	public function changeStatusEvent( $idAgenda, $status ){
+
+		if ($status == "")
+			$status = null;
+
 		$database = new DataBase();
 		return $database->sendQuery("UPDATE `agenda` SET `estado` = ? WHERE `agenda`.`idAgenda` = ?", array('si', $status, $idAgenda), "BOOLE");
 	}

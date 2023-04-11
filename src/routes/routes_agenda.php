@@ -58,6 +58,15 @@ return function (App $app) {
 		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("Internacion");
 
+	$app->get('/guarderia', function($request, $response, $args) use ($userController){
+        $args['version'] = FECHA_ULTIMO_PUSH;
+		$responseSession = $userController->validateSession();
+		if($responseSession->result == 2){
+			$args['administrador'] = $responseSession->session;
+			return $this->view->render($response, "guarderia.twig", $args);
+		}else return $response->withRedirect($request->getUri()->getBaseUrl());
+	})->setName("Guarderia");
+
 	$app->post('/getEventCalendarByDay', function(Request $request, Response $response) use ($userController, $calendarController){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
