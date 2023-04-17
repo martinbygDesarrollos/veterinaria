@@ -2,6 +2,7 @@
 
 require_once '../src/clases/usuarios.php';
 require_once '../src/clases/socios.php';
+require_once '../src/clases/gestcom.php';
 
 require_once '../src/clases/configuracionSistema.php';
 
@@ -315,6 +316,51 @@ class ctr_usuarios{
 			}
 			fclose($file);
 		}
+	}
+
+
+
+	public function gestcomNewSale($data)
+	{
+		$gestcomClass = new gestcom();
+		$response = new \stdClass();
+		if ( isset($data['numSocio']) && $data['numSocio'] !== "" ){
+
+			$currentDate = fechas::getCurrentDateInt();
+			$token = base64_encode($currentDate . "gestcom1213");
+			if (isset($data['token'])){
+				if ( $token == $data['token'] ){
+
+					if ( isset($data['mes']) || isset($data['importe']) || isset($data['comprobante']) ){
+
+						$saveFacturacion = $gestcomClass->saveFacturacion($data);
+						if($saveFacturacion->result == 2){
+							$response->result = 2;
+							$response->message = "Ok.";
+						}else return $saveFacturacion;
+
+					}else{
+						$response->result = 0;
+						$response->message = "Los datos 'mes', 'importe' y 'comprobante' deben estar definidos y ser distintos de null.";
+					}
+				}
+				else{
+					$response->result = 0;
+					$response->message = "El Token de validación no es correcto.";
+				}
+			}
+			else {
+				$response->result = 0;
+				$response->message = "El Token debe estar definido y ser distinto de null.";
+			}
+
+
+		}else{
+			$response->result = 0;
+			$response->message = "No se ha encontrado el campo 'numSocio'.";
+		}
+
+		return $response;
 	}
 
     //----------------------------------- FUNCIONES DE USUARIO ------------------------------------------

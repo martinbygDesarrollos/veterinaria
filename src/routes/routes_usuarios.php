@@ -144,6 +144,16 @@ return function (App $app) {
         return json_encode(ctr_usuarios::gestcomNewClient($data));
     });
 
+
+    $app->post('/gestcom-rest-historial', function(Request $request, Response $response) use ($userController){
+        $data = $request->getParams();        /*
+        $ultimaCuota = $data['ultimaCuota'];
+        $ultimoPago = $data['ultimoPago'];
+        $idSocio = $data['numSocio'];
+        $token = $data['token'];*/
+        return json_encode(ctr_usuarios::gestcomNewSale($data));
+    });
+
     $app->post('/asignarMascotaSocio', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
         if($responseSession->result == 2){
