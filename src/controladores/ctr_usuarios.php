@@ -324,40 +324,58 @@ class ctr_usuarios{
 	{
 		$gestcomClass = new gestcom();
 		$response = new \stdClass();
-		if ( isset($data['numSocio']) && $data['numSocio'] !== "" ){
 
-			$currentDate = fechas::getCurrentDateInt();
-			$token = base64_encode($currentDate . "gestcom1213");
-			if (isset($data['token'])){
-				if ( $token == $data['token'] ){
+		$currentDate = fechas::getCurrentDateInt();
+		$token = base64_encode($currentDate . "gestcom1213");
+		if (isset($data['token'])){
+			if ( $token == $data['token'] ){
+
+				if ( isset($data['numSocio']) && $data['numSocio'] !== "" ){
+
 
 					if ( isset($data['mes']) || isset($data['importe']) || isset($data['comprobante']) ){
 
-						$saveFacturacion = $gestcomClass->saveFacturacion($data);
-						if($saveFacturacion->result == 2){
-							$response->result = 2;
-							$response->message = "Ok.";
-						}else return $saveFacturacion;
+						//comprobar por $data['mes'] y $data['numSocio'] que el registro está, si está modifico los datos
+						$objFacturacion = $gestcomClass->getFacturacionById($data['numSocio'], $data['mes']);
+						if($objFacturacion->result == 2){
+
+							$idFacturacion = $objFacturacion->objectResult->idHistorialSocio;
+							if ( $idFacturacion > 0 ){
+								$updateFacturacion = $gestcomClass->updateFacturacion($idFacturacion, $data);
+								if($updateFacturacion->result == 2){
+									$response->result = 2;
+									$response->message = "Actualizado Ok.";
+								}else return $updateFacturacion;
+							}
+
+
+						}else{
+
+							$saveFacturacion = $gestcomClass->saveFacturacion($data);
+							if($saveFacturacion->result == 2){
+								$response->result = 2;
+								$response->message = "Ok.";
+							}else return $saveFacturacion;
+						}
 
 					}else{
 						$response->result = 0;
 						$response->message = "Los datos 'mes', 'importe' y 'comprobante' deben estar definidos y ser distintos de null.";
 					}
-				}
-				else{
+
+				}else{
 					$response->result = 0;
-					$response->message = "El Token de validación no es correcto.";
+					$response->message = "No se ha encontrado el campo 'numSocio'.";
 				}
-			}
-			else {
+
+			}else{
 				$response->result = 0;
-				$response->message = "El Token debe estar definido y ser distinto de null.";
+				$response->message = "El Token de validación no es correcto.";
 			}
 
-
-		}else{
+		}else {
 			$response->result = 0;
-			$response->message = "No se ha encontrado el campo 'numSocio'.";
+			$response->message = "El Token debe estar definido y ser distinto de null.";
 		}
 
 		return $response;
