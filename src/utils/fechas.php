@@ -57,7 +57,13 @@ class fechas{
 	}
 
 	public function dateToFormatBar($intDate){
-		return  substr($intDate, 6, 2) . "/" .  substr($intDate, 4, 2) . "/" . substr($intDate, 0, 4);
+		return strlen($intDate) <= 0 ? "" :
+		substr($intDate, 6, 2) . "/" .  substr($intDate, 4, 2) . "/" . substr($intDate, 0, 4);
+	}
+
+	public function dateToFormatBarMes($intDate){
+		return strlen($intDate) <= 0 ? "" :
+		substr($intDate, 4, 2) . "/" . substr($intDate, 0, 4);
 	}
 
 	public function dateTimeToFormatBar($intDateTime){

@@ -7,21 +7,40 @@ function cargarTablaHistorialSocios(idSocio){
 			lastId = response.lastId;
 		let list = response.listResult;
 		for (var i = 0; i < list.length; i++) {
-			let row = createRowHistorial(list[i].idHistorialSocio, list[i].idSocio, list[i].idMascota, list[i].mascota, list[i].fechaEmision, list[i].asunto, list[i].importe, list[i].fecha, list[i].observaciones);
+			let row = createRowHistorial(list[i]);
 			$('#tbodyHistorialSocio').append(row);
 		}
 	}
 }
 
-function createRowHistorial(idHistorialSocio, idSocio, idMascota, mascota, fechaEmision, asunto, importe, fecha, observaciones){
+function createRowHistorial(obj){
+
+	let idHistorialSocio = obj.idHistorialSocio ;
+	let idSocio = obj.idSocio ;
+	let idMascota = obj.idMascota ;
+	let mascota = obj.mascota ;
+	let fechaEmision = obj.fechaEmision;
+	let asunto = obj.asunto ;
+	let importe = obj.importe ;
+	let fecha = obj.fecha ; //formato DD/MM/YYYY
+	let observaciones = obj.observaciones || "" ;
+	let comprobante = obj.comprobante || "" ;
+	let mes = obj.mes || "" ; //formato MM/YYYY
+	let recibo = obj.recibo || "" ;
+
+
 	let row = "<tr id='"+ idHistorialSocio +"'>";
-	row += "<td class='text-center' >"+ fecha +"</td>";
-	row += "<td class='text-center' >"+ asunto +"</td>";
+	row += "<td class='col-1' >"+ mes +"</td>";
+	row += "<td class='col-1' >"+ fecha +"</td>";
 	if(mascota)
-		row += "<td class='text-center' onclick='verMascota("+ idMascota + ")'>"+ mascota +"</td>";
+		row += "<td class='col-1' onclick='verMascota("+ idMascota + ")'>"+ mascota +"</td>";
 	else
-		row += "<td class='text-center'></td>";
-	row += "<td class='text-center' >"+ importe +"</td></tr>";
+		row += "<td class='col-1'></td>";
+	row += "<td class='col-3' >"+ asunto +"</td>";
+	row += "<td class='col-2' >"+ observaciones +"</td>";
+	row += "<td class='col-2' >"+ comprobante +"</td>";
+	row += "<td class='col-1' >"+ importe +"</td>";
+	row += "<td class='col-1' >"+ recibo +"</td></tr>";
 
 	return row;
 }
@@ -79,7 +98,8 @@ function createHistorialSocio(idSocio){
 			showReplyMessage(response.result, response.message, "Cliente", "modalHistorialSocio");
 			if(response.result == 2){
 				let newRow = response.newHistorial;
-				let row = createRowHistorial(newRow.idHistorialSocio, newRow.idSocio, newRow.idMascota, newRow.mascota, newRow.fechaEmision, newRow.asunto, newRow.importe, newRow.fecha, newRow.observaciones);
+				//let row = createRowHistorial(newRow.idHistorialSocio, newRow.idSocio, newRow.idMascota, newRow.mascota, newRow.fechaEmision, newRow.asunto, newRow.importe, newRow.fecha, newRow.observaciones);
+				let row = createRowHistorial(newRow);
 				$('#tbodyHistorialSocio').prepend(row);
 				clearModalHistorial();
 			}

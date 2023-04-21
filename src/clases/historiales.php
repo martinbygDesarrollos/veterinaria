@@ -216,6 +216,9 @@ class historiales{
 				if(is_null($row['observaciones']))
 					$row['observaciones'] = "";
 
+				$row['mes'] = fechas::dateToFormatBarMes($row['mes']);
+
+
 				$arrayResult[] = $row;
 			}
 			$responseQuery->lastId = $newLastId;
