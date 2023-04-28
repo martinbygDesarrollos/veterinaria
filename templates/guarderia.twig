@@ -6,30 +6,24 @@
 	<div class="card border-top-0 rounded-bottom border shadow w-75">
 		<div class="card-header d-flex justify-content-between bg-mycolor">
 			<h5 class="card-title">Guardería</h5>
+			<button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Agendar nueva guardería" onclick="newRowToCalendar()"><i class="fas fa-calendar-plus"></i></button>
 		</div>
 		<div class="card-body">
 			<div class="tableCustomScroll">
 				<table class="table">
-					<thead class="bg-mycolor">
-						<tr>
-							<td class="text-center" scope="col">Mascota</td>
-							<td class="text-center" scope="col">Dueño</td>
-							<td class="text-center" scope="col">Entrada</td>
-							<td class="text-center" scope="col">Salida</td>
-							<td class="text-center" scope="col"><i class="fab fa-whatsapp"></i></td>
-						</tr>
-					</thead>
 					<tbody id="tbodyGuarderia"></tbody>
 				</table>
 			</div>
 		</div>
 	</div>
 </div>
+{% include("modalSearchClientOrPet.twig") %}
 {%block script%}
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/guarderia.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/agenda.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/mascotas.js?{{version}}"></script>
 <script type="text/javascript">
 	/*cargarTablaGuarderia();

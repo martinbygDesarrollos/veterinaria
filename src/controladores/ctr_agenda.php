@@ -128,5 +128,21 @@ class ctr_agenda {
 		$response = $calendarClass->changeStatusEvent($idevent, $status );
 		return $response;
 	}
+
+
+
+
+
+
+	public function saveNewGuarderia( $idUser, $data ){
+		$calendarClass = new agenda();
+
+		$client = isset($data['cliente']) && $data['cliente'] != "" ? $data['cliente'] : null;
+		$pet = isset($data['mascota']) && $data['mascota'] != "" ? $data['mascota'] : null;
+		$dateInit = isset($data['entrada']) && $data['entrada'] != "" ? $data['entrada'] : null;
+		$dateFinish = isset($data['salida']) && $data['salida'] != "" ? $data['salida'] : null;
+
+		return $calendarClass->saveNewGuarderia( $idUser, $client, $pet, $dateInit, $dateFinish );
+	}
 }
 ?>

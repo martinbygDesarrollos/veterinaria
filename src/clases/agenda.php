@@ -40,6 +40,13 @@ class agenda{
 		return $database->sendQuery("UPDATE `agenda` SET `estado` = ? WHERE `agenda`.`idAgenda` = ?", array('si', $status, $idAgenda), "BOOLE");
 	}
 
+
+
+	public function saveNewGuarderia( $idUser, $client, $pet, $dateInit, $dateFinish ){
+		$database = new DataBase();
+		return $database->sendQuery("INSERT INTO `agenda` (`categoria`, `idUsuario`,`idSocio`, `idMascota`, `guarderiaEntrada`, `guarderiaSalida` ) VALUES (?,?,?,?,?,?)", array('siiiss', "guarderia", $idUser, $client, $pet, $dateInit, $dateFinish), "BOOLE");
+	}
+
 }
 
 ?>

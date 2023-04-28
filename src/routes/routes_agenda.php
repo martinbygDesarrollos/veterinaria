@@ -107,6 +107,27 @@ return function (App $app) {
 
 
 
+	$app->post('/modifyGuarderiaByDay', function(Request $request, Response $response) use ($userController, $calendarController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idUser = $responseSession->session['IDENTIFICADOR'];
+			return json_encode($calendarController->modifyNewEvent($idUser, $data));
+        }else return json_encode($responseSession);
+    });
+
+    $app->post('/saveGuarderiaByDay', function(Request $request, Response $response) use ($userController, $calendarController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $idUser = $responseSession->session['IDENTIFICADOR'];
+
+			return json_encode($calendarController->saveNewGuarderia($idUser, $data));
+        }else return json_encode($responseSession);
+    });
+
+
+
     $app->post('/getHospitalizedPet', function(Request $request, Response $response) use ($userController, $hospitalizedPetController){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){

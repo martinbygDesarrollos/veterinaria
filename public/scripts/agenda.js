@@ -22,6 +22,8 @@ $(document).ready(()=>{
 		calendarCategory = "domicilios";
 	}else if (window.location.pathname.includes("calendario")){
 		calendarCategory = "calendario";
+	}else if (window.location.pathname.includes("guarderia")){
+		calendarCategory = "guarderia";
 	}
 });
 
@@ -128,46 +130,53 @@ function createRow( obj ){
 
 function saveEventInCalendar( tr ){
 
-	console.log(calendarCategory);
-	let day = null;
-	if ( calendarCategory == "cirugia" ){
-		day = $("#idInputTodayCalendar").val();
-	}else if ( calendarCategory == "peluqueria" ){
-		day = $("#idInputTodayPelu").val();
-	}else if ( calendarCategory == "domicilios" ){
-		day = $("#idInputTodayDomi").val();
-	}
+	 if ( calendarCategory == "guarderia" ){
+		saveEventInCalendarGuarderias(tr)
+	}else{
 
-
-	let hours = tr.getElementsByTagName("input")[0].value;
-	let event = tr.getElementsByTagName("input")[1].value;
-	let client = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
-	let petClient = tr.getElementsByTagName("input")[3].value.split(" - ")[0];
-
-	day = day.replaceAll("-","");
-	hours = hours.replaceAll(":","");
-
-	let datetime = day+hours;
-
-	if ( datetime || event || client || petClient ){
-		if ( tr.id ){
-			data = {"id":tr.id, "fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
-			sendAsyncPost("modifyEventCalendarByDay",{event:data})
-			.then(( response )=>{
-				if ( response.result != 2 ){
-					showReplyMessage(response.result, response.message, "Agenda", null);
-				}
-			});
-		}else{
-			data = {"fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
-			sendAsyncPost("saveEventCalendarByDay",{event:data, type:calendarCategory})
-			.then(( response )=>{
-				if ( response.result != 2 ){
-					showReplyMessage(response.result, response.message, "Agenda", null);
-				}
-				window.location.reload();
-			});
+		let day = null;
+		if ( calendarCategory == "cirugia" ){
+			day = $("#idInputTodayCalendar").val();
+		}else if ( calendarCategory == "peluqueria" ){
+			day = $("#idInputTodayPelu").val();
+		}else if ( calendarCategory == "domicilios" ){
+			day = $("#idInputTodayDomi").val();
 		}
+
+
+		let hours = tr.getElementsByTagName("input")[0].value;
+		let event = tr.getElementsByTagName("input")[1].value;
+		let client = tr.getElementsByTagName("input")[2].value.split(" - ")[0];
+		let petClient = tr.getElementsByTagName("input")[3].value.split(" - ")[0];
+
+		day = day.replaceAll("-","");
+		hours = hours.replaceAll(":","");
+
+		let datetime = day+hours;
+
+		if ( datetime || event || client || petClient ){
+			if ( tr.id ){
+				data = {"id":tr.id, "fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
+				sendAsyncPost("modifyEventCalendarByDay",{event:data})
+				.then(( response )=>{
+					if ( response.result != 2 ){
+						showReplyMessage(response.result, response.message, "Agenda", null);
+					}
+				});
+			}else{
+				data = {"fechaHora": datetime, "descripcion": event, "cliente": client, "mascota": petClient}
+				sendAsyncPost("saveEventCalendarByDay",{event:data, type:calendarCategory})
+				.then(( response )=>{
+					if ( response.result != 2 ){
+						showReplyMessage(response.result, response.message, "Agenda", null);
+					}
+					window.location.reload();
+				});
+			}
+		}
+
+
+
 	}
 }
 
@@ -179,18 +188,25 @@ function clearTableEvents(){
 		$("#tbodyPeluqueriasCalendar").empty();
 	}else if ( calendarCategory == "domicilios" ){
 		$("#tbodyDomiciliosCalendar").empty();
+	}else if ( calendarCategory == "guarderia" ){
+		$("#tbodyGuarderia").empty();
 	}
 }
 
 function newRowToCalendar(){
-	row = createCleanRow();
 
 	if ( calendarCategory == "cirugia" ){
+		row = createCleanRow();
 		$("#tbodyCirugiasCalendar").append(row);
 	}else if ( calendarCategory == "peluqueria" ){
+		row = createCleanRow();
 		$("#tbodyPeluqueriasCalendar").append(row);
 	}else if ( calendarCategory == "domicilios" ){
+		row = createCleanRow();
 		$("#tbodyDomiciliosCalendar").append(row);
+	}else if ( calendarCategory == "guarderia" ){
+		row = createCleanRowGuarderias();
+		$("#tbodyGuarderia").append(row);
 	}
 }
 
@@ -213,7 +229,7 @@ function createCleanRow(){
 }
 
 function loadClientContactData( telefono, telefax, direccion, email ){
-
+	console.log(trSelected);
 	if ( trSelected ){
 
 		if (telefono && telefono != "null" && telefono != ""){
@@ -351,16 +367,36 @@ function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel,
 	nomMascota = decodeURI(nomMascota)
 	tel = encodeURI(tel);
 	telefax = encodeURI(telefax);
-	direccion = encodeURI(direccion);
+	direccion = decodeURI(direccion);
 	email = encodeURI(email);
 
-	trSelected.getElementsByTagName("input")[2].value = idClient +" - "+nomClient;
-	if ( idMascota != null && idMascota  )
-		trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
+	console.log(idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email);
 
 
-	trSelected.getElementsByTagName("a")[0].setAttribute("href", getSiteURL()+"ver-socio/"+idClient)
-	trSelected.getElementsByTagName("a")[0].removeAttribute("disabled");
+	if ( calendarCategory == "guarderia" ){
+		//loadClientContactDataGuarderia(tel, telefax, direccion, email);
+		trSelected.getElementsByTagName("input")[0].value = idClient +" - "+nomClient;
+		if ( idMascota != null && idMascota  )
+			trSelected.getElementsByTagName("input")[1].value = idMascota +" - "+nomMascota;
+
+		//fecha de entrada
+		trSelected.getElementsByTagName("input")[2].value = getCurrentDate();
+
+		//fecha de salida
+		trSelected.getElementsByTagName("input")[3].value = getCurrentDate();
+
+		trSelected.getElementsByTagName("a")[0].setAttribute("href", getSiteURL()+"ver-socio/"+idClient)
+		trSelected.getElementsByTagName("a")[0].removeAttribute("disabled");
+
+
+	}else{
+		trSelected.getElementsByTagName("input")[2].value = idClient +" - "+nomClient;
+		if ( idMascota != null && idMascota  )
+			trSelected.getElementsByTagName("input")[3].value = idMascota +" - "+nomMascota;
+
+		trSelected.getElementsByTagName("a")[0].setAttribute("href", getSiteURL()+"ver-socio/"+idClient)
+		trSelected.getElementsByTagName("a")[0].removeAttribute("disabled");
+	}
 
 	loadClientContactData(tel, telefax, direccion, email);
 
@@ -369,7 +405,14 @@ function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel,
 	trSelected.dispatchEvent(evt);
 
 
-	openModalSearchClientOrPet(null);
+	openModalSearchClientOrPet(null); //como el parametro es null entonces se cierra el modal
+}
+
+
+function addClientsCalendarRowGuarderias( idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email ){
+
+
+
 }
 
 //SCROLL TABLA BODY RESULTADOS PARA AGREGAR CLIENTE A SECCION CIRUGIAS
