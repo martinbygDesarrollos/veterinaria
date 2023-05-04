@@ -47,6 +47,20 @@ class agenda{
 		return $database->sendQuery("INSERT INTO `agenda` (`categoria`, `idUsuario`,`idSocio`, `idMascota`, `guarderiaEntrada`, `guarderiaSalida` ) VALUES (?,?,?,?,?,?)", array('siiiss', "guarderia", $idUser, $client, $pet, $dateInit, $dateFinish), "BOOLE");
 	}
 
+
+
+	public function getGuarderias($pagination){
+		$database = new DataBase();
+		$sql = 'SELECT * FROM `agenda`
+			WHERE categoria = "guarderia" AND (estado <> "eliminado" OR estado IS null)
+			ORDER BY
+				`agenda`.`guarderiaEntrada` DESC,
+				`agenda`.`idAgenda` DESC
+			LIMIT ?,30';
+		$params = array('i', $pagination);
+		return $database->sendQuery($sql, $params, "LIST");
+	}
+
 }
 
 ?>

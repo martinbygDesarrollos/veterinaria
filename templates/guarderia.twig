@@ -26,13 +26,14 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/agenda.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/mascotas.js?{{version}}"></script>
 <script type="text/javascript">
-	/*cargarTablaGuarderia();
+	pagination = 0;
+	cargarTablaGuarderia();
 	$('.tableCustomScroll').on('scroll', function() {
 
 		if($(this).scrollTop() + $(this).innerHeight() >= ($(this)[0].scrollHeight - 10)) {
 			cargarTablaGuarderia();
 		}
-	});*/
+	});
 </script>
 {% endblock %}
 {% endblock %}

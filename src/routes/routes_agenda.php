@@ -163,5 +163,21 @@ return function (App $app) {
 			return json_encode($calendarController->changeStatusEvent($idevent, $status));
         }else return json_encode($responseSession);
     });
+
+
+
+
+
+    $app->post('/getGuarderias', function(Request $request, Response $response) use ($userController, $calendarController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $pagination = $data['pagination'];
+
+			return json_encode($calendarController->getGuarderias($pagination));
+        }else return json_encode($responseSession);
+    });
+
+
 }
 ?>

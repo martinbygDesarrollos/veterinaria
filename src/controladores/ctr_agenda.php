@@ -3,6 +3,7 @@
 require_once '../src/clases/agenda.php';
 require_once '../src/controladores/ctr_usuarios.php';
 require_once '../src/controladores/ctr_mascotas.php';
+require_once '../src/utils/fechas.php';
 
 
 class ctr_agenda {
@@ -143,6 +144,68 @@ class ctr_agenda {
 		$dateFinish = isset($data['salida']) && $data['salida'] != "" ? $data['salida'] : null;
 
 		return $calendarClass->saveNewGuarderia( $idUser, $client, $pet, $dateInit, $dateFinish );
+	}
+
+
+
+	public function getGuarderias( $pagination ){
+
+		$calendarClass = new agenda();
+		$usersController = new ctr_usuarios();
+		$petController = new ctr_mascotas();
+		$dateClass = new fechas();
+
+
+		$response = $calendarClass->getGuarderias($pagination);
+
+		if ( $response->result == 2 ){
+			foreach ($response->listResult as $index => $value) {
+				$response->listResult[$index]['socio'] = null;
+				if ( isset($value['idSocio'])){
+					if ( ctype_digit($value['idSocio']) ){
+						$resultClient = $usersController->getSocio($value['idSocio']);
+						if ( $resultClient->result == 2 ){
+							$response->listResult[$index]['socio'] = $resultClient->socio;
+							$response->listResult[$index]['nombreCliente'] = $resultClient->socio->idSocio." - ".$resultClient->socio->nombre;
+						}
+					}else
+						$response->listResult[$index]['nombreCliente'] = $value['idSocio'];
+				}else $response->listResult[$index]['nombreCliente'] = "";
+
+
+				$response->listResult[$index]['mascota'] = null;
+				if ( isset($value['idMascota'])){
+					if ( ctype_digit($value['idMascota']) ){
+						$resultPet = $petController->getMascota($value['idMascota']);
+						//var_dump($resultPet);exit;
+						if ( $resultPet->result == 2 ){
+							$response->listResult[$index]['mascota'] = $resultPet->objectResult;
+							$response->listResult[$index]['nombreMascota'] = $resultPet->objectResult->idMascota." - ".$resultPet->objectResult->nombre;
+						}
+					}else
+						$response->listResult[$index]['nombreMascota'] = $value['idMascota'];
+				}else $response->listResult[$index]['nombreMascota'] = "";
+
+
+				$response->listResult[$index]['entrada'] = null;
+				if ( isset($value['guarderiaEntrada']) ){
+					$fecha = $dateClass->dateToFormatHTML($value['guarderiaEntrada']);
+					$response->listResult[$index]['entrada'] = $fecha;
+				}
+
+				$response->listResult[$index]['salida'] = null;
+				if ( isset($value['guarderiaSalida']) ){
+					$fecha = $dateClass->dateToFormatHTML($value['guarderiaSalida']);
+					$response->listResult[$index]['salida'] = $fecha;
+				}
+
+			}
+		}else if ( $response->result == 1 ){
+			$response->result = 2;
+			$response->listResult = array();
+		}
+
+		return $response;
 	}
 }
 ?>

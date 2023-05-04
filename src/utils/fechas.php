@@ -107,7 +107,7 @@ class fechas{
 
 			echo date("jS F, Y", strtotime("11-12-10"));
 			// outputs 11th December, 2010
-			?>
+
 
 			Hope this helps someone!
 		*/
