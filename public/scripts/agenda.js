@@ -206,7 +206,7 @@ function newRowToCalendar(){
 		$("#tbodyDomiciliosCalendar").append(row);
 	}else if ( calendarCategory == "guarderia" ){
 		row = createCleanRowGuarderias();
-		$("#tbodyGuarderia").append(row);
+		$("#tbodyGuarderia").prepend(row);
 	}
 }
 
@@ -229,34 +229,37 @@ function createCleanRow(){
 }
 
 function loadClientContactData( telefono, telefax, direccion, email ){
-	console.log(trSelected);
+
 	if ( trSelected ){
+		let select = trSelected.getElementsByTagName("select")[0]
+		$("#"+select.id).empty();
+
 
 		if (telefono && telefono != "null" && telefono != ""){
 			let option = document.createElement("option")
 			option.append(telefono)
-			trSelected.getElementsByTagName("select")[0].appendChild(option);
+			select.appendChild(option);
 		}
 
 		if (telefax && telefax != "null" && telefax != ""){
 			let option = document.createElement("option")
 			option.append(telefax)
-			trSelected.getElementsByTagName("select")[0].appendChild(option);
+			select.appendChild(option);
 		}
 
 		if (email && email != "null" && email != ""){
 			let option = document.createElement("option")
 			option.append(email)
-			trSelected.getElementsByTagName("select")[0].appendChild(option);
+			select.appendChild(option);
 		}
 
 		if (direccion && direccion != "null" && direccion != ""){
 			let option = document.createElement("option")
 			option.append(direccion)
-			trSelected.getElementsByTagName("select")[0].appendChild(option);
+			select.appendChild(option);
 		}
 
-		trSelected.getElementsByTagName("select")[0].removeAttribute("disabled");
+		select.removeAttribute("disabled");
 	}
 }
 
@@ -370,8 +373,6 @@ function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel,
 	direccion = decodeURI(direccion);
 	email = encodeURI(email);
 
-	console.log(idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email);
-
 
 	if ( calendarCategory == "guarderia" ){
 		//loadClientContactDataGuarderia(tel, telefax, direccion, email);
@@ -408,12 +409,6 @@ function addClientsCalendarRow( idClient, nomClient, idMascota, nomMascota, tel,
 	openModalSearchClientOrPet(null); //como el parametro es null entonces se cierra el modal
 }
 
-
-function addClientsCalendarRowGuarderias( idClient, nomClient, idMascota, nomMascota, tel, telefax, direccion, email ){
-
-
-
-}
 
 //SCROLL TABLA BODY RESULTADOS PARA AGREGAR CLIENTE A SECCION CIRUGIAS
 $('#modalSearchClientOrPet .tableCustomScroll').on('scroll', function() {

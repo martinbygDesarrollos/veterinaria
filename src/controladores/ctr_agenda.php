@@ -207,5 +207,31 @@ class ctr_agenda {
 
 		return $response;
 	}
+
+
+
+	public function modifyGuarderia($idUser, $data){
+		$calendarClass = new agenda();
+		$response = new stdClass();
+
+		$idAgenda = $data["id"];
+
+		if ( isset($idAgenda) && $idAgenda > 0 ){
+
+			$client = isset($data['cliente']) && $data['cliente'] != "" ? $data['cliente'] : null;
+			$pet = isset($data['mascota']) && $data['mascota'] != "" ? $data['mascota'] : null;
+			$dateInit = isset($data['entrada']) && $data['entrada'] != "" ? $data['entrada'] : null;
+			$dateFinish = isset($data['salida']) && $data['salida'] != "" ? $data['salida'] : null;
+
+			return $calendarClass->updateEventGuarderia( $idAgenda, $dateInit, $dateFinish, $pet, $client  );
+
+		}else{
+			$response->result = 1;
+			$response->message = "No se encontró el registro a modificar.";
+		}
+
+
+
+	}
 }
 ?>

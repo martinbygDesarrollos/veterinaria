@@ -112,7 +112,7 @@ return function (App $app) {
         if($responseSession->result == 2){
             $data = $request->getParams();
             $idUser = $responseSession->session['IDENTIFICADOR'];
-			return json_encode($calendarController->modifyNewEvent($idUser, $data));
+			return json_encode($calendarController->modifyGuarderia($idUser, $data));
         }else return json_encode($responseSession);
     });
 

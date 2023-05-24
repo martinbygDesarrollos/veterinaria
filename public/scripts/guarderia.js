@@ -59,7 +59,7 @@ function saveEventInCalendarGuarderias(tr){
 	if ( client || petClient ){
 		if ( tr.id ){
 			data = {"id":tr.id, "cliente": client, "mascota": petClient, "entrada": dateInit, "salida": dateFinish}
-			sendAsyncPost("modifyGuarderiaByDay",{event:data})
+			sendAsyncPost("modifyGuarderiaByDay",data)
 			.then(( response )=>{
 				if ( response.result != 2 ){
 					showReplyMessage(response.result, response.message, "Agenda", null);
@@ -82,10 +82,14 @@ function saveEventInCalendarGuarderias(tr){
 
 
 function createRowGuarderias( obj ){
-	console.log(obj);
 
-	let nomClient = obj.nombreCliente.replaceAll('"', '\'');
-	let nomMascota = obj.nombreMascota.replaceAll('"', '\'');
+	let nomClient = "";
+	if (obj.nombreCliente)
+		nomClient = obj.nombreCliente.replaceAll('"', '\'');
+
+	let nomMascota = "";
+	if (obj.nombreCliente)
+		nomMascota = obj.nombreMascota.replaceAll('"', '\'');
 
 	let wppBtn = '<button class="btn btn-info" disabled><a class="btn-info" title="Enviar whatsapp"target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>';
 

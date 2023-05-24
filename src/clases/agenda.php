@@ -48,6 +48,13 @@ class agenda{
 	}
 
 
+	public function updateEventGuarderia( $idEvent, $dateInit, $dateFinish, $pet, $client ){
+		$database = new DataBase();
+		return $database->sendQuery("UPDATE `agenda` SET `guarderiaEntrada` = ?, `guarderiaSalida` = ?, `idMascota` = ?, `idSocio` = ? WHERE `agenda`.`idAgenda` = ?",
+			array("ssiii", $dateInit, $dateFinish, $pet, $client, $idEvent), "BOOLE");
+	}
+
+
 
 	public function getGuarderias($pagination){
 		$database = new DataBase();
