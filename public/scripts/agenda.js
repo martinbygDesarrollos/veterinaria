@@ -58,9 +58,22 @@ function getCirugiasByDay( day ){
 //funcion para cargar todas las filas cuando ya hay registros en la agenda
 function createRow( obj ){
 	console.log(obj);
-	let descripcion = obj.descripcion.replaceAll('"', '\'');
-	let nomClient = obj.nombreCliente.replaceAll('"', '\'');
-	let nomMascota = obj.nombreMascota.replaceAll('"', '\'');
+
+
+	let descripcion = "";
+	if ( obj.descripcion ){
+		descripcion = obj.descripcion.replaceAll('"', '\'');
+	}
+
+	let nomClient = "";
+	if ( obj.nombreCliente ){
+		nomClient = obj.nombreCliente.replaceAll('"', '\'');
+	}
+
+	let nomMascota = "";
+	if (obj.nombreMascota){
+		nomMascota = obj.nombreMascota.replaceAll('"', '\'');
+	}
 
 	let wppBtn = '<button class="btn btn-info" disabled><a class="btn-info" title="Enviar whatsapp"target="_blank" value=""><i class="fab fa-whatsapp"></i></a></button>';
 
