@@ -245,7 +245,9 @@ function loadClientContactData( telefono, telefax, direccion, email ){
 
 	if ( trSelected ){
 		let select = trSelected.getElementsByTagName("select")[0]
-		$("#"+select.id).empty();
+		while(select.firstElementChild) {
+		    select.firstElementChild.remove();
+		}
 
 
 		if (telefono && telefono != "null" && telefono != ""){
