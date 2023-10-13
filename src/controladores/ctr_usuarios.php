@@ -419,7 +419,7 @@ class ctr_usuarios{
 			$responseGetUserInSesion = ctr_usuarios::getUserInSession();
 			if($responseGetUserInSesion->result == 2){
 				if($responseGetUserInSesion->user->idUsuario != $responseGetUser->objectResult->idUsuario){
-					$responseCleanPassword = usuarios::cleanPassword($idUser, "", "");
+					$responseCleanPassword = usuarios::cleanPassword($idUser, null, null);
 					if($responseCleanPassword->result == 2){
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue borrado del sistema.");
 						if($responseInsertHistorial->result == 2){
