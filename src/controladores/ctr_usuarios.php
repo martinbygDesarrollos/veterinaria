@@ -401,7 +401,10 @@ class ctr_usuarios{
 							$response->result = 1;
 							$response->message = "El usaurio fue borrado del sistema.";
 						}
-					}else return $responseDeleteUser;
+					}else{
+						$response->result = 1;
+						$response->message = "No se pudo borrar el usuario.";
+					}
 				}else{
 					$response->result = 0;
 					$response->message = "No se puede borrar el usuario con el que mantiene una sesión activa.";
