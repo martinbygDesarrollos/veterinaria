@@ -69,12 +69,12 @@ class historiales{
 				$historia->diagnostico = "";
 
 
-			$historia->usuario = "";
+			$historia->nomUsuario = "";
 			if ( $historia->idUsuario ){
 				$user = $usersClass->getUser($historia->idUsuario);
 				if ($user->result == 2){
 
-					$historia->usuario = $user->objectResult->nombre;
+					$historia->nomUsuario = $user->objectResult->nombre;
 				}
 			}
 
