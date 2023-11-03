@@ -69,7 +69,7 @@ class historiales{
 				$historia->diagnostico = "";
 
 
-			$historia->nomUsuario = "";
+			$historia->nomUsuario = "Sin usuario";
 			if ( $historia->idUsuario ){
 				$user = $usersClass->getUser($historia->idUsuario);
 				if ($user->result == 2){
@@ -163,6 +163,9 @@ class historiales{
 
 				if(is_null($row['observaciones']) || strlen($row['observaciones']) < 4)
 					$row['observaciones'] = $noData;
+
+				if(is_null($row['nomUsuario']))
+					$row['nomUsuario'] = "Sin usuario";
 
 				$arrayResult[] = $row;
 			}
