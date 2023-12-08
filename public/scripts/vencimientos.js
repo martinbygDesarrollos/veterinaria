@@ -85,7 +85,7 @@ function cargarVencimientoVacunas(){
 					lastidvac = response.lastId;
 				let list = response.listResult;
 				for (var i = 0; i < list.length; i++) {
-					let row = createRowVacunas(list[i].idVacunaMascota, list[i].nombreVacuna, list[i].intervaloDosis, list[i].numDosis, list[i].fechaProximaDosis, list[i].idMascota, list[i].nombre, list[i].raza, list[i].idSocio, list[i].nombreSocio, list[i].telefono, list[i].email, list[i].observacion);
+					let row = createRowVacunas(list[i].idVacunaMascota, list[i].nombreVacuna, list[i].intervaloDosis, list[i].numDosis, list[i].fechaProximaDosis, list[i].idMascota, list[i].nombre, list[i].raza, list[i].idSocio, list[i].nombreSocio, list[i].telefono, list[i].email, list[i].observacion, list[i].notificado);
 					$('#tbodyVencimientosVacuna').append(row);
 				}
 			}
@@ -93,25 +93,22 @@ function cargarVencimientoVacunas(){
 	}else console.log("no se cargo alguna de las fechas, desde ", dateVencimientoInit, " hasta ", dateVencimientoFinish);
 }
 
-function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosis, fechaProximaDosis, idMascota, nombre, raza, idSocio, nombreSocio, telefono, email, obs){
+function createRowVacunas(idVacunaMascota, nombreVacuna, intervaloDosis, numDosis, fechaProximaDosis, idMascota, nombre, raza, idSocio, nombreSocio, telefono, email, obs, notificado){
 	let row = "<tr>";
 
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ fechaProximaDosis +"</td>";
-	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombreVacuna +"</td>";
+	row += "<td class='text-center' onclick='openDescriptionVacuna(historiaClinica.js"+idVacunaMascota+")'>"+ nombreVacuna +"</td>";
 	row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ intervaloDosis +" días</td>";
-	//row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ numDosis +"</td>";
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombre +"</td>";
-	//row += "<td class='text-center notShowMobile' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ raza +"</td>";
 	row += "<td class='text-center' onclick='openDescriptionVacuna("+idVacunaMascota+")'>"+ nombreSocio +"</td>";
-	//row += "<td class='text-center'>"+ telefono +"</td>";
 
-	if ( obs ){
-		if ( obs.length > 0 ){
-			row += "<td class='text-center'><i class='fas fa-check'></i></td>";
-		}else
-			row += "<td class='text-center'><i class='fas fa-times'></i></td>";
-	}else
-			row += "<td class='text-center'><i class='fas fa-times'></i></td>";
+	if ( notificado ){
+		row += '<td class="text-center" title="Desmarcar esta vacuna como notificada" id="idTdVacuna'+idVacunaMascota+'"><button class="btn btn-light" value="0" onclick="notifyVacuna('+idVacunaMascota+', this.value, this.parentElement.id)"><i class="fas fa-check"></i></button></td>'
+	}else{
+		row += '<td class="text-center" title="Marcar esta vacuna como notificada" id="idTdVacuna'+idVacunaMascota+'"><button class="btn btn-light" value="1" onclick="notifyVacuna('+idVacunaMascota+', this.value, this.parentElement.id)"><i class="fas fa-times"></i></button></td>'
+	}
+
+
 
 	vacMessage = "Estimado cliente Veterinaria Nan le recuerda que su mascota "+nombre+" tiene el antiparasitario/vacuna "+nombreVacuna+" vencido. Saluda atte, equipo médico de Veterinaria Nan. Este mensaje es automático. Por cualquier consulta comunicarse al 472- 34039 en nuestros horarios de atención. Muchas gracias!";
 
@@ -198,4 +195,30 @@ function thenNotifyVacunaByWhatsapp(idVacunaMascota){
 			$('#modalMessageConfirm').modal("hide");
 		});
 	});
+}
+
+
+function notifyVacuna( idVacuna, estado, idTd){
+
+	sendAsyncPost("changeNotifyVacuna", {
+		vacuna:idVacuna,
+		estado:estado
+	})
+	.then((response)=>{
+		if (response.result == 2){
+			var button = ""
+			if (estado === "1"){
+				button = '<button class="btn btn-light" value="0" title="Desmarcar esta vacuna como notificada" onclick="notifyVacuna('+idVacuna+', this.value, this.parentElement.id)"><i class="fas fa-check"></i></button>'
+			}else{
+				button = '<button class="btn btn-light" value="1" title="Marcar esta vacuna como notificada" onclick="notifyVacuna('+idVacuna+', this.value, this.parentElement.id)"><i class="fas fa-times"></i></button>'
+			}
+
+			document.getElementById(idTd).innerHTML = "";
+			document.getElementById(idTd).innerHTML = button
+
+		}else{
+			showReplyMessage(response.result, response.message, "Notificar vencimiento vacuna", null)
+		}
+	})
+
 }

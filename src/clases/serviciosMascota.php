@@ -124,7 +124,7 @@ class serviciosMascota {
         $to = str_replace("-", "", $to);
 
         $responseQuery = DataBase::sendQuery("
-            SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, VM.notifEnviada as observacion , M.idMascota, M.nombre, M.raza
+            SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, VM.notifEnviada as observacion , VM.notificado, M.idMascota, M.nombre, M.raza
             FROM vacunasmascota AS VM, mascotas AS M
             WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND M.fechaFallecimiento IS NULL AND
                 VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis >= ? AND VM.fechaProximaDosis <= ?
@@ -353,6 +353,12 @@ class serviciosMascota {
     public function changeVacunaFromMascota($idVacuna, $idMascota){
         $dataBaseClass = new DataBase();
         return $dataBaseClass->sendQuery("UPDATE `vacunasmascota` SET `idMascota` = ? WHERE `idVacunaMascota` = ?", array('ii',$idMascota, $idVacuna), "BOOLE");
+    }
+
+
+    public function changeNotifyVacuna ($idVacuna, $estado){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `vacunasmascota` SET `notificado` = ? WHERE `idVacunaMascota` = ?", array('ii',$estado, $idVacuna), "BOOLE");
     }
 
 
