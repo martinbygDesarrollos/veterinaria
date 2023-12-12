@@ -6,12 +6,15 @@ use Slim\Http\Response;
 
 require_once '../src/controladores/ctr_agenda.php';
 require_once '../src/controladores/ctr_internado.php';
+require_once '../src/utils/fpdf.php';
 
 return function (App $app) {
 
 	$calendarController = new ctr_agenda();
 	$userController = new ctr_usuarios();
 	$hospitalizedPetController = new ctr_internado();
+
+    $fpdf = new Pdf();
 
 	$app->get('/cirugia', function($request, $response, $args) use ($userController, $calendarController){
         $args['version'] = FECHA_ULTIMO_PUSH;
@@ -175,6 +178,25 @@ return function (App $app) {
             $pagination = $data['pagination'];
 
 			return json_encode($calendarController->getGuarderias($pagination));
+        }else return json_encode($responseSession);
+    });
+
+
+    $app->post('/getDomiciliosDocument', function(Request $request, Response $response) use ($userController, $calendarController, $fpdf){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+
+            $date = $request->getParams()['date'];
+            $category = $request->getParams()['category'];
+
+            $domiciliosDocument = $calendarController->getCalendarDocument($date, $category);
+            if ($domiciliosDocument->result === 2){
+
+                return json_encode($fpdf->domiciliosDocument($date, $domiciliosDocument->listResult));
+
+            }else{
+                return json_encode($domiciliosDocument);
+            }
         }else return json_encode($responseSession);
     });
 

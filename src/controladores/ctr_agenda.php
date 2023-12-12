@@ -233,5 +233,15 @@ class ctr_agenda {
 
 
 	}
+
+
+
+
+	public function getCalendarDocument($day, $type){
+
+		$calendarClass = new agenda();
+		return $calendarClass->getCalendarDocumentByDayCategory($day, $type);
+
+	}
 }
 ?>
