@@ -72,7 +72,14 @@ class agenda{
 	//Tener en cuentra que esta consulta se hace cuando se quieren descargar los datos en un pdf por eso no hay límite
 	public function getCalendarDocumentByDayCategory($day, $type){
 		$database = new DataBase();
-		$sql = "SELECT * FROM `agenda` WHERE `categoria` = ? AND `fechaHora` like '%".$day."%' AND (`estado` <> 'eliminado' OR `estado` IS NULL ) ORDER BY fechaHora ASC";
+		$sql = "SELECT ag.*, s.nombre AS socionombre, s.telefono, s.telefax, s.direccion, m.nombre
+		FROM `agenda` AS ag
+		LEFT JOIN socios AS s ON s.idSocio = ag.idSocio
+		LEFT JOIN mascotas AS m ON m.idMascota = ag.idMascota
+		WHERE ag.`categoria` = ? AND
+			ag.`fechaHora` LIKE '%".$day."%' AND
+			(ag.`estado` <> 'eliminado' OR ag.`estado` IS NULL )
+		ORDER BY fechaHora ASC";
 
 		return $database->sendQuery($sql, array('s', $type), "LIST");
 

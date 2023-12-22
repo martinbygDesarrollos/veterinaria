@@ -19,37 +19,32 @@ class Pdf extends FPDF
 
 		$this->file = new Fpdf("P", "mm", "A4");
 		$this->file->AddPage();
+        $this->file->SetAutoPageBreak(1, 1);
 		$this->file->SetFont('helvetica','',10);
 
 
-		$this->encabezado($fecha, "Domicilios");
+        $this->encabezado($fecha, "Domicilios");
+
         $this->file->SetFontSize(10);
 
-        $this->file->setXY(10,30);
-        //Line break
-        //$this->file->Ln(10);
-        for ($i=0; $i<count($this->heads); $i++)
-        {
-            $this->file->Cell ($this->widths[$i], 10, $this->heads[$i], 1, 0, 'L', 0);
-        }
-
-
-		$this->file->setXY(10,40);
+        $this->encabezadoTabla();
 
 		foreach ($arrayDomicilios as $row) {
 			$this->Row(array(
 				$row['estado'],
 				date("H:i", strtotime($row['fechaHora'])),
 				$row['descripcion'],
-				$row['idSocio'],
-				$row['idMascota'],
-				"contactos"
+				$row['idSocio']." - ".$row['socionombre'],
+				$row['idMascota']." - ".$row['nombre'],
+				$row['telefax']."\n".$row['telefono']."\n".$row['direccion']
 			));
 		}
+        $this->footer();
+        $nameFile = "Domicilios_$date";
 
-		$this->file->Output("F","imprimibles/domicilios.pdf");
+		$this->file->Output("F","imprimibles/$nameFile.pdf");
 		$response->result = 2;
-		$response->name = "domicilios";
+		$response->name = $nameFile;
 		return $response;
 	}
 
@@ -65,6 +60,16 @@ class Pdf extends FPDF
 		$this->file->setXY(10,10);
         $this->file->Cell(0,10,$date,0,2,'R');
 
+    }
+
+
+    function encabezadoTabla(){
+        $this->file->setXY(10,30);
+        for ($i=0; $i<count($this->heads); $i++)
+        {
+            $this->file->Cell ($this->widths[$i], 10, $this->heads[$i], 1, 0, 'L', 0);
+        }
+        $this->file->setXY(10,40);
     }
 
 
@@ -105,8 +110,12 @@ class Pdf extends FPDF
     function CheckPageBreak($h)
     {
         // If the height h would cause an overflow, add a new page immediately
-        if($this->file->GetY()+$h>$this->PageBreakTrigger)
+        if($this->file->GetY()+$h>$this->PageBreakTrigger){
+            $this->footer();
             $this->file->AddPage($this->file->CurOrientation);
+            $this->file->SetAutoPageBreak(1, 1);
+            $this->encabezadoTabla();
+        }
     }
 
     function NbLines($w, $txt)
@@ -164,6 +173,15 @@ class Pdf extends FPDF
                 $i++;
         }
         return $nl;
+    }
+
+
+    function footer()
+    {
+        // Go to 1.5 cm from bottom
+        $this->file->SetY(-15);
+        // Print centered page number
+        $this->file->Cell(0, 0, $this->file->PageNo(), 0, 0, 'R');
     }
 
 }

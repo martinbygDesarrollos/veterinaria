@@ -7,6 +7,7 @@ use Slim\Http\Response;
 require_once '../src/controladores/ctr_agenda.php';
 require_once '../src/controladores/ctr_internado.php';
 require_once '../src/utils/fpdf.php';
+require_once '../src/utils/utils.php';
 
 return function (App $app) {
 
@@ -15,6 +16,7 @@ return function (App $app) {
 	$hospitalizedPetController = new ctr_internado();
 
     $fpdf = new Pdf();
+    $utils = new Utils();
 
 	$app->get('/cirugia', function($request, $response, $args) use ($userController, $calendarController){
         $args['version'] = FECHA_ULTIMO_PUSH;
@@ -182,13 +184,14 @@ return function (App $app) {
     });
 
 
-    $app->post('/getDomiciliosDocument', function(Request $request, Response $response) use ($userController, $calendarController, $fpdf){
+    $app->post('/getDomiciliosDocument', function(Request $request, Response $response) use ($userController, $calendarController, $fpdf, $utils){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
 
             $date = $request->getParams()['date'];
             $category = $request->getParams()['category'];
 
+            $utils->clearCalendarPdfDir();
             $domiciliosDocument = $calendarController->getCalendarDocument($date, $category);
             if ($domiciliosDocument->result === 2){
 
