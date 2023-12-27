@@ -195,7 +195,7 @@ return function (App $app) {
             $domiciliosDocument = $calendarController->getCalendarDocument($date, $category);
             if ($domiciliosDocument->result === 2){
 
-                return json_encode($fpdf->domiciliosDocument($date, $domiciliosDocument->listResult));
+                return json_encode($fpdf->calendarDocument($date, $category, $domiciliosDocument->listResult));
 
             }else{
                 return json_encode($domiciliosDocument);
@@ -204,5 +204,24 @@ return function (App $app) {
     });
 
 
+
+    $app->post('/getCirugiasDocument', function(Request $request, Response $response) use ($userController, $calendarController, $fpdf, $utils){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+
+            $date = $request->getParams()['date'];
+            $category = $request->getParams()['category'];
+
+            $utils->clearCalendarPdfDir();
+            $cirugiasDocument = $calendarController->getCalendarDocument($date, $category);
+            if ($cirugiasDocument->result === 2){
+
+                return json_encode($fpdf->calendarDocument($date, $category, $cirugiasDocument->listResult));
+
+            }else{
+                return json_encode($cirugiasDocument);
+            }
+        }else return json_encode($responseSession);
+    });
 }
 ?>

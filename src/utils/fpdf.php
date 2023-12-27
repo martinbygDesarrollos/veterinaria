@@ -12,7 +12,7 @@ class Pdf extends FPDF
     protected $widths = array (12, 15, 40, 37, 35, 50);
     protected $aligns;
 
-	function domiciliosDocument($date, $arrayDomicilios)
+	function calendarDocument($date, $category, $arrayData)
 	{
 		$response = new stdClass();
 		$fecha = date("d/m/Y", strtotime($date));
@@ -23,13 +23,14 @@ class Pdf extends FPDF
 		$this->file->SetFont('helvetica','',10);
 
 
-        $this->encabezado($fecha, "Domicilios");
+        $categoryName = $this->categoryTitle($category);
+        $this->encabezado($fecha, $categoryName);
 
         $this->file->SetFontSize(10);
 
         $this->encabezadoTabla();
 
-		foreach ($arrayDomicilios as $row) {
+		foreach ($arrayData as $row) {
 			$this->Row(array(
 				$row['estado'],
 				date("H:i", strtotime($row['fechaHora'])),
@@ -40,7 +41,7 @@ class Pdf extends FPDF
 			));
 		}
         $this->footer();
-        $nameFile = "Domicilios_$date";
+        $nameFile = $categoryName."_".$date;
 
 		$this->file->Output("F","imprimibles/$nameFile.pdf");
 		$response->result = 2;
@@ -182,6 +183,20 @@ class Pdf extends FPDF
         $this->file->SetY(-15);
         // Print centered page number
         $this->file->Cell(0, 0, $this->file->PageNo(), 0, 0, 'R');
+    }
+
+
+    function categoryTitle($category){
+
+        switch ($category) {
+            case 'domicilios':
+                return "Domicilios";
+            case 'cirugia':
+                return "Cirugias";
+            default:
+                return "Imprimible";
+        }
+
     }
 
 }
