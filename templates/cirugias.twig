@@ -9,7 +9,7 @@
 			<div>
 				<input style="border: 1px solid #ced4da;border-radius: 0.25rem;padding: 0.375rem 0.75rem;" type="date" name="" id="idInputTodayCalendar" onchange="getCirugiasByDay(this.value)">
 				<button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Agendar nueva cirugía" onclick="newRowToCalendar()"><i class="fas fa-calendar-plus"></i></button>
-				<button class="btn btn-dark" title="Exportar PDF" onclick="downloadCirugias()"><i class="fas fa-download"></i></button>
+				<button class="btn btn-dark" title="Exportar PDF" onclick="downloadPdf('idInputTodayCalendar','cirugia')"><i class="fas fa-download"></i></button>
 			</div>
 		</div>
 		<div class="card-body">
