@@ -22,6 +22,20 @@ class internado{
 	}
 
 
+
+	public function getAllHospitalizedPetDocument(){
+		$database = new DataBase();
+		return $database->sendQuery("
+			SELECT m.nombre, m.internado, s.nombre as nomCliente, s.telefax
+			FROM `mascotas` as m
+			LEFT JOIN mascotasocio AS ms ON m.idMascota = ms.idMascota
+			LEFT JOIN socios AS s ON ms.idSocio = s.idSocio
+			WHERE m.fechaFallecimiento IS null AND m.internado IS NOT null
+			ORDER BY m.`idMascota` DESC",
+			array(), "LIST");
+	}
+
+
 }
 
 ?>

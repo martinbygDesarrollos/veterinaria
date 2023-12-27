@@ -40,5 +40,17 @@ class ctr_internado {
 		return $response;
 	}
 
+
+
+
+	public function getInternacionDocument(){
+
+		$response = new \stdClass();
+		$hospitalizedPetClass = new internado();
+
+		return $hospitalizedPetClass->getAllHospitalizedPetDocument();
+
+	}
+
 }
 ?>

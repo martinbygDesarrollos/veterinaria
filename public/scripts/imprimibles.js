@@ -1,42 +1,30 @@
 console.log("imprimibles")
 
-function downloadDomicilios(){
+function downloadPdf(dateId, category){
 
-	let date = $("#idInputTodayDomi").val()
+	let date = $("#"+dateId).val()
 	date = date.replaceAll("-","")
 
-	sendAsyncPost("getDomiciliosDocument", {date:date, category: "domicilios"})
-	.then(( response )=>{
-		console.log(response);
-		if (response.result === 2){
-		//acá enviar nombre del doc a descargar
-			window.location.href = getSiteURL() + 'downloadpdf.php?n='+response.name;
-		}else{
-			showReplyMessage(response.result, "No se encontraron domicilios a descargar.", "Descargar datos", null)
-		}
-	})
-
+	sendAsyncPost("getCalendarDocument", {date:date, category: category})
+	.then(( response )=>{ download(response) })
 
 }
 
 
+function downloadInternacion(){
 
+	sendAsyncPost("getInternacionDocument")
+	.then(( response )=>{ download(response) })
 
-function downloadCirugias(){
+}
 
-	let date = $("#idInputTodayCalendar").val()
-	date = date.replaceAll("-","")
+function download(response){
 
-	sendAsyncPost("getCirugiasDocument", {date:date, category: "cirugia"})
-	.then(( response )=>{
-		console.log(response);
-		if (response.result === 2){
-		//acá enviar nombre del doc a descargar
-			window.location.href = getSiteURL() + 'downloadpdf.php?n='+response.name;
-		}else{
-			showReplyMessage(response.result, "No se encontraron domicilios a descargar.", "Descargar datos", null)
-		}
-	})
-
+	if (response.result === 2){
+	//acá enviar nombre del doc a descargar
+		window.location.href = getSiteURL() + 'downloadpdf.php?n='+response.name;
+	}else{
+		showReplyMessage(response.result, "No se encontraron datos a descargar.", "Descargar datos", null)
+	}
 
 }

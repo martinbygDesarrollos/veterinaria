@@ -10,6 +10,8 @@ class Pdf extends FPDF
 	protected $file = null;
 	protected $heads = array('Hecho','Hora', 'Motivo', 'Cliente', 'Mascota', 'Contacto' );
     protected $widths = array (12, 15, 40, 37, 35, 50);
+    protected $headsInt = array('Mascota','Dueño', 'Modalidad', 'Contacto' );
+    protected $widthsInt = array (47, 47, 47, 47);
     protected $aligns;
 
 	function calendarDocument($date, $category, $arrayData)
@@ -93,6 +95,34 @@ class Pdf extends FPDF
         for($i=0;$i<count($data);$i++)
         {
             $w = $this->widths[$i];
+            $a = isset($this->aligns[$i]) ? $this->aligns[$i] : 'L';
+            // Save the current position
+            $x = $this->file->GetX();
+            $y = $this->file->GetY();
+            // Draw the border
+            $this->file->Rect($x,$y,$w,$h);
+            // Print the text
+            $this->file->MultiCell($w,5,$data[$i],0,$a);
+            // Put the position to the right of the cell
+            $this->file->SetXY($x+$w,$y);
+        }
+        // Go to the next line
+        $this->file->Ln($h);
+    }
+
+    function RowInt($data)
+    {
+        // Calculate the height of the row
+        $nb = 0;
+        for($i=0;$i<count($data);$i++)
+            $nb = max($nb,$this->NbLines($this->widthsInt[$i],$data[$i]));
+        $h = 5*$nb;
+        // Issue a page break first if needed
+        $this->CheckPageBreak($h);
+        // Draw the cells of the row
+        for($i=0;$i<count($data);$i++)
+        {
+            $w = $this->widthsInt[$i];
             $a = isset($this->aligns[$i]) ? $this->aligns[$i] : 'L';
             // Save the current position
             $x = $this->file->GetX();
@@ -193,10 +223,66 @@ class Pdf extends FPDF
                 return "Domicilios";
             case 'cirugia':
                 return "Cirugias";
+            case 'internacion':
+                return "Internacion";
             default:
                 return "Imprimible";
         }
 
+    }
+
+
+    function internacionDocument( $data ){
+
+        $response = new stdClass();
+        $fecha = date("d/m/Y");
+
+        $this->file = new Fpdf("P", "mm", "A4");
+        $this->file->AddPage();
+        $this->file->SetAutoPageBreak(1, 1);
+        $this->file->SetFont('helvetica','',10);
+
+
+        $categoryName = $this->categoryTitle("internacion");
+        $this->encabezado($fecha, $categoryName);
+
+        $this->file->SetFontSize(10);
+
+        $this->encabezadoTablaInternacion();
+
+        foreach ($data as $row) {
+
+            if (isset($row['internado']) && $row['internado'] != "" ){
+
+                $internado = $row['internado'] == "vet" ? "En veterinaria" : "Dar seguimiento";
+
+                $this->RowInt(array(
+                    $row['nombre'],
+                    $row['nomCliente'],
+                    $internado,
+                    $row['telefax']
+                ));
+
+            }
+        }
+        $this->footer();
+        $nameFile = $categoryName."_".date("Ymd");
+
+        $this->file->Output("F","imprimibles/$nameFile.pdf");
+        $response->result = 2;
+        $response->name = $nameFile;
+        return $response;
+
+    }
+
+
+    function encabezadoTablaInternacion(){
+        $this->file->setXY(10,30);
+        for ($i=0; $i<count($this->headsInt); $i++)
+        {
+            $this->file->Cell ($this->widthsInt[$i], 10, $this->headsInt[$i], 1, 0, 'L', 0);
+        }
+        $this->file->setXY(10,40);
     }
 
 }

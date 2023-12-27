@@ -9,7 +9,8 @@
 		</div>
 		<div class="card-body">
 			<div class="d-flex flex-row-reverse">
-				<div class="">
+				<button class="btn btn-dark" title="Exportar PDF" onclick="downloadInternacion()"><i class="fas fa-download"></i></button>
+				<div class="mx-1">
 					<select id="petHospitalizedMode" class="form-select form-control shadow-sm">
 						<option value="">Modalidad</option>
 						<option value="vet">En veterinaria</option>
@@ -40,6 +41,7 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/internacion.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/mascotas.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/imprimibles.js?{{version}}"></script>
 <script type="text/javascript">
 	cargarTablaInternacion();
 	$('.tableCustomScroll').on('scroll', function() {

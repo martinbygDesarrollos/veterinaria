@@ -184,7 +184,7 @@ return function (App $app) {
     });
 
 
-    $app->post('/getDomiciliosDocument', function(Request $request, Response $response) use ($userController, $calendarController, $fpdf, $utils){
+    $app->post('/getCalendarDocument', function(Request $request, Response $response) use ($userController, $calendarController, $fpdf, $utils){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
 
@@ -192,34 +192,31 @@ return function (App $app) {
             $category = $request->getParams()['category'];
 
             $utils->clearCalendarPdfDir();
-            $domiciliosDocument = $calendarController->getCalendarDocument($date, $category);
-            if ($domiciliosDocument->result === 2){
+            $dataCalendar = $calendarController->getCalendarDocument($date, $category);
+            if ($dataCalendar->result === 2){
 
-                return json_encode($fpdf->calendarDocument($date, $category, $domiciliosDocument->listResult));
+                return json_encode($fpdf->calendarDocument($date, $category, $dataCalendar->listResult));
 
             }else{
-                return json_encode($domiciliosDocument);
+                return json_encode($dataCalendar);
             }
         }else return json_encode($responseSession);
     });
 
 
 
-    $app->post('/getCirugiasDocument', function(Request $request, Response $response) use ($userController, $calendarController, $fpdf, $utils){
+    $app->post('/getInternacionDocument', function(Request $request, Response $response) use ($userController, $hospitalizedPetController, $fpdf, $utils){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
 
-            $date = $request->getParams()['date'];
-            $category = $request->getParams()['category'];
-
             $utils->clearCalendarPdfDir();
-            $cirugiasDocument = $calendarController->getCalendarDocument($date, $category);
-            if ($cirugiasDocument->result === 2){
+            $dataInternacion = $hospitalizedPetController->getInternacionDocument();
+            if ($dataInternacion->result === 2){
 
-                return json_encode($fpdf->calendarDocument($date, $category, $cirugiasDocument->listResult));
+                return json_encode($fpdf->internacionDocument($dataInternacion->listResult));
 
             }else{
-                return json_encode($cirugiasDocument);
+                return json_encode($dataInternacion);
             }
         }else return json_encode($responseSession);
     });
