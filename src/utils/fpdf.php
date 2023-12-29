@@ -10,7 +10,7 @@ class Pdf extends FPDF
 	protected $file = null;
 	protected $heads = array('Hecho','Hora', 'Motivo', 'Cliente', 'Mascota', 'Contacto' );
     protected $widths = array (12, 15, 40, 37, 35, 50);
-    protected $headsInt = array('Mascota','Dueño', 'Modalidad', 'Contacto' );
+    protected $headsInt = array('Mascota',"Dueño", 'Modalidad', 'Contacto' );
     protected $widthsInt = array (47, 47, 47, 47);
     protected $headsHist = array('Vet.','Fecha','Motivo', 'Observaciones','Tratamiento','Temp.','FC.','FR.','TLLC.',);
     protected $widthsHist = array (14,10,42,42,42,10,10,10,10);
@@ -59,7 +59,7 @@ class Pdf extends FPDF
         $this->file->Image('..\public\img\inicio.jpeg',10,10,30);
         $this->file->SetFontSize(18);
         $this->file->setXY(10,14);
-        $this->file->Cell(0,10,$title,0,2,'C');
+        $this->file->Cell(0,10,iconv("UTF-8", "CP1250//TRANSLIT", $title),0,2,'C');
 
         $this->file->SetFontSize(10);
 		$this->file->setXY(10,16);
@@ -72,7 +72,7 @@ class Pdf extends FPDF
         $this->file->setXY(10,30);
         for ($i=0; $i<count($this->heads); $i++)
         {
-            $this->file->Cell ($this->widths[$i], 10, $this->heads[$i], 1, 0, 'L', 0);
+            $this->file->Cell ($this->widths[$i], 10, iconv("UTF-8", "CP1250//TRANSLIT",$this->heads[$i]), 1, 0, 'L', 0);
         }
         $this->file->setXY(10,40);
     }
@@ -104,7 +104,7 @@ class Pdf extends FPDF
             // Draw the border
             $this->file->Rect($x,$y,$w,$h);
             // Print the text
-            $this->file->MultiCell($w,5,$data[$i],0,$a);
+            $this->file->MultiCell($w,5,iconv("UTF-8", "CP1250//TRANSLIT",$data[$i]),0,$a);
             // Put the position to the right of the cell
             $this->file->SetXY($x+$w,$y);
         }
@@ -132,7 +132,7 @@ class Pdf extends FPDF
             // Draw the border
             $this->file->Rect($x,$y,$w,$h);
             // Print the text
-            $this->file->MultiCell($w,5,$data[$i],0,$a);
+            $this->file->MultiCell($w,5,iconv("UTF-8", "CP1250//TRANSLIT",$data[$i]),0,$a);
             // Put the position to the right of the cell
             $this->file->SetXY($x+$w,$y);
         }
@@ -158,7 +158,7 @@ class Pdf extends FPDF
             // Draw the border
             $this->file->Rect($x,$y,$w,$h);
             // Print the text
-            $this->file->MultiCell($w,5,$data[$i],0,$a);
+            $this->file->MultiCell($w,5,iconv("UTF-8", "CP1250//TRANSLIT",$data[$i]),0,$a);
             // Put the position to the right of the cell
             $this->file->SetXY($x+$w,$y);
         }
@@ -311,7 +311,7 @@ class Pdf extends FPDF
         $this->file->setXY(10,30);
         for ($i=0; $i<count($this->headsInt); $i++)
         {
-            $this->file->Cell ($this->widthsInt[$i], 10, $this->headsInt[$i], 1, 0, 'L', 0);
+            $this->file->Cell($this->widthsInt[$i], 10, iconv("UTF-8", "CP1250//TRANSLIT",$this->headsInt[$i]), 1, 0, 'L', 0);
         }
         $this->file->setXY(10,40);
     }
@@ -337,16 +337,16 @@ class Pdf extends FPDF
             }
 
             $this->file->SetFontSize(12);
-            $this->file->Cell(0,10,$row['usuario']." ".date("d/m/y", strtotime($row['fecha']))."\n".date("H:i", strtotime($row['fecha'].$row['hora'])),0,2,'R');
+            $this->file->Cell(0,10,iconv("UTF-8", "CP1250//TRANSLIT",$row['usuario']." ".date("d/m/y", strtotime($row['fecha']))." ".date("H:i", strtotime($row['fecha'].$row['hora'])) ),0,2,'R');
             $this->file->SetFontSize(12);
             $this->RowHist(["Temperatura","FC.","FR.","TLLC. (seg)"], [47.5,47.5,47.5,47.5]);
             $this->RowHist([$row['temperatura'],$row['fc'],$row['fr'],$row['tllc']], [47.5,47.5,47.5,47.5]);
             $this->file->SetFontSize(12);
-            $this->file->MultiCell(0,7,"Motivo: ".$row['motivoConsulta'],0,'L');
+            $this->file->MultiCell(0,7,iconv("UTF-8", "CP1250//TRANSLIT","Motivo: ".$row['motivoConsulta'] ),0,'L');
             $this->file->SetFontSize(12);
-            $this->file->MultiCell(0,7,"Observaciones: ".$row['observaciones'],0,'L');
+            $this->file->MultiCell(0,7, iconv("UTF-8", "CP1250//TRANSLIT","Observaciones: ".$row['observaciones'] ),0,'L');
             $this->file->SetFontSize(12);
-            $this->file->MultiCell(0,7,"Tratamiento: ".$row['diagnostico'],0,'L');
+            $this->file->MultiCell(0,7, iconv("UTF-8", "CP1250//TRANSLIT","Tratamiento: ".$row['diagnostico']),0,'L');
         }
 
         $this->footer();
