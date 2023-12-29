@@ -13,6 +13,8 @@ return function (App $app) {
 	$historialesController = new ctr_historiales();
 	$userController = new ctr_usuarios();
 
+    $fpdf = new Pdf();
+    $utils = new Utils();
 
 
 	// $app->post('/prueba', function(Request $request, Response $response){
@@ -185,5 +187,36 @@ return function (App $app) {
             return json_encode($response);
         }else return json_encode($responseSession);
     });
+
+
+
+    $app->post('/countSizePetHistory', function(Request $request, Response $response) use ($userController, $historialesController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $idMascota = $request->getParams()["idMascota"];
+
+            $response = $historialesController->countSizePetHistory($idMascota);
+            return json_encode($response);
+        }else return json_encode($responseSession);
+    });
+
+
+    $app->post('/downloadHistory', function(Request $request, Response $response) use ($userController, $historialesController, $utils, $fpdf){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $idMascota = $request->getParams()["idMascota"];
+
+            $utils->clearCalendarPdfDir();
+            $dataHistory = $historialesController->getHistoryDocument($idMascota);
+            if ($dataHistory->result === 2){
+
+                return json_encode($fpdf->petHistoryDocument($dataHistory->listResult));
+
+            }else{
+                return json_encode($dataHistory);
+            }
+        }else return json_encode($responseSession);
+    });
+
 }
 ?>

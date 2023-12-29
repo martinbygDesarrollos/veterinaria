@@ -28,3 +28,35 @@ function download(response){
 	}
 
 }
+
+
+function modalDownloadPetsData(){
+
+	$("#modalDownloadPetsData").modal("show");
+}
+
+function downloadPetHistory(idMascota){
+
+	console.log(idMascota);
+
+	sendAsyncPost("countSizePetHistory", {idMascota:idMascota})
+	.then(( response )=>{
+		console.log(response)
+		if (response.result == 2){
+			if(response.size > 10000){
+				console.log("preguntar por el rango de fecha")
+			}else{
+				downloadHistory(idMascota)
+			}
+		}
+	})
+
+}
+
+
+function downloadHistory(idMascota){
+
+	sendAsyncPost("downloadHistory", {idMascota:idMascota})
+	.then(( response )=>{ download(response) })
+
+}

@@ -344,6 +344,35 @@ class ctr_historiales {
 		$response = $historialesClass->getAllIdListHistory( $idMascota );
 		return $response;
    	}
+
+
+   	public function countSizePetHistory($idMascota){
+		$historialesClass = new historiales();
+		$response = new stdClass();
+		$response->result = 1;
+		$response->size = 0;
+
+		$historyList = $historialesClass->countSizePetHistory( $idMascota );
+		if ($historyList->result == 2) {
+			$history = "";
+			foreach ($historyList->listResult as $value) {
+				$history .= $value["observaciones"];
+			}
+
+			$response->result = 2;
+			$response->size = strlen($history);
+		}else return $response;
+
+
+		return $response;
+   	}
+
+
+   	public function getHistoryDocument($idMascota){
+
+   		$historialesClass = new historiales();
+		return $historialesClass->getHistoryDocument( $idMascota );
+   	}
 }
 
 ?>

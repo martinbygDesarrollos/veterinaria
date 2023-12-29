@@ -361,4 +361,37 @@ class historiales{
 
 
 
+	public function countSizePetHistory( $idMascota ){
+		$dataBaseClass = new DataBase();
+		$sql = "SELECT observaciones FROM `historiasclinica`
+			WHERE idMascota = ?";
+
+		$responseQuery = $dataBaseClass->sendQuery($sql, array('i', $idMascota), "LIST");
+		if( $responseQuery->result == 1 ){
+			$responseQuery->listResult = array();
+		}
+
+		return $responseQuery;
+	}
+
+
+	public function getHistoryDocument( $idMascota ){
+		$dataBaseClass = new DataBase();
+		$sql = "SELECT hc.*, m.nombre, s.nombre AS nomSocio, usu.nombre AS usuario
+			FROM `historiasclinica` AS hc
+			LEFT JOIN mascotasocio AS ms ON ms.idMascota = hc.idMascota
+			LEFT JOIN mascotas AS m ON m.idMascota = hc.idMascota
+			LEFT JOIN socios AS s ON s.idSocio = ms.idSocio
+			LEFT JOIN usuarios AS usu ON usu.idUsuario = hc.idUsuario
+			WHERE hc.idMascota = ?
+			ORDER BY hc.fecha DESC, hc.hora DESC";
+
+		$responseQuery = $dataBaseClass->sendQuery($sql, array('i', $idMascota), "LIST");
+		if( $responseQuery->result == 1 ){
+			$responseQuery->listResult = array();
+		}
+
+		return $responseQuery;
+	}
+
 }
