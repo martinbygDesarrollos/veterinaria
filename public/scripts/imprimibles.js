@@ -32,30 +32,23 @@ function download(response){
 
 function modalDownloadPetsData(){
 
+	let date = new Date()
+	let month = date.getMonth() + 1;
+	let year = date.getFullYear();
+	let day = date.getDay();
+	if(day < 10)
+		day = "0" + day ;
+	if(month < 10)
+		month = "0" + month ;
+
+	$("#idDownloadPetDateFrom").val(year + "-"+month+"-01" )
+	$("#idDownloadPetDateTo").val(year + "-"+month+"-"+day )
+
 	$("#modalDownloadPetsData").modal("show");
+
 }
 
 function downloadPetHistory(idMascota){
-
-	console.log(idMascota);
-
-	sendAsyncPost("countSizePetHistory", {idMascota:idMascota})
-	.then(( response )=>{
-		console.log(response)
-		if (response.result == 2){
-			if(response.size > 10000){
-				console.log("preguntar por el rango de fecha")
-			}else{
-				downloadHistory(idMascota)
-			}
-		}
-	})
-
-}
-
-
-function downloadHistory(idMascota){
-
 	sendAsyncPost("downloadHistory", {idMascota:idMascota})
 	.then(( response )=>{ download(response) })
 

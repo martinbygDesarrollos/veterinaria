@@ -189,18 +189,6 @@ return function (App $app) {
     });
 
 
-
-    $app->post('/countSizePetHistory', function(Request $request, Response $response) use ($userController, $historialesController){
-        $responseSession = $userController->validateSession();
-        if($responseSession->result == 2){
-            $idMascota = $request->getParams()["idMascota"];
-
-            $response = $historialesController->countSizePetHistory($idMascota);
-            return json_encode($response);
-        }else return json_encode($responseSession);
-    });
-
-
     $app->post('/downloadHistory', function(Request $request, Response $response) use ($userController, $historialesController, $utils, $fpdf){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
