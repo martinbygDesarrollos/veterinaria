@@ -42,7 +42,7 @@ class Pdf extends FPDF
 				$row['idSocio']." - ".$row['socionombre'],
 				$row['idMascota']." - ".$row['nombre'],
 				$row['telefax']."\n".$row['telefono']."\n".$row['direccion']
-			));
+			), $category);
 		}
         $this->footer();
         $nameFile = $categoryName."_".$date;
@@ -84,7 +84,7 @@ class Pdf extends FPDF
         $this->aligns = $a;
     }
 
-    function Row($data)
+    function Row($data, $category)
     {
         // Calculate the height of the row
         $nb = 0;
@@ -92,7 +92,7 @@ class Pdf extends FPDF
             $nb = max($nb,$this->NbLines($this->widths[$i],$data[$i]));
         $h = 5*$nb;
         // Issue a page break first if needed
-        $this->CheckPageBreak($h);
+        $this->CheckPageBreak($h, $category);
         // Draw the cells of the row
         for($i=0;$i<count($data);$i++)
         {
@@ -112,7 +112,7 @@ class Pdf extends FPDF
         $this->file->Ln($h);
     }
 
-    function RowInt($data)
+    function RowInt($data, $category)
     {
         // Calculate the height of the row
         $nb = 0;
@@ -120,7 +120,7 @@ class Pdf extends FPDF
             $nb = max($nb,$this->NbLines($this->widthsInt[$i],$data[$i]));
         $h = 5*$nb;
         // Issue a page break first if needed
-        $this->CheckPageBreak($h);
+        $this->CheckPageBreak($h, $category);
         // Draw the cells of the row
         for($i=0;$i<count($data);$i++)
         {
@@ -166,14 +166,20 @@ class Pdf extends FPDF
         $this->file->Ln($h);
     }
 
-    function CheckPageBreak($h)
+    function CheckPageBreak($h, $category)
     {
         // If the height h would cause an overflow, add a new page immediately
         if($this->file->GetY()+$h>$this->PageBreakTrigger){
             $this->footer();
             $this->file->AddPage($this->file->CurOrientation);
             $this->file->SetAutoPageBreak(1, 1);
-            $this->encabezadoTabla();
+
+            if ($category === 'internacion') {
+                $this->encabezadoTablaInternacion();
+            }else{
+                $this->encabezadoTabla();
+            }
+
         }
     }
 
@@ -292,7 +298,7 @@ class Pdf extends FPDF
                     $row['nomCliente'],
                     $internado,
                     $row['telefax']
-                ));
+                ), "internacion");
 
             }
         }
