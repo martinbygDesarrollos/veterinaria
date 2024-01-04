@@ -49,7 +49,19 @@ function modalDownloadPetsData(){
 }
 
 function downloadPetHistory(idMascota){
-	sendAsyncPost("downloadHistory", {idMascota:idMascota})
-	.then(( response )=>{ download(response) })
+
+	let from = $("#idDownloadPetDateFrom").val()
+	let to = $("#idDownloadPetDateTo").val()
+
+	sendAsyncPost("downloadHistory", {idMascota:idMascota, desde:from, hasta:to})
+
+	.then(( response )=>{
+		if (response.result === 2){
+		//acá enviar nombre del doc a descargar
+			window.location.href = getSiteURL() + 'downloadpdf.php?n='+response.name;
+		}else{
+			showReplyMessage(response.result, "No se encontraron datos a descargar.", "Descargar datos", "modalDownloadPetsData")
+		}
+	})
 
 }

@@ -193,9 +193,11 @@ return function (App $app) {
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
             $idMascota = $request->getParams()["idMascota"];
+            $desde = $request->getParams()["desde"];
+            $hasta = $request->getParams()["hasta"];
 
             $utils->clearCalendarPdfDir();
-            $dataHistory = $historialesController->getHistoryDocument($idMascota);
+            $dataHistory = $historialesController->getHistoryDocument($idMascota, $desde, $hasta);
             if ($dataHistory->result === 2){
 
                 return json_encode($fpdf->petHistoryDocument($dataHistory->listResult));

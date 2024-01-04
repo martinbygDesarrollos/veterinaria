@@ -346,10 +346,10 @@ class ctr_historiales {
    	}
 
 
-   	public function getHistoryDocument($idMascota){
+   	public function getHistoryDocument($idMascota, $desde, $hasta){
 
    		$historialesClass = new historiales();
-		return $historialesClass->getHistoryDocument( $idMascota );
+		return $historialesClass->getHistoryDocument( $idMascota, $desde, $hasta);
    	}
 }
 

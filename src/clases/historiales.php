@@ -360,7 +360,16 @@ class historiales{
 	}
 
 
-	public function getHistoryDocument( $idMascota ){
+	public function getHistoryDocument( $idMascota, $desde, $hasta ){
+
+		$whereFecha = "";
+		if( isset($desde) && $desde != "" && isset($hasta) && $hasta != ""){
+
+			$desde = str_replace("-","",$desde);
+			$hasta = str_replace("-","",$hasta);
+			$whereFecha = ' AND hc.fecha >= "'.$desde.'" AND hc.fecha <= "'.$hasta.'" ';
+		}
+
 		$dataBaseClass = new DataBase();
 		$sql = "SELECT hc.*, m.nombre, s.nombre AS nomSocio, usu.nombre AS usuario
 			FROM `historiasclinica` AS hc
@@ -368,7 +377,7 @@ class historiales{
 			LEFT JOIN mascotas AS m ON m.idMascota = hc.idMascota
 			LEFT JOIN socios AS s ON s.idSocio = ms.idSocio
 			LEFT JOIN usuarios AS usu ON usu.idUsuario = hc.idUsuario
-			WHERE hc.idMascota = ?
+			WHERE hc.idMascota = ? ".$whereFecha."
 			ORDER BY hc.fecha DESC, hc.hora DESC";
 
 		$responseQuery = $dataBaseClass->sendQuery($sql, array('i', $idMascota), "LIST");
