@@ -1189,4 +1189,13 @@ class ctr_mascotas {
 
 	}
 
+
+
+	public function changeNotifyVacuna($idVacuna, $estado){
+
+		$serviciosMascotaClass = new serviciosMascota();
+		return $serviciosMascotaClass->changeNotifyVacuna($idVacuna, $estado);
+
+	}
+
 }

@@ -483,5 +483,20 @@ return function (App $app) {
             return json_encode($response);
         }else return json_encode($responseSession);
     });
+
+
+
+    $app->post('/changeNotifyVacuna', function(Request $request, Response $response) use ($userController, $mascotaController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+
+            $data = $request->getParams();
+            $vacuna = $data['vacuna'];
+            $estado = $data['estado'];
+
+            $response = $mascotaController->changeNotifyVacuna($vacuna, $estado);
+            return json_encode($response);
+        }else return json_encode($responseSession);
+    });
 }
 ?>
