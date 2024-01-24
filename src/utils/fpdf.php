@@ -42,7 +42,7 @@ class Pdf extends FPDF
 				$row['idSocio']." - ".$row['socionombre'],
 				$row['idMascota']." - ".$row['nombre'],
 				$row['telefax']."\n".$row['telefono']."\n".$row['direccion']
-			), $category);
+			), $category, $fecha);
 		}
         $this->footer();
         $nameFile = $categoryName."_".$date;
@@ -84,7 +84,7 @@ class Pdf extends FPDF
         $this->aligns = $a;
     }
 
-    function Row($data, $category)
+    function Row($data, $category, $fecha)
     {
         // Calculate the height of the row
         $nb = 0;
@@ -92,7 +92,7 @@ class Pdf extends FPDF
             $nb = max($nb,$this->NbLines($this->widths[$i],$data[$i]));
         $h = 5*$nb;
         // Issue a page break first if needed
-        $this->CheckPageBreak($h, $category);
+        $this->CheckPageBreak($h, $category, $fecha);
         // Draw the cells of the row
         for($i=0;$i<count($data);$i++)
         {
@@ -112,7 +112,7 @@ class Pdf extends FPDF
         $this->file->Ln($h);
     }
 
-    function RowInt($data, $category)
+    function RowInt($data, $category, $fecha)
     {
         // Calculate the height of the row
         $nb = 0;
@@ -120,7 +120,7 @@ class Pdf extends FPDF
             $nb = max($nb,$this->NbLines($this->widthsInt[$i],$data[$i]));
         $h = 5*$nb;
         // Issue a page break first if needed
-        $this->CheckPageBreak($h, $category);
+        $this->CheckPageBreak($h, $category, $fecha);
         // Draw the cells of the row
         for($i=0;$i<count($data);$i++)
         {
@@ -166,12 +166,18 @@ class Pdf extends FPDF
         $this->file->Ln($h);
     }
 
-    function CheckPageBreak($h, $category)
+    function CheckPageBreak($h, $category,$fecha)
     {
         // If the height h would cause an overflow, add a new page immediately
         if($this->file->GetY()+$h>$this->PageBreakTrigger){
             $this->footer();
             $this->file->AddPage($this->file->CurOrientation);
+
+            $categoryName = $this->categoryTitle($category);
+            $this->encabezado($fecha, $categoryName);
+
+            $this->file->SetFontSize(10);
+
             $this->file->SetAutoPageBreak(1, 1);
 
             if ($category === 'internacion') {
@@ -298,7 +304,7 @@ class Pdf extends FPDF
                     $row['nomCliente'],
                     $internado,
                     $row['telefax']
-                ), "internacion");
+                ), "internacion", $fecha);
 
             }
         }
@@ -340,6 +346,7 @@ class Pdf extends FPDF
                 $this->file->SetAutoPageBreak(1, 1);
                 $this->footer();
                 $this->file->AddPage($this->file->CurOrientation);
+                $this->encabezado($fecha, $categoryName);
             }
 
             $this->file->SetFontSize(12);
@@ -348,11 +355,11 @@ class Pdf extends FPDF
             $this->RowHist(["Temperatura","FC.","FR.","TLLC. (seg)"], [47.5,47.5,47.5,47.5]);
             $this->RowHist([$row['temperatura'],$row['fc'],$row['fr'],$row['tllc']], [47.5,47.5,47.5,47.5]);
             $this->file->SetFontSize(12);
-            $this->file->MultiCell(0,7,iconv("UTF-8", "windows-1252","Motivo: ".$row['motivoConsulta'] ),0,'L');
+            $this->MultiCellHist(0,7,iconv("UTF-8", "windows-1252","Motivo: ".$row['motivoConsulta'] ),0,'L', false, $fecha, $categoryName);
             $this->file->SetFontSize(12);
-            $this->file->MultiCell(0,7, iconv("UTF-8", "windows-1252","Observaciones: ".$row['observaciones'] ),0,'L');
+            $this->MultiCellHist(0,7, iconv("UTF-8", "windows-1252","Observaciones: ".$row['observaciones'] ),0,'L', false, $fecha, $categoryName);
             $this->file->SetFontSize(12);
-            $this->file->MultiCell(0,7, iconv("UTF-8", "windows-1252","Tratamiento: ".$row['diagnostico']),0,'L');
+            $this->MultiCellHist(0,7, iconv("UTF-8", "windows-1252","Tratamiento: ".$row['diagnostico']),0,'L', false, $fecha, $categoryName);
         }
 
         $this->footer();
@@ -363,6 +370,131 @@ class Pdf extends FPDF
         $response->name = $nameFile;
         return $response;
     }
+
+
+
+function MultiCellHist($w, $h, $txt, $border=0, $align='J', $fill=false, $fecha, $categoryName)
+{
+    // Output text with automatic or explicit line breaks
+    if(!isset($this->file->CurrentFont))
+        $this->file->Error('No font has been set');
+    $cw = &$this->file->CurrentFont['cw'];
+    if($w==0)
+        $w = $this->file->w-$this->file->rMargin-$this->file->x;
+    $wmax = ($w-2*$this->file->cMargin)*1000/$this->file->FontSize;
+    $s = str_replace("\r",'',$txt);
+    $nb = strlen($s);
+    if($nb>0 && $s[$nb-1]=="\n")
+        $nb--;
+    $b = 0;
+    if($border)
+    {
+        if($border==1)
+        {
+            $border = 'LTRB';
+            $b = 'LRT';
+            $b2 = 'LR';
+        }
+        else
+        {
+            $b2 = '';
+            if(strpos($border,'L')!==false)
+                $b2 .= 'L';
+            if(strpos($border,'R')!==false)
+                $b2 .= 'R';
+            $b = (strpos($border,'T')!==false) ? $b2.'T' : $b2;
+        }
+    }
+    $sep = -1;
+    $i = 0;
+    $j = 0;
+    $l = 0;
+    $ns = 0;
+    $nl = 1;
+    while($i<$nb)
+    {
+        if($this->file->GetY() +51 > $this->file->PageBreakTrigger){
+            $this->file->SetAutoPageBreak(1, 1);
+            $this->footer();
+            $this->file->AddPage($this->file->CurOrientation);
+            $this->encabezado($fecha, $categoryName);
+            $this->file->SetFontSize(12);
+
+        }
+        // Get next character
+        $c = $s[$i];
+        if($c=="\n")
+        {
+            // Explicit line break
+            if($this->file->ws>0)
+            {
+                $this->file->ws = 0;
+                $this->file->_out('0 Tw');
+            }
+            $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+            $i++;
+            $sep = -1;
+            $j = $i;
+            $l = 0;
+            $ns = 0;
+            $nl++;
+            if($border && $nl==2)
+                $b = $b2;
+            continue;
+        }
+        if($c==' ')
+        {
+            $sep = $i;
+            $ls = $l;
+            $ns++;
+        }
+        $l += $cw[$c];
+        if($l>$wmax)
+        {
+            // Automatic line break
+            if($sep==-1)
+            {
+                if($i==$j)
+                    $i++;
+                if($this->file->ws>0)
+                {
+                    $this->file->ws = 0;
+                    $this->file->_out('0 Tw');
+                }
+                $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+            }
+            else
+            {
+                if($align=='J')
+                {
+                    $this->file->ws = ($ns>1) ? ($wmax-$ls)/1000*$this->file->FontSize/($ns-1) : 0;
+                    $this->file->_out(sprintf('%.3F Tw',$this->file->ws*$this->file->k));
+                }
+                $this->file->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
+                $i = $sep+1;
+            }
+            $sep = -1;
+            $j = $i;
+            $l = 0;
+            $ns = 0;
+            $nl++;
+            if($border && $nl==2)
+                $b = $b2;
+        }
+        else
+            $i++;
+    }
+    // Last chunk
+    if($this->file->ws>0)
+    {
+        $this->file->ws = 0;
+        $this->file->_out('0 Tw');
+    }
+    if($border && strpos($border,'B')!==false)
+        $b .= 'B';
+    $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+    $this->file->x = $this->file->lMargin;
+}
 
 }
 	
