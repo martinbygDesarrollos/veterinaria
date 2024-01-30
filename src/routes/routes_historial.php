@@ -12,6 +12,7 @@ return function (App $app) {
 	$container = $app->getContainer();
 	$historialesController = new ctr_historiales();
 	$userController = new ctr_usuarios();
+	$petController = new ctr_mascotas();
 
     $fpdf = new Pdf();
     $utils = new Utils();
@@ -204,6 +205,24 @@ return function (App $app) {
 
             }else{
                 return json_encode($dataHistory);
+            }
+        }else return json_encode($responseSession);
+    });
+
+
+    $app->post('/downloadMedicine', function(Request $request, Response $response) use ($userController, $petController, $utils, $fpdf){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $idMascota = $request->getParams()["idMascota"];
+
+            $utils->clearCalendarPdfDir();
+            $dataMedicine = $petController->getMedicineToDocument($idMascota);
+            if ($dataMedicine->result === 2){
+
+                return json_encode($fpdf->petMedicineDocument($dataMedicine->listResult));
+
+            }else{
+                return json_encode($dataMedicine);
             }
         }else return json_encode($responseSession);
     });

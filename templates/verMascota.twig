@@ -645,7 +645,7 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<p class="col-8">Historias clínica</p>
+				<p class="col-8 font-weight-bold">Historia clínica</p>
 				<div class="row d-flex justify-content-between mx-1">
 					<div class="col-10 d-flex">
 						<div class="d-block col-6">
@@ -658,13 +658,13 @@
 						</div>
 					</div>
 
-					<button type="button" class="btn btn-dark" style="align-self: end;" title="Exportar PDF - Historias Clínica" onclick="downloadPetHistory({{ SocioMascota.mascota.idMascota }})"><i class="fas fa-download"></i></button>
+					<button type="button" class="btn btn-dark" style="align-self: end;" title="Exportar PDF - Historia Clínica" onclick="downloadPetHistory({{ SocioMascota.mascota.idMascota }})"><i class="fas fa-download"></i></button>
 				</div>
-				<!--hr>
-				<div class="row d-flex justify-content-between mx-1	">
-					<p class="col-8">Vacunas</p>
-					<button type="button" class="btn btn-dark" title="Exportar PDF - Vacunas" onclick="downloadPetVacunas()"><i class="fas fa-download"></i></button>
-				</div-->
+				<hr>
+				<div class="row d-flex justify-content-between mx-1">
+					<p class="col-8 font-weight-bold">Vacunas / Medicamentos</p>
+					<button type="button" class="btn btn-dark" style="align-self: end;" title="Exportar PDF - Vacunas" onclick="downloadPetVacunas({{ SocioMascota.mascota.idMascota }})"><i class="fas fa-download"></i></button>
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-danger shadow-sm" data-dismiss="modal">Cerrar</button>

@@ -124,7 +124,7 @@ class serviciosMascota {
         $to = str_replace("-", "", $to);
 
         $responseQuery = DataBase::sendQuery("
-            SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, VM.notifEnviada as observacion , M.idMascota, M.nombre, M.raza
+            SELECT VM.idVacunaMascota, VM.nombreVacuna, VM.intervaloDosis, VM.numDosis, VM.fechaProximaDosis, VM.notifEnviada as observacion , VM.notificado, M.idMascota, M.nombre, M.raza
             FROM vacunasmascota AS VM, mascotas AS M
             WHERE VM.idMascota = M.idMascota AND M.estado = 1 AND M.fechaFallecimiento IS NULL AND
                 VM.fechaProximaDosis IS NOT NULL AND VM.fechaProximaDosis >= ? AND VM.fechaProximaDosis <= ?
@@ -356,17 +356,24 @@ class serviciosMascota {
     }
 
 
-
-    public function getAllEnfermedadesByMascota($idMascota){
+    public function changeNotifyVacuna ($idVacuna, $estado){
         $dataBaseClass = new DataBase();
-        return $dataBaseClass->sendQuery("SELECT * FROM enfermedadesmascota WHERE idMascota = ?", array('i', $idMascota), "LIST");
+        return $dataBaseClass->sendQuery("UPDATE `vacunasmascota` SET `notificado` = ? WHERE `idVacunaMascota` = ?", array('ii',$estado, $idVacuna), "BOOLE");
     }
 
-
-    public function changeEnfermedadesFromMascota($idEnfermedad, $idMascota){
+    public function getMedicineToDocument($idMascota){
         $dataBaseClass = new DataBase();
-        return $dataBaseClass->sendQuery("UPDATE `enfermedadesmascota` SET `idMascota` = ? WHERE `idEnfermedad` = ?", array('ii',$idMascota, $idEnfermedad), "BOOLE");
+        return $dataBaseClass->sendQuery("SELECT vm.nombreVacuna, vm.fechaUltimaDosis, vm.fechaProximaDosis, vm.observacion, vm.notifEnviada, m.nombre
+            FROM vacunasmascota AS vm
+            LEFT JOIN mascotas AS m on m.idMascota = vm.idMascota
+            WHERE vm.idMascota = ?", array('i',$idMascota), "LIST");
     }
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------- HISTORIA ------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -410,6 +417,17 @@ class serviciosMascota {
     //--------------------------------------------------------ENFERMEDADES------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------------
+
+    public function getAllEnfermedadesByMascota($idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("SELECT * FROM enfermedadesmascota WHERE idMascota = ?", array('i', $idMascota), "LIST");
+    }
+
+
+    public function changeEnfermedadesFromMascota($idEnfermedad, $idMascota){
+        $dataBaseClass = new DataBase();
+        return $dataBaseClass->sendQuery("UPDATE `enfermedadesmascota` SET `idMascota` = ? WHERE `idEnfermedad` = ?", array('ii',$idMascota, $idEnfermedad), "BOOLE");
+    }
 
     public function getEnfermedadesMascota($idMascota){
         $responseQuery = DataBase::sendQuery("SELECT * FROM enfermedadesmascota WHERE idMascota = ? ORDER BY idEnfermedad DESC", array('i', $idMascota), "LIST");
