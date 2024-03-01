@@ -1202,7 +1202,7 @@ class ctr_mascotas {
 	public function getMedicineToDocument($idMascota){
 
 		$serviciosMascotaClass = new serviciosMascota();
-		return $serviciosMascotaClass->getHistoryDocument( $idMascota, $desde, $hasta);
+		return $serviciosMascotaClass->getMedicineToDocument( $idMascota );
 	}
 
 }

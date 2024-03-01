@@ -500,44 +500,62 @@ class Pdf extends FPDF
     function petMedicineDocument($listMedicine){
 
         $response = new stdClass();
-        $fecha = date("d/m/y");
+        $mascota = "";
 
-        $this->file = new Fpdf("P", "mm", "A4");
+        if (isset($listMedicine[0]["nombre"])){
+            $mascota = $listMedicine[0]["nombre"];
+        }
+
+        $large = (16 + count($listMedicine)) * 10;
+        $this->file = new FPDF('P','mm',array(80,$large)); // Tamaño tickt 80mm x 150 mm (largo aprox)
+        $this->file->SetMargins(5, 10, 5);
+
         $this->file->AddPage();
         $this->file->SetAutoPageBreak(1, 1);
         $this->file->SetFont('helvetica','',10);
 
 
-        $this->file->Image('..\public\img\inicio.jpeg',10,10,30);
-        $this->file->SetFontSize(18);
-        $this->file->setXY(10,14);
-        $this->file->Cell(0,10,iconv("UTF-8", "windows-1252", $title),0,2,'C');
+        $this->encabezadoTicketVacunas($mascota);
 
-        $this->file->SetFontSize(10);
-        $this->file->setXY(10,16);
-        $this->file->Cell(0,10,$date,0,2,'R');
+        $this->file->Ln(5);
 
-        $this->file->SetFontSize(10);
+        foreach ($listMedicine as $row) {
 
-        $this->encabezadoTabla();
+            $ultimaDosis = date("d/m/y", strtotime($row['fechaUltimaDosis']) );
+            $proximaDosis = date("d/m/y", strtotime($row['fechaProximaDosis']) );
 
-        foreach ($arrayData as $row) {
-            $this->Row(array(
-                $row['estado'],
-                date("H:i", strtotime($row['fechaHora'])),
-                $row['descripcion'],
-                $row['idSocio']." - ".$row['socionombre'],
-                $row['idMascota']." - ".$row['nombre'],
-                $row['telefax']."\n".$row['telefono']."\n".$row['direccion']
-            ), $category, $fecha);
+            $this->file->SetFont('Helvetica','B',12);
+            $this->file->setX(10);
+            $this->file->MultiCell(0,7,iconv("UTF-8", "windows-1252",$row['nombreVacuna']),0,"L");
+
+            $this->file->SetFont('Helvetica','',12);
+            $this->file->setX(15);
+            $this->file->MultiCell(0,7,iconv("UTF-8", "windows-1252","Aplicada el día: ".$ultimaDosis),0,"L");
+            $this->file->setX(15);
+            $this->file->MultiCell(0,7,iconv("UTF-8", "windows-1252","Vence: ".$proximaDosis),0,"L");
+            $this->file->Ln(3);
+
         }
-        $this->footer();
-        $nameFile = $categoryName."_".$date;
+
+        $nameFile = "vacunas_".date("Ymd");
 
         $this->file->Output("F","imprimibles/$nameFile.pdf");
         $response->result = 2;
         $response->name = $nameFile;
         return $response;
+
+    }
+
+
+    function encabezadoTicketVacunas($mascota){
+
+        $this->file->Image('..\public\img\imprimibles.jpeg',10,10,30);
+        $this->file->SetFont('Helvetica','',8);
+        $this->file->Cell(0,10,date("d/m/y"),0,2,'R');
+
+        $this->file->Ln(7);
+        $this->file->SetFont('Helvetica','B',18);
+        $this->file->MultiCell(0,5,iconv("UTF-8", "windows-1252",ucfirst($mascota)),0,"C");
 
     }
 

@@ -363,10 +363,11 @@ class serviciosMascota {
 
     public function getMedicineToDocument($idMascota){
         $dataBaseClass = new DataBase();
-        return $dataBaseClass->sendQuery("SELECT vm.nombreVacuna, vm.fechaUltimaDosis, vm.fechaProximaDosis, vm.observacion, vm.notifEnviada, m.nombre
+        return $dataBaseClass->sendQuery("SELECT vm.nombreVacuna, vm.fechaUltimaDosis, vm.fechaProximaDosis, m.nombre
             FROM vacunasmascota AS vm
             LEFT JOIN mascotas AS m on m.idMascota = vm.idMascota
-            WHERE vm.idMascota = ?", array('i',$idMascota), "LIST");
+            WHERE vm.idMascota = ?
+            ORDER BY vm.fechaUltimaDosis DESC", array('i',$idMascota), "LIST");
     }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------
