@@ -12,7 +12,10 @@ return function (App $app) {
     $userController = new ctr_usuarios();
     $mascotaController = new ctr_mascotas();
 
-	//---------------------------- VISTAS ------------------------------------------------------
+    $fpdf = new Pdf();
+    $utils = new Utils();
+
+    //---------------------------- VISTAS ------------------------------------------------------
     $app->get('/mascotas', function($request, $response, $args) use ($container){
         $args['version'] = FECHA_ULTIMO_PUSH;
         $responseSession = ctr_usuarios::validateSession();
@@ -87,7 +90,7 @@ return function (App $app) {
     })->setName('VacunasVencidas');
 
     //------------------------------------------------------------------------------------------
-	//----------------------------- POST -------------------------------------------------------
+    //----------------------------- POST -------------------------------------------------------
 
     $app->post('/getMascotaToEdit', function(Request $request, Response $response){
         $responseSession = ctr_usuarios::validateSession();
@@ -484,8 +487,6 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
-
-
     $app->post('/changeNotifyVacuna', function(Request $request, Response $response) use ($userController, $mascotaController){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
@@ -496,6 +497,25 @@ return function (App $app) {
 
             $response = $mascotaController->changeNotifyVacuna($vacuna, $estado);
             return json_encode($response);
+        }else return json_encode($responseSession);
+    });
+
+
+    $app->post('/downloadMedicine', function(Request $request, Response $response) use ($userController, $mascotaController, $fpdf, $utils){
+
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $idMascota = $request->getParams()["idMascota"];
+
+            $utils->clearCalendarPdfDir();
+            $dataMedicine = $mascotaController->getMedicineToDocument($idMascota);
+            if ($dataMedicine->result === 2){
+
+                return json_encode($fpdf->petMedicineDocument($dataMedicine->listResult));
+
+            }else{
+                return json_encode($dataMedicine);
+            }
         }else return json_encode($responseSession);
     });
 }

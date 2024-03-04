@@ -65,3 +65,18 @@ function downloadPetHistory(idMascota){
 	})
 
 }
+
+
+function downloadPetVacunas(idMascota){
+
+	sendAsyncPost("downloadMedicine", {idMascota:idMascota})
+	.then(( response )=>{
+		if (response.result === 2){
+		//acá enviar nombre del doc a descargar
+			window.location.href = getSiteURL() + 'downloadpdf.php?n='+response.name;
+		}else{
+			showReplyMessage(response.result, "No se encontraron datos a descargar.", "Descargar datos", "modalDownloadPetsData")
+		}
+	})
+
+}

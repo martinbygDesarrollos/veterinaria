@@ -373,128 +373,191 @@ class Pdf extends FPDF
 
 
 
-function MultiCellHist($w, $h, $txt, $border=0, $align='J', $fill=false, $fecha, $categoryName)
-{
-    // Output text with automatic or explicit line breaks
-    if(!isset($this->file->CurrentFont))
-        $this->file->Error('No font has been set');
-    $cw = &$this->file->CurrentFont['cw'];
-    if($w==0)
-        $w = $this->file->w-$this->file->rMargin-$this->file->x;
-    $wmax = ($w-2*$this->file->cMargin)*1000/$this->file->FontSize;
-    $s = str_replace("\r",'',$txt);
-    $nb = strlen($s);
-    if($nb>0 && $s[$nb-1]=="\n")
-        $nb--;
-    $b = 0;
-    if($border)
+    function MultiCellHist($w, $h, $txt, $border=0, $align='J', $fill=false, $fecha, $categoryName)
     {
-        if($border==1)
+        // Output text with automatic or explicit line breaks
+        if(!isset($this->file->CurrentFont))
+            $this->file->Error('No font has been set');
+        $cw = &$this->file->CurrentFont['cw'];
+        if($w==0)
+            $w = $this->file->w-$this->file->rMargin-$this->file->x;
+        $wmax = ($w-2*$this->file->cMargin)*1000/$this->file->FontSize;
+        $s = str_replace("\r",'',$txt);
+        $nb = strlen($s);
+        if($nb>0 && $s[$nb-1]=="\n")
+            $nb--;
+        $b = 0;
+        if($border)
         {
-            $border = 'LTRB';
-            $b = 'LRT';
-            $b2 = 'LR';
-        }
-        else
-        {
-            $b2 = '';
-            if(strpos($border,'L')!==false)
-                $b2 .= 'L';
-            if(strpos($border,'R')!==false)
-                $b2 .= 'R';
-            $b = (strpos($border,'T')!==false) ? $b2.'T' : $b2;
-        }
-    }
-    $sep = -1;
-    $i = 0;
-    $j = 0;
-    $l = 0;
-    $ns = 0;
-    $nl = 1;
-    while($i<$nb)
-    {
-        if($this->file->GetY() +51 > $this->file->PageBreakTrigger){
-            $this->file->SetAutoPageBreak(1, 1);
-            $this->footer();
-            $this->file->AddPage($this->file->CurOrientation);
-            $this->encabezado($fecha, $categoryName);
-            $this->file->SetFontSize(12);
-
-        }
-        // Get next character
-        $c = $s[$i];
-        if($c=="\n")
-        {
-            // Explicit line break
-            if($this->file->ws>0)
+            if($border==1)
             {
-                $this->file->ws = 0;
-                $this->file->_out('0 Tw');
+                $border = 'LTRB';
+                $b = 'LRT';
+                $b2 = 'LR';
             }
-            $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
-            $i++;
-            $sep = -1;
-            $j = $i;
-            $l = 0;
-            $ns = 0;
-            $nl++;
-            if($border && $nl==2)
-                $b = $b2;
-            continue;
-        }
-        if($c==' ')
-        {
-            $sep = $i;
-            $ls = $l;
-            $ns++;
-        }
-        $l += $cw[$c];
-        if($l>$wmax)
-        {
-            // Automatic line break
-            if($sep==-1)
+            else
             {
-                if($i==$j)
-                    $i++;
+                $b2 = '';
+                if(strpos($border,'L')!==false)
+                    $b2 .= 'L';
+                if(strpos($border,'R')!==false)
+                    $b2 .= 'R';
+                $b = (strpos($border,'T')!==false) ? $b2.'T' : $b2;
+            }
+        }
+        $sep = -1;
+        $i = 0;
+        $j = 0;
+        $l = 0;
+        $ns = 0;
+        $nl = 1;
+        while($i<$nb)
+        {
+            if($this->file->GetY() +51 > $this->file->PageBreakTrigger){
+                $this->file->SetAutoPageBreak(1, 1);
+                $this->footer();
+                $this->file->AddPage($this->file->CurOrientation);
+                $this->encabezado($fecha, $categoryName);
+                $this->file->SetFontSize(12);
+
+            }
+            // Get next character
+            $c = $s[$i];
+            if($c=="\n")
+            {
+                // Explicit line break
                 if($this->file->ws>0)
                 {
                     $this->file->ws = 0;
                     $this->file->_out('0 Tw');
                 }
                 $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+                $i++;
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $ns = 0;
+                $nl++;
+                if($border && $nl==2)
+                    $b = $b2;
+                continue;
+            }
+            if($c==' ')
+            {
+                $sep = $i;
+                $ls = $l;
+                $ns++;
+            }
+            $l += $cw[$c];
+            if($l>$wmax)
+            {
+                // Automatic line break
+                if($sep==-1)
+                {
+                    if($i==$j)
+                        $i++;
+                    if($this->file->ws>0)
+                    {
+                        $this->file->ws = 0;
+                        $this->file->_out('0 Tw');
+                    }
+                    $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+                }
+                else
+                {
+                    if($align=='J')
+                    {
+                        $this->file->ws = ($ns>1) ? ($wmax-$ls)/1000*$this->file->FontSize/($ns-1) : 0;
+                        $this->file->_out(sprintf('%.3F Tw',$this->file->ws*$this->file->k));
+                    }
+                    $this->file->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
+                    $i = $sep+1;
+                }
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $ns = 0;
+                $nl++;
+                if($border && $nl==2)
+                    $b = $b2;
             }
             else
-            {
-                if($align=='J')
-                {
-                    $this->file->ws = ($ns>1) ? ($wmax-$ls)/1000*$this->file->FontSize/($ns-1) : 0;
-                    $this->file->_out(sprintf('%.3F Tw',$this->file->ws*$this->file->k));
-                }
-                $this->file->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
-                $i = $sep+1;
-            }
-            $sep = -1;
-            $j = $i;
-            $l = 0;
-            $ns = 0;
-            $nl++;
-            if($border && $nl==2)
-                $b = $b2;
+                $i++;
         }
-        else
-            $i++;
+        // Last chunk
+        if($this->file->ws>0)
+        {
+            $this->file->ws = 0;
+            $this->file->_out('0 Tw');
+        }
+        if($border && strpos($border,'B')!==false)
+            $b .= 'B';
+        $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+        $this->file->x = $this->file->lMargin;
     }
-    // Last chunk
-    if($this->file->ws>0)
-    {
-        $this->file->ws = 0;
-        $this->file->_out('0 Tw');
+
+
+    function petMedicineDocument($listMedicine){
+
+        $response = new stdClass();
+        $mascota = "";
+
+        if (isset($listMedicine[0]["nombre"])){
+            $mascota = $listMedicine[0]["nombre"];
+        }
+
+        $large = (16 + count($listMedicine)) * 10;
+        $this->file = new FPDF('P','mm',array(80,$large)); // Tamaño tickt 80mm x 150 mm (largo aprox)
+        $this->file->SetMargins(5, 10, 5);
+
+        $this->file->AddPage();
+        $this->file->SetAutoPageBreak(1, 1);
+        $this->file->SetFont('helvetica','',10);
+
+
+        $this->encabezadoTicketVacunas($mascota);
+
+        $this->file->Ln(5);
+
+        foreach ($listMedicine as $row) {
+
+            $ultimaDosis = date("d/m/y", strtotime($row['fechaUltimaDosis']) );
+            $proximaDosis = date("d/m/y", strtotime($row['fechaProximaDosis']) );
+
+            $this->file->SetFont('Helvetica','B',12);
+            $this->file->setX(10);
+            $this->file->MultiCell(0,7,iconv("UTF-8", "windows-1252",$row['nombreVacuna']),0,"L");
+
+            $this->file->SetFont('Helvetica','',12);
+            $this->file->setX(15);
+            $this->file->MultiCell(0,7,iconv("UTF-8", "windows-1252","Aplicada el día: ".$ultimaDosis),0,"L");
+            $this->file->setX(15);
+            $this->file->MultiCell(0,7,iconv("UTF-8", "windows-1252","Vence: ".$proximaDosis),0,"L");
+            $this->file->Ln(3);
+
+        }
+
+        $nameFile = "vacunas_".date("Ymd");
+
+        $this->file->Output("F","imprimibles/$nameFile.pdf");
+        $response->result = 2;
+        $response->name = $nameFile;
+        return $response;
+
     }
-    if($border && strpos($border,'B')!==false)
-        $b .= 'B';
-    $this->file->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
-    $this->file->x = $this->file->lMargin;
-}
+
+
+    function encabezadoTicketVacunas($mascota){
+
+        $this->file->Image('..\public\img\imprimibles.jpeg',10,10,30);
+        $this->file->SetFont('Helvetica','',8);
+        $this->file->Cell(0,10,date("d/m/y"),0,2,'R');
+
+        $this->file->Ln(7);
+        $this->file->SetFont('Helvetica','B',18);
+        $this->file->MultiCell(0,5,iconv("UTF-8", "windows-1252",ucfirst($mascota)),0,"C");
+
+    }
 
 }
 	

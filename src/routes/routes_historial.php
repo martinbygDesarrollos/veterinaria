@@ -12,6 +12,7 @@ return function (App $app) {
 	$container = $app->getContainer();
 	$historialesController = new ctr_historiales();
 	$userController = new ctr_usuarios();
+	$petController = new ctr_mascotas();
 
     $fpdf = new Pdf();
     $utils = new Utils();

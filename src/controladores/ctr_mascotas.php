@@ -1198,4 +1198,9 @@ class ctr_mascotas {
 
 	}
 
+	public function getMedicineToDocument($idMascota){
+
+		$serviciosMascotaClass = new serviciosMascota();
+		return $serviciosMascotaClass->getMedicineToDocument( $idMascota );
+	}
 }
