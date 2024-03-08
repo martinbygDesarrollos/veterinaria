@@ -32,7 +32,7 @@ $("#formConfirmFileHistory").submit(function(e) {
 	    	setTimeout(()=>{
 	    		//console.log("no se ha cargado id de historia, se llama al submit nuevamente");
 	    		$("#formConfirmFileHistory").trigger("submit");
-	    	}, 200);
+	    	}, 10000);
 	    }
 	}else{
 		//console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
@@ -346,9 +346,9 @@ function crearHistoriaClinica(idMascota){
 		limitHisto = 0;
 		$('#tbodyHistoriaClinica').empty();
 		cargarHistoriaClinica(idMascota);
-		/*idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
-		let newHistoria = response.newHistoria;
-		$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));*/
+		idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
+		//let newHistoria = response.newHistoria;
+		//$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));
 	}
 }
 
@@ -462,8 +462,8 @@ function verHistoriaClinica(idHistoria){
 
 			histUsuario = "";
 			if ( historia.idUsuario == 0){
-				histUsuario = "Veterinaria";
-			}else histUsuario = historia.usuario;
+				histUsuario = "Sin usuario";
+			}else histUsuario = historia.nomUsuario;
 
 
 			var modal = document.getElementById("modalViewDialog");

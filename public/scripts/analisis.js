@@ -34,7 +34,7 @@ $("#formConfirmFileAnalisisMasc").submit(function(e) {
 	    	setTimeout(()=>{
 	    		console.log("no se ha cargado, se llama al submit nuevamente");
 	    		$("#formConfirmFileAnalisisMasc").trigger("submit");
-	    	}, 200);
+	    	}, 10000);
 	    }
 	}else{
 		console.log('en el formulario -analisis- por guardar archivos, pero no se cargaron archivos, saliendo');

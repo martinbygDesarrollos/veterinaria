@@ -70,10 +70,9 @@ class historiales{
 
 
 			$historia->nomUsuario = "Sin usuario";
-			if ( $historia->idUsuario ){
+			if (isset($historia->idUsuario) && $historia->idUsuario > 0 ){
 				$user = $usersClass->getUser($historia->idUsuario);
 				if ($user->result == 2){
-
 					$historia->nomUsuario = $user->objectResult->nombre;
 				}
 			}
