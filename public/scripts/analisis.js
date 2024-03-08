@@ -221,7 +221,9 @@ function verAnalisis(idAnalisis){
 		if ( !phoneSocio ){
 			console.log("pidiendo numero de tel del socio");
 			let responseSocio = sendPost("getSocioPorMascota", {idMascota: response.objectResult.idMascota});
-			phoneSocio = responseSocio.socio.telefax;
+			if (responseSocio.socio){
+				phoneSocio = responseSocio.socio.telefax;
+			}
 		}
 
 		$("#titleModalView").html("Análisis");
