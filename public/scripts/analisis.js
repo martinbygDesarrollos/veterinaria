@@ -230,6 +230,11 @@ function verAnalisis(idAnalisis){
 		$('#dateModalView').html("<b>Diagnositico:</b> " + analisis.fecha);
 		$("#textModalView").html("<b>Nombre:</b> " + analisis.nombre + "<hr><b>Detalle: </b>" + analisis.detalle + "<hr>");
 
+		//tabla que muestra temperatura y otros datos en la historia clínica
+		$("#divDetailsTableModalView table tbody").empty();
+		$("#divDetailsTableModalView").attr("hidden", true);
+		$("#divDetailsTableModalView").attr("disabled", true);
+
 		if ( analisis.archivos ){
 			$("#divFilesTableModalView table tbody").empty();
 			$("#divFilesTableModalView").attr("hidden", true);
@@ -259,9 +264,9 @@ function verAnalisis(idAnalisis){
 
 
 		$("#divButtonLeftModalView").attr("hidden",true);
-		$("#divButtonLeftModalView").attr("disable",true);
+		$("#divButtonLeftModalView").attr("disabled",true);
 		$("#divButtonRightModalView").attr("hidden",true);
-		$("#divButtonRightModalView").attr("disable",true);
+		$("#divButtonRightModalView").attr("disabled",true);
 
 
 		var modal = document.getElementById("modalViewDialog");

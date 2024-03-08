@@ -528,12 +528,12 @@ function verHistoriaClinica(idHistoria){
 				$("#divDetailsTableModalView table tbody").append(row);
 
 				$("#divDetailsTableModalView").attr("hidden", false);
-				$("#divDetailsTableModalView").attr("disable", false);
+				$("#divDetailsTableModalView").attr("disabled", false);
 			}else{
 				$("#divDetailsTableModalView table tbody").empty();
 
 				$("#divDetailsTableModalView").attr("hidden", true);
-				$("#divDetailsTableModalView").attr("disable", true);
+				$("#divDetailsTableModalView").attr("disabled", true);
 			}
 
 
