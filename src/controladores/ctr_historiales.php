@@ -351,6 +351,116 @@ class ctr_historiales {
    		$historialesClass = new historiales();
 		return $historialesClass->getHistoryDocument( $idMascota, $desde, $hasta);
    	}
+
+
+
+   	public function saveFileLocal($category, $idCategory, $filename, $filesize, $start, $end){
+
+
+   		$historialesController = new ctr_historiales();
+
+   		$response = new stdClass();
+		$response->result = 2;
+		$response->message = "Archivos almacenados correctamente";
+		$responseMessage = "Ocurrió un error al guardar los siguientes archivos: ";
+
+   		$arrayErrores = $historialesController->guardarArvhivos($category, $filename, $filesize, $start, $end);
+   		foreach ($arrayErrores as $value) {
+   			if ($value["result"] === false) {
+				$response->result = 1;
+   				$responseMessage .= $value["nameFile"]."<br>";
+   			}else{
+   				//guardar el registro en la base de datos
+	   			$historialesClass = new historiales();
+				$responsebd = $historialesClass->saveFilePath($category, $idCategory, $value["nameFile"], $value["pathFile"]);
+				if ($responsebd->result != 2) {
+					$response->result = 1;
+					$responseMessage .= $value["nameFile"]."<br>";
+				}
+
+   			}
+   		}
+
+   		if ($response->result == 1)
+   			$response->message = $responseMessage;
+
+		return $response;
+
+   	}
+
+
+   	//llega la categoria "analisismascota" o "historiasclinica"
+   	//el archivo que se subió se guarda
+   	public function guardarArvhivos($category, $filename, $filesize, $start, $end){
+   		$arrayErrores = [];
+
+   		$input = $_FILES["nameInputFile"];
+   		$name = $filename;//$input["name"];
+		$error["nameFile"] = $name;
+		$error["pathFile"] = null;
+		$error["result"] = false;
+
+		if (is_uploaded_file($input['tmp_name']) ) {
+
+			$day = date("d");
+			$month = date("m");
+			$year = date("Y");
+			$newPath = dirname(__DIR__)."/../public/files/$category/$year/$month/$day";
+
+			$chunkSize = $end - $start + 1;
+
+
+			$responsePutContent = false;
+			if ( !(file_exists($newPath) && is_dir($newPath)) ) {
+				$dirCreada = mkdir($newPath, 0777, true);
+
+				if ($dirCreada === true)
+				$responsePutContent = file_put_contents($newPath."/$name", file_get_contents($input['tmp_name']), FILE_APPEND);
+
+			}else{ //la carpeta ya estaba creada
+				$responsePutContent = file_put_contents($newPath."/$name", file_get_contents($input['tmp_name']), FILE_APPEND);
+			}
+			//$responsePutContent = file_put_contents($newPath."/$name", $input['tmp_name'], FILE_APPEND);
+
+			// Verificar si se han recibido todos los fragmentos
+			$receivedFileSize = filesize($input['tmp_name']);
+
+			if ($receivedFileSize == $chunkSize) {
+				$error["nameFile"] = $name;
+				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["result"] = $responsePutContent;
+
+			    //unlink($input['tmp_name']);
+			    //echo 'Fragmento del archivo subido correctamente.';
+			} elseif ($receivedFileSize > $chunkSize) {
+				$error["nameFile"] = $name;
+				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["result"] = $responsePutContent;
+			    // Si se recibió más de un fragmento, algo salió mal, eliminar el archivo temporal
+			    //unlink($input['tmp_name']);
+			    //echo 'Error: Se recibió más de un fragmento.';
+			} else {
+				$error["nameFile"] = $name;
+				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["result"] = $responsePutContent;
+			    // Todavía se están recibiendo fragmentos, no hacer nada por ahora
+			    //echo 'Fragmento del archivo recibido correctamente.';
+			}
+
+
+			/*$oldFile = file_get_contents($input["tmp_name"]);
+			//verificar mediante el size si $oldfile tiene el mismo contenido que el archivo original, si el size es distinto no se guarda
+
+
+*/
+		}
+
+		array_push($arrayErrores, $error);
+
+   		return $arrayErrores;
+   	}
+
+
 }
 
 ?>

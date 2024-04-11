@@ -387,6 +387,23 @@ return function (App $app) {
         else return json_encode($responseSession);
     });
 
+
+
+    $app->post('/saveFileLocal', function(Request $request, Response $response){
+        $responseSession = ctr_usuarios::validateSession();
+        if($responseSession->result == 2){
+            $data = $request->getParams();
+            $category = $data['category'];
+            $idCategory = $data['idCategory'];
+            $filename = $data['filename'];
+            $filesize = $data['filesize'];
+            $start = $data['start'];
+            $end = $data['end'];
+            return json_encode(ctr_historiales::saveFileLocal($category, $idCategory, $filename, $filesize, $start, $end));
+        }
+        else return json_encode($responseSession);
+    });
+
     //descarga el archivo
     $app->get('/descargar/{id}', function(Request $request, Response $response, $args) {
         $responseSession = ctr_usuarios::validateSession();

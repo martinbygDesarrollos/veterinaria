@@ -4,7 +4,7 @@ var phoneSocio = null;
 
 var listAllIds = [];
 
-$("#formConfirmFileHistory").submit(function(e) {
+/*$("#formConfirmFileHistory").submit(function(e) {
     e.preventDefault();
     if ( $("#idInputFileResult").val().length > 0 ){
 
@@ -13,7 +13,7 @@ $("#formConfirmFileHistory").submit(function(e) {
 	    	formData.append("category", "historiasclinica");
 	    	formData.append("idCategory", idLastHistoriaClinica);
 
-		    sendAsyncPostFiles( "saveFile", formData)
+		    sendAsyncPostFiles( "saveFileLocal", formData)
 		    .then(function(response){
 		        if ( response.result != 2 ){
 		        	$("#modalLoadResultsOrder").modal("hide");
@@ -34,6 +34,62 @@ $("#formConfirmFileHistory").submit(function(e) {
 	    		$("#formConfirmFileHistory").trigger("submit");
 	    	}, 10000);
 	    }
+	}else{
+		//console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
+	}
+});*/
+
+
+$("#formConfirmFileHistory").submit(function(e) {
+    event.preventDefault();
+    if ( $("#idInputFileResult").val().length > 0 ){
+
+	    if ( idLastHistoriaClinica ){
+
+
+	    	var files = document.getElementById('idInputFileResult').files;
+	    	for (var i = 0; i < files.length; i++) {
+	    		var file = files[i];
+
+	    		var chunkSize = 1024 * 1024; // 1 MB (tamaño del fragmento)
+			    var start = 0;
+
+			    function uploadChunk() {
+			        let chunk = file.slice(start, start + chunkSize);
+
+			        var formData = new FormData();
+			    	formData.append("category", "historiasclinica");
+			    	formData.append("idCategory", idLastHistoriaClinica);
+			    	formData.append("filename", file.name);
+			    	formData.append("filesize", file.size);
+			    	formData.append("start", start);
+			    	formData.append("end", (start + chunkSize - 1));
+        			formData.append('nameInputFile', chunk, file.name + '_' + start); // Agregar fragmento al FormData
+
+			        sendAsyncPostFiles("saveFileLocal", formData)
+			        .then((response)=>{
+			        	console.log(response);
+			        	if (start < file.size) {
+			                start += chunkSize;
+			                uploadChunk();
+			            } else {
+			                console.log('Archivo subido exitosamente.');
+			            }
+			        })
+
+			    }
+
+			    uploadChunk();
+
+	    	}
+
+    	}else{
+	    	setTimeout(()=>{
+	    		//console.log("no se ha cargado id de historia, se llama al submit nuevamente");
+	    		$("#formConfirmFileHistory").trigger("submit");
+	    	}, 10000);
+	    }
+
 	}else{
 		//console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
 	}
