@@ -333,6 +333,14 @@ input[type=number] {
 }
 
 
+.progressBar{
+  animation-name: loadProgress;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-direction: alternate;
+}
+
 
 
 @media (min-width: 769px) and (max-width: 1366px) {
