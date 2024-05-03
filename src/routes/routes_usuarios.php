@@ -397,9 +397,9 @@ return function (App $app) {
             $idCategory = $data['idCategory'];
             $filename = $data['filename'];
             $filesize = $data['filesize'];
-            $start = $data['start'];
-            $end = $data['end'];
-            return json_encode(ctr_historiales::saveFileLocal($category, $idCategory, $filename, $filesize, $start, $end));
+            $chunksize = $data['chunksize'];
+            $currentsize = $data['currentsize'];
+            return json_encode(ctr_historiales::saveFileLocal($category, $idCategory, $filename, $filesize, $chunksize, $currentsize));
         }
         else return json_encode($responseSession);
     });

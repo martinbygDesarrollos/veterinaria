@@ -179,11 +179,8 @@ class historiales{
 
 
 	public function saveFilePath($category, $idCategory, $name, $path){
-		$bd = new DataBase();
-
-		$query = "INSERT INTO media (`categoria`, `idCategoria`, `nombre`, `ruta`) VALUES ($category, $idCategory, $name, $path) ";
-
-		return $bd->sendQuery($query, null, "BOOLE");
+		$query = "INSERT INTO media (`categoria`, `idCategoria`, `nombre`, `ruta`) VALUES (?,?,?,?) ";
+		return DataBase::sendQuery($query, array("ssss", $category, $idCategory, $name, $path), "BOOLE");
 
 	}
 

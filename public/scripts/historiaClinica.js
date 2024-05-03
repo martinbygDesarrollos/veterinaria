@@ -1,87 +1,54 @@
 let limitHisto = 0;
 var idLastHistoriaClinica = null;
 var phoneSocio = null;
-
+var currentsize = []; // tamaño actual del archivo subido
+const chunkSize = 1024 * 1024; // 1 MB (tamaño del fragmento)
 var listAllIds = [];
-
-/*$("#formConfirmFileHistory").submit(function(e) {
-    e.preventDefault();
-    if ( $("#idInputFileResult").val().length > 0 ){
-
-	    if ( idLastHistoriaClinica ){
-	    	var formData = new FormData(this);
-	    	formData.append("category", "historiasclinica");
-	    	formData.append("idCategory", idLastHistoriaClinica);
-
-		    sendAsyncPostFiles( "saveFileLocal", formData)
-		    .then(function(response){
-		        if ( response.result != 2 ){
-		        	$("#modalLoadResultsOrder").modal("hide");
-		        	showReplyMessage(response.result, response.message, "Historia clínica", null, true);
-		        }else{
-		        	$("#modalLoadResultsOrder").modal("hide");
-		        	window.location.reload();
-		        }
-		    })
-		    .catch(function(response){
-		        $("#modalLoadResultsOrder").modal("hide");
-		        alert(response.message);
-		        //console.log(response);
-		    })
-	    }else{
-	    	setTimeout(()=>{
-	    		//console.log("no se ha cargado id de historia, se llama al submit nuevamente");
-	    		$("#formConfirmFileHistory").trigger("submit");
-	    	}, 10000);
-	    }
-	}else{
-		//console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
-	}
-});*/
-
 
 $("#formConfirmFileHistory").submit(function(e) {
     event.preventDefault();
+    $("#modalHistoriaClinica").modal("hide");
+	$("#modalHistoriaClinica").hide();
+
+
+    let errores = {}
+    errores.result = 2;
+	errores.message = "Archivos subidos correctamente.";
+
+	/*progressBarId = loadPrograssBar();
+    $('#progressbar h5').text("Subiendo archivos...");
+    $('#progressbar').modal({
+        backdrop: 'static'
+    })*/
+
+
     if ( $("#idInputFileResult").val().length > 0 ){
 
+
 	    if ( idLastHistoriaClinica ){
+    		var files = document.getElementById('idInputFileResult').files;
+    		let errormessage = "Error al subir los siguientes archivos:<br>";
 
 
-	    	var files = document.getElementById('idInputFileResult').files;
-	    	for (var i = 0; i < files.length; i++) {
-	    		var file = files[i];
+			for (var i = 0; i < files.length; i++) {
 
-	    		var chunkSize = 1024 * 1024; // 1 MB (tamaño del fragmento)
-			    var start = 0;
+	    		let file = files[i];
+	    		currentsize[i] = 0;
+			    let start = 0;
+			    let respuesta = uploadChunk(file, currentsize[i], start);
 
-			    function uploadChunk() {
-			        let chunk = file.slice(start, start + chunkSize);
-
-			        var formData = new FormData();
-			    	formData.append("category", "historiasclinica");
-			    	formData.append("idCategory", idLastHistoriaClinica);
-			    	formData.append("filename", file.name);
-			    	formData.append("filesize", file.size);
-			    	formData.append("start", start);
-			    	formData.append("end", (start + chunkSize - 1));
-        			formData.append('nameInputFile', chunk, file.name + '_' + start); // Agregar fragmento al FormData
-
-			        sendAsyncPostFiles("saveFileLocal", formData)
-			        .then((response)=>{
-			        	console.log(response);
-			        	if (start < file.size) {
-			                start += chunkSize;
-			                uploadChunk();
-			            } else {
-			                console.log('Archivo subido exitosamente.');
-			            }
-			        })
+			    if(respuesta){
+			    	if(respuesta.result != 2){
+			    		errores.result = 1;
+						errormessage += respuesta.nameFile + "<br>"
+						errores.message = errormessage
+			    	}
 
 			    }
 
-			    uploadChunk();
-
 	    	}
+
+
 
     	}else{
 	    	setTimeout(()=>{
@@ -90,12 +57,45 @@ $("#formConfirmFileHistory").submit(function(e) {
 	    	}, 10000);
 	    }
 
-	}else{
-		//console.log('en el formulario -historia clinica- por guardar archivos, pero no se cargaron archivos, saliendo');
 	}
+
+
+
 });
 
+function uploadChunk( file, currentsize, start) {
+    let chunk = file.slice(start, start + chunkSize);
+    var formData = new FormData();
+	formData.append("category", "historiasclinica");
+	formData.append("idCategory", idLastHistoriaClinica);
+	formData.append("filename", file.name);
+	formData.append("filesize", file.size);
+	formData.append("chunksize", chunk.size);
+	formData.append("currentsize", currentsize);
+	formData.append('nameInputFile', chunk, file.name + '_' + start); // Agregar fragmento al FormData
 
+
+    //let response = sendPostFiles("saveFileLocal", formData)
+    sendAsyncPostFiles("saveFileLocal", formData)
+    .then((response)=>{
+    	if (response.currentsize && file.name == response.nameFile){
+			currentsize = response.currentsize
+
+			if (currentsize < file.size ){
+	            start += chunkSize;
+	            return uploadChunk(file, currentsize, start);
+	        } else if(response.result == 2) {
+	        	if (response.currentsize == currentsize)
+	            	currentsize = 0;
+
+				return response;
+	        }else if(response.result == 0) {
+	        	return response;
+	        }
+		}
+    })
+
+}
 
 function getAllIdListHistory(id){
 	//console.log("buscar todos los ids");
@@ -397,7 +397,7 @@ function crearHistoriaClinica(idMascota){
 		tllc: tllc
 	};
 	let response = sendPost("agregarHistoriaClinica", data);
-	showReplyMessage(response.result, response.message, "Historia clínica", "modalHistoriaClinica");
+	//showReplyMessage(response.result, response.message, "Historia clínica", "modalHistoriaClinica");
 	if(response.result == 2){
 		limitHisto = 0;
 		$('#tbodyHistoriaClinica').empty();

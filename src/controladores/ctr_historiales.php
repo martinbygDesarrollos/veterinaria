@@ -354,51 +354,40 @@ class ctr_historiales {
 
 
 
-   	public function saveFileLocal($category, $idCategory, $filename, $filesize, $start, $end){
+   	public function saveFileLocal($category, $idCategory, $filename, $filesize, $chunksize, $currentsize){
 
 
    		$historialesController = new ctr_historiales();
 
-   		$response = new stdClass();
-		$response->result = 2;
-		$response->message = "Archivos almacenados correctamente";
-		$responseMessage = "Ocurrió un error al guardar los siguientes archivos: ";
+   		$errorChunk = $historialesController->guardarArvhivos($category, $filename, $filesize, $chunksize, $currentsize);
+		if ($errorChunk["result"] === 2) {
+			//guardar el registro en la base de datos
+			$historialesClass = new historiales();
+			$responsebd = $historialesClass->saveFilePath($category, $idCategory, $errorChunk["nameFile"], $errorChunk["pathFile"]);
+			if ($responsebd->result != 2) {
+				unset($errorChunk["pathFile"]);
+				$errorChunk[$key]["result"] = 0;
+			}
 
-   		$arrayErrores = $historialesController->guardarArvhivos($category, $filename, $filesize, $start, $end);
-   		foreach ($arrayErrores as $value) {
-   			if ($value["result"] === false) {
-				$response->result = 1;
-   				$responseMessage .= $value["nameFile"]."<br>";
-   			}else{
-   				//guardar el registro en la base de datos
-	   			$historialesClass = new historiales();
-				$responsebd = $historialesClass->saveFilePath($category, $idCategory, $value["nameFile"], $value["pathFile"]);
-				if ($responsebd->result != 2) {
-					$response->result = 1;
-					$responseMessage .= $value["nameFile"]."<br>";
-				}
+		}
 
-   			}
-   		}
-
-   		if ($response->result == 1)
-   			$response->message = $responseMessage;
-
-		return $response;
+		return $errorChunk;
 
    	}
 
 
    	//llega la categoria "analisismascota" o "historiasclinica"
    	//el archivo que se subió se guarda
-   	public function guardarArvhivos($category, $filename, $filesize, $start, $end){
-   		$arrayErrores = [];
+   	//el currentsize es un valor que yo retorno en la respuesta y viene como parametro nuevamente cada vez que viene un chunk, sirve para controlar si hay errores en la subida
+   	public function guardarArvhivos($category, $filename, $totalfilesize, $chunksize, $currentsize){
+   		$response = new stdClass();
 
    		$input = $_FILES["nameInputFile"];
    		$name = $filename;//$input["name"];
 		$error["nameFile"] = $name;
 		$error["pathFile"] = null;
 		$error["result"] = false;
+
 
 		if (is_uploaded_file($input['tmp_name']) ) {
 
@@ -407,57 +396,64 @@ class ctr_historiales {
 			$year = date("Y");
 			$newPath = dirname(__DIR__)."/../public/files/$category/$year/$month/$day";
 
-			$chunkSize = $end - $start + 1;
-
+			if (file_exists($newPath."/$name")){
+				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["result"] = 2;
+				$error["currentsize"] = $currentsize;
+			}
 
 			$responsePutContent = false;
 			if ( !(file_exists($newPath) && is_dir($newPath)) ) {
 				$dirCreada = mkdir($newPath, 0777, true);
 
 				if ($dirCreada === true)
-				$responsePutContent = file_put_contents($newPath."/$name", file_get_contents($input['tmp_name']), FILE_APPEND);
+					$responsePutContent = file_put_contents($newPath."/$name", file_get_contents($input['tmp_name']), FILE_APPEND);
 
 			}else{ //la carpeta ya estaba creada
 				$responsePutContent = file_put_contents($newPath."/$name", file_get_contents($input['tmp_name']), FILE_APPEND);
 			}
-			//$responsePutContent = file_put_contents($newPath."/$name", $input['tmp_name'], FILE_APPEND);
 
-			// Verificar si se han recibido todos los fragmentos
-			$receivedFileSize = filesize($input['tmp_name']);
+			if ($responsePutContent)
+				$currentsize += $responsePutContent;
 
-			if ($receivedFileSize == $chunkSize) {
-				$error["nameFile"] = $name;
-				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
-				$error["result"] = $responsePutContent;
 
-			    //unlink($input['tmp_name']);
-			    //echo 'Fragmento del archivo subido correctamente.';
-			} elseif ($receivedFileSize > $chunkSize) {
-				$error["nameFile"] = $name;
+			if ($totalfilesize == $currentsize ) { //archivo subido correctamente
 				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
-				$error["result"] = $responsePutContent;
-			    // Si se recibió más de un fragmento, algo salió mal, eliminar el archivo temporal
-			    //unlink($input['tmp_name']);
-			    //echo 'Error: Se recibió más de un fragmento.';
-			} else {
-				$error["nameFile"] = $name;
+				$error["result"] = 2;
+				$error["currentsize"] = $currentsize;
+
+   				return $error;
+
+			}else if ($totalfilesize > $currentsize){ //aun quedan chunks por subir
 				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
-				$error["result"] = $responsePutContent;
-			    // Todavía se están recibiendo fragmentos, no hacer nada por ahora
-			    //echo 'Fragmento del archivo recibido correctamente.';
+				$error["result"] = 1;
+				$error["currentsize"] = $currentsize;
+
+		   		return $error;
+			}else if ($chunksize != filesize($input['tmp_name'])){ //chunk con error
+				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["result"] = 0;
+				$error["currentsize"] = $currentsize;
+
+				$ruta = $newPath."/".$name;
+				unset($ruta);
+
+   				return $error;
+			}else{
+				$error["pathFile"] = null;
+				$error["result"] = 0;
+				$error["currentsize"] = $currentsize;
+
+				$ruta = $newPath."/".$name;
+				unset($ruta);
+
+   				return $error;
+
 			}
 
-
-			/*$oldFile = file_get_contents($input["tmp_name"]);
-			//verificar mediante el size si $oldfile tiene el mismo contenido que el archivo original, si el size es distinto no se guarda
-
-
-*/
 		}
 
-		array_push($arrayErrores, $error);
-
-   		return $arrayErrores;
+   		return $error;
    	}
 
 

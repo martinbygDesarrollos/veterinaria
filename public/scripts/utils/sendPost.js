@@ -55,12 +55,36 @@ function sendAsyncPostFiles(nombreFuncion, formData){ //fromData es un new FormD
 				var response = jQuery.parseJSON(response);
 				resolve(response);
 	        },
-	        error: function (response) {
-				reject(response.status, response.statusText);
+	        error: function (jqXHR, textStatus, errorThrown) {
+				var response = {result:0, message:errorThrown}
+				resolve(response);
 			},
 	        cache: false,
 	        contentType: false,
 	        processData: false
 	    });
 	});
+}
+
+
+function sendPostFiles(nombreFuncion, formData){ //fromData es un new FormData(this)
+	let result = {result:0, message:""}
+	$.ajax({
+		async:false,
+		url: getSiteURL() + nombreFuncion,
+		type: 'POST',
+		data: formData,
+		success: function (response) {
+		    response = response.trim();
+			result = jQuery.parseJSON(response);
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			result = {result:0, message:errorThrown}
+		},
+		cache: false,
+		contentType: false,
+		processData: false
+	});
+
+	return result;
 }
