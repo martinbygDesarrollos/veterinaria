@@ -472,40 +472,6 @@ function verHistoriaClinica(idHistoria){
 
 	let idHistoriaClinicaSiguiente = null; let idHistoriaClinicaPrevia = null;
 
-	/*$("#divButtonLeftModalView").
-	$("#divButtonLeftModalView").
-	$("#divButtonLeftModalView").
-	$("#divButtonLeftModalView").*/
-
-
-/*
-	$("#divButtonLeftModalView").empty();
-	let buttonl = '<button type="button" class="btn" disabled ><i class="fas fa-arrow-left"></i></button>';
-	$("#divButtonLeftModalView").append(buttonl);
-
-
-	$("#divButtonRightModalView").empty();
-	let buttonr = '<button type="button" class="btn" disabled ><i class="fas fa-arrow-right"></i></button>';
-	$("#divButtonRightModalView").append(buttonr);
-
-
-	if ( listAllIds[pos -1] ){
-		idHistoriaClinicaSiguiente = listAllIds[pos -1].idHistoriaClinica;
-		$("#divButtonLeftModalView").empty();
-		buttonl = '<button type="button" class="btn" onclick="verHistoriaClinica('+idHistoriaClinicaSiguiente+')"><i class="fas fa-arrow-left"></i></button>';
-		$("#divButtonLeftModalView").append(buttonl);
-	}
-
-
-	if ( listAllIds[pos +1] ){
-		idHistoriaClinicaPrevia = listAllIds[pos +1].idHistoriaClinica;
-		$("#divButtonRightModalView").empty();
-		buttonr = '<button type="button" class="btn" onclick="verHistoriaClinica('+idHistoriaClinicaPrevia+')" ><i class="fas fa-arrow-right"></i></button>';
-		$("#divButtonRightModalView").append(buttonr);
-	}*/
-
-
-
 	sendAsyncPost("getHistoriaClinicaToShow", {idHistoriaClinica: idHistoria})
 	.then(( response )=>{
 
@@ -540,7 +506,13 @@ function verHistoriaClinica(idHistoria){
 
 				//divFilesTableModalView
 				for (var i = 0; i < historia.archivos.length; i++) {
-					let row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Ver archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')">ver</button></td><td class="text-center"></td></tr>';
+					let arch = historia.archivos[i];
+					let row = null;
+					if (typeof arch.ruta !== 'undefined' && arch.ruta !== null && arch.ruta !== ''){
+						row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Ver archivo"class="btn bg-light" onclick="downloadFilePath('+historia.archivos[i].idMedia+')">ver</button></td><td class="text-center"></td></tr>';
+					}else{
+						row = '<tr><td>'+historia.archivos[i].nombre+'</td><td class="text-center"><button title="Ver archivo"class="btn bg-light" onclick="downloadFile('+historia.archivos[i].idMedia+')">ver</button></td><td class="text-center"></td></tr>';
+					}
 
 					$("#divFilesTableModalView table tbody").append(row);
 				}
@@ -688,5 +660,35 @@ function showNextHistoriaClinica(){
 
 function showPreviousHistoriaClinica(){
 	verHistoriaClinica(idHistoria)
+
+}
+
+
+function downloadFilePath( idMedia ){
+
+	sendAsyncPost("getPathFileByIdMedia", {id: idMedia})
+	.then(( response )=>{
+		console.log(response)
+		if (response.result == 2){
+
+			let file = response.objectResult;
+			window.location.href = getSiteURL() + 'downloadFile.php?path='+file.ruta+'&category='+file.categoria;
+
+			/*var data = new FormData();
+			data.append("path",file.ruta);
+			data.append("name",file.nombre);
+			data.append("category",file.categoria);
+
+			fetch(getSiteURL() + 'downloadfile.php', {
+			  method: "GET",
+			  body: data
+			});*/
+
+
+		}else{
+			showReplyMessage(response.result, response.message, "Archivos", null)
+		}
+
+	});
 
 }

@@ -209,5 +209,14 @@ return function (App $app) {
         }else return json_encode($responseSession);
     });
 
+
+    $app->post('/getPathFileByIdMedia', function(Request $request, Response $response) use ($userController, $historialesController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+            $filedata = $historialesController->getFileById( $request->getParams()["id"] );
+            return json_encode($filedata);
+        }else return json_encode($responseSession);
+    });
+
 }
 ?>

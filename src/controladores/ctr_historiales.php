@@ -325,7 +325,7 @@ class ctr_historiales {
 
    	public function getFileById($id){
    		$responseQuery = DataBase::sendQuery("
-			SELECT archivo, nombre FROM media
+			SELECT archivo, nombre, categoria, ruta FROM media
 			WHERE idMedia = ? ",
 			array('i', $id), "OBJECT");
 		if($responseQuery->result == 1)
@@ -418,20 +418,20 @@ class ctr_historiales {
 
 
 			if ($totalfilesize == $currentsize ) { //archivo subido correctamente
-				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["pathFile"] = "/$year/$month/$day/$name";
 				$error["result"] = 2;
 				$error["currentsize"] = $currentsize;
 
    				return $error;
 
 			}else if ($totalfilesize > $currentsize){ //aun quedan chunks por subir
-				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["pathFile"] = "/$year/$month/$day/$name";
 				$error["result"] = 1;
 				$error["currentsize"] = $currentsize;
 
 		   		return $error;
 			}else if ($chunksize != filesize($input['tmp_name'])){ //chunk con error
-				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["pathFile"] = "/$year/$month/$day/$name";
 				$error["result"] = 0;
 				$error["currentsize"] = $currentsize;
 
