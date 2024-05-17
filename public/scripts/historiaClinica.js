@@ -11,20 +11,18 @@ $("#formConfirmFileHistory").submit(async function(e) {
 	$("#modalHistoriaClinica").hide();
 
 
-    let errores = {}
-    errores.result = 2;
-	errores.message = "Archivos subidos correctamente.";
-
-	progressBarId = loadPrograssBar();
-    $('#progressbar h5').text("Subiendo archivos...");
-	$("#progressbar").modal("show");
-
-
-
     if ( $("#idInputFileResult").val().length > 0 ){
 
 
 	    if ( idLastHistoriaClinica ){
+	    	let errores = {}
+		    errores.result = 2;
+			errores.message = "Archivos subidos correctamente.";
+
+			progressBarId = loadPrograssBar();
+		    $('#progressbar h5').text("Subiendo archivos...");
+			$("#progressbar").modal("show");
+
     		const files = document.getElementById('idInputFileResult').files;
     		let errormessage = "Error al subir los siguientes archivos:<br>";
 

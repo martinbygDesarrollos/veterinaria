@@ -359,7 +359,7 @@ class ctr_historiales {
 
    		$historialesController = new ctr_historiales();
 
-   		$errorChunk = $historialesController->guardarArvhivos($category, $filename, $filesize, $chunksize, $currentsize);
+   		$errorChunk = $historialesController->guardarArvhivos($category, $idCategory, $filename, $filesize, $chunksize, $currentsize);
 		if ($errorChunk["result"] === 2) {
 			//guardar el registro en la base de datos
 			$historialesClass = new historiales();
@@ -379,7 +379,7 @@ class ctr_historiales {
    	//llega la categoria "analisismascota" o "historiasclinica"
    	//el archivo que se subió se guarda
    	//el currentsize es un valor que yo retorno en la respuesta y viene como parametro nuevamente cada vez que viene un chunk, sirve para controlar si hay errores en la subida
-   	public function guardarArvhivos($category, $filename, $totalfilesize, $chunksize, $currentsize){
+   	public function guardarArvhivos($category, $idCategory, $filename, $totalfilesize, $chunksize, $currentsize){
    		$response = new stdClass();
 
    		$input = $_FILES["nameInputFile"];
@@ -390,14 +390,10 @@ class ctr_historiales {
 
 
 		if (is_uploaded_file($input['tmp_name']) ) {
-
-			$day = date("d");
-			$month = date("m");
-			$year = date("Y");
-			$newPath = dirname(__DIR__)."/../public/files/$category/$year/$month/$day";
+			$newPath = dirname(__DIR__)."/../public/files/$category/$idCategory";
 
 			if (file_exists($newPath."/$name")){
-				$error["pathFile"] = "/public/files/$category/$year/$month/$day/$name";
+				$error["pathFile"] = "/public/files/$category/$idCategory/$name";
 				$error["result"] = 2;
 				$error["currentsize"] = $currentsize;
 			}
@@ -418,20 +414,20 @@ class ctr_historiales {
 
 
 			if ($totalfilesize == $currentsize ) { //archivo subido correctamente
-				$error["pathFile"] = "/$year/$month/$day/$name";
+				$error["pathFile"] = "/$idCategory/$name";
 				$error["result"] = 2;
 				$error["currentsize"] = $currentsize;
 
    				return $error;
 
 			}else if ($totalfilesize > $currentsize){ //aun quedan chunks por subir
-				$error["pathFile"] = "/$year/$month/$day/$name";
+				$error["pathFile"] = "/$idCategory/$name";
 				$error["result"] = 1;
 				$error["currentsize"] = $currentsize;
 
 		   		return $error;
 			}else if ($chunksize != filesize($input['tmp_name'])){ //chunk con error
-				$error["pathFile"] = "/$year/$month/$day/$name";
+				$error["pathFile"] = "/$idCategory/$name";
 				$error["result"] = 0;
 				$error["currentsize"] = $currentsize;
 

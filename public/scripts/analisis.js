@@ -7,39 +7,114 @@ $("#formConfirmFileAnalisisMasc").submit(function(e) {
     e.preventDefault();
     console.log("formulario archivos en nuevo analisis");
 
+    $("#modalLoadResultsOrder").modal("hide");
+	$("#modalLoadResultsOrder").hide();
+
+
     if ($("#idInputFileAnalisisMasc").val().length){
-	    if ( idLastAnalisis ){
-	    	var formData = new FormData(this);
-	    	console.log(formData);
+	    if ( idLastAnalisis !== null && idLastAnalisis > 0 ){
+	    	let errores = {}
+		    errores.result = 2;
+			errores.message = "Archivos subidos correctamente.";
 
-	    	formData.append("category", "analisismascota");
-	    	formData.append("idCategory", idLastAnalisis);
+			const progressBarIdAnalisis = loadPrograssBar();
+		    $('#progressbar h5').text("Subiendo archivos...");
+			$("#progressbar").modal("show");
 
-		    sendAsyncPostFiles( "saveFile", formData)
-		    .then(function(response){
-		        if ( response.result != 2 ){
-		        	$("#modalLoadResultsOrder").modal("hide");
-		        	showReplyMessage(response.result, response.message, "Análisis", null, true);
-		        }else{
-		        	$("#modalLoadResultsOrder").modal("hide");
-		        	window.location.reload();
-		        }
-		    })
-		    .catch(function(response){
-		        $("#modalLoadResultsOrder").modal("hide");
-		        alert(response.message);
-		        //console.log(response);
-		    })
+	    	const files = document.getElementById('idInputFileAnalisisMasc').files;
+    		let errormessage = "Error al subir los siguientes archivos:<br>";
+
+
+			for (var i = 0; i < files.length; i++) {
+
+	    		let file = files[i];
+	    		currentsize[i] = 0;
+			    let start = 0;
+			    uploadChunkAnalisis(file, currentsize[i], start)
+			    .then((respuesta)=>{
+			    	if(respuesta){
+				    	if(respuesta.result != 2){
+				    		errores.result = 1;
+							errormessage += respuesta.nameFile + "<br>"
+							errores.message = errormessage
+
+							stopPrograssBar(progressBarIdAnalisis);
+							$('#progressbar').modal("hide");
+							showReplyMessage(errores.result, errores.message, "Archivos", null)
+				    	}else{
+				    		if(files.length == i) {
+							    stopPrograssBar(progressBarIdAnalisis);
+								$('#progressbar').modal("hide");
+							}
+
+							showReplyMessage(errores.result, errores.message, "Archivos", null)
+
+				    	}
+
+				    }
+				    else{
+				    	if(files.length == i) {
+						    stopPrograssBar(progressBarIdAnalisis);
+							$('#progressbar').modal("hide");
+
+							showReplyMessage(errores.result, errores.message, "Archivos", null)
+
+						}
+				    }
+			    })
+	    	}
 	    }else{
 	    	setTimeout(()=>{
 	    		console.log("no se ha cargado, se llama al submit nuevamente");
-	    		$("#formConfirmFileAnalisisMasc").trigger("submit");
+	    		if ($('#modalAnalisis').hasClass('show') === true ){
+	    			$("#formConfirmFileAnalisisMasc").trigger("submit");
+	    		}
 	    	}, 10000);
 	    }
 	}else{
 		console.log('en el formulario -analisis- por guardar archivos, pero no se cargaron archivos, saliendo');
 	}
 });
+
+function uploadChunkAnalisis( file, currentsize, start) {
+	return new Promise( function(resolve, reject){
+
+	    let chunk = file.slice(start, start + chunkSize);
+	    var formData = new FormData();
+		formData.append("category", "analisismascota");
+		formData.append("idCategory", idLastAnalisis);
+		formData.append("filename", file.name);
+		formData.append("filesize", file.size);
+		formData.append("chunksize", chunk.size);
+		formData.append("currentsize", currentsize);
+		formData.append('nameInputFile', chunk, file.name + '_' + start); // Agregar fragmento al FormData
+
+
+	    //let response = sendPostFiles("saveFileLocal", formData)
+	    sendAsyncPostFiles("saveFileLocal", formData)
+	    .then((response)=>{
+	    	console.log(response)
+	    	if (response.currentsize && file.name == response.nameFile){
+				currentsize = response.currentsize
+
+				if (currentsize < file.size ){
+		            start += chunkSize;
+		            resolve( uploadChunkAnalisis(file, currentsize, start) );
+		        } else if(response.result == 2) {
+		        	if (response.currentsize == currentsize)
+		            	currentsize = 0;
+
+					resolve(response);
+		        }else if(response.result == 0) {
+		        	//return response;
+					resolve(response);
+
+		        }
+			}
+	    })
+	})
+
+}
 
 //funciones con nombre
 function openModalAnalaisis(button){
@@ -150,7 +225,7 @@ function crearAnalisis(idMascota){
 			};
 
 			let response = sendPost("insertAnalisis", data);
-			showReplyMessage(response.result, response.message, "Análisis", "modalAnalisis");
+			//showReplyMessage(response.result, response.message, "Análisis", "modalAnalisis");
 			if(response.result == 2){
 				idLastAnalisis = response.newAnalisis.idAnalisis;
 				let analisis = response.newAnalisis;
@@ -206,7 +281,7 @@ function createRowAnalsis(idAnalisis, nombre, fecha, detalle, resultado){
 		buttonWhatsapp = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 
 
-	row += "<td class='text-center'>"+ buttonWhatsapp +"</td>";
+	row += buttonWhatsapp ;
 	row += "</tr>";
 
 	return row;
