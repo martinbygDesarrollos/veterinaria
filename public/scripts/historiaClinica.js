@@ -6,7 +6,7 @@ const chunkSize = 1024 * 1024; // 1 MB (tamaño del fragmento)
 var listAllIds = [];
 
 $("#formConfirmFileHistory").submit(async function(e) {
-    event.preventDefault();
+    e.preventDefault();
     $("#modalHistoriaClinica").modal("hide");
 	$("#modalHistoriaClinica").hide();
 
@@ -41,11 +41,18 @@ $("#formConfirmFileHistory").submit(async function(e) {
 				    		errores.result = 1;
 							errormessage += respuesta.nameFile + "<br>"
 							errores.message = errormessage
+
+							stopPrograssBar(progressBarId);
+							$('#progressbar').modal("hide");
+							showReplyMessage(errores.result, errores.message, "Archivos", null)
 				    	}else{
 				    		if(files.length == i) {
 							    stopPrograssBar(progressBarId);
 								$('#progressbar').modal("hide");
 							}
+
+							showReplyMessage(errores.result, errores.message, "Archivos", null)
+
 				    	}
 
 				    }
@@ -53,6 +60,9 @@ $("#formConfirmFileHistory").submit(async function(e) {
 				    	if(files.length == i) {
 						    stopPrograssBar(progressBarId);
 							$('#progressbar').modal("hide");
+
+							showReplyMessage(errores.result, errores.message, "Archivos", null)
+
 						}
 				    }
 			    })
