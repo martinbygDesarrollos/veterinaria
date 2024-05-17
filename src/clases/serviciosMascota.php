@@ -26,7 +26,7 @@ class serviciosMascota {
         $responseQuery = serviciosMascota::getAnalisis($idAnalisis);
         if($responseQuery->result == 2){
 
-            $responseQueryFiles = DataBase::sendQuery("SELECT idMedia, nombre FROM media WHERE categoria = ? AND idCategoria = ?", array('si', "analisismascota", $idAnalisis), "LIST");
+            $responseQueryFiles = DataBase::sendQuery("SELECT idMedia, nombre, ruta FROM media WHERE categoria = ? AND idCategoria = ?", array('si', "analisismascota", $idAnalisis), "LIST");
             if ( $responseQueryFiles->result == 2 ){
                 $responseQuery->objectResult->archivos = $responseQueryFiles->listResult;
             }else $responseQuery->objectResult->archivos = null;

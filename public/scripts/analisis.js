@@ -1,6 +1,7 @@
 //variables
 var idLastAnalisis = null;
 var phoneSocio = null;
+const chunkSizeAnalisis = 1024 * 1024; // 1 MB (tamaño del fragmento)
 
 //funciones sin nombre
 $("#formConfirmFileAnalisisMasc").submit(function(e) {
@@ -79,7 +80,7 @@ $("#formConfirmFileAnalisisMasc").submit(function(e) {
 function uploadChunkAnalisis( file, currentsize, start) {
 	return new Promise( function(resolve, reject){
 
-	    let chunk = file.slice(start, start + chunkSize);
+	    let chunk = file.slice(start, start + chunkSizeAnalisis);
 	    var formData = new FormData();
 		formData.append("category", "analisismascota");
 		formData.append("idCategory", idLastAnalisis);
@@ -98,7 +99,7 @@ function uploadChunkAnalisis( file, currentsize, start) {
 				currentsize = response.currentsize
 
 				if (currentsize < file.size ){
-		            start += chunkSize;
+		            start += chunkSizeAnalisis;
 		            resolve( uploadChunkAnalisis(file, currentsize, start) );
 		        } else if(response.result == 2) {
 		        	if (response.currentsize == currentsize)
@@ -310,6 +311,7 @@ function verAnalisis(idAnalisis){
 		$("#divDetailsTableModalView").attr("hidden", true);
 		$("#divDetailsTableModalView").attr("disabled", true);
 
+		console.log(analisis.archivos)
 		if ( analisis.archivos ){
 			$("#divFilesTableModalView table tbody").empty();
 			$("#divFilesTableModalView").attr("hidden", true);
@@ -323,7 +325,14 @@ function verAnalisis(idAnalisis){
 				buttonWhatsapp = '<td class="text-center"><a href="https://wa.me/'+phoneSocio+'" target="_blank"><button title="Enviar archivo '+phoneSocio+'" class="btn bg-light"><i class="fab fa-whatsapp"></i></button></a></td>';
 
 			for (var i = 0; i < analisis.archivos.length; i++) {
-				let row = '<tr><td>'+analisis.archivos[i].nombre+'</td><td class="text-center"><button title="Ver archivo"class="btn bg-light" onclick="downloadFile('+analisis.archivos[i].idMedia+')">ver</button></td>'+buttonWhatsapp+'</tr>';
+
+				let arch = analisis.archivos[i];
+				let row = null;
+				if (typeof arch.ruta !== 'undefined' && arch.ruta !== null && arch.ruta !== ''){
+					row = '<tr><td>'+arch.nombre+'</td><td class="text-center"><button title="Ver archivo"class="btn bg-light" onclick="downloadFilePath('+arch.idMedia+')">ver</button></td>'+buttonWhatsapp+'</tr>';
+				}else{
+					row = '<tr><td>'+arch.nombre+'</td><td class="text-center"><button title="Ver archivo"class="btn bg-light" onclick="downloadFile('+arch.idMedia+')">ver</button></td>'+buttonWhatsapp+'</tr>';
+				}
 
 				$("#divFilesTableModalView table tbody").append(row);
 			}
