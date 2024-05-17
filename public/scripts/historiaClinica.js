@@ -5,7 +5,7 @@ var currentsize = []; // tamaño actual del archivo subido
 const chunkSize = 1024 * 1024; // 1 MB (tamaño del fragmento)
 var listAllIds = [];
 
-$("#formConfirmFileHistory").submit(function(e) {
+$("#formConfirmFileHistory").submit(async function(e) {
     event.preventDefault();
     $("#modalHistoriaClinica").modal("hide");
 	$("#modalHistoriaClinica").hide();
@@ -15,18 +15,17 @@ $("#formConfirmFileHistory").submit(function(e) {
     errores.result = 2;
 	errores.message = "Archivos subidos correctamente.";
 
-	/*progressBarId = loadPrograssBar();
+	progressBarId = loadPrograssBar();
     $('#progressbar h5').text("Subiendo archivos...");
-    $('#progressbar').modal({
-        backdrop: 'static'
-    })*/
+	$("#progressbar").modal("show");
+
 
 
     if ( $("#idInputFileResult").val().length > 0 ){
 
 
 	    if ( idLastHistoriaClinica ){
-    		var files = document.getElementById('idInputFileResult').files;
+    		const files = document.getElementById('idInputFileResult').files;
     		let errormessage = "Error al subir los siguientes archivos:<br>";
 
 
@@ -35,21 +34,29 @@ $("#formConfirmFileHistory").submit(function(e) {
 	    		let file = files[i];
 	    		currentsize[i] = 0;
 			    let start = 0;
-			    let respuesta = uploadChunk(file, currentsize[i], start);
+			    uploadChunk(file, currentsize[i], start)
+			    .then((respuesta)=>{
+			    	if(respuesta){
+				    	if(respuesta.result != 2){
+				    		errores.result = 1;
+							errormessage += respuesta.nameFile + "<br>"
+							errores.message = errormessage
+				    	}else{
+				    		if(files.length == i) {
+							    stopPrograssBar(progressBarId);
+								$('#progressbar').modal("hide");
+							}
+				    	}
 
-			    if(respuesta){
-			    	if(respuesta.result != 2){
-			    		errores.result = 1;
-						errormessage += respuesta.nameFile + "<br>"
-						errores.message = errormessage
-			    	}
-
-			    }
-
+				    }
+				    else{
+				    	if(files.length == i) {
+						    stopPrograssBar(progressBarId);
+							$('#progressbar').modal("hide");
+						}
+				    }
+			    })
 	    	}
-
-
-
     	}else{
 	    	setTimeout(()=>{
 	    		//console.log("no se ha cargado id de historia, se llama al submit nuevamente");
@@ -64,36 +71,42 @@ $("#formConfirmFileHistory").submit(function(e) {
 });
 
 function uploadChunk( file, currentsize, start) {
-    let chunk = file.slice(start, start + chunkSize);
-    var formData = new FormData();
-	formData.append("category", "historiasclinica");
-	formData.append("idCategory", idLastHistoriaClinica);
-	formData.append("filename", file.name);
-	formData.append("filesize", file.size);
-	formData.append("chunksize", chunk.size);
-	formData.append("currentsize", currentsize);
-	formData.append('nameInputFile', chunk, file.name + '_' + start); // Agregar fragmento al FormData
+	return new Promise( function(resolve, reject){
+
+	    let chunk = file.slice(start, start + chunkSize);
+	    var formData = new FormData();
+		formData.append("category", "historiasclinica");
+		formData.append("idCategory", idLastHistoriaClinica);
+		formData.append("filename", file.name);
+		formData.append("filesize", file.size);
+		formData.append("chunksize", chunk.size);
+		formData.append("currentsize", currentsize);
+		formData.append('nameInputFile', chunk, file.name + '_' + start); // Agregar fragmento al FormData
 
 
-    //let response = sendPostFiles("saveFileLocal", formData)
-    sendAsyncPostFiles("saveFileLocal", formData)
-    .then((response)=>{
-    	if (response.currentsize && file.name == response.nameFile){
-			currentsize = response.currentsize
+	    //let response = sendPostFiles("saveFileLocal", formData)
+	    sendAsyncPostFiles("saveFileLocal", formData)
+	    .then((response)=>{
+	    	console.log(response)
+	    	if (response.currentsize && file.name == response.nameFile){
+				currentsize = response.currentsize
 
-			if (currentsize < file.size ){
-	            start += chunkSize;
-	            return uploadChunk(file, currentsize, start);
-	        } else if(response.result == 2) {
-	        	if (response.currentsize == currentsize)
-	            	currentsize = 0;
+				if (currentsize < file.size ){
+		            start += chunkSize;
+		            resolve( uploadChunk(file, currentsize, start) );
+		        } else if(response.result == 2) {
+		        	if (response.currentsize == currentsize)
+		            	currentsize = 0;
 
-				return response;
-	        }else if(response.result == 0) {
-	        	return response;
-	        }
-		}
-    })
+					resolve(response);
+		        }else if(response.result == 0) {
+		        	//return response;
+					resolve(response);
+
+		        }
+			}
+	    })
+	})
 
 }
 
@@ -672,18 +685,10 @@ function downloadFilePath( idMedia ){
 		if (response.result == 2){
 
 			let file = response.objectResult;
-			window.location.href = getSiteURL() + 'downloadFile.php?path='+file.ruta+'&category='+file.categoria;
-
-			/*var data = new FormData();
-			data.append("path",file.ruta);
-			data.append("name",file.nombre);
-			data.append("category",file.categoria);
-
-			fetch(getSiteURL() + 'downloadfile.php', {
-			  method: "GET",
-			  body: data
-			});*/
-
+			if (typeof file.ruta !== undefined && file.ruta !== null && file.ruta !== "")
+				window.location.href = getSiteURL() + 'downloadFile.php?path='+file.ruta+'&category='+file.categoria;
+			else
+				showReplyMessage(1, "No se encontraron los datos del archivo", "Archivos", null)
 
 		}else{
 			showReplyMessage(response.result, response.message, "Archivos", null)
