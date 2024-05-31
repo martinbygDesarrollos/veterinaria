@@ -1,3 +1,4 @@
+var crearSocio = false;
 function insertarNuevoSocio(){
 	let nombre = $('#inputNombreSocio').val() || null;
 	let cedula = $('#inputCedulaSocio').val() || null;
@@ -20,8 +21,20 @@ function insertarNuevoSocio(){
 	if(email) email = email.replaceAll('|', '');
 	if(rut) rut = rut.replaceAll('|', '');
 
+	if ( $("#inputTipoSocio").val() == 1 && !crearSocio){
+		showMessageConfirm(1, "Está seguro de crear un SOCIO?", "Nuevo cliente", null)
+		$('#modalMessageConfirmBtnSi').click(function(){
+			$('#modalMessageConfirm').modal('hide');
+			crearSocio = true
+			insertarNuevoSocio()
+		});
+	}else{
+		crearSocio = true
+	}
 
-	//if( cedula || rut ){
+	if( crearSocio === true ){
+		crearSocio = false
+
 		if(validateCI(cedula) || !cedula){
 			if(nombre){
 				if(!email || validateEmail(email)){
@@ -58,7 +71,7 @@ function insertarNuevoSocio(){
 				}else showReplyMessage(1, "En caso de ingresar un email este debe ser valido", "Cliente", "modalUpdateSocio");
 			}else showReplyMessage(1, "Debe ingresar el nombre del cliente para agregarlo", "Cliente", "modalUpdateSocio");
 		}else showReplyMessage(1, "La cédula ingresada no es valida", "Cliente", "modalUpdateSocio");
-	//}else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
+	}//else showReplyMessage(1, "Debe ingresar cédula o rut para poder identificar el cliente", "Cliente", "modalUpdateSocio");
 }
 
 
