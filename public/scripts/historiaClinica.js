@@ -684,6 +684,49 @@ function showPreviousHistoriaClinica(){
 
 }
 
+function verificarOrientacionImagen(url) {
+	console.log("verificando")
+	return new Promise((resolve, reject) => {
+	    const img = new Image();
+	    img.onload = () => {
+	        if (img.width > img.height) {
+	            resolve({orientacion:"horizontal", w:img.width, h:img.height});
+	        } else if (img.width < img.height) {
+	            resolve({orientacion:"vertical", w:img.width, h:img.height});
+	        } else {
+	            resolve({orientacion:"cuadrado", w:img.width, h:img.height});
+	        }
+	    };
+	    img.onerror = () => {
+	        resolve({orientacion:"cuadrado", w:0, h:0});
+	    };
+	    img.src = url;
+	});
+}
+
+function verificarOrientacionVideo(url) {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+
+        video.onloadedmetadata = () => {
+            if (video.videoWidth > video.videoHeight) {
+                resolve({orientacion:"horizontal", w:video.videoWidth, h:video.videoHeight});
+            } else if (video.videoWidth < video.videoHeight) {
+                resolve({orientacion:"vertical", w:video.videoWidth, h:video.videoHeight});
+            } else {
+                resolve({orientacion:"cuadrado", w:video.videoWidth, h:video.videoHeight});
+            }
+        };
+
+        video.onerror = () => {
+            resolve({orientacion:"cuadrado", w:0, h:0});
+        };
+
+        video.src = url;
+        // Necesario para cargar los metadatos del video
+        video.load();
+    });
+}
 
 function downloadFilePath( idMedia ){
 
@@ -693,6 +736,8 @@ function downloadFilePath( idMedia ){
 
 			let file = response.objectResult;
 			if (typeof file.ruta !== undefined && file.ruta !== null && file.ruta !== ""){
+				const urlDeImagen = getSiteURL() + 'files\\'+file.categoria+file.ruta;
+
 
 				const extension = file.nombre.split('.').pop().toLowerCase();
 			    switch (extension) {
@@ -724,38 +769,87 @@ function downloadFilePath( idMedia ){
 function mostrarVideo(file){
 	$('#modalView').modal("hide");
 	let src = getSiteURL() + 'files\\'+file.categoria+file.ruta;
-	document.getElementById("modalViewFileVideo").src = src;
-	document.getElementById("modalViewFileVideo").disabled = false;
-	document.getElementById("modalViewFileVideo").hidden = false;
-	$("#modalViewFileVideo").removeClass("fade");
-	$("#modalViewFileVideo").addClass("show");
-	$('#modalViewFile').modal("show");
-	$('#modalViewFile').on('hide.bs.modal', function (event) {
-		document.getElementById("modalViewFileVideo").src = "";
-		document.getElementById("modalViewFileVideo").disabled = true;
-		document.getElementById("modalViewFileVideo").hidden = true;
-		$("#modalViewFileVideo").removeClass("show");
-		$("#modalViewFileVideo").addClass("fade");
+
+	verificarOrientacionVideo(src)
+	.then((videoInfo)=>{
+		document.getElementById("modalViewFileVideo").src = src;
+    	var modalViewFileVideo = document.getElementById("modalViewFileVideo");
+
+		if (videoInfo.orientacion == "vertical") {
+			if(videoInfo.h > 700 )
+	        	document.getElementById("modalViewFileVideo").height = 700;
+	        else{
+	        	document.getElementById("modalViewFileVideo").height = videoInfo.h;
+		        document.getElementById("modalViewFileVideo").width = videoInfo.w;
+
+	        }
+
+        }else{
+	       	if(videoInfo.w > 700 )
+	        	document.getElementById("modalViewFileVideo").width = 700;
+	        else{
+	        	document.getElementById("modalViewFileVideo").height = videoInfo.h;
+		        document.getElementById("modalViewFileVideo").width = videoInfo.w;
+	        }
+        }
+
+		document.getElementById("modalViewFileVideo").disabled = false;
+		document.getElementById("modalViewFileVideo").hidden = false;
+		$("#modalViewFileVideo").removeClass("fade");
+		$("#modalViewFileVideo").addClass("show");
+		$('#modalViewFile').modal("show");
+		$('#modalViewFile').on('hide.bs.modal', function (event) {
+			document.getElementById("modalViewFileVideo").src = "";
+			document.getElementById("modalViewFileVideo").disabled = true;
+			document.getElementById("modalViewFileVideo").hidden = true;
+			$("#modalViewFileVideo").removeClass("show");
+			$("#modalViewFileVideo").addClass("fade");
+		})
 	})
+
 }
 
 function mostrarImg(file){
-
 	$('#modalView').modal("hide");
 	let src = getSiteURL() + 'files\\'+file.categoria+file.ruta;
-	document.getElementById("modalViewFileImage").src = src;
-	document.getElementById("modalViewFileImage").disabled = false;
-	document.getElementById("modalViewFileImage").hidden = false;
-	$("#modalViewFileImage").removeClass("fade");
-	$("#modalViewFileImage").addClass("show");
-	$('#modalViewFile').modal("show");
-	$('#modalViewFile').on('hide.bs.modal', function (event) {
-		document.getElementById("modalViewFileImage").src = "";
-		document.getElementById("modalViewFileImage").disabled = true;
-		document.getElementById("modalViewFileImage").hidden = true;
-		$("#modalViewFileImage").removeClass("show");
-		$("#modalViewFileImage").addClass("fade");
-	})
+	verificarOrientacionImagen(src)
+    .then(imgInfo => {
+    	var modalViewFileImage = document.getElementById("modalViewFileImage");
+        document.getElementById("modalViewFileImage").src = src;
+
+        if (imgInfo.orientacion == "vertical") {
+			if(imgInfo.h > 700 )
+				document.getElementById("modalViewFileImage").height = 700;
+			else{
+				document.getElementById("modalViewFileImage").height = imgInfo.h;
+		    	document.getElementById("modalViewFileImage").width = imgInfo.w;
+
+			}
+        }else{
+			if(imgInfo.w > 700 )
+				document.getElementById("modalViewFileImage").width = 700;
+			else{
+				document.getElementById("modalViewFileImage").height = imgInfo.h;
+		    	document.getElementById("modalViewFileImage").width = imgInfo.w;
+			}
+
+        }
+
+
+		document.getElementById("modalViewFileImage").disabled = false;
+		document.getElementById("modalViewFileImage").hidden = false;
+		$("#modalViewFileImage").removeClass("fade");
+		$("#modalViewFileImage").addClass("show");
+		$('#modalViewFile').modal("show");
+		$('#modalViewFile').on('hide.bs.modal', function (event) {
+			document.getElementById("modalViewFileImage").src = "";
+			document.getElementById("modalViewFileImage").disabled = true;
+			document.getElementById("modalViewFileImage").hidden = true;
+			$("#modalViewFileImage").removeClass("show");
+			$("#modalViewFileImage").addClass("fade");
+		})
+    })
+
 }
 
 function mostrarPdf(file){
