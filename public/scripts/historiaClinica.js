@@ -689,12 +689,28 @@ function downloadFilePath( idMedia ){
 
 	sendAsyncPost("getPathFileByIdMedia", {id: idMedia})
 	.then(( response )=>{
-		console.log(response)
 		if (response.result == 2){
 
 			let file = response.objectResult;
-			if (typeof file.ruta !== undefined && file.ruta !== null && file.ruta !== "")
-				window.location.href = getSiteURL() + 'downloadFile.php?path='+file.ruta+'&category='+file.categoria;
+			if (typeof file.ruta !== undefined && file.ruta !== null && file.ruta !== ""){
+
+				const extension = file.nombre.split('.').pop().toLowerCase();
+			    switch (extension) {
+			        case 'jpg':
+			        case 'jpeg':
+			        case 'png':
+			        case 'gif':
+			            mostrarImg(file);return;
+			        case 'mp4':
+			        case 'webm':
+			        case 'ogg':
+			            mostrarVideo(file);return;
+			        case 'pdf':
+			            mostrarPdf(file);return;
+			        default:
+			            window.location.href = getSiteURL() + 'downloadFile.php?path='+file.ruta+'&category='+file.categoria;
+			    }
+			}
 			else
 				showReplyMessage(1, "No se encontraron los datos del archivo", "Archivos", null)
 
@@ -703,5 +719,60 @@ function downloadFilePath( idMedia ){
 		}
 
 	});
+}
 
+function mostrarVideo(file){
+	$('#modalView').modal("hide");
+	let src = getSiteURL() + 'files\\'+file.categoria+file.ruta;
+	document.getElementById("modalViewFileVideo").src = src;
+	document.getElementById("modalViewFileVideo").disabled = false;
+	document.getElementById("modalViewFileVideo").hidden = false;
+	$("#modalViewFileVideo").removeClass("fade");
+	$("#modalViewFileVideo").addClass("show");
+	$('#modalViewFile').modal("show");
+	$('#modalViewFile').on('hide.bs.modal', function (event) {
+		document.getElementById("modalViewFileVideo").src = "";
+		document.getElementById("modalViewFileVideo").disabled = true;
+		document.getElementById("modalViewFileVideo").hidden = true;
+		$("#modalViewFileVideo").removeClass("show");
+		$("#modalViewFileVideo").addClass("fade");
+	})
+}
+
+function mostrarImg(file){
+
+	$('#modalView').modal("hide");
+	let src = getSiteURL() + 'files\\'+file.categoria+file.ruta;
+	document.getElementById("modalViewFileImage").src = src;
+	document.getElementById("modalViewFileImage").disabled = false;
+	document.getElementById("modalViewFileImage").hidden = false;
+	$("#modalViewFileImage").removeClass("fade");
+	$("#modalViewFileImage").addClass("show");
+	$('#modalViewFile').modal("show");
+	$('#modalViewFile').on('hide.bs.modal', function (event) {
+		document.getElementById("modalViewFileImage").src = "";
+		document.getElementById("modalViewFileImage").disabled = true;
+		document.getElementById("modalViewFileImage").hidden = true;
+		$("#modalViewFileImage").removeClass("show");
+		$("#modalViewFileImage").addClass("fade");
+	})
+}
+
+function mostrarPdf(file){
+
+	$('#modalView').modal("hide");
+	let src = getSiteURL() + 'files\\'+file.categoria+file.ruta;
+	document.getElementById("modalViewFilePDF").src = src;
+	document.getElementById("modalViewFilePDF").disabled = false;
+	document.getElementById("modalViewFilePDF").hidden = false;
+	$("#modalViewFilePDF").removeClass("fade");
+	$("#modalViewFilePDF").addClass("show");
+	$('#modalViewFile').modal("show");
+	$('#modalViewFile').on('hide.bs.modal', function (event) {
+		document.getElementById("modalViewFilePDF").src = "";
+		document.getElementById("modalViewFilePDF").disabled = true;
+		document.getElementById("modalViewFilePDF").hidden = true;
+		$("#modalViewFilePDF").removeClass("show");
+		$("#modalViewFilePDF").addClass("fade");
+	})
 }
