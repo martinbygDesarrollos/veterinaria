@@ -24,22 +24,24 @@ return function (App $app) {
  */
 
 	$app->post('/articulos', function(Request $request) use ($userController, $historiaArticulosController){
-        $responseSession = $userController->validateSession();
-        if($responseSession->result == 2){
-            $response = new stdClass();
-            $idUser = $responseSession->session['IDENTIFICADOR'];
+        
+        $response = new stdClass();
+        //$idUser = $responseSession->session['IDENTIFICADOR'];
 
-            $data = $request->getParams();
-            $token = $data['token'];
-            $myToken = base64_encode(date("Ymd") . "gestcom1213");
-		    if(strcmp($token, $myToken) == 0){
-                return json_encode($historiaArticulosController->altaArticulos());
-            }else{
-                $response->result = 1;
-                $response->message = "Token invalido.";
-                return json_encode($response);
-            }
-        }else return json_encode($responseSession);
+        $data = $request->getParams();
+        $token = $data['token'];
+        $myToken = base64_encode(date("Ymd") . "gestcom1213");
+        if(strcmp($token, $myToken) == 0){
+
+            $file = $data['file'];
+            $pathArticulos = PATH_ARCHIVOS."articulos.dbf";
+            file_put_contents($pathArticulos, base64_decode($file));
+            return json_encode($historiaArticulosController->altaArticulos($pathArticulos));
+        }else{
+            $response->result = 1;
+            $response->message = "Token invalido.";
+            return json_encode($response);
+        }
     });
 
 }
