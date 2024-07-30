@@ -122,6 +122,13 @@ return function (App $app) {
 
     //------------------------------------------------------------------------------------------
 
+    //------------------------------- DEBITOS --------------------------------------------------
+    $app->get('/debitos-rest-cuotas', function($request, $response, $args) use ($container){
+        $response = ctr_usuarios::getAllImportesSocios();
+        return json_encode($response);
+    });
+    //------------------------------------------------------------------------------------------
+    
     //------------------------------ POST ------------------------------------------------------
 
     $app->post('/gestcom-rest-cuotas', function(Request $request, Response $response){

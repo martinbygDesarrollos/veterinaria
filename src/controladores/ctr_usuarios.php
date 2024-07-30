@@ -784,6 +784,27 @@ class ctr_usuarios{
 		return socios::updateQuotaSocio($idSocio, $quota);
 	}
 
+	public function getAllImportesSocios(){
+		$response = new \stdClass();
+		$resultado = [];
+		$responseGetSociosActives = socios::getSociosWithMascotas();
+		if($responseGetSociosActives->result == 2){
+			$response->result = 2;
+			foreach ($responseGetSociosActives->listResult as $key => $socio) {
+				$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas'], $socio['tipo']);
+				if($responseGetQuota->result == 2){
+					$resultado[] = ["socio" => $socio['idSocio'], "importe" => $responseGetQuota->quota];
+				}
+			}
+			$response->importes = $resultado;
+		} else {
+			$response->result = 1;
+			$response->importes = $resultado;
+			// return $responseGetSociosActives;
+		} 
+		return $response;
+	}
+
 	public function actualizarCuotaSocio($idSocio){
 		$response = new \stdClass();
 
