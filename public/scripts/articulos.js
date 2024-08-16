@@ -1,0 +1,97 @@
+$("#buttonConfirmModalArticulo").click(function(){
+	console.log("guardar datos art")
+
+	alert("guardado")
+
+	let cookie = "";
+
+	$("#tbodyArticulos tr").map((i, e)=>{
+		if (i == 0)
+			cookie = e.id
+		else
+			cookie += ","+e.id
+
+	})
+
+	document.cookie = "articulos="+cookie;
+})
+
+
+function searchArticulos(value){
+
+    if (value.length > 1){
+
+		let response = sendPost("searchArticuloByDescOrCodeBar", { textToSearch: value });
+		console.log(response);
+		if(response.result == 2){
+			$('#datalistModalArticulo').empty();
+			for (var i = 0; i < response.listResult.length; i++) {
+				option = '<option value="' +response.listResult[i].descripcion +'"></option>';
+				$("#datalistModalArticulo").append(option);
+			}
+		}
+		else if(response.result == 1){
+			$('#datalistModalArticulo').empty();
+		}
+	}
+	else $('#datalistModalArticulo').empty();
+
+}
+
+function addArticulo(articulo){
+	if (articulo.length > 0) {
+		let response = sendPost("searchArticuloByDescOrCodeBar", { textToSearch: articulo });
+		console.log(response);
+		if(response.result == 2 && response.listResult.length > 0){
+			row = createRowArticuloToModal(response.listResult[0]);
+			$("#tbodyArticulos").prepend(row);
+			$('#datalistModalArticulo').children().remove()
+			$('#idlistArticulos').val("");
+
+		}
+	}
+
+}
+
+
+function createRowArticuloToModal( object ){
+	console.log(object)
+	let row = '<tr id="'+object.id+'">'
+	row += '<td>'+object.descripcion+'</td>';
+	row += '<td>'+object.saldo+'</td>';
+	row += '<td><button title="Quitar artículo de la lista" onclick="unselectArticulo('+object.id+')" class="btn bg-light"><i class="fas fa-trash-alt text-danger"></i></button></td>';
+	row += '</tr>';
+	return row;
+}
+
+
+function unselectArticulo(id){
+	id.remove()
+}
+
+
+
+function matchArticulosHistoria(idHist, idMascota){
+
+	const progressBar = loadPrograssBar();
+	$('#progressbar h5').text("Subiendo archivos...");
+	$("#progressbar").modal("show");
+
+	let rows = "";
+	$("#tbodyArticulos tr").map((i, e)=>{
+		if (i == 0)
+			rows = e.id
+		else
+			rows += ","+e.id
+
+	})
+
+	sendAsyncPost("matchArticulosHistoria",{art:rows, idHist:idHist, idMascota:idMascota})
+	.then(( response )=>{
+		console.log(response)
+		stopPrograssBar(progressBar);
+		$('#progressbar').modal("hide");
+	})
+
+
+}

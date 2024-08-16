@@ -424,6 +424,8 @@ function crearHistoriaClinica(idMascota){
 		$('#tbodyHistoriaClinica').empty();
 		cargarHistoriaClinica(idMascota);
 		idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
+
+		matchArticulosHistoria(idLastHistoriaClinica, idMascota);
 		//let newHistoria = response.newHistoria;
 		//$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));
 	}
@@ -870,3 +872,16 @@ function mostrarPdf(file){
 		$("#modalViewFilePDF").addClass("fade");
 	})
 }
+
+
+
+function modalArticulos(){
+
+	$('#modalHistoriaClinica').modal("hide");
+	$('#modalArticulos').modal("show");
+
+}
+
+$('#modalArticulos').on('hidden.bs.modal', function (e) {
+	$('#modalHistoriaClinica').modal("show");
+})
