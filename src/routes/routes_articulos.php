@@ -162,5 +162,20 @@ return function (App $app) {
 
         }else return $response->withRedirect($request->getUri()->getBaseUrl());
     });
+
+
+
+    $app->post('/getArticulosByHistoria', function(Request $request, Response $response) use ($userController, $historiaArticulosController) {
+
+		$responseSession = $userController->validateSession();
+		if($responseSession->result == 2){
+            $response = new stdClass();
+            $data = $request->getParsedBody();
+            $idHist = $data["idHist"];
+
+            return json_encode($historiaArticulosController->getArticulosByHistoria($idHist));
+
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
+    });
 }
 ?>

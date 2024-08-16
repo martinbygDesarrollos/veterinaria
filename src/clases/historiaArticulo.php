@@ -119,6 +119,16 @@ class historiaArticulo{
         return $dbClass->sendQuery($sql, array(), "LIST");
     }
 
+
+    public function getArticulosByHistoria($id){
+        $dbClass = new DataBase();
+        $sql = "SELECT ha.*, a.descripcion FROM historiaarticulo ha
+            LEFT JOIN articulos a on a.id = ha.idArticulo
+            WHERE ha.idHistoriaClinica = ?";
+
+        return $dbClass->sendQuery($sql, array("i", $id), "LIST");
+    }
+
 }
 
 ?>

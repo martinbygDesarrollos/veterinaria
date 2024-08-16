@@ -175,5 +175,13 @@ class ctr_historiaArticulos {
         return $response;
 
     }
+
+
+
+    public function getArticulosByHistoria($idHist){
+        $articulosClass = new historiaArticulo();
+        return $articulosClass->getArticulosByHistoria($idHist);
+
+    }
 }
 ?>

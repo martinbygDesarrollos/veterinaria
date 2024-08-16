@@ -258,3 +258,32 @@ function differenceDays( date1, date2 ){
 
 	return diff_nro > 0 ? diff_nro : 0;
 }
+
+
+function getNameVoucher(typevoucher) {
+    let nameVoucher = "";
+
+    switch (typevoucher) {
+        case '101':
+            nameVoucher = "e-Ticket";
+            break;
+        case '102':
+            nameVoucher = "N.C. e-Ticket";
+            break;
+        case '103':
+            nameVoucher = "N.D. e-Ticket";
+            break;
+        case '111':
+            nameVoucher = "e-Factura";
+            break;
+        case '112':
+            nameVoucher = "N.C. e-Factura";
+            break;
+        case '113':
+            nameVoucher = "N.D. e-Factura";
+            break;
+		default: "";
+    }
+
+    return nameVoucher;
+}

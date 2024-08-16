@@ -135,7 +135,11 @@ class historiales{
 
 		$responseQuery = $dataBaseClass->sendQuery("
 
-			SELECT historiasclinica.*, usuarios.nombre AS nomUsuario FROM historiasclinica
+			SELECT historiasclinica.*, usuarios.nombre AS nomUsuario, 
+			(SELECT COUNT(id) 
+			FROM historiaarticulo 
+			WHERE idHistoriaClinica = historiasclinica.idHistoriaClinica) AS cantArticulos
+			FROM historiasclinica
 			LEFT JOIN usuarios on historiasclinica.idUsuario = usuarios.idUsuario
 			WHERE idMascota=?
 			ORDER BY fecha DESC, idHistoriaClinica DESC LIMIT ".$lastId.", 14",

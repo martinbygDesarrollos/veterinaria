@@ -55,7 +55,7 @@ function addArticulo(articulo){
 
 
 function createRowArticuloToModal( object ){
-	console.log(object)
+	
 	let row = '<tr id="'+object.id+'">'
 	row += '<td>'+object.descripcion+'</td>';
 	row += '<td>'+object.saldo+'</td>';
@@ -94,4 +94,40 @@ function matchArticulosHistoria(idHist, idMascota){
 	})
 
 
+}
+
+
+function getArticulosByHistoria(idHistoriaClinica){
+	$("#tbodyInfoArticulos").empty()
+	sendAsyncPost("getArticulosByHistoria",{idHist:idHistoriaClinica})
+	.then(( response )=>{
+		console.log(response)
+		if(response.result == 2 && response.listResult.length > 0){
+			for (let i = 0; i < response.listResult.length; i++) {
+				row = createRowInfoArticuloToModal(response.listResult[i]);
+				$("#tbodyInfoArticulos").append(row);
+			}
+
+			$("#modalInfoArticulos").modal("show")
+		}
+	})
+}
+
+
+function createRowInfoArticuloToModal( object ){
+	console.log(object)
+
+	let fecha = new Date(object.fecha)
+	fecha = fecha.toLocaleDateString("es-UY")
+
+	let comp = "";
+	if (object.serie && object.numero)
+		comp = getNameVoucher(object.tipo)+" "+object.serie+" "+object.numero
+
+	let row = '<tr>'
+	row += '<td>'+fecha+'</td>';
+	row += '<td>'+object.descripcion+'</td>';
+	row += '<td>'+comp+'</td></tr>';
+
+	return row;
 }
