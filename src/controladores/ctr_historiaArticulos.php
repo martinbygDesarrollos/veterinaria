@@ -6,6 +6,76 @@ require_once "../src/clases/historiaArticulo.php";
 
 class ctr_historiaArticulos {
 
+    public function getArticulosPendientesByIdClient($idClient){
+        $historaArticuloClass = new historiaArticulo();
+		$response = new \stdClass();
+		$responseGetResults = $historaArticuloClass->getArticulosPendientesByIdClient($idClient);
+        
+		if($responseGetResults->result == 2){
+			$response->result = 2;
+			$response->articulos = $responseGetResults->listResult;
+		} else if ($responseGetResults->result == 1){
+			$response->result = 1;
+			$response->message = "Ningun articulo pendiente para ese cliente";
+            $response->articulos = array();
+		} else return $responseGetResults;
+		return $response;
+    }
+
+    public function updateHistoriaArticulo($ids, $tipo, $serie, $numero){
+        $historaArticuloClass = new historiaArticulo();
+		$response = new \stdClass();
+        $exitos = [];
+        $errores = [];
+        foreach ($ids as $id) {
+            $pendiente = $historaArticuloClass->getArticulosPendientesById($id);
+		    if($pendiente->result == 2){
+                $responseUpdate = $historaArticuloClass->updateArticuloPendiente($id, $tipo, $serie, $numero);
+                if($responseUpdate->result == 2){
+                    // $response->result = 2;
+                    $exitos[] = $id;
+                } else {
+                    $errores[] = $id;
+                }
+            } else {
+                $errores[] = $id;
+            }
+        }
+        if(count($errores) == 0)
+            $response->result = 2;
+        else
+            $response->result = 1;
+        $response->exitos = $exitos;
+        $response->errores = $errores;
+		return $response;
+    }
+
+    public function updateFacturaspendientes($facturas){
+        $historaArticuloClass = new historiaArticulo();
+		$response = new \stdClass();
+        $responseEmpty = $historaArticuloClass->emptyTable();
+        foreach ($ids as $id) {
+            $pendiente = $historaArticuloClass->getArticulosPendientesById($id);
+		    if($pendiente->result == 2){
+                $responseUpdate = $historaArticuloClass->updateArticuloPendiente($id, $tipo, $serie, $numero);
+                if($responseUpdate->result == 2){
+                    // $response->result = 2;
+                    $exitos[] = $id;
+                } else {
+                    $errores[] = $id;
+                }
+            } else {
+                $errores[] = $id;
+            }
+        }
+        if(count($errores) == 0)
+            $response->result = 2;
+        else
+            $response->result = 1;
+        $response->exitos = $exitos;
+        $response->errores = $errores;
+		return $response;
+    }
 
     public function altaArticulos($path){
 
@@ -49,5 +119,61 @@ class ctr_historiaArticulos {
         }
     }
 
+
+
+
+    public function searchArticuloByDescOrCodeBar($text){
+
+        $articulos = new historiaArticulo();
+
+		$textArray = explode(" ", $text);
+		return $articulos->getByDescOrCodebar( $textArray );
+
+    }
+
+
+    public function matchArticulosHistoria($art, $idHist, $idMascota){
+
+
+        $articulosClass = new historiaArticulo();
+        $response = new stdClass();
+        $response->result = 2;
+        $response->message = "";
+
+        //obtener id cliente segun la mascota
+        $clienteClass = new socios();
+        $clienteResponse = $clienteClass->getSocioMascota($idMascota);
+
+
+        if($clienteResponse->result == 2){
+            $idCliente = $clienteResponse->objectResult->idSocio;
+        }else return $clienteResponse;
+
+
+        $arrayArticulos = explode(",", $art);
+
+        $data = [
+            "idHistoriaClinica"=>$idHist,
+            "idCliente"=>$idCliente,
+            "cantidad"=>1
+        ];
+
+        foreach ($arrayArticulos as $value) {
+            $data["idArticulo"] = $value;
+            $articuloResponse = $articulosClass->new($data);
+            if ($articuloResponse->result != 2){
+                $response->result = $articuloResponse->result;
+                $response->message .= $articuloResponse->message."<br>";
+            }
+        }
+
+
+        if ( $response->result == 2){
+            $response->message = "Artículos ingresados.";
+        }
+
+        return $response;
+
+    }
 }
 ?>

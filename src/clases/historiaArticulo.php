@@ -3,8 +3,8 @@
 class historiaArticulo{
 
 
-    //FUNCIONES DE ARTICULOS
-	public function create( $articulo ){
+    //crear registro en la tabla articulos
+    public function create( $articulo ){
         //var_dump($articulo);exit;
 		$database = new DataBase();
         //$this = new historiaArticulo();
@@ -25,6 +25,17 @@ class historiaArticulo{
                 $articulo->coef2,  $articulo->coef3, $articulo->frut_verd, $articulo->peso_unid), "BOOLE");
 
         }else return $responseId;
+
+	}
+
+    //crear registro en la tabla historiaarticulo
+    public function new( $data ){
+		$database = new DataBase();
+
+        return $database->sendQuery("INSERT INTO `historiaarticulo`
+            (`idHistoriaClinica`, `idArticulo`, `idCliente`, `cantidad`)
+            VALUES (?,?,?,?);",
+            array('isii',$data["idHistoriaClinica"], $data["idArticulo"], $data["idCliente"], $data["cantidad"]), "BOOLE");
 
 	}
 
@@ -67,6 +78,45 @@ class historiaArticulo{
         $sql = "TRUNCATE `articulos`";
         return $database->sendQuery($sql, array(), "BOOLE");
 
+    }
+
+    public function getArticulosPendientesByIdClient($idClient){
+        $dbClass = new DataBase();
+        return $dbClass->sendQuery("SELECT id, idArticulo, fecha, cantidad FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND idCliente = ? ", array('i', $idClient), "LIST");
+    }
+
+    public function getArticulosPendientesById($idHistoriaArticulo){
+        $dbClass = new DataBase();
+        return $dbClass->sendQuery("SELECT * FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND id= ? ", array('i', $idHistoriaArticulo), "OBJECT");
+    }
+
+    public function updateArticuloPendiente($idHistoriaArticulo, $tipo, $serie, $numero){
+        $dbClass = new DataBase();
+        return $dbClass->sendQuery("UPDATE historiaarticulo SET tipo = ?, serie = ?, numero = ? WHERE id= ? ", array('ssii', $tipo, $serie, $numero, $idHistoriaArticulo), "BOOLE");
+    }
+
+
+    public function getByDescOrCodebar($textArray){
+        $dbClass = new DataBase();
+        $where = "";
+        foreach ($textArray as $text) {
+            if ( strlen($text) > 0 ){
+                if ( strlen($where) > 0 ){
+                    $where .= " AND (descripcion like '%".$text."%' OR codigo_barras like '%".$text."%' ) ";
+                }else
+                    $where .= " (descripcion like '%".$text."%' OR codigo_barras like '%".$text."%' )";
+            }
+        }
+
+
+        $sql = "SELECT id, descripcion, saldo FROM `articulos`
+            WHERE $where
+            ORDER BY `descripcion` ASC
+            LIMIT 30";
+
+            //var_dump($sql);exit;
+
+        return $dbClass->sendQuery($sql, array(), "LIST");
     }
 
 }
