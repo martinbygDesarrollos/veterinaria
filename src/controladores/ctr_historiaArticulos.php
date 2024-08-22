@@ -93,10 +93,11 @@ class ctr_historiaArticulos {
                 $filasArt = $readResponse->objectResult;
                 foreach ($filasArt as $articulo) {
 
-                    //var_dump($articulo);
-                    $responseCreate = $historaArticuloClass->create($articulo);
-                    if ($responseCreate->result != 2)
-                        $errores[] = $articulo->rubro."_".$articulo->nro.": ". $responseCreate->message;
+                    if (isset($articulo->desc) && $articulo->desc != "" ){
+                        $responseCreate = $historaArticuloClass->create($articulo);
+                        if ($responseCreate->result != 2)
+                            $errores[] = $articulo->rubro."_".$articulo->nro.": ". $responseCreate->message;
+                    }
 
                 }
 
