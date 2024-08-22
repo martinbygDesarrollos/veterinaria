@@ -73,26 +73,27 @@ function unselectArticulo(id){
 
 function matchArticulosHistoria(idHist, idMascota){
 
-	const progressBar = loadPrograssBar();
-	$('#progressbar h5').text("Subiendo archivos...");
-	$("#progressbar").modal("show");
-
-	let rows = "";
-	$("#tbodyArticulos tr").map((i, e)=>{
-		if (i == 0)
-			rows = e.id
-		else
-			rows += ","+e.id
-
-	})
-
-	sendAsyncPost("matchArticulosHistoria",{art:rows, idHist:idHist, idMascota:idMascota})
-	.then(( response )=>{
-		console.log(response)
-		stopPrograssBar(progressBar);
-		$('#progressbar').modal("hide");
-	})
-
+	if($("#tbodyArticulos tr").length > 0){
+		const progressBar = loadPrograssBar();
+		$('#progressbar h5').text("Subiendo archivos...");
+		$("#progressbar").modal("show");
+	
+		let rows = "";
+		$("#tbodyArticulos tr").map((i, e)=>{
+			if (i == 0)
+				rows = e.id
+			else
+				rows += ","+e.id
+	
+		})
+	
+		sendAsyncPost("matchArticulosHistoria",{art:rows, idHist:idHist, idMascota:idMascota})
+		.then(( response )=>{
+			console.log(response)
+			stopPrograssBar(progressBar);
+			$('#progressbar').modal("hide");
+		})
+	}
 
 }
 
