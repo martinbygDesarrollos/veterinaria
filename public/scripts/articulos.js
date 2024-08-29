@@ -105,6 +105,10 @@ function matchArticulosHistoria(idHist, idMascota){
 			console.log(response)
 			stopPrograssBar(progressBar);
 			$('#progressbar').modal("hide");
+
+			const botonVer = document.querySelector(`button[onclick="getArticulosByHistoria(${idHist})"]`);
+			botonVer.removeAttribute('disabled');
+
 		})
 	}
 

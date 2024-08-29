@@ -187,7 +187,7 @@ function createRowHistorial(obj){
 	if(obj.cantArticulos > 0)
 		row += "<button class='btn btn-light' onclick='getArticulosByHistoria("+ idHistoriaClinica +")'>ver</button></td>";
 	else
-		row += "<button class='btn btn-light' disabled >ver</button></td>";
+		row += "<button class='btn btn-light' onclick='getArticulosByHistoria("+ idHistoriaClinica +")' disabled >ver</button></td>";
 
 	//botones acción 
 	row += "<td class='text-center' style='min-width: 6em;'>";
