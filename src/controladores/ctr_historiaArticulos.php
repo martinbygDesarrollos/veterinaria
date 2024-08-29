@@ -151,7 +151,7 @@ class ctr_historiaArticulos {
         }else return $clienteResponse;
 
 
-        $arrayArticulos = explode(",", $art);
+        //$arrayArticulos = explode(",", $art);
 
         $data = [
             "idHistoriaClinica"=>$idHist,
@@ -159,8 +159,12 @@ class ctr_historiaArticulos {
             "cantidad"=>1
         ];
 
-        foreach ($arrayArticulos as $value) {
-            $data["idArticulo"] = $value;
+        foreach ($art as $row) {
+            $data["idArticulo"] = $row["art"];
+
+            if (isset($row["cant"]))
+                $data["cantidad"] = $row["cant"];
+            
             $articuloResponse = $articulosClass->new($data);
             if ($articuloResponse->result != 2){
                 $response->result = $articuloResponse->result;

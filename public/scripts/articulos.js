@@ -58,7 +58,7 @@ function createRowArticuloToModal( object ){
 	
 	let row = '<tr id="'+object.id+'">'
 	row += '<td>'+object.descripcion+'</td>';
-	row += '<td>'+object.saldo+'</td>';
+	row += '<td><input name="'+object.id+'_cant" type="number" min=1 value=1 /></td>';
 	row += '<td><button title="Quitar artículo de la lista" onclick="unselectArticulo('+object.id+')" class="btn bg-light"><i class="fas fa-trash-alt text-danger"></i></button></td>';
 	row += '</tr>';
 	return row;
@@ -78,12 +78,13 @@ function matchArticulosHistoria(idHist, idMascota){
 		$('#progressbar h5').text("Subiendo archivos...");
 		$("#progressbar").modal("show");
 	
-		let rows = "";
+		let rows = [];
 		$("#tbodyArticulos tr").map((i, e)=>{
-			if (i == 0)
-				rows = e.id
-			else
-				rows += ","+e.id
+			let cant = 0;
+			if(document.getElementsByName(e.id+"_cant"))
+				cant = document.getElementsByName(e.id+"_cant")[0].value
+			
+			rows.push({art:e.id, cant:cant})
 	
 		})
 	
@@ -116,8 +117,6 @@ function getArticulosByHistoria(idHistoriaClinica){
 
 
 function createRowInfoArticuloToModal( object ){
-	console.log(object)
-
 	let fecha = new Date(object.fecha)
 	fecha = fecha.toLocaleDateString("es-UY")
 
@@ -125,9 +124,14 @@ function createRowInfoArticuloToModal( object ){
 	if (object.serie && object.numero)
 		comp = getNameVoucher(object.tipo)+" "+object.serie+" "+object.numero
 
+	let desc = ""
+	if(object.descripcion)
+		desc = object.descripcion
+
 	let row = '<tr>'
 	row += '<td>'+fecha+'</td>';
-	row += '<td>'+object.descripcion+'</td>';
+	row += '<td>'+object.cantidad+'</td>';
+	row += '<td>'+desc+'</td>';
 	row += '<td>'+comp+'</td></tr>';
 
 	return row;
