@@ -1334,4 +1334,20 @@ class ctr_usuarios{
 		return $response;
 	}
 
+	function getSaldo($idSocio){
+		$response = new \stdClass();
+		$sociosClass = new socios();
+		$responseGetSaldo = $sociosClass->getSaldo($idSocio);
+		if ($responseGetSaldo->result != 2) {
+			$response->result = $responseGetSaldo->result;
+			$response->saldo = 0;
+		} else {
+			$response->result = 2;
+			$saldo = isset($responseGetSaldo->objectResult->saldo) ? $responseGetSaldo->objectResult->saldo : 0;
+			$response->saldo = $saldo;
+			// var_dump($response->saldo);
+		}
+		return $response;
+	}
+
 }
