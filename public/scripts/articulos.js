@@ -1,7 +1,9 @@
 $("#buttonConfirmModalArticulo").click(function(){
-	console.log("guardar datos art")
 
-	alert("guardado")
+	document.getElementById("buttonConfirmModalArticulo").hidden = true
+	document.getElementById("buttonConfirmModalArticulo").disabled = true
+	document.getElementById("buttonConfirmModalGuardadoArticulo").hidden = false
+
 
 	let cookie = "";
 
@@ -14,6 +16,16 @@ $("#buttonConfirmModalArticulo").click(function(){
 	})
 
 	document.cookie = "articulos="+cookie;
+
+
+	setTimeout(() => {
+		console.log("boton")
+		document.getElementById("buttonConfirmModalGuardadoArticulo").hidden = true
+		document.getElementById("buttonConfirmModalArticulo").disabled = false
+		document.getElementById("buttonConfirmModalArticulo").hidden = false
+	  }, 300);
+	
+
 })
 
 
