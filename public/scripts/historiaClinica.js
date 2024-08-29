@@ -275,6 +275,7 @@ function openModalHistoria(button){
 					$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
 					$("#inputPesoHistoria").val("");
 					$("#inputTemperaturaHistoria").val("");
+					document.getElementById("divButtonAddArticulosHistory").hidden = true
 					if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
 						hora = "00:00"
 					else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
@@ -345,6 +346,8 @@ function openModalHistoria(button){
 				$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
 				$("#inputPesoHistoria").val("");
 				$("#inputTemperaturaHistoria").val("");
+				document.getElementById("divButtonAddArticulosHistory").hidden = true
+
 				if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
 					hora = "00:00"
 				else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
@@ -487,6 +490,7 @@ function clearModalHistoria(){
 	$("#inputFrecuenciaCardiacaHistoria").val('');
 	$("#inputFRHistoria").val('');
 	$("#inputTiempoLlenadoCapilarHistoria").val('');
+	document.getElementById("divButtonAddArticulosHistory").hidden = false
 }
 
 
