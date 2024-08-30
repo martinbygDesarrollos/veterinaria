@@ -9,8 +9,17 @@ class ctr_historiaArticulos {
     public function getArticulosPendientesByIdClient($idClient){
         $historaArticuloClass = new historiaArticulo();
 		$response = new \stdClass();
-		$responseGetResults = $historaArticuloClass->getArticulosPendientesByIdClient($idClient);
-        
+        $responseGetResults = new \stdClass();
+        $responseGetResults->result = 0;
+
+
+        if ($idClient == 0){
+            $responseGetResults = $historaArticuloClass->getArticulosPendientesAllClient();
+        }else{
+    		$responseGetResults = $historaArticuloClass->getArticulosPendientesByIdClient($idClient);
+        }
+
+
 		if($responseGetResults->result == 2){
 			$response->result = 2;
 			$response->articulos = $responseGetResults->listResult;

@@ -82,7 +82,12 @@ class historiaArticulo{
 
     public function getArticulosPendientesByIdClient($idClient){
         $dbClass = new DataBase();
-        return $dbClass->sendQuery("SELECT id, idArticulo, fecha, cantidad FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND idCliente = ? ", array('i', $idClient), "LIST");
+        return $dbClass->sendQuery("SELECT id, idArticulo, idCliente, fecha, cantidad FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND idCliente = ? ", array('i', $idClient), "LIST");
+    }
+
+    public function getArticulosPendientesAllClient(){
+        $dbClass = new DataBase();
+        return $dbClass->sendQuery("SELECT id, idArticulo, idCliente, fecha, cantidad FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL", array(), "LIST");
     }
 
     public function getArticulosPendientesById($idHistoriaArticulo){
