@@ -49,7 +49,7 @@ return function (App $app) {
 	$app->get('/pendientes/{id}', function(Request $request, $response, $args) use ($userController, $historiaArticulosController){
         $response = new stdClass();
         $data = $request->getParams();
-        $token = $data['token'];
+        $token = isset($data['token']) ? $data['token'] : 0;
         $myToken = base64_encode(date("Ymd") . "gestcom1213");
         // var_dump($myToken);
         if(strcmp($token, $myToken) == 0){
