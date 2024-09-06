@@ -183,11 +183,7 @@ function createRowHistorial(obj){
 	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+nomUsuario+ detalle +"</td>";
 
 	//botón artículos
-	row += "<td class='text-center' scope='col'>";
-	if(obj.cantArticulos > 0)
-		row += "<button class='btn btn-light' onclick='getArticulosByHistoria("+ idHistoriaClinica +")'>ver</button></td>";
-	else
-		row += "<button class='btn btn-light' onclick='getArticulosByHistoria("+ idHistoriaClinica +")' disabled >ver</button></td>";
+	row += "<td class='text-center' scope='col'><button class='btn btn-light' onclick='getArticulosByHistoria("+ idHistoriaClinica +")'>ver</button></td>";
 
 	//botones acción 
 	row += "<td class='text-center' style='min-width: 6em;'>";
@@ -897,4 +893,23 @@ function modalArticulos(){
 
 $('#modalArticulos').on('hidden.bs.modal', function (e) {
 	$('#modalHistoriaClinica').modal("show");
+})
+
+
+function modalArticulosUpdate(){
+
+	$('#modalInfoArticulos').modal("hide");
+
+	$('#modalArticulosUpdate').modal("show");
+
+}
+
+$('#modalArticulosUpdate').on('hidden.bs.modal', function (e) {
+	$('#modalInfoArticulos').modal("show");
+})
+
+$('#modalArticulosUpdate').on('shown.bs.modal', function (e) {
+	$('#datalistModalArticuloUpdate').children().remove()
+	$('#inputSearchArticuloUpdate').val("");
+	$('#tbodyArticulosUpdate').empty();
 })

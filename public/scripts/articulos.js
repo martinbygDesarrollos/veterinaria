@@ -1,40 +1,14 @@
-$("#buttonConfirmModalArticulo").click(function(){
+function findArticulo(value){
 
-	document.getElementById("buttonConfirmModalArticulo").hidden = true
-	document.getElementById("buttonConfirmModalArticulo").disabled = true
-	document.getElementById("buttonConfirmModalGuardadoArticulo").hidden = false
-
-
-	let cookie = "";
-
-	$("#tbodyArticulos tr").map((i, e)=>{
-		if (i == 0)
-			cookie = e.id
-		else
-			cookie += ","+e.id
-
-	})
-
-	document.cookie = "articulos="+cookie;
-
-
-	setTimeout(() => {
-		console.log("boton")
-		document.getElementById("buttonConfirmModalGuardadoArticulo").hidden = true
-		document.getElementById("buttonConfirmModalArticulo").disabled = false
-		document.getElementById("buttonConfirmModalArticulo").hidden = false
-	  }, 300);
-	
-
-})
+	return sendPost("searchArticuloByDescOrCodeBar", { textToSearch: value });
+}
 
 
 function searchArticulos(value){
 
     if (value.length > 1){
 
-		let response = sendPost("searchArticuloByDescOrCodeBar", { textToSearch: value });
-		console.log(response);
+		let response = findArticulo(value);
 		if(response.result == 2){
 			$('#datalistModalArticulo').empty();
 			for (var i = 0; i < response.listResult.length; i++) {
@@ -50,10 +24,28 @@ function searchArticulos(value){
 
 }
 
+function searchArticulosUpdate(value){
+	
+	if (value.length > 1){
+
+		let response = findArticulo(value);
+		if(response.result == 2){
+			$('#datalistModalArticuloUpdate').empty();
+			for (var i = 0; i < response.listResult.length; i++) {
+				option = '<option value="' +response.listResult[i].descripcion +'"></option>';
+				$("#datalistModalArticuloUpdate").append(option);
+			}
+		}
+		else if(response.result == 1){
+			$('#datalistModalArticuloUpdate').empty();
+		}
+	}
+	else $('#datalistModalArticuloUpdate').empty();
+}
+
 function addArticulo(articulo){
 	if (articulo.length > 0) {
-		let response = sendPost("searchArticuloByDescOrCodeBar", { textToSearch: articulo });
-		console.log(response);
+		let response = findArticulo(articulo);
 		if(response.result == 2 && response.listResult.length > 0){
 			row = createRowArticuloToModal(response.listResult[0]);
 			$("#tbodyArticulos").prepend(row);
@@ -65,6 +57,20 @@ function addArticulo(articulo){
 
 }
 
+function addArticuloUpdate(articulo){
+	if (articulo.length > 0) {
+		let response = findArticulo(articulo);
+		if(response.result == 2 && response.listResult.length > 0){
+			row = createRowArticuloToModal(response.listResult[0]);
+			console.log(row)
+			$("#tbodyArticulosUpdate").prepend(row);
+			$('#datalistModalArticuloUpdate').children().remove()
+			$('#inputSearchArticuloUpdate').val("");
+
+		}
+	}
+
+}
 
 function createRowArticuloToModal( object ){
 	
@@ -102,14 +108,54 @@ function matchArticulosHistoria(idHist, idMascota){
 	
 		sendAsyncPost("matchArticulosHistoria",{art:rows, idHist:idHist, idMascota:idMascota})
 		.then(( response )=>{
-			console.log(response)
 			stopPrograssBar(progressBar);
 			$('#progressbar').modal("hide");
 
-			const botonVer = document.querySelector(`button[onclick="getArticulosByHistoria(${idHist})"]`);
-			botonVer.removeAttribute('disabled');
+			if (response.result == 2)
+				$('#tbodyArticulos').empty();
 
 		})
+	}
+
+}
+
+function updateMatchArticulosHistoria(idMascota){
+
+	let boton = document.getElementById('idButtonAddArticuloUpdate');
+    let idHist = boton.dataset.hist;
+
+	if($("#tbodyArticulosUpdate tr").length > 0){
+
+		$('#modalArticulosUpdate').modal("hide");
+		setTimeout(() => {
+			$('#modalInfoArticulos').modal("hide");
+
+			const progressBar = loadPrograssBar();
+			$('#progressbar h5').text("Subiendo artículos...");
+			$("#progressbar").modal("show");
+		
+			let rows = [];
+			$("#tbodyArticulosUpdate tr").map((i, e)=>{
+				let cant = 0;
+				if(document.getElementsByName(e.id+"_cant"))
+					cant = document.getElementsByName(e.id+"_cant")[0].value
+				
+				rows.push({art:e.id, cant:cant})
+		
+			})
+		
+			sendAsyncPost("matchArticulosHistoria",{art:rows, idHist:idHist, idMascota:idMascota})
+			.then(( response )=>{
+
+				setTimeout(() => {
+					stopPrograssBar(progressBar);
+					$('#progressbar').modal("hide");
+					getArticulosByHistoria(idHist)
+				}, 350);
+				
+			})
+		}, 250);
+		
 	}
 
 }
@@ -126,9 +172,13 @@ function getArticulosByHistoria(idHistoriaClinica){
 				$("#tbodyInfoArticulos").append(row);
 			}
 
-			$("#modalInfoArticulos").modal("show")
 		}
 	})
+
+	let boton = document.getElementById('idButtonAddArticuloUpdate');
+	boton.dataset.hist = idHistoriaClinica;
+
+	$("#modalInfoArticulos").modal("show")
 }
 
 

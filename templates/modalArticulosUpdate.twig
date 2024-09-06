@@ -1,4 +1,4 @@
-<div class="modal fade" id="modalArticulos" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+<div class="modal fade" id="modalArticulosUpdate" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
 	<div class="modal-dialog modal-dialog-historia-clinica modal-dialog-centered" style="width: 70%;" role="document">
 		<div class="modal-content">
 			<div class="modal-header bg-mycolor" >
@@ -9,8 +9,8 @@
 			</div>
 			<div class="modal-body">
 				<div class="form-row">
-					<input type="text" list="datalistModalArticulo" name="" class="form-control form-control-sm w-100" id="idlistArticulos" onkeyup="searchArticulos( this.value )" onchange="addArticulo(this.value)" placeholder="Buscar artículo">
-			        <datalist id="datalistModalArticulo"></datalist>
+					<input type="text" list="datalistModalArticuloUpdate" id="inputSearchArticuloUpdate" name="" class="form-control form-control-sm w-100" onkeyup="searchArticulosUpdate( this.value )" onchange="addArticuloUpdate(this.value)" placeholder="Buscar artículo">
+			        <datalist id="datalistModalArticuloUpdate"></datalist>
 				</div>
 				<div class="my-3">
 					<h6>Artículos seleccionados</h6>
@@ -23,12 +23,16 @@
 									<th class="col-1"></th>
 								</tr>
 							</thead>
-							<tbody id="tbodyArticulos"></tbody>
+							<tbody id="tbodyArticulosUpdate"></tbody>
 						</table>
 					</div>
 				</div>
 				<div class="modal-footer d-flex justify-content-between align-end" >
 					<button class="btn btn-ligth shadow-sm" type="button" data-dismiss="modal">Volver</button>
+					<button id="buttonUpdateModalArticulo" class="btn btn-success shadow-sm" onclick="updateMatchArticulosHistoria({{ SocioMascota.mascota.idMascota }})" >Actualizar</button>
+					<div class="spinner-border" role="status" id="spinnerUpdateArticulo" disabled hidden>
+						<span class="sr-only">Loading...</span>
+					</div>
 				</div>
 			</div>
 		</div>
