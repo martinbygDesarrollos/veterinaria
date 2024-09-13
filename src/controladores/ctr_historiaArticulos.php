@@ -25,7 +25,7 @@ class ctr_historiaArticulos {
 			$response->articulos = $responseGetResults->listResult;
 		} else if ($responseGetResults->result == 1){
 			$response->result = 1;
-			$response->message = "Ningun articulo pendiente para ese cliente";
+			$response->message = "Ningún artículo pendiente encontrado.";
             $response->articulos = array();
 		} else return $responseGetResults;
 		return $response;
