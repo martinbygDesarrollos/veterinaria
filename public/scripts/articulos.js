@@ -165,7 +165,6 @@ function getArticulosByHistoria(idHistoriaClinica){
 	$("#tbodyInfoArticulos").empty()
 	sendAsyncPost("getArticulosByHistoria",{idHist:idHistoriaClinica})
 	.then(( response )=>{
-		console.log(response)
 		if(response.result == 2 && response.listResult.length > 0){
 			for (let i = 0; i < response.listResult.length; i++) {
 				row = createRowInfoArticuloToModal(response.listResult[i]);
@@ -195,6 +194,11 @@ function createRowInfoArticuloToModal( object ){
 		acciones += '<button class="btn btn-link" onclick="updateArticulo('+object.id+')"><i class="fas fa-edit text-dark"></i></button>'
 		//botón borrar
 		//acciones += '<button class="btn btn-link" onclick="deleteArticulo('+object.id+')"><i class="fas fa-trash-alt text-dark"></i></button>'
+	}
+
+
+	if ( object.tipoPago && object.tipoPago != "" ){
+		comp += " / "+object.tipoPago
 	}
 
 	let desc = ""

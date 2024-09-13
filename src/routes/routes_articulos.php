@@ -89,7 +89,8 @@ return function (App $app) {
                 $tipo = $factura['tipo'];
                 $serie = $factura['serie'];
                 $numero = $factura['numero'];
-                $resultAux = $historiaArticulosController->updateHistoriaArticulo($ids, $tipo, $serie, $numero);
+                $tipopago = $factura['tipopago'];
+                $resultAux = $historiaArticulosController->updateHistoriaArticulo($ids, $tipo, $serie, $numero, $tipopago);
                 $results->exitos = array_merge($results->exitos, $resultAux->exitos);
                 $results->errores = array_merge($results->errores, $resultAux->errores);
             }

@@ -31,7 +31,7 @@ class ctr_historiaArticulos {
 		return $response;
     }
 
-    public function updateHistoriaArticulo($ids, $tipo, $serie, $numero){
+    public function updateHistoriaArticulo($ids, $tipo, $serie, $numero, $tipopago){
         $historaArticuloClass = new historiaArticulo();
 		$response = new \stdClass();
         $exitos = [];
@@ -39,7 +39,7 @@ class ctr_historiaArticulos {
         foreach ($ids as $id) {
             $pendiente = $historaArticuloClass->getArticulosPendientesById($id);
 		    if($pendiente->result == 2){
-                $responseUpdate = $historaArticuloClass->updateArticuloPendiente($id, $tipo, $serie, $numero);
+                $responseUpdate = $historaArticuloClass->updateArticuloPendiente($id, $tipo, $serie, $numero, $tipopago);
                 if($responseUpdate->result == 2){
                     // $response->result = 2;
                     $exitos[] = $id;

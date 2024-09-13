@@ -105,9 +105,9 @@ class historiaArticulo{
         return $dbClass->sendQuery("SELECT * FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND id= ? ", array('i', $idHistoriaArticulo), "OBJECT");
     }
 
-    public function updateArticuloPendiente($idHistoriaArticulo, $tipo, $serie, $numero){
+    public function updateArticuloPendiente($idHistoriaArticulo, $tipo, $serie, $numero, $tipopago){
         $dbClass = new DataBase();
-        return $dbClass->sendQuery("UPDATE historiaarticulo SET tipo = ?, serie = ?, numero = ? WHERE id= ? ", array('ssii', $tipo, $serie, $numero, $idHistoriaArticulo), "BOOLE");
+        return $dbClass->sendQuery("UPDATE historiaarticulo SET tipo = ?, serie = ?, numero = ?, tipoPago = ? WHERE id= ? ", array('ssisi', $tipo, $serie, $numero, $tipopago, $idHistoriaArticulo), "BOOLE");
     }
 
 
