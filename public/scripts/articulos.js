@@ -187,18 +187,43 @@ function createRowInfoArticuloToModal( object ){
 	fecha = fecha.toLocaleDateString("es-UY")
 
 	let comp = "";
-	if (object.serie && object.numero)
+	let acciones = "";
+	if (object.serie && object.numero){
 		comp = getNameVoucher(object.tipo)+" "+object.serie+" "+object.numero
+	}else if(!object.serie && !object.numero){
+		//botón modificar
+		acciones += '<button class="btn btn-link" onclick="updateArticulo('+object.id+')"><i class="fas fa-edit text-dark"></i></button>'
+		//botón borrar
+		//acciones += '<button class="btn btn-link" onclick="deleteArticulo('+object.id+')"><i class="fas fa-trash-alt text-dark"></i></button>'
+	}
 
 	let desc = ""
 	if(object.descripcion)
 		desc = object.descripcion
 
-	let row = '<tr>'
+	let row = '<tr id="tr_'+object.id+'" >'
 	row += '<td>'+fecha+'</td>';
-	row += '<td>'+object.cantidad+'</td>';
+	row += '<td id="td_'+object.id+'_cantnueva" disabled hidden ><input name="'+object.id+'_cant" type="number" min=1 value="'+object.cantidad+'"/>';
+	row += '<td id="td_'+object.id+'_cant">'+object.cantidad+'</td>';
 	row += '<td>'+desc+'</td>';
-	row += '<td>'+comp+'</td></tr>';
+	row += '<td>'+comp+'</td>';
+	row += '<td>'+acciones+'</td></tr>';
 
 	return row;
+}
+
+
+function updateArticulo(id){
+	console.log("modificar", id)
+
+	document.getElementById("td_"+id+"_cant").disabled = true
+	document.getElementById("td_"+id+"_cant").hidden = true
+
+	document.getElementById("td_"+id+"_cantnueva").disabled = false
+	document.getElementById("td_"+id+"_cantnueva").hidden = false
+}
+
+
+function deleteArticulo(id){
+	console.log("borrar", id)
 }
