@@ -82,12 +82,22 @@ class historiaArticulo{
 
     public function getArticulosPendientesByIdClient($idClient){
         $dbClass = new DataBase();
-        return $dbClass->sendQuery("SELECT id, idArticulo, idCliente, fecha, cantidad FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND idCliente = ? ", array('i', $idClient), "LIST");
+        $sql = "SELECT ha.id, ha.idArticulo, ha.idCliente, ha.fecha, ha.cantidad, m.nombre as mascota
+            FROM historiaarticulo ha
+            LEFT JOIN historiasclinica hc on ha.idHistoriaClinica = hc.idHistoriaClinica
+            LEFT JOIN mascotas  m on hc.idMascota = m.idMascota
+            WHERE ha.tipo IS NULL AND ha.serie IS NULL AND ha.numero IS NULL AND ha.idCliente = ? ";
+        return $dbClass->sendQuery($sql, array('i', $idClient), "LIST");
     }
 
     public function getArticulosPendientesAllClient(){
         $dbClass = new DataBase();
-        return $dbClass->sendQuery("SELECT id, idArticulo, idCliente, fecha, cantidad FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL", array(), "LIST");
+        $sql = "SELECT ha.id, ha.idArticulo, ha.idCliente, ha.fecha, ha.cantidad, m.nombre as mascota
+            FROM historiaarticulo ha
+            LEFT JOIN historiasclinica hc on ha.idHistoriaClinica = hc.idHistoriaClinica
+            LEFT JOIN mascotas  m on hc.idMascota = m.idMascota
+            WHERE ha.tipo IS NULL AND ha.serie IS NULL AND ha.numero IS NULL";
+        return $dbClass->sendQuery($sql, array(), "LIST");
     }
 
     public function getArticulosPendientesById($idHistoriaArticulo){
