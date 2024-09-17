@@ -49,7 +49,7 @@
 			<div  class="row mr-1" >
 				{% if SocioMascota.saldo != 0 %}
 					<div> 
-						<a class="btn btn-danger mt-2 mr-1" title="Ver facturas pendientes" onclick="openModalSaldo();" value=""><i class="fas fa-dollar-sign"></i> {{SocioMascota.saldo}} </a>
+						<a class="btn btn-danger mt-2 mr-1" title="Ver facturas pendientes" onclick="openModalSaldo({{SocioMascota.socio.idSocio}});" value=""><i class="fas fa-dollar-sign"></i> {{SocioMascota.saldo}} </a>
 					</div>
 				{% endif %}
 				<div name="divbuttonwppmascota">
@@ -687,6 +687,7 @@
 {% include("modalArticulos.twig") %}
 {% include("modalInfoArticulos.twig") %}
 {% include("modalArticulosUpdate.twig") %}
+{% include("modalSaldo.twig") %}
 
 
 {%block script%}
@@ -700,6 +701,7 @@
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/internacion.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/imprimibles.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/articulos.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/facturacion.js?{{version}}"></script>
 <script type="text/javascript">
 	$('#inputPrimerDosisVacuna').val(getDateForInput());
 	$('#inputProximaDosisVacuna').val("");

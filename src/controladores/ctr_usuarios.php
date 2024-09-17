@@ -850,6 +850,11 @@ class ctr_usuarios{
 			$response->result = 2;
 			$response->socio = $responseGetSocio->objectResult;
 			$response->mascotas = ctr_mascotas::getMascotasSocio($idSocio);
+
+			$response->socio->saldo = null;
+			$responseGetSaldo = ctr_usuarios::getSaldo($responseGetSocio->objectResult->idSocio);
+			if($responseGetSaldo->result == 2)
+				$response->socio->saldo = $responseGetSaldo->saldo;
 		}else return $responseGetSocio;
 
 		return $response;
@@ -1347,6 +1352,14 @@ class ctr_usuarios{
 			$response->saldo = $saldo;
 			// var_dump($response->saldo);
 		}
+		return $response;
+	}
+
+
+	function getFacturasPendientesCliente($idCliente){
+		$response = new \stdClass();
+		$clientClass = new socios();
+		$response = $clientClass->getFacturasPendientesCliente($idCliente);
 		return $response;
 	}
 
