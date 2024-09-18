@@ -33,9 +33,9 @@ class historiaArticulo{
 		$database = new DataBase();
 
         return $database->sendQuery("INSERT INTO `historiaarticulo`
-            (`idHistoriaClinica`, `idArticulo`, `idCliente`, `cantidad`)
-            VALUES (?,?,?,?);",
-            array('isii',$data["idHistoriaClinica"], $data["idArticulo"], $data["idCliente"], $data["cantidad"]), "BOOLE");
+            (`idHistoriaClinica`, `idArticulo`, `idCliente`, `idUsuario`,`cantidad`)
+            VALUES (?,?,?,?,?);",
+            array('isiii',$data["idHistoriaClinica"], $data["idArticulo"], $data["idCliente"], $data["idUsuario"], $data["cantidad"]), "BOOLE");
 
 	}
 

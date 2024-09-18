@@ -159,13 +159,18 @@ class ctr_historiaArticulos {
             $idCliente = $clienteResponse->objectResult->idSocio;
         }else return $clienteResponse;
 
+        $idUsuario = null;
+        if (isset($_SESSION["ADMIN"]["IDENTIFICADOR"])){
+            $idUsuario = $_SESSION["ADMIN"]["IDENTIFICADOR"];
+        }
 
         //$arrayArticulos = explode(",", $art);
 
         $data = [
             "idHistoriaClinica"=>$idHist,
             "idCliente"=>$idCliente,
-            "cantidad"=>1
+            "cantidad"=>1, //por defecto para todos los articulos queda en 1 pero si se agregó cantidad se actualiza en el foreach
+            "idUsuario"=>$idUsuario,
         ];
 
         foreach ($art as $row) {
@@ -194,7 +199,23 @@ class ctr_historiaArticulos {
 
     public function getArticulosByHistoria($idHist){
         $articulosClass = new historiaArticulo();
-        return $articulosClass->getArticulosByHistoria($idHist);
+        $usersClass = new usuarios();
+        $list = $articulosClass->getArticulosByHistoria($idHist);
+
+        if($list->result == 2){
+            foreach ($list->listResult as $key => $value) {
+                if(isset($value["idUsuario"]) && $value["idUsuario"] > 0){
+                    $objUser = $usersClass->getUser($value["idUsuario"]);
+                    if($objUser->result == 2){
+                        $nombreUsuario = $objUser->objectResult->nombre;
+                        $value["nombreUsuario"] = $nombreUsuario;
+                        $list->listResult[$key] = $value;
+                    }
+                }
+            }
+        }
+
+        return $list;
 
     }
 }

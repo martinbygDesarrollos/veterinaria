@@ -205,7 +205,13 @@ function createRowInfoArticuloToModal( object ){
 	if(object.descripcion)
 		desc = object.descripcion
 
+	let nombreUsuario = ""
+	if (object.nombreUsuario)
+		nombreUsuario = object.nombreUsuario
+
+
 	let row = '<tr id="tr_'+object.id+'" >'
+	row += '<td>'+nombreUsuario+'</td>';
 	row += '<td>'+fecha+'</td>';
 	row += '<td id="td_'+object.id+'_cantnueva" disabled hidden ><input name="'+object.id+'_cant" type="number" min=1 value="'+object.cantidad+'"/>';
 	row += '<td id="td_'+object.id+'_cant">'+object.cantidad+'</td>';
