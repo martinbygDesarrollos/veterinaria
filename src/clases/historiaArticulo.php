@@ -144,6 +144,27 @@ class historiaArticulo{
         return $dbClass->sendQuery($sql, array("i", $id), "LIST");
     }
 
+    public function setValue($idHistArt, $campo, $valor){
+        $dbClass = new DataBase();
+
+        $sql = "SELECT $campo FROM `historiaarticulo` WHERE `historiaarticulo`.`id` = $idHistArt";
+        $historiaarticulo = $dbClass->sendQuery($sql, array(), "OBJECT");
+
+        $valor_anterior = 1;
+        if($historiaarticulo->result == 2){
+            $valor_anterior = $historiaarticulo->objectResult->$campo;
+        }
+
+        $sql = "UPDATE `historiaarticulo` SET $campo = $valor WHERE `historiaarticulo`.`id` = $idHistArt";
+        $update = $dbClass->sendQuery($sql, array(), "BOOLE");
+
+        if($update->result != 2 ){
+            $update->anterior = $valor_anterior;
+        }
+
+        return $update;
+    }
+
 }
 
 ?>

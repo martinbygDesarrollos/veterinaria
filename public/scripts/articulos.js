@@ -191,7 +191,7 @@ function createRowInfoArticuloToModal( object ){
 		comp = getNameVoucher(object.tipo)+" "+object.serie+" "+object.numero
 	}else if(!object.serie && !object.numero){
 		//botón modificar
-		acciones += '<button class="btn btn-link" onclick="updateArticulo('+object.id+')"><i class="fas fa-edit text-dark"></i></button>'
+		acciones += '<button id="idButtonEnableUpdateArticulo" class="btn btn-link" onclick="enableUpdateArticulo('+object.id+')"><i class="fas fa-edit text-dark"></i></button><button id="idButtonUpdateArticulo" class="btn btn-success" title="Guardar cambios" onclick="updateArticulo('+object.id+')" disabled hidden><i class="fas fa-check"></i></button>'
 		//botón borrar
 		//acciones += '<button class="btn btn-link" onclick="deleteArticulo('+object.id+')"><i class="fas fa-trash-alt text-dark"></i></button>'
 	}
@@ -223,14 +223,64 @@ function createRowInfoArticuloToModal( object ){
 }
 
 
+function enableUpdateArticulo(id){
+	console.log("modificar", id)
+
+	document.getElementById("td_"+id+"_cant").disabled = true //td que muestra la cantidad ingresada
+	document.getElementById("td_"+id+"_cant").hidden = true
+	document.getElementById("idButtonEnableUpdateArticulo").disabled = true //boton que permite editar
+	document.getElementById("idButtonEnableUpdateArticulo").hidden = true
+
+	document.getElementById("td_"+id+"_cantnueva").disabled = false //td input que tiene la cantidad nueva
+	document.getElementById("td_"+id+"_cantnueva").hidden = false
+	document.getElementById("idButtonUpdateArticulo").disabled = false//boton que actualiza la cantidad
+	document.getElementById("idButtonUpdateArticulo").hidden = false
+}
+
+function desableUpdateArticulo(id){
+
+	document.getElementById("td_"+id+"_cantnueva").disabled = true //td input que tiene la cantidad nueva
+	document.getElementById("td_"+id+"_cantnueva").hidden = true
+	document.getElementById("idButtonUpdateArticulo").disabled = true//boton que actualiza la cantidad
+	document.getElementById("idButtonUpdateArticulo").hidden = true
+
+	document.getElementById("td_"+id+"_cant").disabled = false //td que muestra la cantidad ingresada
+	document.getElementById("td_"+id+"_cant").hidden = false
+	document.getElementById("idButtonEnableUpdateArticulo").disabled = false //boton que permite editar
+	document.getElementById("idButtonEnableUpdateArticulo").hidden = false
+
+}
+
+
 function updateArticulo(id){
 	console.log("modificar", id)
 
-	document.getElementById("td_"+id+"_cant").disabled = true
-	document.getElementById("td_"+id+"_cant").hidden = true
+	//deshabilitar boton y deshabilitar input, guardar nuevo valor y al terminar dejar todo desbloqueado
+	document.getElementById("idButtonUpdateArticulo").disabled = true //boton que actualiza la cantidad
+	const cant_nueva = document.getElementById("td_"+id+"_cantnueva").children[0].value;
+	document.getElementById("td_"+id+"_cantnueva").disabled = true //td input que tiene la cantidad nueva 
 
-	document.getElementById("td_"+id+"_cantnueva").disabled = false
-	document.getElementById("td_"+id+"_cantnueva").hidden = false
+	sendAsyncPost("setHistoriaArticulo",{idHistArt:id, campo:"cantidad", valor:cant_nueva})
+	.then((response)=>{
+		console.log(response)
+
+		if(response.result == 2){
+			const cant_nueva = document.getElementById("td_"+id+"_cantnueva").children[0].value;
+			document.getElementById("td_"+id+"_cant").innerHTML = cant_nueva;
+			document.getElementById("td_"+id+"_cant").innerText = cant_nueva;
+
+			desableUpdateArticulo(id)
+		}else{
+			let cant_anterior = response.anterior;
+			document.getElementById("td_"+id+"_cant").innerHTML = cant_anterior;
+			document.getElementById("td_"+id+"_cant").innerText = cant_anterior;
+
+			desableUpdateArticulo(id)
+		}
+
+
+	})
+
 }
 
 

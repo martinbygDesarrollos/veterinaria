@@ -218,5 +218,11 @@ class ctr_historiaArticulos {
         return $list;
 
     }
+
+
+    public function setHistoriaArticulo($idHistArt, $campo, $valor){
+        $articulosClass = new historiaArticulo();
+        return $articulosClass->setValue($idHistArt, $campo, $valor);
+    }
 }
 ?>

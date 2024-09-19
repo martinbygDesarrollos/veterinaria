@@ -178,5 +178,21 @@ return function (App $app) {
 
         }else return $response->withRedirect($request->getUri()->getBaseUrl());
     });
+
+
+    $app->post('/setHistoriaArticulo', function(Request $request, Response $response) use ($userController, $historiaArticulosController) {
+
+		$responseSession = $userController->validateSession();
+		if($responseSession->result == 2){
+            $response = new stdClass();
+            $data = $request->getParsedBody();
+            $idHistArt = $data["idHistArt"];
+            $campo = $data["campo"];
+            $valor = $data["valor"];
+
+            return json_encode($historiaArticulosController->setHistoriaArticulo($idHistArt, $campo, $valor));
+
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
+    });
 }
 ?>
