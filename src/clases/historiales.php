@@ -136,9 +136,9 @@ class historiales{
 		$responseQuery = $dataBaseClass->sendQuery("
 
 			SELECT historiasclinica.*, usuarios.nombre AS nomUsuario, 
-			(SELECT COUNT(id) 
-			FROM historiaarticulo 
-			WHERE idHistoriaClinica = historiasclinica.idHistoriaClinica) AS cantArticulos
+			(SELECT COUNT(ha.id) 
+			FROM historiaarticulo ha
+			WHERE ha.idHistoriaClinica = historiasclinica.idHistoriaClinica AND ha.eliminado = 0) AS cantArticulos
 			FROM historiasclinica
 			LEFT JOIN usuarios on historiasclinica.idUsuario = usuarios.idUsuario
 			WHERE idMascota=?

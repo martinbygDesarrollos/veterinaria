@@ -86,7 +86,7 @@ class historiaArticulo{
             FROM historiaarticulo ha
             LEFT JOIN historiasclinica hc on ha.idHistoriaClinica = hc.idHistoriaClinica
             LEFT JOIN mascotas  m on hc.idMascota = m.idMascota
-            WHERE ha.tipo IS NULL AND ha.serie IS NULL AND ha.numero IS NULL AND ha.idCliente = ? ";
+            WHERE ha.tipo IS NULL AND ha.serie IS NULL AND ha.numero IS NULL AND ha.idCliente = ? AND ha.eliminado = 0 ";
         return $dbClass->sendQuery($sql, array('i', $idClient), "LIST");
     }
 
@@ -96,13 +96,13 @@ class historiaArticulo{
             FROM historiaarticulo ha
             LEFT JOIN historiasclinica hc on ha.idHistoriaClinica = hc.idHistoriaClinica
             LEFT JOIN mascotas  m on hc.idMascota = m.idMascota
-            WHERE ha.tipo IS NULL AND ha.serie IS NULL AND ha.numero IS NULL";
+            WHERE ha.tipo IS NULL AND ha.serie IS NULL AND ha.numero IS NULL AND ha.eliminado = 0 ";
         return $dbClass->sendQuery($sql, array(), "LIST");
     }
 
     public function getArticulosPendientesById($idHistoriaArticulo){
         $dbClass = new DataBase();
-        return $dbClass->sendQuery("SELECT * FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND id= ? ", array('i', $idHistoriaArticulo), "OBJECT");
+        return $dbClass->sendQuery("SELECT * FROM historiaarticulo WHERE tipo IS NULL AND serie IS NULL AND numero IS NULL AND id= ? AND eliminado = 0 ", array('i', $idHistoriaArticulo), "OBJECT");
     }
 
     public function updateArticuloPendiente($idHistoriaArticulo, $tipo, $serie, $numero, $tipopago){
@@ -139,13 +139,14 @@ class historiaArticulo{
         $dbClass = new DataBase();
         $sql = "SELECT ha.*, a.descripcion FROM historiaarticulo ha
             LEFT JOIN articulos a on a.id = ha.idArticulo
-            WHERE ha.idHistoriaClinica = ?";
+            WHERE ha.idHistoriaClinica = ? AND ha.eliminado = 0 ";
 
         return $dbClass->sendQuery($sql, array("i", $id), "LIST");
     }
 
     public function setValue($idHistArt, $campo, $valor){
         $dbClass = new DataBase();
+        $historiales = new historiales();
 
         $sql = "SELECT $campo FROM `historiaarticulo` WHERE `historiaarticulo`.`id` = $idHistArt";
         $historiaarticulo = $dbClass->sendQuery($sql, array(), "OBJECT");
@@ -158,7 +159,19 @@ class historiaArticulo{
         $sql = "UPDATE `historiaarticulo` SET $campo = $valor WHERE `historiaarticulo`.`id` = $idHistArt";
         $update = $dbClass->sendQuery($sql, array(), "BOOLE");
 
-        if($update->result != 2 ){
+        if($update->result == 2){
+            $idUsuario = null;
+            if (isset($_SESSION["ADMIN"]["IDENTIFICADOR"])){
+                $idUsuario = $_SESSION["ADMIN"]["IDENTIFICADOR"];
+            }
+
+            $obs = "Modificar campo $campo de la historia artículo id: $idHistArt, valor anterior $valor_anterior valor nuevo $valor.";
+            if ($campo ==  "eliminado"){
+                $obs = "Historia artículo $idHistArt eliminado.";
+            }
+            $historiales->insertHistorialUsuario($idUsuario, "Historia artículo", null, null, $obs);
+        }
+        else{
             $update->anterior = $valor_anterior;
         }
 

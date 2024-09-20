@@ -167,7 +167,7 @@ function getArticulosByHistoria(idHistoriaClinica){
 	.then(( response )=>{
 		if(response.result == 2 && response.listResult.length > 0){
 			for (let i = 0; i < response.listResult.length; i++) {
-				row = createRowInfoArticuloToModal(response.listResult[i]);
+				row = createRowInfoArticuloToModal(response.listResult[i], idHistoriaClinica);
 				$("#tbodyInfoArticulos").append(row);
 			}
 
@@ -181,7 +181,7 @@ function getArticulosByHistoria(idHistoriaClinica){
 }
 
 
-function createRowInfoArticuloToModal( object ){
+function createRowInfoArticuloToModal( object, idHistoriaClinica ){
 	let fecha = new Date(object.fecha)
 	fecha = fecha.toLocaleDateString("es-UY")
 
@@ -193,7 +193,7 @@ function createRowInfoArticuloToModal( object ){
 		//botón modificar
 		acciones += '<button id="idButtonEnableUpdateArticulo" class="btn btn-link" onclick="enableUpdateArticulo('+object.id+')"><i class="fas fa-edit text-dark"></i></button><button id="idButtonUpdateArticulo" class="btn btn-success" title="Guardar cambios" onclick="updateArticulo('+object.id+')" disabled hidden><i class="fas fa-check"></i></button>'
 		//botón borrar
-		//acciones += '<button class="btn btn-link" onclick="deleteArticulo('+object.id+')"><i class="fas fa-trash-alt text-dark"></i></button>'
+		acciones += '<button class="btn btn-link" onclick="deleteArticulo('+object.id+','+idHistoriaClinica+')"><i class="fas fa-trash-alt text-dark"></i></button>'
 	}
 
 
@@ -284,6 +284,18 @@ function updateArticulo(id){
 }
 
 
-function deleteArticulo(id){
+function deleteArticulo(id, idHistoriaClinica){
 	console.log("borrar", id)
+	showMessageConfirm(0, "Eliminar el artículo?", "Eliminar artículo", "modalInfoArticulos")
+	$('#modalMessageConfirmBtnSi').off('click');
+	$('#modalMessageConfirmBtnSi').click(function(){
+		$('#modalMessageConfirm').modal('hide');
+		sendAsyncPost("setHistoriaArticulo",{idHistArt:id, campo:"eliminado", valor:1})
+		.then((response)=>{
+			if(response.result == 2)
+				getArticulosByHistoria(idHistoriaClinica)
+			else
+				showReplyMessage(response.result, "Error al eliminar el artículo", "Eliminar artículo", "modalInfoArticulos");
+		})
+	});
 }
