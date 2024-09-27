@@ -93,7 +93,7 @@ function matchArticulosHistoria(idHist, idMascota){
 
 	if($("#tbodyArticulos tr").length > 0){
 		const progressBar = loadPrograssBar();
-		$('#progressbar h5').text("Subiendo archivos...");
+		$('#progressbar h5').text("Subiendo artículos...");
 		$("#progressbar").modal("show");
 	
 		let rows = [];
