@@ -257,7 +257,15 @@ function openModalHistoria(button){
 				clearModalHistoria();
 				$('#buttonConfirmHistoriaClinica').off('click');
 				$('#buttonConfirmHistoriaClinica').click(function(){
-					crearHistoriaClinica(button.name);
+					if ( $("#tbodyArticulos tr").length <= 0 ){
+						showMessageConfirm(1, "Confirma que quiere guardar la historia SIN ARTÍCULOS?", "Guardar historia?", "modalHistoriaClinica");
+						$('#modalMessageConfirmBtnSi').click(function(){
+							$('#modalMessageConfirm').modal('hide');
+							crearHistoriaClinica(button.name);
+						});
+					}else{
+						crearHistoriaClinica(button.name);
+					}
 				});
 				$('#inputHoraHistoria').val(getCurrentHours());
 				$('#modalHistoriaClinica').modal();
@@ -328,7 +336,15 @@ function openModalHistoria(button){
 			clearModalHistoria();
 			$('#buttonConfirmHistoriaClinica').off('click');
 			$('#buttonConfirmHistoriaClinica').click(function(){
-				crearHistoriaClinica(button.name);
+				if ( $("#tbodyArticulos tr").length <= 0 ){
+					showMessageConfirm(1, "Confirma que quiere guardar la historia SIN ARTÍCULOS?", "Guardar historia?", "modalHistoriaClinica");
+					$('#modalMessageConfirmBtnSi').click(function(){
+						$('#modalMessageConfirm').modal('hide');
+						crearHistoriaClinica(button.name);
+					});
+				}else{
+					crearHistoriaClinica(button.name);
+				}
 			});
 			$('#inputHoraHistoria').val(getCurrentHours());
 			$('#modalHistoriaClinica').modal();
@@ -913,3 +929,23 @@ $('#modalArticulosUpdate').on('shown.bs.modal', function (e) {
 	$('#inputSearchArticuloUpdate').val("");
 	$('#tbodyArticulosUpdate').empty();
 })
+
+
+
+function confirmarGuardadoHistoria(modalAnterior){
+
+	console.log("funcion guardado historia sin articulos")
+
+	showMessageConfirm(1, "Confirma que quiere guardar la historia SIN ARTÍCULOS?", "Guardar historia?", modalAnterior)
+	if ( $("#inputTipoSocio").val() == 1 && !crearSocio){
+		showMessageConfirm(1, "Está seguro de crear un SOCIO?", "Nuevo cliente", null)
+		$('#modalMessageConfirmBtnSi').click(function(){
+			$('#modalMessageConfirm').modal('hide');
+			crearSocio = true
+			insertarNuevoSocio()
+		});
+	}else{
+		crearSocio = true
+	}
+
+}
