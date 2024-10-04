@@ -111,15 +111,15 @@ class historiaArticulo{
     }
 
 
-    public function getByDescOrCodebar($textArray){
+    public function getByDescripcion($textArray){
         $dbClass = new DataBase();
         $where = "";
         foreach ($textArray as $text) {
             if ( strlen($text) > 0 ){
                 if ( strlen($where) > 0 ){
-                    $where .= " AND (descripcion like '%".$text."%' OR codigo_barras like '%".$text."%' ) ";
+                    $where .= " AND (descripcion like '%".$text."%' ) ";
                 }else
-                    $where .= " (descripcion like '%".$text."%' OR codigo_barras like '%".$text."%' )";
+                    $where .= " (descripcion like '%".$text."%' )";
             }
         }
 

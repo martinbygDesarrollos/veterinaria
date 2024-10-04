@@ -132,12 +132,12 @@ class ctr_historiaArticulos {
 
 
 
-    public function searchArticuloByDescOrCodeBar($text){
+    public function searchArticuloByDescripcion($text){
 
         $articulos = new historiaArticulo();
 
 		$textArray = explode(" ", $text);
-		return $articulos->getByDescOrCodebar( $textArray );
+		return $articulos->getByDescripcion( $textArray );
 
     }
 

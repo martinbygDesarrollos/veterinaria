@@ -1,6 +1,6 @@
 function findArticulo(value){
 
-	return sendPost("searchArticuloByDescOrCodeBar", { textToSearch: value });
+	return sendPost("searchArticuloByDescripcion", { textToSearch: value });
 }
 
 
@@ -62,7 +62,6 @@ function addArticuloUpdate(articulo){
 		let response = findArticulo(articulo);
 		if(response.result == 2 && response.listResult.length > 0){
 			row = createRowArticuloToModal(response.listResult[0]);
-			console.log(row)
 			$("#tbodyArticulosUpdate").prepend(row);
 			$('#datalistModalArticuloUpdate').children().remove()
 			$('#inputSearchArticuloUpdate').val("");

@@ -135,7 +135,7 @@ return function (App $app) {
         }
     });
 
-    $app->post('/searchArticuloByDescOrCodeBar', function(Request $request, Response $response) use ($userController, $historiaArticulosController) {
+    $app->post('/searchArticuloByDescripcion', function(Request $request, Response $response) use ($userController, $historiaArticulosController) {
 
 		$responseSession = $userController->validateSession();
 		if($responseSession->result == 2){
@@ -143,7 +143,7 @@ return function (App $app) {
             $data = $request->getParsedBody();
             $textToSearch = $data["textToSearch"];
 
-            return json_encode($historiaArticulosController->searchArticuloByDescOrCodeBar($textToSearch));
+            return json_encode($historiaArticulosController->searchArticuloByDescripcion($textToSearch));
 
         }else return $response->withRedirect($request->getUri()->getBaseUrl());
     });
