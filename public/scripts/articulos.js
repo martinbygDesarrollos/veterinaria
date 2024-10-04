@@ -85,7 +85,7 @@ function createRowArticuloToModal( object ){
 	let row = '<tr id="'+object.id+'">'
 	row += '<td>'+object.descripcion+'</td>';
 	row += '<td><input name="'+object.id+'_cant" type="number" min=1 value=1 /></td>';
-	row += '<td><button title="Quitar artículo de la lista" onclick="unselectArticulo('+object.id+')" class="btn bg-light"><i class="fas fa-trash-alt text-danger"></i></button></td>';
+	row += '<td><button title="Quitar artículo de la lista" onclick="unselectArticulo('+object.id+')" class="btn btn-link"><i class="fas fa-trash-alt text-dark"></i></button></td>';
 	row += '</tr>';
 	return row;
 }
