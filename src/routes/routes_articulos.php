@@ -135,6 +135,19 @@ return function (App $app) {
         }
     });
 
+    $app->post('/getArticuloByDescripcion', function(Request $request, Response $response) use ($userController, $historiaArticulosController) {
+
+		$responseSession = $userController->validateSession();
+		if($responseSession->result == 2){
+            $response = new stdClass();
+            $data = $request->getParsedBody();
+            $textToSearch = $data["textToSearch"];
+
+            return json_encode($historiaArticulosController->getArticuloByDescripcion($textToSearch));
+
+        }else return $response->withRedirect($request->getUri()->getBaseUrl());
+    });
+
     $app->post('/searchArticuloByDescripcion', function(Request $request, Response $response) use ($userController, $historiaArticulosController) {
 
 		$responseSession = $userController->validateSession();

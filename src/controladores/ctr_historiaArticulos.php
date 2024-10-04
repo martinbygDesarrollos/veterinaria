@@ -130,6 +130,12 @@ class ctr_historiaArticulos {
     }
 
 
+    public function getArticuloByDescripcion($text){
+
+        $articulos = new historiaArticulo();
+		return $articulos->getByEqualDescripcion( $text );
+
+    }
 
 
     public function searchArticuloByDescripcion($text){

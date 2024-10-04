@@ -110,6 +110,13 @@ class historiaArticulo{
         return $dbClass->sendQuery("UPDATE historiaarticulo SET tipo = ?, serie = ?, numero = ?, tipoPago = ? WHERE id= ? ", array('ssisi', $tipo, $serie, $numero, $tipopago, $idHistoriaArticulo), "BOOLE");
     }
 
+    public function getByEqualDescripcion($descripcion){
+        $dbClass = new DataBase();
+        $sql = "SELECT id, descripcion, saldo FROM `articulos`
+            WHERE descripcion = '$descripcion'";
+        return $dbClass->sendQuery($sql, array(), "LIST");
+    }
+
 
     public function getByDescripcion($textArray){
         $dbClass = new DataBase();

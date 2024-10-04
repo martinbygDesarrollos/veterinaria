@@ -3,6 +3,10 @@ function findArticulo(value){
 	return sendPost("searchArticuloByDescripcion", { textToSearch: value });
 }
 
+function getArticuloByDescripcion(value){
+	return sendPost("getArticuloByDescripcion", { textToSearch: value });
+}
+
 
 function searchArticulos(value){
 
@@ -45,7 +49,7 @@ function searchArticulosUpdate(value){
 
 function addArticulo(articulo){
 	if (articulo.length > 0) {
-		let response = findArticulo(articulo);
+		let response = getArticuloByDescripcion(articulo);
 		if(response.result == 2 && response.listResult.length > 0){
 			const added = articuloIsAdded("tbodyArticulos", response.listResult[0].id)
 			if (!added){
@@ -61,7 +65,7 @@ function addArticulo(articulo){
 
 function addArticuloUpdate(articulo){
 	if (articulo.length > 0) {
-		let response = findArticulo(articulo);
+		let response = getArticuloByDescripcion(articulo);
 		if(response.result == 2 && response.listResult.length > 0){
 			const added = articuloIsAdded("tbodyArticulosUpdate", response.listResult[0].id)
 			if (!added){
