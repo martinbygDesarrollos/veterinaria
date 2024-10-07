@@ -82,7 +82,7 @@ class historiaArticulo{
 
     public function getArticulosPendientesByIdClient($idClient){
         $dbClass = new DataBase();
-        $sql = "SELECT ha.id, ha.idArticulo, ha.idCliente, ha.fecha, ha.cantidad, m.nombre as mascota
+        $sql = "SELECT ha.id, ha.idArticulo, ha.idCliente, ha.fecha, ha.cantidad, CONCAT(m.idMascota, '-', m.nombre) AS mascota
             FROM historiaarticulo ha
             LEFT JOIN historiasclinica hc on ha.idHistoriaClinica = hc.idHistoriaClinica
             LEFT JOIN mascotas  m on hc.idMascota = m.idMascota
@@ -92,7 +92,7 @@ class historiaArticulo{
 
     public function getArticulosPendientesAllClient(){
         $dbClass = new DataBase();
-        $sql = "SELECT ha.id, ha.idArticulo, ha.idCliente, ha.fecha, ha.cantidad, m.nombre as mascota
+        $sql = "SELECT ha.id, ha.idArticulo, ha.idCliente, ha.fecha, ha.cantidad, CONCAT(m.idMascota, '-', m.nombre) AS mascota
             FROM historiaarticulo ha
             LEFT JOIN historiasclinica hc on ha.idHistoriaClinica = hc.idHistoriaClinica
             LEFT JOIN mascotas  m on hc.idMascota = m.idMascota
