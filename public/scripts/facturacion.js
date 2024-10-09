@@ -36,9 +36,17 @@ function createRowInfoSaldo(obj){
 	const month = parseInt(obj.fecha.substring(4, 6)) - 1; // 09 (meses en JS van de 0 a 11, por eso restamos 1)
 	const day = parseInt(obj.fecha.substring(6, 8));   // 17
 
+	let serie = "";
+	if (obj.serie)
+		serie = obj.serie
+
+	let numero = "";
+	if (obj.numero)
+		numero = obj.numero
+
 	let comp = "";
-	if (obj.serie && obj.numero){
-		comp = getNameVoucher(obj.tipo)+" "+obj.serie+" "+obj.numero
+	if ((obj.serie && obj.numero) || obj.tipo == "999"){
+		comp = getNameVoucher(obj.tipo)+" "+serie+" "+numero
 	}
 
 	let row = '<tr id="'+obj.id+'">'

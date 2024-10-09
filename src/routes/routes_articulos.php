@@ -123,7 +123,7 @@ return function (App $app) {
             foreach ($facturas as $factura) {
                 if(!isset($factura['tipo']) || !isset($factura['serie']) || !isset($factura['numero']) || !isset($factura['importe']) || !isset($factura['saldo']) ){ // Si falta alguno de esos datos devuelvo error de formato
                     $response->result = 1;
-                    $response->message = "Formato invalido";
+                    $response->message = "Faltan datos";
                     return json_encode($response);
                 }
             }

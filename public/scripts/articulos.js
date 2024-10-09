@@ -199,8 +199,18 @@ function createRowInfoArticuloToModal( object, idHistoriaClinica ){
 
 	let comp = "";
 	let acciones = "";
-	if (object.serie && object.numero){
-		comp = getNameVoucher(object.tipo)+" "+object.serie+" "+object.numero
+
+	let serie = "";
+	if (object.serie)
+		serie = object.serie
+
+	let numero = "";
+	if (object.numero)
+		numero = object.numero
+
+
+	if ((object.serie && object.numero) || object.tipo == "999"){
+		comp = getNameVoucher(object.tipo)+" "+serie+" "+numero
 	}else if(!object.serie && !object.numero){
 		//botón modificar
 		acciones += '<button id="idButtonEnableUpdateArticulo" class="btn btn-link" onclick="enableUpdateArticulo('+object.id+')"><i class="fas fa-edit text-dark"></i></button><button id="idButtonUpdateArticulo" class="btn btn-success" title="Guardar cambios" onclick="updateArticulo('+object.id+')" disabled hidden><i class="fas fa-check"></i></button>'

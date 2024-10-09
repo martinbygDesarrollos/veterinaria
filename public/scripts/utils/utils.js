@@ -279,9 +279,12 @@ function getNameVoucher(typevoucher) {
         case '112':
             nameVoucher = "N.C. e-Factura";
             break;
-        case '113':
-            nameVoucher = "N.D. e-Factura";
-            break;
+		case '113':
+			nameVoucher = "N.D. e-Factura";
+			break;
+		case '999':
+			nameVoucher = "Remito";
+			break;
 		default: "";
     }
 
