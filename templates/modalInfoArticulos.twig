@@ -1,0 +1,38 @@
+<div class="modal fade" id="modalInfoArticulos" tabindex="-1" role="dialog"  aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+	<div class="modal-dialog modal-dialog-historia-clinica modal-dialog-centered" style="width: 70%;" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-mycolor" >
+				<span class="modal-title">Artículos</span>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div>
+					<div class="d-flex flex-row-reverse">
+						<div class="col-4" title="Ingresar artcíulos" id="idButtonAddArticuloUpdate">
+							<div class="form-group d-flex">
+								<button id="" class="btn btn-warning shadow-sm w-100" type="button" onclick="modalArticulosUpdate()" data-hist="0" >Artcíulos<i class="fas fa-plus-circle mx-2"></i></button>
+							</div>
+						</div>
+					</div>
+					<div class="tableCustomScroll" style="max-height: 50vh; min-height: 50vh;">
+						<table class="table table-sm">
+							<thead class="bg-white">
+								<tr>
+									<th scope="col">Usuario</th>
+									<th scope="col">Fecha</th>
+									<th scope="col">Cantidad</th>
+									<th scope="col">Descripción</th>
+									<th scope="col">Comprobante</th>
+									<th scope="col"></th>
+								</tr>
+							</thead>
+							<tbody id="tbodyInfoArticulos"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

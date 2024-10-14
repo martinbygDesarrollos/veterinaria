@@ -438,4 +438,15 @@ class socios{
 
 		return $response;
 	}
+
+	public function getSaldo($idSocio){
+		return DataBase::sendQuery("SELECT SUM(saldo) AS saldo FROM facturaspendientes WHERE idCliente = ?", array('i', $idSocio), "OBJECT");
+	}
+
+	function getFacturasPendientesCliente($idClient){
+		$dataBaseCLass = new DataBase();
+		$query = "SELECT * FROM facturaspendientes WHERE idCliente = ?";
+		return $dataBaseCLass->sendQuery($query, array('i', $idClient), "LIST");
+
+	}
 }

@@ -181,9 +181,14 @@ function createRowHistorial(obj){
 	let row = "<tr id='trH"+ idHistoriaClinica +"'>";
 	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+ fecha +"</td>";
 	row += "<td class='text-center' onclick='verHistoriaClinica("+ idHistoriaClinica +")' scope='col'>"+nomUsuario+ detalle +"</td>";
+
+	//botón artículos
+	row += "<td class='text-center' scope='col'><button class='btn btn-light' onclick='getArticulosByHistoria("+ idHistoriaClinica +")'>ver</button></td>";
+
+	//botones acción 
 	row += "<td class='text-center' style='min-width: 6em;'>";
 	row += "<button class='btn btn-link' name='" + idHistoriaClinica + "' onclick='openModalHistoria(this)'><i class='fas fa-edit text-dark'></i></button>";
-	row += "<button class='btn btn-link' onclick='openModalBorrarHistoria("+ idHistoriaClinica + ")'><i class='fas fa-trash-alt text-dark'></i></button>";
+	//row += "<button class='btn btn-link' onclick='openModalBorrarHistoria("+ idHistoriaClinica + ")'><i class='fas fa-trash-alt text-dark'></i></button>";
 	row += "</td>";
 
 	if ( phoneSocio ){
@@ -252,7 +257,15 @@ function openModalHistoria(button){
 				clearModalHistoria();
 				$('#buttonConfirmHistoriaClinica').off('click');
 				$('#buttonConfirmHistoriaClinica').click(function(){
-					crearHistoriaClinica(button.name);
+					if ( $("#tbodyArticulos tr").length <= 0 ){
+						showMessageConfirm(1, "Confirma que quiere guardar la historia SIN ARTÍCULOS?", "Guardar historia?", "modalHistoriaClinica");
+						$('#modalMessageConfirmBtnSi').click(function(){
+							$('#modalMessageConfirm').modal('hide');
+							crearHistoriaClinica(button.name);
+						});
+					}else{
+						crearHistoriaClinica(button.name);
+					}
 				});
 				$('#inputHoraHistoria').val(getCurrentHours());
 				$('#modalHistoriaClinica').modal();
@@ -266,6 +279,7 @@ function openModalHistoria(button){
 					$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
 					$("#inputPesoHistoria").val("");
 					$("#inputTemperaturaHistoria").val("");
+					document.getElementById("divButtonAddArticulosHistory").hidden = true
 					if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
 						hora = "00:00"
 					else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
@@ -322,7 +336,15 @@ function openModalHistoria(button){
 			clearModalHistoria();
 			$('#buttonConfirmHistoriaClinica').off('click');
 			$('#buttonConfirmHistoriaClinica').click(function(){
-				crearHistoriaClinica(button.name);
+				if ( $("#tbodyArticulos tr").length <= 0 ){
+					showMessageConfirm(1, "Confirma que quiere guardar la historia SIN ARTÍCULOS?", "Guardar historia?", "modalHistoriaClinica");
+					$('#modalMessageConfirmBtnSi').click(function(){
+						$('#modalMessageConfirm').modal('hide');
+						crearHistoriaClinica(button.name);
+					});
+				}else{
+					crearHistoriaClinica(button.name);
+				}
 			});
 			$('#inputHoraHistoria').val(getCurrentHours());
 			$('#modalHistoriaClinica').modal();
@@ -336,6 +358,8 @@ function openModalHistoria(button){
 				$('#inputObservacionesHistoria').val(response.objectResult.observaciones);
 				$("#inputPesoHistoria").val("");
 				$("#inputTemperaturaHistoria").val("");
+				document.getElementById("divButtonAddArticulosHistory").hidden = true
+
 				if( response.objectResult.hora === null || response.objectResult.hora.length < 4 )
 					hora = "00:00"
 				else hora = response.objectResult.hora.substr(0,2)+":"+response.objectResult.hora.substr(2,2);
@@ -424,6 +448,8 @@ function crearHistoriaClinica(idMascota){
 		$('#tbodyHistoriaClinica').empty();
 		cargarHistoriaClinica(idMascota);
 		idLastHistoriaClinica = response.newHistoria.idHistoriaClinica
+
+		matchArticulosHistoria(idLastHistoriaClinica, idMascota);
 		//let newHistoria = response.newHistoria;
 		//$('#tbodyHistoriaClinica').prepend(createRowHistorial(newHistoria));
 	}
@@ -476,6 +502,7 @@ function clearModalHistoria(){
 	$("#inputFrecuenciaCardiacaHistoria").val('');
 	$("#inputFRHistoria").val('');
 	$("#inputTiempoLlenadoCapilarHistoria").val('');
+	document.getElementById("divButtonAddArticulosHistory").hidden = false
 }
 
 
@@ -869,4 +896,56 @@ function mostrarPdf(file){
 		$("#modalViewFilePDF").removeClass("show");
 		$("#modalViewFilePDF").addClass("fade");
 	})
+}
+
+
+
+function modalArticulos(){
+
+	$('#modalHistoriaClinica').modal("hide");
+	$('#modalArticulos').modal("show");
+
+}
+
+$('#modalArticulos').on('hidden.bs.modal', function (e) {
+	$('#modalHistoriaClinica').modal("show");
+})
+
+
+function modalArticulosUpdate(){
+
+	$('#modalInfoArticulos').modal("hide");
+
+	$('#modalArticulosUpdate').modal("show");
+
+}
+
+$('#modalArticulosUpdate').on('hidden.bs.modal', function (e) {
+	$('#modalInfoArticulos').modal("show");
+})
+
+$('#modalArticulosUpdate').on('shown.bs.modal', function (e) {
+	$('#datalistModalArticuloUpdate').children().remove()
+	$('#inputSearchArticuloUpdate').val("");
+	$('#tbodyArticulosUpdate').empty();
+})
+
+
+
+function confirmarGuardadoHistoria(modalAnterior){
+
+	console.log("funcion guardado historia sin articulos")
+
+	showMessageConfirm(1, "Confirma que quiere guardar la historia SIN ARTÍCULOS?", "Guardar historia?", modalAnterior)
+	if ( $("#inputTipoSocio").val() == 1 && !crearSocio){
+		showMessageConfirm(1, "Está seguro de crear un SOCIO?", "Nuevo cliente", null)
+		$('#modalMessageConfirmBtnSi').click(function(){
+			$('#modalMessageConfirm').modal('hide');
+			crearSocio = true
+			insertarNuevoSocio()
+		});
+	}else{
+		crearSocio = true
+	}
+
 }

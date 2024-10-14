@@ -871,6 +871,11 @@ class ctr_usuarios{
 			$response->result = 2;
 			$response->socio = $responseGetSocio->objectResult;
 			$response->mascotas = ctr_mascotas::getMascotasSocio($idSocio);
+
+			$response->socio->saldo = null;
+			$responseGetSaldo = ctr_usuarios::getSaldo($responseGetSocio->objectResult->idSocio);
+			if($responseGetSaldo->result == 2)
+				$response->socio->saldo = $responseGetSaldo->saldo;
 		}else return $responseGetSocio;
 
 		return $response;
@@ -1352,6 +1357,30 @@ class ctr_usuarios{
 
 		$response = $sociosClass->getAllWhatsappSocios();
 
+		return $response;
+	}
+
+	function getSaldo($idSocio){
+		$response = new \stdClass();
+		$sociosClass = new socios();
+		$responseGetSaldo = $sociosClass->getSaldo($idSocio);
+		if ($responseGetSaldo->result != 2) {
+			$response->result = $responseGetSaldo->result;
+			$response->saldo = 0;
+		} else {
+			$response->result = 2;
+			$saldo = isset($responseGetSaldo->objectResult->saldo) ? $responseGetSaldo->objectResult->saldo : 0;
+			$response->saldo = $saldo;
+			// var_dump($response->saldo);
+		}
+		return $response;
+	}
+
+
+	function getFacturasPendientesCliente($idCliente){
+		$response = new \stdClass();
+		$clientClass = new socios();
+		$response = $clientClass->getFacturasPendientesCliente($idCliente);
 		return $response;
 	}
 

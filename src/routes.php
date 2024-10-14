@@ -14,6 +14,7 @@ return function (App $app) {
     $routesM = require_once __DIR__ . "/../src/routes/routes_mascotas.php";
     $routesU = require_once __DIR__ . "/../src/routes/routes_usuarios.php";
     $routesAg = require_once __DIR__ . "/../src/routes/routes_agenda.php";
+    $routesArt = require_once __DIR__ . "/../src/routes/routes_articulos.php";
 
 
     $container = $app->getContainer();
@@ -22,6 +23,7 @@ return function (App $app) {
     $routesH($app);
     $routesM($app);
     $routesAg($app);
+    $routesArt($app);
 
     $app->get('/', function ($request, $response, $args) use ($container) {
         $args['version'] = FECHA_ULTIMO_PUSH;

@@ -505,5 +505,18 @@ return function (App $app) {
         else return json_encode($responseSession);
     });
 
+
+    $app->post('/getFacturasPendientesCliente', function(Request $request) use ($userController){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+
+            $data = $request->getParams();
+            $idClient = $data['idClient'];
+
+
+            return json_encode($userController->getFacturasPendientesCliente($idClient));
+        }
+        else return json_encode($responseSession);
+    });
 }
 ?>

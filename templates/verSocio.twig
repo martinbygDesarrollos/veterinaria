@@ -13,6 +13,11 @@
 				</h5>
 			</div>
 			<div class="row">
+				{% if responseSocio.socio.saldo != 0 %}
+					<div> 
+						<a class="btn btn-danger mt-2 mr-1" title="Ver facturas pendientes" onclick="openModalSaldo({{responseSocio.socio.idSocio}});" value=""><i class="fas fa-dollar-sign"></i> {{responseSocio.socio.saldo}} </a>
+					</div>
+				{% endif %}
 				<button id="{{ responseSocio.socio.idSocio }}" type="button" data-toggle="tooltip" data-placement="top" title="Modificar cliente" class="btn btn-dark mt-2 mr-4" onclick="openModalUpdateSocio(this)"><i class="fas fa-user-edit"></i></button>
 				<button class="btn btn-dark mt-2 mr-4" type="button" data-toggle="tooltip" data-placement="top" title="Activar/Desactivar cliente" onclick="openModalChangeState('{{ responseSocio.socio.idSocio }}')">
 					{% if responseSocio.socio.estado == 1 %}
@@ -490,11 +495,14 @@
 		</div>
 	</div>
 </div>
+{% include("modalSaldo.twig") %}
+
 {%block script%}
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/showReplyMessage.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/sendPost.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/utils/utils.js?{{version}}"></script>
 <script type="text/javascript" src="{{path_for('Inicio')}}scripts/verSocio.js?{{version}}"></script>
+<script type="text/javascript" src="{{path_for('Inicio')}}scripts/facturacion.js?{{version}}"></script>
 <script type="text/javascript">
 
 	cargarTablaHistorialSocios('{{ responseSocio.socio.idSocio }}');

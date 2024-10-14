@@ -271,8 +271,12 @@ class ctr_mascotas {
 		$responseGetIDSocio = mascotas::getMascotaSocio($idMascota);
 		if($responseGetIDSocio->result == 2){
 			$responseGetSocio = ctr_usuarios::getSocioToShow($responseGetIDSocio->objectResult->idSocio);
-			if($responseGetSocio->result == 2)
+			if($responseGetSocio->result == 2) {
 				$response->socio = $responseGetSocio->objectResult;
+				$responseGetSaldo = ctr_usuarios::getSaldo($responseGetIDSocio->objectResult->idSocio);
+				if($responseGetSaldo->result == 2)
+					$response->saldo = $responseGetSaldo->saldo;
+			}
 		}
 
 		return $response;
