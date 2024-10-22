@@ -118,20 +118,20 @@ class historiaArticulo{
     }
 
 
-    public function getByDescripcion($textArray){
+    public function getByDescripcionAndCodebar($textArray){
         $dbClass = new DataBase();
         $where = "";
         foreach ($textArray as $text) {
             if ( strlen($text) > 0 ){
                 if ( strlen($where) > 0 ){
-                    $where .= " AND (descripcion like '%".$text."%' ) ";
+                    $where .= " AND ((descripcion like '%".$text."%' ) OR (codigo_barras like '%".$text."%' )) ";
                 }else
-                    $where .= " (descripcion like '%".$text."%' )";
+                    $where .= " ((descripcion like '%".$text."%' ) OR (codigo_barras like '%".$text."%' )) ";
             }
         }
 
 
-        $sql = "SELECT id, descripcion, saldo FROM `articulos`
+        $sql = "SELECT id, descripcion, saldo, codigo_barras FROM `articulos`
             WHERE $where
             ORDER BY `descripcion` ASC
             LIMIT 30";

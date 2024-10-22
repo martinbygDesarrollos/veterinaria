@@ -1,12 +1,20 @@
 function findArticulo(value){
-
-	return sendPost("searchArticuloByDescripcion", { textToSearch: value });
+	text = value.replace(/(["'.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+	return sendPost("searchArticuloByDescripcionAndCodebar", { textToSearch: text });
 }
 
 function getArticuloByDescripcion(value){
-	return sendPost("getArticuloByDescripcion", { textToSearch: value });
+	text = value.replace(/(["'.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+	return sendPost("getArticuloByDescripcion", { textToSearch: text });
 }
 
+function escapeHTML(text) {
+	return text.replace(/&/g, "&amp;")
+			   .replace(/</g, "&lt;")
+			   .replace(/>/g, "&gt;")
+			   .replace(/"/g, "&quot;")
+			   .replace(/'/g, "&#39;");
+}
 
 function searchArticulos(value){
 
@@ -16,7 +24,8 @@ function searchArticulos(value){
 		if(response.result == 2){
 			$('#datalistModalArticulo').empty();
 			for (var i = 0; i < response.listResult.length; i++) {
-				option = '<option value="' +response.listResult[i].descripcion +'"></option>';
+				let desc = escapeHTML(response.listResult[i].descripcion)
+				option = '<option textContent="' + desc +'" innerText="' + desc +'" value="' + desc +'" label="' + response.listResult[i].codigo_barras +'"></option>';
 				$("#datalistModalArticulo").append(option);
 			}
 		}
@@ -36,7 +45,8 @@ function searchArticulosUpdate(value){
 		if(response.result == 2){
 			$('#datalistModalArticuloUpdate').empty();
 			for (var i = 0; i < response.listResult.length; i++) {
-				option = '<option value="' +response.listResult[i].descripcion +'"></option>';
+				let desc = escapeHTML(response.listResult[i].descripcion)
+				option = '<option value="' +desc+'" label="' + response.listResult[i].codigo_barras +'"></option>';
 				$("#datalistModalArticuloUpdate").append(option);
 			}
 		}
