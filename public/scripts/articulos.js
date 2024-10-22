@@ -1,6 +1,6 @@
 function findArticulo(value){
 	text = value.replace(/(["'.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-	return sendPost("searchArticuloByDescripcion", { textToSearch: text });
+	return sendPost("searchArticuloByDescripcionAndCodebar", { textToSearch: text });
 }
 
 function getArticuloByDescripcion(value){
@@ -25,7 +25,7 @@ function searchArticulos(value){
 			$('#datalistModalArticulo').empty();
 			for (var i = 0; i < response.listResult.length; i++) {
 				let desc = escapeHTML(response.listResult[i].descripcion)
-				option = '<option textContent="' + desc +'" innerText="' + desc +'" value="' + desc +'"></option>';
+				option = '<option textContent="' + desc +'" innerText="' + desc +'" value="' + desc +'" label="' + response.listResult[i].codigo_barras +'"></option>';
 				$("#datalistModalArticulo").append(option);
 			}
 		}
@@ -46,7 +46,7 @@ function searchArticulosUpdate(value){
 			$('#datalistModalArticuloUpdate').empty();
 			for (var i = 0; i < response.listResult.length; i++) {
 				let desc = escapeHTML(response.listResult[i].descripcion)
-				option = '<option value="' +desc+'"></option>';
+				option = '<option value="' +desc+'" label="' + response.listResult[i].codigo_barras +'"></option>';
 				$("#datalistModalArticuloUpdate").append(option);
 			}
 		}
