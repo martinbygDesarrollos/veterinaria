@@ -297,7 +297,7 @@ class Pdf extends FPDF
 
             if (isset($row['internado']) && $row['internado'] != "" ){
 
-                $internado = $row['internado'] == "vet" ? "En veterinaria" : "Dar seguimiento";
+                $internado = $row['internado'] == "vet" ? "En veterinaria" : "Internación ambulatoria";
 
                 $this->RowInt(array(
                     $row['nombre'],
