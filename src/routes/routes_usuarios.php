@@ -294,11 +294,12 @@ return function (App $app) {
             $ultimoPago = $data['ultimoPago'];
             $fechaPago =  $data['fechaPago'];
             $ultimoMesPago = $data['ultimoMesPago'];
+            $buenPagador = $data['buenPagador'];
 
             if ( $cedula == "" ){
                 $cedula = null;
             }
-            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $fechaBaja, $ultimoPago, $fechaPago, $ultimoMesPago));
+            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $fechaBaja, $ultimoPago, $fechaPago, $ultimoMesPago, $buenPagador));
         }else return json_encode($responseSession);
     });
 

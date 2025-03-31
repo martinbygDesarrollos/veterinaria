@@ -946,7 +946,7 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $fechaBajaSocio, $ultimoPago, $fechaPago, $ultimoMesPago){
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $fechaBajaSocio, $ultimoPago, $fechaPago, $ultimoMesPago, $buenPagador){
 
 		//$idSocio = str_replace("|","",$idSocio);
 		$nombre = str_replace("|","",$nombre);
@@ -1023,7 +1023,7 @@ class ctr_usuarios{
 
 					$cuota = $responseGetSocio->objectResult->cuota;
 					//if($responseGetQuota->result == 2){
-						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $cuota, $fechaBajaSocio);
+						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $cuota, $fechaBajaSocio, $buenPagador);
 
 						if($responseUpdateSocio->result == 2){
 							$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
