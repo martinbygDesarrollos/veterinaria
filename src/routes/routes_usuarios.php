@@ -480,10 +480,12 @@ return function (App $app) {
 
 
 
-    $app->post('/getAllWhatsappSocios', function(Request $request, Response $response) use ($userController){
+    $app->post('/getAllWhatsappClientByType', function(Request $request, Response $response) use ($userController){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
-            return json_encode($userController->getAllWhatsappSocios());
+            $data = $request->getParams();
+            $type = $data['type'];
+            return json_encode($userController->getAllWhatsappClientByType($type));
         }
         else return json_encode($responseSession);
     });

@@ -1351,11 +1351,11 @@ class ctr_usuarios{
 	}
 
 
-	function getAllWhatsappSocios(){
+	function getAllWhatsappClientByType($type){
 		$response = new \stdClass();
 		$sociosClass = new socios();
 
-		$response = $sociosClass->getAllWhatsappSocios();
+		$response = $sociosClass->getAllWhatsappClientByType($type);
 
 		return $response;
 	}

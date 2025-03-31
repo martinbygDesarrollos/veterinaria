@@ -170,6 +170,16 @@
 						<div class="col-8">
 							<textarea class="w-100" placeholder="Mensaje a enviar..."></textarea>
 							<p class="text-end" id="pClientsWhatsapp"></p>
+							<div>
+								<h5>Tipos de clientes: </h5>
+								<select name="" id="selectClientTypeWhatsapp" class="form-select form-control shadow-sm">
+									<option value="1">Socio</option>
+									<option value="3">Ex socio</option>
+									<option selected value="0">No socio</option>
+									<option value="2">ONG</option>
+									<option value="bp">Buen pagador</option>
+								</select>
+							</div>
 							<div class="tableCustomScroll" >
 								<table class="table">
 									<thead style="background-color: white;"><tr><th>Socio</th><th >Whatsapp</th><th ></th><th >Estado</th><th >Enviar</th></tr></thead>
@@ -178,7 +188,7 @@
 							</div>
 
 							<div class="d-flex flex-row-reverse">
-								<button type="button" class="btn btn-success" id="btnEnviarWhatsapp">Enviar</button>
+								<button type="button" class="btn btn-success" id="btnEnviarWhatsapp">Enviar a todos</button>
 							</div>
 						</div>
 						<div class="col-4" >
