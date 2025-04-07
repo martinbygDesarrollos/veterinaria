@@ -33,7 +33,24 @@ option[disabled]{
 
 }
 
+.rowSocioBuenPagador {
+  background: linear-gradient(to right, var(--socio) 70%, #a8e6a1 100%);
+}
+.rowNosocioBuenPagador {
+  background: linear-gradient(to right, var(--nosocio) 70%, #a8e6a1 100%);
+}
 
+.rowWarningBuenPagador {
+  background: linear-gradient(to right, var(--socio-warning) 70%, #a8e6a1 100%);
+}
+
+.rowExsocioWarningBuenPagador {
+  background: linear-gradient(to right, var(--exsocio-warning) 70%, #a8e6a1 100%);
+}
+
+.rowExsocioBuenPagador {
+  background: linear-gradient(to right, var(--exsocio) 70%, #a8e6a1 100%);
+}
 
 
 .tareaCompletada input{

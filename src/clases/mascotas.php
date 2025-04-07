@@ -137,7 +137,7 @@ class mascotas{
 		}
 
 
-		$select = "SELECT m.*, ms.idSocio, s.nombre AS nombreSocio, s.fechaUltimoPago, s.fechaUltimaCuota, s.tipo as socioTipo, s.estado as socioActivo, s.telefono, s.telefax FROM mascotas AS m ";
+		$select = "SELECT m.*, ms.idSocio, s.nombre AS nombreSocio, s.fechaUltimoPago, s.fechaUltimaCuota, s.tipo as socioTipo, s.estado as socioActivo, s.telefono, s.telefax, s.buenPagador FROM mascotas AS m ";
 		$join = " LEFT JOIN mascotasocio AS ms ON m.idMascota = ms.idMascota
 				LEFT JOIN socios AS s ON s.idSocio = ms.idSocio ";
 		$where = " WHERE m.idMascota < ? ";

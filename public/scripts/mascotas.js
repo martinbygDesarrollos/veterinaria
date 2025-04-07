@@ -35,6 +35,7 @@ function createRow(obj){
 	socioActivo = obj.socioActivo;
 	telefono = obj.telefono;
 	telefax = obj.telefax;
+	buenPagador = obj.buenPagador;
 
 	wppBtn = '<td class="text-center"><button title="Enviar whatsapp" class="btn bg-light" disabled><i class="fab fa-whatsapp"></i></button></td>';
 
@@ -64,6 +65,7 @@ function createRow(obj){
 		classForClient = "rowNosocio";
 	}else if ( socioTipo == 1 ){ //SOCIO
 		tipoCliente = "<br>(Socio)";
+		classForClient = "rowSocio";
 		if ( socioDeudor )
 			classForClient = "rowWarning";
 	}else if ( socioTipo == 3 ){ //EX SOCIO
@@ -78,7 +80,8 @@ function createRow(obj){
 
 	let row = "";
 
-
+	if (buenPagador === 1)
+		classForClient += "BuenPagador"
 
 	if ( obj.fechaFallecimiento ){
 		if ( obj.fechaFallecimiento.length > 0 ){

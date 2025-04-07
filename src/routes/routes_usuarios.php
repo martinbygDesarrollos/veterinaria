@@ -73,17 +73,34 @@ return function (App $app) {
             if($responseGetSocio->result == 2){
                 $args['responseSocio'] = $responseGetSocio;
 
-                $args['rowColorClientType'] = "rowSocio";
-                if ( $responseGetSocio->socio->tipoSocio == 0 ){ //NO SOCIO
-                    $args['rowColorClientType'] = "rowNosocio";
-                }else if ( $responseGetSocio->socio->tipoSocio == 1 ){ //SOCIO
-                    if ( $responseGetSocio->socio->deudor )
-                        $args['rowColorClientType'] = "rowWarning";
-                }else if ( $responseGetSocio->socio->tipoSocio == 3 ){ //EX SOCIO
-                    if ( $responseGetSocio->socio->deudor )
-                        $args['rowColorClientType'] = "rowExsocioWarning";
-                    else
-                        $args['rowColorClientType'] = "rowExsocio";
+                $args['rowColorClientType'] = "rowNosocio";
+                if($responseGetSocio->socio->buenPagador === 0){
+
+                    if ( $responseGetSocio->socio->tipoSocio == 1 ){ //SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowWarning";
+                        else
+                            $args['rowColorClientType'] = "rowSocio";
+                    }else if ( $responseGetSocio->socio->tipoSocio == 3 ){ //EX SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowExsocioWarning";
+                        else
+                            $args['rowColorClientType'] = "rowExsocio";
+                    }
+                }else{
+                    $args['rowColorClientType'] = "rowNosocioBuenPagador";
+                    
+                    if ( $responseGetSocio->socio->tipoSocio == 1 ){ //SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowWarningBuenPagador";
+                        else
+                            $args['rowColorClientType'] = "rowSocioBuenPagador";
+                    }else if ( $responseGetSocio->socio->tipoSocio == 3 ){ //EX SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowExsocioWarningBuenPagador";
+                        else
+                            $args['rowColorClientType'] = "rowExsocioBuenPagador";
+                    }
                 }
             }
             else return $response->withRedirect('socios');
