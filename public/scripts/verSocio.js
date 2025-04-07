@@ -238,7 +238,7 @@ function saveChangeSocio(buttonConfirm){
 	let rut = $('#inputModalRut').val() || null;
 	let telefax = $('#inputModalTelefax').val() || null;
 	let email = $('#inputModalEmail').val() || null;
-	let buenPagador = $('#inputBuenPagador').prop("checked") ? 1 : 0;
+	let buenPagador = $('#inputBuenPagadorEdit').prop("checked") ? 1 : 0;
 
 	if (cedula) cedula.replaceAll('|', '');
 	if (nombre) nombre.replaceAll('|', '');

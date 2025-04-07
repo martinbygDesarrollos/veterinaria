@@ -881,7 +881,7 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
+	public function insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador){
 		$response = new \stdClass();
 		$clientClass = new socios();
 
@@ -919,7 +919,7 @@ class ctr_usuarios{
 
 
 
-					$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+					$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador);
 					if($responseInsertSocio->result == 2){
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", $responseInsertSocio->id, null, "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
 						if($responseInsertHistorial->result == 2){

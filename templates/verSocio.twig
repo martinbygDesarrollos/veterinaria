@@ -172,6 +172,19 @@
 								<input type="text" class="form-control text-center shadow-sm" readonly id="selectTipoSocio" value="{{ responseSocio.socio.tipo }}">
 							</div>
 						</div>
+						<div class="">
+							<div class="form-group">
+								<label for="inputBuenPagador">Buen pagador</label>
+								<label class="switch d-block">
+									{%if responseSocio.socio.buenPagador is same as(1) %}
+									<input type="checkbox" id="inputBuenPagador" checked disabled>
+									{%else%}
+									<input type="checkbox" id="inputBuenPagador" disabled>
+									{%endif%}
+									<span class="slider round"></span>
+								</label>
+							</div>
+						</div>
 						<div class="col">
 							<div class="form-group">
 								<label for="inputFechaIngreso">Fecha de alta</label>
@@ -444,9 +457,13 @@
 					</div>
 					<div class="col">
 						<div class="form-group">
-							<label for="inputBuenPagador">Buen pagador</label>
+							<label for="inputBuenPagadorEdit">Buen pagador</label>
 							<label class="switch d-block">
-								<input type="checkbox" id="inputBuenPagador">
+								{%if responseSocio.socio.buenPagador is same as(1) %}
+								<input type="checkbox" id="inputBuenPagadorEdit" checked>
+								{%else%}
+								<input type="checkbox" id="inputBuenPagadorEdit">
+								{%endif%}
 								<span class="slider round"></span>
 							</label>
 						</div>

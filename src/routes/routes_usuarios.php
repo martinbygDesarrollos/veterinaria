@@ -270,8 +270,9 @@ return function (App $app) {
             $rut = $data['rut'];
             $telefax = $data['telefax'];
             $tipoSocio = $data['tipo'];
+            $buenPagador = $data['buenPagador'];
 
-            return json_encode(ctr_usuarios::insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio));
+            return json_encode(ctr_usuarios::insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador));
         }else return json_encode($responseSession);
     });
 

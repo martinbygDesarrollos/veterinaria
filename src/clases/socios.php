@@ -320,12 +320,12 @@ class socios{
 		return $responseQuery;
 	}
 
-	public function insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
+	public function insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador){
 
 		if ($cedula == "")
 			$cedula = null;
 
-		return DataBase::sendQuery("INSERT INTO socios (nombre, cedula, direccion, telefono, fechaPago, lugarPago, telefax, fechaIngreso, email, rut, tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('ssssiisissi', $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio), "BOOLE");
+		return DataBase::sendQuery("INSERT INTO socios (nombre, cedula, direccion, telefono, fechaPago, lugarPago, telefax, fechaIngreso, email, rut, tipo, buenPagador) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", array('ssssiisissii', $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador), "BOOLE");
 	}
 
 	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $quota, $fechaBajaSocio, $buenPagador){
