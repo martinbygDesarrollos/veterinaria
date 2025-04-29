@@ -391,9 +391,9 @@ class ctr_usuarios{
 			$responseGetUserInSesion = ctr_usuarios::getUserInSession();
 			if($responseGetUserInSesion->result == 2){
 				if($responseGetUserInSesion->user->idUsuario != $responseGetUser->objectResult->idUsuario){
-					$responseDeleteUser = usuarios::deleteUser($idUser);
+					$responseDeleteUser = usuarios::desableUser($idUser);
 					if($responseDeleteUser->result == 2){
-						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue borrado del sistema.");
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Desactivar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue desactivado del sistema.");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 2;
 							$response->message = "El usuario fue borrado del sistema.";

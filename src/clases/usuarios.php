@@ -9,6 +9,10 @@ class usuarios{
 		return DataBase::sendQuery("DELETE FROM usuarios WHERE idUsuario = ?", array('i', $idUser), "BOOLE");
 	}
 
+	public function desableUser($idUser){
+		return DataBase::sendQuery("UPDATE usuarios SET activo = 0 WHERE idUsuario = ?", array('i', $idUser), "BOOLE");
+	}
+
 	public function updateUserPassword($idUser, $password){
 		return DataBase::sendQuery("UPDATE usuarios SET pass = ? WHERE idUsuario = ?", array('si', $password, $idUser), "BOOLE");
 	}
@@ -19,7 +23,7 @@ class usuarios{
 	}
 
 	public function getUser($idUser){
-		$responseQuery = DataBase::sendQuery("SELECT * FROM usuarios WHERE idUsuario = ? ", array('i', $idUser), "OBJECT");
+		$responseQuery = DataBase::sendQuery("SELECT * FROM usuarios WHERE idUsuario = ? AND activo = 1", array('i', $idUser), "OBJECT");
 		if($responseQuery->result == 1)
 			$responseQuery->message = "El identificador ingresado no corresponde a un usuario del sistema.";
 
@@ -44,7 +48,7 @@ class usuarios{
 	}
 
 	public function getUsuarios(){
-		return DataBase::sendQuery("SELECT idUsuario, nombre, email FROM usuarios WHERE nombre != 'admin'", null, "LIST");
+		return DataBase::sendQuery("SELECT idUsuario, nombre, email FROM usuarios WHERE nombre != 'admin' AND activo = 1 ", null, "LIST");
 	}
 
 	public function getUsuario($idUsuario){
@@ -66,7 +70,7 @@ class usuarios{
 	}
 
 	public function getUserName($name){
-		$responseQuery = DataBase::sendQuery("SELECT * FROM usuarios WHERE nombre = ?", array('s', $name), "OBJECT");
+		$responseQuery = DataBase::sendQuery("SELECT * FROM usuarios WHERE nombre = ? AND activo = 1 ", array('s', $name), "OBJECT");
 		if($responseQuery->result == 1)
 			$responseQuery->message = "No se encontro un usuario con ese nombre en el sisitema.";
 
