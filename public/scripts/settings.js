@@ -286,21 +286,15 @@ $("#btnEnviarWhatsapp").on( "click", ()=>{
 	let message = $("#nav-whatsapp textarea" ).val();
 	if(message && message != ""){
 
-		let length = $("#tbodyClientsWhatsapp tr").length;
-		for (let index = 0; index < array.length; index++) {
-			
-			$("#"+element.id+" button")[0].click()
-			if(response){
+		$("#tbodyClientsWhatsapp tr").map((index, element)=>{
 
-				$("#"+element.id+" td").eq(3).empty()
-				if( response.result == 2 ){
-					$("#"+element.id+" td")[3].append("OK");
-				}else{
-					$("#"+element.id+" td")[3].append("error");
-				}
-			}
-			
-		}
+			$("#"+element.id+" td").eq(3).empty()
+			$("#"+element.id+" button")[0].click()
+
+		});
+	}else{
+		showReplyMessage(1, "Ingrese mensaje", "Whatsapp");
+		return;
 	}
 
 })
@@ -309,13 +303,24 @@ $("#btnEnviarWhatsapp").on( "click", ()=>{
 function enviarWhatsappIndividual(button){
 	let message = $("#nav-whatsapp textarea" ).val();
 
-	button.disabled = true;
-	//document.getElementById("spinnerWhatsappLogin").hidden = false;
+	if(message && message != ""){
+		button.disabled = true;
 
+		let element = button.parentNode.parentNode;
 
-	element = button.parentNode.parentNode;
+		let phone = element.dataset.wa1;
+		let response = sendPost("enviarWhatsapp", {to:phone, message:message})
 
-	let phone = element.dataset.wa1;
-	let response = sendPost("enviarWhatsapp", {to:phone, message:message})
-	return response;
+		if( response.result == 2 ){
+			button.disabled = false;
+			$("#"+element.id+" td")[3].append("enviado");
+		}else{
+			button.disabled = false;
+			$("#"+element.id+" td")[3].append("error");
+		}
+	}
+	else{
+		showReplyMessage(1, "Ingrese mensaje", "Whatsapp");
+		return false;
+	}
 }
