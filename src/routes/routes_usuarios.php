@@ -73,17 +73,34 @@ return function (App $app) {
             if($responseGetSocio->result == 2){
                 $args['responseSocio'] = $responseGetSocio;
 
-                $args['rowColorClientType'] = "rowSocio";
-                if ( $responseGetSocio->socio->tipoSocio == 0 ){ //NO SOCIO
-                    $args['rowColorClientType'] = "rowNosocio";
-                }else if ( $responseGetSocio->socio->tipoSocio == 1 ){ //SOCIO
-                    if ( $responseGetSocio->socio->deudor )
-                        $args['rowColorClientType'] = "rowWarning";
-                }else if ( $responseGetSocio->socio->tipoSocio == 3 ){ //EX SOCIO
-                    if ( $responseGetSocio->socio->deudor )
-                        $args['rowColorClientType'] = "rowExsocioWarning";
-                    else
-                        $args['rowColorClientType'] = "rowExsocio";
+                $args['rowColorClientType'] = "rowNosocio";
+                if($responseGetSocio->socio->buenPagador === 0){
+
+                    if ( $responseGetSocio->socio->tipoSocio == 1 ){ //SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowWarning";
+                        else
+                            $args['rowColorClientType'] = "rowSocio";
+                    }else if ( $responseGetSocio->socio->tipoSocio == 3 ){ //EX SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowExsocioWarning";
+                        else
+                            $args['rowColorClientType'] = "rowExsocio";
+                    }
+                }else{
+                    $args['rowColorClientType'] = "rowNosocioBuenPagador";
+                    
+                    if ( $responseGetSocio->socio->tipoSocio == 1 ){ //SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowWarningBuenPagador";
+                        else
+                            $args['rowColorClientType'] = "rowSocioBuenPagador";
+                    }else if ( $responseGetSocio->socio->tipoSocio == 3 ){ //EX SOCIO
+                        if ($responseGetSocio->socio->deudor )
+                            $args['rowColorClientType'] = "rowExsocioWarningBuenPagador";
+                        else
+                            $args['rowColorClientType'] = "rowExsocioBuenPagador";
+                    }
                 }
             }
             else return $response->withRedirect('socios');
@@ -122,6 +139,13 @@ return function (App $app) {
 
     //------------------------------------------------------------------------------------------
 
+    //------------------------------- DEBITOS --------------------------------------------------
+    $app->get('/debitos-rest-cuotas', function($request, $response, $args) use ($container){
+        $response = ctr_usuarios::getAllImportesSocios();
+        return json_encode($response);
+    });
+    //------------------------------------------------------------------------------------------
+    
     //------------------------------ POST ------------------------------------------------------
 
     $app->post('/gestcom-rest-cuotas', function(Request $request, Response $response){
@@ -263,8 +287,9 @@ return function (App $app) {
             $rut = $data['rut'];
             $telefax = $data['telefax'];
             $tipoSocio = $data['tipo'];
+            $buenPagador = $data['buenPagador'];
 
-            return json_encode(ctr_usuarios::insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio));
+            return json_encode(ctr_usuarios::insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador));
         }else return json_encode($responseSession);
     });
 
@@ -287,11 +312,12 @@ return function (App $app) {
             $ultimoPago = $data['ultimoPago'];
             $fechaPago =  $data['fechaPago'];
             $ultimoMesPago = $data['ultimoMesPago'];
+            $buenPagador = $data['buenPagador'];
 
             if ( $cedula == "" ){
                 $cedula = null;
             }
-            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $fechaBaja, $ultimoPago, $fechaPago, $ultimoMesPago));
+            return json_encode(ctr_usuarios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $fechaBaja, $ultimoPago, $fechaPago, $ultimoMesPago, $buenPagador));
         }else return json_encode($responseSession);
     });
 
@@ -479,10 +505,12 @@ return function (App $app) {
 
 
 
-    $app->post('/getAllWhatsappSocios', function(Request $request, Response $response) use ($userController){
+    $app->post('/getAllWhatsappClientByType', function(Request $request, Response $response) use ($userController){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
-            return json_encode($userController->getAllWhatsappSocios());
+            $data = $request->getParams();
+            $type = $data['type'];
+            return json_encode($userController->getAllWhatsappClientByType($type));
         }
         else return json_encode($responseSession);
     });

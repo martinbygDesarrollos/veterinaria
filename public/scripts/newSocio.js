@@ -11,6 +11,7 @@ function insertarNuevoSocio(){
 	let lugarPago = $('#inputLugarPagoSocio').val() || null;
 	let tipoSocio = $('#inputTipoSocio').val() || null;
 	let fechaIngreso = $('#inputFechaIngresoSocio').val() || null;
+	let buenPagador = $('#inputBuenPagador').prop("checked") ? 1 : 0;
 
 
 	if(nombre) nombre = nombre.replaceAll('|', '');
@@ -49,10 +50,10 @@ function insertarNuevoSocio(){
 						rut: rut,
 						telefax: telefax,
 						tipo: tipoSocio,
-						email: email
+						email: email,
+						buenPagador:buenPagador
 					};
 
-					console.log(data);
 					sendAsyncPost("insertNewSocio", data)
 					.then((response)=>{
 						console.log(response);

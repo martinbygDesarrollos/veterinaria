@@ -391,9 +391,9 @@ class ctr_usuarios{
 			$responseGetUserInSesion = ctr_usuarios::getUserInSession();
 			if($responseGetUserInSesion->result == 2){
 				if($responseGetUserInSesion->user->idUsuario != $responseGetUser->objectResult->idUsuario){
-					$responseDeleteUser = usuarios::deleteUser($idUser);
+					$responseDeleteUser = usuarios::desableUser($idUser);
 					if($responseDeleteUser->result == 2){
-						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Borrar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue borrado del sistema.");
+						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Desactivar usuario", null,null, "El usuario " . $responseGetUser->objectResult->nombre . " fue desactivado del sistema.");
 						if($responseInsertHistorial->result == 2){
 							$response->result = 2;
 							$response->message = "El usuario fue borrado del sistema.";
@@ -784,6 +784,27 @@ class ctr_usuarios{
 		return socios::updateQuotaSocio($idSocio, $quota);
 	}
 
+	public function getAllImportesSocios(){
+		$response = new \stdClass();
+		$resultado = [];
+		$responseGetSociosActives = socios::getSociosWithMascotas();
+		if($responseGetSociosActives->result == 2){
+			$response->result = 2;
+			foreach ($responseGetSociosActives->listResult as $key => $socio) {
+				$responseGetQuota = configuracionSistema::getQuotaSocio($socio['cantMascotas'], $socio['tipo']);
+				if($responseGetQuota->result == 2){
+					$resultado[] = ["socio" => $socio['idSocio'], "importe" => $responseGetQuota->quota];
+				}
+			}
+			$response->importes = $resultado;
+		} else {
+			$response->result = 1;
+			$response->importes = $resultado;
+			// return $responseGetSociosActives;
+		} 
+		return $response;
+	}
+
 	public function actualizarCuotaSocio($idSocio){
 		$response = new \stdClass();
 
@@ -860,7 +881,7 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
+	public function insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador){
 		$response = new \stdClass();
 		$clientClass = new socios();
 
@@ -898,7 +919,7 @@ class ctr_usuarios{
 
 
 
-					$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+					$responseInsertSocio = socios::insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador);
 					if($responseInsertSocio->result == 2){
 						$responseInsertHistorial = ctr_historiales::insertHistorialUsuario("Nuevo socio ingresado", $responseInsertSocio->id, null, "Se ingresó un nuevo socio en el sistema con nombre " . $nombre . ".");
 						if($responseInsertHistorial->result == 2){
@@ -925,7 +946,7 @@ class ctr_usuarios{
 		return $response;
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $fechaBajaSocio, $ultimoPago, $fechaPago, $ultimoMesPago){
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $fechaBajaSocio, $ultimoPago, $fechaPago, $ultimoMesPago, $buenPagador){
 
 		//$idSocio = str_replace("|","",$idSocio);
 		$nombre = str_replace("|","",$nombre);
@@ -1002,7 +1023,7 @@ class ctr_usuarios{
 
 					$cuota = $responseGetSocio->objectResult->cuota;
 					//if($responseGetQuota->result == 2){
-						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $cuota, $fechaBajaSocio);
+						$responseUpdateSocio = socios::updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocioNuevo, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $cuota, $fechaBajaSocio, $buenPagador);
 
 						if($responseUpdateSocio->result == 2){
 							$responseGetQuota = ctr_usuarios::calculateQuotaSocio($idSocio);
@@ -1330,11 +1351,11 @@ class ctr_usuarios{
 	}
 
 
-	function getAllWhatsappSocios(){
+	function getAllWhatsappClientByType($type){
 		$response = new \stdClass();
 		$sociosClass = new socios();
 
-		$response = $sociosClass->getAllWhatsappSocios();
+		$response = $sociosClass->getAllWhatsappClientByType($type);
 
 		return $response;
 	}

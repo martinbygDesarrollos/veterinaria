@@ -52,7 +52,7 @@ function createRowHospitalized(obj){
 		if ( obj.internado == "vet" ){
 			internado = "En veterinaria";
 		}else if (obj.internado == "casa"){
-			internado = "Dar seguimiento";
+			internado = "Internación ambulatoria";
 		}
 
 		colorForClient = calculateColorRowByClient(obj.tipo, obj.deudor);

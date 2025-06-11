@@ -320,20 +320,20 @@ class socios{
 		return $responseQuery;
 	}
 
-	public function insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio){
+	public function insertSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador){
 
 		if ($cedula == "")
 			$cedula = null;
 
-		return DataBase::sendQuery("INSERT INTO socios (nombre, cedula, direccion, telefono, fechaPago, lugarPago, telefax, fechaIngreso, email, rut, tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array('ssssiisissi', $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio), "BOOLE");
+		return DataBase::sendQuery("INSERT INTO socios (nombre, cedula, direccion, telefono, fechaPago, lugarPago, telefax, fechaIngreso, email, rut, tipo, buenPagador) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", array('ssssiisissii', $nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, $buenPagador), "BOOLE");
 	}
 
-	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $quota, $fechaBajaSocio){
+	public function updateSocio($idSocio, $nombre, $cedula, $direccion, $telefono, $email, $rut, $telefax, $tipoSocio, $lugarPago, $fechaIngreso, $ultimoPago, $fechaPago, $ultimoMesPago, $quota, $fechaBajaSocio, $buenPagador){
 
 		if ($cedula == "")
 			$cedula = null;
 
-		return DataBase::sendQuery("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ?, fechaUltimaCuota = ?, cuota = ?, fechaUltimoPago = ?, fechaBajaSocio = ? WHERE idSocio = ?", array('sssssiiissiiiiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $ultimoMesPago, $quota, $ultimoPago, $fechaBajaSocio, $idSocio), "BOOLE");
+		return DataBase::sendQuery("UPDATE socios SET cedula = ?, nombre = ?, telefono = ?, telefax = ?, direccion = ?, fechaIngreso = ?, fechaPago = ?, lugarPago = ?, email = ?, rut = ?, tipo = ?, fechaUltimaCuota = ?, cuota = ?, fechaUltimoPago = ?, fechaBajaSocio = ?, buenPagador = ? WHERE idSocio = ?", array('sssssiiissiiiiiii', $cedula, $nombre, $telefono, $telefax, $direccion, $fechaIngreso, $fechaPago, $lugarPago, $email, $rut, $tipoSocio, $ultimoMesPago, $quota, $ultimoPago, $fechaBajaSocio, $buenPagador, $idSocio), "BOOLE");
 	}
 
 	public function getAllSocios(){
@@ -427,12 +427,18 @@ class socios{
 	}
 
 
-	function getAllWhatsappSocios(){
+	function getAllWhatsappClientByType($type){
 		$dataBaseCLass = new DataBase();
 
-		$fechaDeudor = date('Ym', strtotime(date('Ym')." -3 month"));
-		$response = $dataBaseCLass->sendQuery('SELECT idSocio, nombre, telefono, telefax FROM `socios`
-			WHERE estado = 1 and tipo = 1 and (fechaUltimaCuota >= ? OR fechaUltimaCuota = "" OR fechaUltimaCuota is null) ', array('s', $fechaDeudor), "LIST");
+		if ($type == "bp") {
+			$query = 'SELECT idSocio, nombre, telefono, telefax FROM `socios`
+			WHERE estado = 1 and buenPagador = 1';
+		}else{
+			$query = 'SELECT idSocio, nombre, telefono, telefax FROM `socios`
+			WHERE estado = 1 and tipo = '.$type;
+		}
+
+		$response = $dataBaseCLass->sendQuery($query, array(), "LIST");
 		if($response->result == 1)
 			$response->listResult = array();
 

@@ -49,16 +49,33 @@ return function (App $app) {
             if ( $args['SocioMascota'] ){
                 $args['rowColorClientType'] = "rowSocio";
                 if ( isset($args['SocioMascota']->socio) ){
-                    if ( $args['SocioMascota']->socio->tipoSocio == 0 ){ //NO SOCIO
-                        $args['rowColorClientType'] = "rowNosocio";
-                    }else if ( $args['SocioMascota']->socio->tipoSocio == 1 ){ //SOCIO
-                        if ( $args['SocioMascota']->socio->deudor )
-                            $args['rowColorClientType'] = "rowWarning";
-                    }else if ( $args['SocioMascota']->socio->tipoSocio == 3 ){ //EX SOCIO
-                        if ( $args['SocioMascota']->socio->deudor )
-                            $args['rowColorClientType'] = "rowExsocioWarning";
-                        else
-                            $args['rowColorClientType'] = "rowExsocio";
+                    if($args['SocioMascota']->socio->buenPagador === 0){
+
+                        if ( $args['SocioMascota']->socio->tipoSocio == 0 ){ //NO SOCIO
+                            $args['rowColorClientType'] = "rowNosocio";
+                        }else if ( $args['SocioMascota']->socio->tipoSocio == 1 ){ //SOCIO
+                            if ( $args['SocioMascota']->socio->deudor )
+                                $args['rowColorClientType'] = "rowWarning";
+                        }else if ( $args['SocioMascota']->socio->tipoSocio == 3 ){ //EX SOCIO
+                            if ( $args['SocioMascota']->socio->deudor )
+                                $args['rowColorClientType'] = "rowExsocioWarning";
+                            else
+                                $args['rowColorClientType'] = "rowExsocio";
+                        }
+                    }else{
+                        $args['rowColorClientType'] = "rowSocioBuenPagador";
+
+                        if ( $args['SocioMascota']->socio->tipoSocio == 0 ){ //NO SOCIO
+                            $args['rowColorClientType'] = "rowNosocioBuenPagador";
+                        }else if ( $args['SocioMascota']->socio->tipoSocio == 1 ){ //SOCIO
+                            if ( $args['SocioMascota']->socio->deudor )
+                                $args['rowColorClientType'] = "rowWarningBuenPagador";
+                        }else if ( $args['SocioMascota']->socio->tipoSocio == 3 ){ //EX SOCIO
+                            if ( $args['SocioMascota']->socio->deudor )
+                                $args['rowColorClientType'] = "rowExsocioWarningBuenPagador";
+                            else
+                                $args['rowColorClientType'] = "rowExsocioBuenPagador";
+                        }
                     }
                 }else{
                     $args['rowColorClientType'] = "rowNosocio";

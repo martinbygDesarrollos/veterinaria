@@ -257,16 +257,23 @@ function whatsappConnect(element){
 
 }
 
+$("#selectClientTypeWhatsapp" ).on( "change", ()=>{
+	$("#nav-profile-tab-whatsapp" ).trigger("click");
+})
+
 
 
 $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
-	console.log("cargar todos los clientes");
+	
+	let type = $("#selectClientTypeWhatsapp").val();
+	let client = $("#selectClientTypeWhatsapp option:selected").text();
 
-	sendAsyncPost("getAllWhatsappSocios")
+	sendAsyncPost("getAllWhatsappClientByType", {type:type})
 	.then((response)=>{
+		$("#tbodyClientsWhatsapp").empty();
+		$("#pClientsWhatsapp").text("Total clientes ("+client+"):  "+response.listResult.length);
 		if ( response.result == 2 ){
-			$("#tbodyClientsWhatsapp").empty();
-			$("#pClientsWhatsapp").text("Total socios:  "+response.listResult.length);
+			$("#pClientsWhatsapp").text("Total clientes ("+client+"):  "+response.listResult.length);
 
 			response.listResult.map((socio)=>{
 

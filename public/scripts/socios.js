@@ -45,6 +45,7 @@ function createRow(obj){
 	let mascotas = obj.mascotas
 	let tipo = obj.tipo
 	let lugarPago = obj.lugarPago;
+	let buenPagador = obj.buenPagador;
 	//console.log(idSocio, tipo, deudor);
 
 	if ( !telefono ){
@@ -90,7 +91,7 @@ function createRow(obj){
 		selectMascotas += '</select>'
 	}else selectMascotas = "";
 
-	//console.log("CALCULAR EL COLOR DE LA LINEA SEGUN EL TIPO DE SOCIO Y LA DEUDA ");
+	//console.log("CALCULAR EL COLOR DE LA LINEA SEGUN EL TIPO DE SOCIO Y LA DEUDA "); y si es buen pagador o no
 	classForClient = "";
 	tipoCliente = "";
 
@@ -99,6 +100,7 @@ function createRow(obj){
 		classForClient = "rowNosocio";
 	}else if ( tipo == 1 ){ //SOCIO
 		tipoCliente = "<br>(Socio)";
+		classForClient = "rowSocio"
 		if ( deudor )
 			classForClient = "rowWarning";
 	}else if ( tipo == 3 ){ //EX SOCIO
@@ -110,6 +112,9 @@ function createRow(obj){
 	}else if ( tipo == 2 ) //ONG
 		tipoCliente = "<br>(ONG)";
 
+	if (buenPagador === 1)
+		classForClient += "BuenPagador"
+	
 	let row = "<tr class='"+classForClient+"' >";
 	//.rowWarning.rowExsocio.rowExsocioWarning.rowNosocio
 
