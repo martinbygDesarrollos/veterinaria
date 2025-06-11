@@ -314,6 +314,7 @@ function enviarWhatsappIndividual(button){
 		button.disabled = true;
 
 		let element = button.parentNode.parentNode;
+		$("#"+element.id+" td").eq(3).empty()
 
 		let phone = element.dataset.wa1;
 		let response = sendPost("enviarWhatsapp", {to:phone, message:message})
@@ -331,3 +332,9 @@ function enviarWhatsappIndividual(button){
 		return false;
 	}
 }
+
+$("#nav-whatsapp textarea" ).change(()=>{
+	$("#tbodyClientsWhatsapp tr").map((index, element)=>{
+		$("#"+element.id+" td").eq(3).empty()
+	});
+})
