@@ -15,10 +15,7 @@
 					<a class="nav-item nav-link active" id="nav-profile-tab-cuota" data-toggle="tab" href="#nav-cuota" role="tab" aria-controls="nav-profile" aria-selected="false">Cuota</a>
 					<a class="nav-item nav-link" id="nav-profile-tab-usuario" data-toggle="tab" href="#nav-usuario" role="tab" aria-controls="nav-profile" aria-selected="false">Usuarios</a>
 
-					{% if administrador['IDENTIFICADOR'] == 15 or administrador['IDENTIFICADOR'] == 12 or administrador['IDENTIFICADOR'] == 13 %}
-					<!--a class="nav-item nav-link" id="nav-profile-tab-mascota" data-toggle="tab" href="#nav-mascota" role="tab" aria-controls="nav-profile" aria-selected="false">Mascotas</a-->
 					<a class="nav-item nav-link" id="nav-profile-tab-whatsapp" data-toggle="tab" href="#nav-whatsapp" role="tab" aria-controls="nav-profile" aria-selected="false">Whatsapp</a>
-					{%endif%}
 				</div>
 			</nav>
 			<div class="tab-content" id="nav-tabContent">
@@ -120,54 +117,11 @@
 					</div>
 				</div>
 
-				{% if administrador['IDENTIFICADOR'] == 15 or administrador['IDENTIFICADOR'] == 12 or administrador['IDENTIFICADOR'] == 13 %}
-				<!--div class="tab-pane fade  border boder-2 border-top-0 p-3" id="nav-mascota" role="tabpanel" aria-labelledby="nav-profile-tab">
-					<div class="row">
-						<div class="col-7">
-							<input type="search" class="form-control" onsearch="searchClientOrPetToUnify(this.value)" id="idInputPetsToUnify" onkeyup="this.onsearch()" placeholder="Buscar mascotas..." >
-							<div class="tableCustomScroll">
-
-								<table class="table table-hover">
-									<thead style="background-color: white;">
-										<tr>
-											<th>Nro. mascota</th>
-											<th>Nombre</th>
-											<th>Nro. cliente</th>
-											<th>Cliente</th>
-											<th>Seleccionar</th>
-										</tr>
-									</thead>
-									<tbody id="tbodyUnifyPets" ></tbody>
-								</table>
-							</div>
-						</div>
-						<div class="col-5">
-
-							<h6 class="card-subtitle mb-2 text-muted">Mascotas a unificar</h6>
-							<hr>
-							<p>Ficha donde quedarán todos los datos: </p>
-							<h6 id="idUnifyPetOneName"></h6>
-							<hr>
-							<p>Ficha a borrar: </p>
-							<h6 id="idUnifyPetTwoName"></h6>
-
-
-							<form id="formUnifyPets">
-								<input type="text" name="nameUnifyPetOne" id="idUnifyPetOne" hidden>
-								<input type="text" name="nameUnifyPetTwo" id="idUnifyPetTwo" hidden>
-								<div class="d-flex flex-row-reverse">
-									<button type="submit" class="btn btn-success m-1" >Cofirmar</button>
-									<button type="button" onclick="cleanUnifyPetsForm()" class="btn btn-danger m-1" >Cancelar</button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div-->
 
 
 				<div class="tab-pane fade  border boder-2 border-top-0 p-3" id="nav-whatsapp" role="tabpanel" aria-labelledby="nav-profile-tab">
 					<div class="row">
-						<div class="col-8">
+						<div class="col-6">
 							<textarea class="w-100" placeholder="Mensaje a enviar..."></textarea>
 							<p class="text-end" id="pClientsWhatsapp"></p>
 							<div class="tableCustomScroll" >
@@ -181,23 +135,24 @@
 								<button type="button" class="btn btn-success" id="btnEnviarWhatsapp">Enviar</button>
 							</div>
 						</div>
-						<div class="col-4" >
+						<div class="col-6" >
+
+							<h6 class="card-subtitle mb-2 text-muted">Conectar whatsapp automático</h6>
+							<hr>
+
 							<div class="col-7 d-flex flex-row-reverse">
-								<img id="imageWhatsappLogin" src="" alt="QR whatsapp" width="500" hidden>
+								<img id="imageWhatsappLogin" src="" alt="QR whatsapp" width="100%" hidden>
 								<div id="spinnerWhatsappLogin" class="spinner-border" role="status" hidden>
 								  <span class="sr-only">Loading...</span>
 								</div>
 							</div>
-
-							<h6 class="card-subtitle mb-2 text-muted">Conectar whatsapp automático</h6>
-							<hr>
+							<h4 class="py-3" id="pStatusWhatsapp" hidden >Whatsapp en funcionamiento</h4>
 							<div class="d-flex flex-row-reverse">
-								<button type="button" class="btn btn-success m-1" onclick="whatsappGetNewQr(this)" >Nuevo QR</button>
+								<button type="button" class="btn btn-success m-1" onclick="whatsappConnect(this)" >Nuevo QR</button>
 							</div>
 						</div>
 					</div>
 				</div>
-				{%endif%}
 
 			</div>
 		</div>

@@ -220,46 +220,39 @@ $("#formUnifyPets").submit((e)=>{
 	.then((response)=>{
 
 		showReplyMessage(response.result,response.message,"Unificar mascotas", null );
-		console.log(response);
 	})
 
 })
 
-
-
-function whatsappGetNewQr(element){
-
+function whatsappConnect(element){
 	element.disabled = true;
 	document.getElementById("spinnerWhatsappLogin").hidden = false;
 	document.getElementById("imageWhatsappLogin").hidden = true;
-	sendAsyncPost("whatsappGetNewQr")
+	document.getElementById("pStatusWhatsapp").hidden = true;
+
+	sendAsyncPost("whatsappVerifyStatus")
 	.then((response)=>{
-		if ( response ){
+		element.disabled = false;
+		document.getElementById("spinnerWhatsappLogin").hidden = true;
 
-			element.disabled = false;
-			document.getElementById("spinnerWhatsappLogin").hidden = true;
-			document.getElementById("imageWhatsappLogin").hidden = false;
+		if(response.result == 2){
+			if(response.qr){
+				$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+response.qr);
+				document.getElementById("imageWhatsappLogin").hidden = false;
 
-
-			console.log(response);
-			console.log(response.obj);
-
-			if ( response.result != 1 ){
-				$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+response.obj);
-
-			}else{
-				showReplyMessage(response.result, response.message, "Autenticar whatsapp", null);
 			}
+			if(response.message == "CONNECTED"){
+				document.getElementById("pStatusWhatsapp").hidden = false;
+			}
+
 		}else{
-			element.disabled = false;
-			document.getElementById("spinnerWhatsappLogin").hidden = true;
-			showReplyMessage(1, "No se puedo establecer conexión!", "Whatsapp", null);
+			showReplyMessage(response.result, response.message, "Autenticar whatsapp", null);
 		}
-
-
 	})
 	.catch((err)=>{
 		console.log("catch", err);
+		element.disabled = false;
+		document.getElementById("spinnerWhatsappLogin").hidden = true;
 	})
 
 }
@@ -290,45 +283,25 @@ $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
 var noEnviados = [];
 $("#btnEnviarWhatsapp").on( "click", ()=>{
 
-	//document.getElementById("spinnerWhatsappLogin").hidden = false;
-	//document.getElementById("btnEnviarWhatsapp").disabled = true;
-
-
 	let message = $("#nav-whatsapp textarea" ).val();
-	let length = $("#tbodyClientsWhatsapp tr").length;
-	$("#tbodyClientsWhatsapp tr").map((index, element)=>{
+	if(message && message != ""){
 
+		let length = $("#tbodyClientsWhatsapp tr").length;
+		for (let index = 0; index < array.length; index++) {
+			
+			$("#"+element.id+" button")[0].click()
+			if(response){
 
-		let phone = element.dataset.wa1;
-		sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
-		.then((response)=>{
-
-			response = JSON.parse(response);
-
-			//console.log(response);
-			if (response){
-
-				if( response.result != 2 ){
-					phone = element.dataset.wa2;
-					sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
-					.then((response)=>{
-						response = JSON.parse(response);
-
-						if( response.result == 2 ){
-							$("#"+element.id+" td")[3].append("OK");
-						}else{
-							$("#"+element.id+" td")[3].append("error");
-						}
-					})
-				}else{
+				$("#"+element.id+" td").eq(3).empty()
+				if( response.result == 2 ){
 					$("#"+element.id+" td")[3].append("OK");
+				}else{
+					$("#"+element.id+" td")[3].append("error");
 				}
-			}else{
-				showReplyMessage(1, "No se puedo establecer conexión.", "Whatsapp", null);
 			}
-
-		})
-	})
+			
+		}
+	}
 
 })
 
@@ -337,41 +310,12 @@ function enviarWhatsappIndividual(button){
 	let message = $("#nav-whatsapp textarea" ).val();
 
 	button.disabled = true;
-	document.getElementById("spinnerWhatsappLogin").hidden = false;
+	//document.getElementById("spinnerWhatsappLogin").hidden = false;
 
 
 	element = button.parentNode.parentNode;
 
 	let phone = element.dataset.wa1;
-	sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
-	.then((response)=>{
-		response = JSON.parse(response);
-		button.disabled = false;
-		document.getElementById("spinnerWhatsappLogin").hidden = true;
-
-		if (response){
-			if( response.result != 2 ){
-				let phone = element.dataset.wa2;
-				sendAsyncPost("enviarWhatsapp", {to:phone, message:message})
-				.then((response)=>{
-					response = JSON.parse(response);
-					if( response.result == 2 ){
-						$("#"+element.id+" td")[3].append("OK");
-					}else{
-						$("#"+element.id+" td")[3].append("error");
-					}
-				})
-			}else{
-				$("#"+element.id+" td")[3].append("OK");
-			}
-		}else{
-			showReplyMessage(1, "No se puedo establecer conexión.", "Whatsapp", null);
-		}
-
-	})
-	.then(()=>{
-		button.disabled = false;
-		document.getElementById("spinnerWhatsappLogin").hidden = true;
-
-	})
+	let response = sendPost("enviarWhatsapp", {to:phone, message:message})
+	return response;
 }

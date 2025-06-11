@@ -462,11 +462,17 @@ return function (App $app) {
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
 
-            $data = 'id='.WHATSAPP_API_USER.'&token='.TOKEN_API;
-            $path = 'client/qr';
+            return $whatsappClass->nuevoQr();
+        }
+        else return json_encode($responseSession);
+    });
 
-            //return json_encode($whatsappClass->nuevoQr($value));
-            return $whatsappClass->nuevoQr($path, $data);
+
+    $app->post('/whatsappVerifyStatus', function(Request $request, Response $response) use ($userController, $whatsappClass){
+        $responseSession = $userController->validateSession();
+        if($responseSession->result == 2){
+
+            return json_encode($whatsappClass->verifyStatus());
         }
         else return json_encode($responseSession);
     });
