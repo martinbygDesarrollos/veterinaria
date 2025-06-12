@@ -7,12 +7,14 @@ use Slim\Http\Response;
 require_once '../src/controladores/ctr_historiales.php';
 require_once '../src/controladores/ctr_mascotas.php';
 require_once '../src/controladores/ctr_usuarios.php';
+require_once '../src/controladores/ctr_whatsapp.php';
 
 return function (App $app) {
 	$container = $app->getContainer();
 	$historialesController = new ctr_historiales();
 	$userController = new ctr_usuarios();
 	$petController = new ctr_mascotas();
+	$whatsappController = new ctr_whatsapp();
 
     $fpdf = new Pdf();
     $utils = new Utils();
@@ -34,7 +36,7 @@ return function (App $app) {
 
     //-------------------------- VISTAS ------------------------------------------
 
-	$app->get('/settings', function($request, $response, $args) use ($container){
+	$app->get('/settings', function($request, $response, $args) use ($container, $whatsappController){
         $args['version'] = FECHA_ULTIMO_PUSH;
 		$responseSession = ctr_usuarios::validateSession();
 		if($responseSession->result == 2){
@@ -46,6 +48,16 @@ return function (App $app) {
 			$responseGetUsers = ctr_usuarios::getUsuarios();
 			if($responseGetUsers->result == 2)
 				$args['listUsuarios'] = $responseGetUsers->listResult;
+
+
+			//verificar session whatsapp
+			$whatsappController->verifyStatus();
+			$args["whatsappStatus"] = "No se obtuvo respuesta.";
+			if( isset($_SESSION["w_status_m"])){
+				$args["whatsappStatus"] = $_SESSION["w_status_m"];
+			}
+
+
 			return $this->view->render($response, "settings.twig", $args);
 		}else return $response->withRedirect($request->getUri()->getBaseUrl());
 	})->setName("settings");

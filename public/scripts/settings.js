@@ -229,6 +229,7 @@ function whatsappConnect(element){
 	document.getElementById("spinnerWhatsappLogin").hidden = false;
 	document.getElementById("imageWhatsappLogin").hidden = true;
 	document.getElementById("pStatusWhatsapp").hidden = true;
+	$("#pStatusWhatsapp strong").empty();
 
 	sendAsyncPost("whatsappVerifyStatus")
 	.then((response)=>{
@@ -241,9 +242,8 @@ function whatsappConnect(element){
 				document.getElementById("imageWhatsappLogin").hidden = false;
 
 			}
-			if(response.message == "CONNECTED"){
-				document.getElementById("pStatusWhatsapp").hidden = false;
-			}
+			$("#pStatusWhatsapp strong").text(response.message)
+			document.getElementById("pStatusWhatsapp").hidden = false;
 
 		}else{
 			showReplyMessage(response.result, response.message, "Autenticar whatsapp", null);

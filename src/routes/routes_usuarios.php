@@ -6,14 +6,14 @@ use Slim\Http\Response;
 
 require_once '../src/controladores/ctr_usuarios.php';
 require_once '../src/controladores/ctr_mascotas.php';
-require_once '../src/utils/whatsapp.php';
+//require_once '../src/utils/whatsapp.php';
 
 return function (App $app) {
     $container = $app->getContainer();
 
     //---------------------------- CONTROLADORES Y CLASES ------------------------------------------------------
     $userController = new ctr_usuarios();
-    $whatsappClass = new whatsapp();
+    //$whatsappClass = new whatsapp();
 
     //---------------------------- VISTAS ------------------------------------------------------
     $app->get('/iniciar-sesion', function ($request, $response, $args) use ($container) {
@@ -484,7 +484,7 @@ return function (App $app) {
 
 
 
-    $app->post('/whatsappGetNewQr', function(Request $request, Response $response) use ($userController, $whatsappClass){
+    /*$app->post('/whatsappGetNewQr', function(Request $request, Response $response) use ($userController, $whatsappClass){
         $responseSession = $userController->validateSession();
         if($responseSession->result == 2){
 
@@ -530,7 +530,7 @@ return function (App $app) {
             return json_encode($whatsappClass->enviarWhatsapp($path, $content, $phone));
         }
         else return json_encode($responseSession);
-    });
+    });*/
 
 
     $app->post('/getFacturasPendientesCliente', function(Request $request) use ($userController){

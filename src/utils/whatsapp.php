@@ -29,8 +29,12 @@ class whatsapp{
 
 	public function nuevoQr(){
 
-		return $this->send_curl("GET",'getqr/'.WHATSAPP_API_USER, null);
+		$response = $this->send_curl("GET",'getqr/'.WHATSAPP_API_USER, null);
+		if ($response->result == 2)
+			$response->message = "QR enviado.";
 
+
+		return $response;
 	}
 
 	public function exist(){
@@ -99,7 +103,7 @@ class whatsapp{
 
 	public function send_curl( $method, $url, $data){
 		$curl = curl_init();
-		error_log("\n".date("ymdHis").": send_curl $method, $url", 3, "./../whatsapp.log");
+		error_log("\n".date("ymdHis").": send_curl $method, $url", 3, "./../logs/whatsapp".date("ymd").".log");
 
 
 		$options = array(
@@ -131,7 +135,7 @@ class whatsapp{
 
 
 		$response = curl_exec($curl);
-		error_log("\n".date("ymdHis").": send_curl respuesta: $response", 3, "./../whatsapp.log");
+		error_log("\n".date("ymdHis").": send_curl respuesta: $response", 3, "./../logs/whatsapp".date("ymd").".log");
 
 		curl_close($curl);
 
