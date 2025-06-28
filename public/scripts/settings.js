@@ -288,8 +288,9 @@ $("#nav-profile-tab-whatsapp" ).on( "click", ()=>{
 });
 
 var noEnviados = [];
-$("#btnEnviarWhatsapp").on( "click", ()=>{
 
+$("#btnEnviarWhatsapp").on( "click", ()=>{
+	//let id = loadPrograssBar()
 	let message = $("#nav-whatsapp textarea" ).val();
 	if(message && message != ""){
 
@@ -303,14 +304,37 @@ $("#btnEnviarWhatsapp").on( "click", ()=>{
 		showReplyMessage(1, "Ingrese mensaje", "Whatsapp");
 		return;
 	}
+	//stopPrograssBar(id)
 
 })
 
 
 function enviarWhatsappIndividual(button){
+
+	let id = loadPrograssBar()
+
+	let status = sendPost("whatsappVerifyStatus")
+	if(status.result == 2){
+		if(status.qr){
+			$("#nav-whatsapp img").attr("src", "data:image/png;base64,"+status.qr);
+			document.getElementById("imageWhatsappLogin").hidden = false;
+
+		}
+		$("#pStatusWhatsapp strong").text(status.message)
+		document.getElementById("pStatusWhatsapp").hidden = false;
+		stopPrograssBar(id)
+
+	}else{
+		stopPrograssBar(id)
+		showReplyMessage(status.result, status.message, "Whatsapp");
+		return false;
+	}
+
+
 	let message = $("#nav-whatsapp textarea" ).val();
 
 	if(message && message != ""){
+
 		button.disabled = true;
 
 		let element = button.parentNode.parentNode;
@@ -322,12 +346,36 @@ function enviarWhatsappIndividual(button){
 		if( response.result == 2 ){
 			button.disabled = false;
 			$("#"+element.id+" td")[3].append("enviado");
+			stopPrograssBar(id)
+
 		}else{
-			button.disabled = false;
-			$("#"+element.id+" td")[3].append("error");
+
+			if (response.message == "No se obtuvo respuesta del servidor."){
+				stopPrograssBar(id)
+				showReplyMessage(1, response.message, "Whatsapp");
+				button.disabled = false;
+				$("#"+element.id+" td")[3].append("error");
+				return false;
+			}
+
+
+			let phone = element.dataset.wa2;
+			let responseWa2 = sendPost("enviarWhatsapp", {to:phone, message:message})
+			if( responseWa2.result == 2 ){
+				stopPrograssBar(id)
+				button.disabled = false;
+				$("#"+element.id+" td")[3].append("enviado");
+				
+			}else{
+				stopPrograssBar(id)
+				button.disabled = false;
+				$("#"+element.id+" td")[3].append("error");
+				
+			}
 		}
 	}
 	else{
+		stopPrograssBar(id)
 		showReplyMessage(1, "Ingrese mensaje", "Whatsapp");
 		return false;
 	}

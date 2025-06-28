@@ -1,4 +1,4 @@
-<div class="modal fade" id="progressbar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="progressbar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header background-template-color text-template-color">
@@ -14,7 +14,6 @@
 </div>
 <script type="text/javascript">
   function loadPrograssBar(){
-    //console.log("loadPrograssBar")
     var width = 0;
     var progressId = setInterval(() => {
       if(width < 100){
@@ -30,7 +29,6 @@
   }
 
   function stopPrograssBar(progressBarIdProcess){
-    console.log("stop");
     clearInterval(progressBarIdProcess);
   }
 
