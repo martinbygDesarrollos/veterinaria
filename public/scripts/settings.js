@@ -386,3 +386,19 @@ $("#nav-whatsapp textarea" ).change(()=>{
 		$("#"+element.id+" td").eq(3).empty()
 	});
 })
+
+
+document.addEventListener('DOMContentLoaded', () => {
+	const input = document.getElementById('searchWhatsappTable');
+	const tableBody = document.getElementById('tbodyClientsWhatsapp');
+
+	input.addEventListener('keyup', function () {
+		const filter = input.value.toLowerCase();
+		const rows = tableBody.getElementsByTagName('tr');
+
+		for (let row of rows) {
+		const text = row.textContent.toLowerCase();
+		row.style.display = text.includes(filter) ? '' : 'none';
+		}
+	});
+});

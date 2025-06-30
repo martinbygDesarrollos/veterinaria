@@ -122,10 +122,18 @@
 				<div class="tab-pane fade  border boder-2 border-top-0 p-3" id="nav-whatsapp" role="tabpanel" aria-labelledby="nav-profile-tab">
 					<div class="row">
 						<div class="col-6">
+							<h4>Buscar: </h4>
+							<div class="mb-2">
+								<input type="text" id="searchWhatsappTable" class="form-control" placeholder="Buscar en la tabla...">
+							</div>
+							<hr>
+
+							<h4>Mensaje: </h4>
 							<textarea class="w-100" placeholder="Mensaje a enviar..."></textarea>
-							<p class="text-end" id="pClientsWhatsapp"></p>
+							<hr>
 							<div>
-								<h5>Tipos de clientes: </h5>
+								<h4>Tipos de clientes: </h4>
+								<p class="text-end" id="pClientsWhatsapp"></p>
 								<select name="" id="selectClientTypeWhatsapp" class="form-select form-control shadow-sm">
 									<option value="1">Socio</option>
 									<option value="3">Ex socio</option>
@@ -134,7 +142,7 @@
 									<option value="bp">Buen pagador</option>
 								</select>
 							</div>
-							<div class="tableCustomScroll" >
+							<div class="tableCustomScroll" style="max-height: 40vh;">
 								<table class="table">
 									<thead style="background-color: white;"><tr><th>Socio</th><th >Whatsapp</th><th ></th><th >Estado</th><th >Enviar</th></tr></thead>
 									<tbody id="tbodyClientsWhatsapp"  ></tbody>
