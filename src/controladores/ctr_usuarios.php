@@ -262,7 +262,7 @@ class ctr_usuarios{
 								$fechaIngreso = null;
 								$tipoSocio = 0;
 
-								$responseInsert = $userController->insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio);
+								$responseInsert = $userController->insertNewSocio($nombre, $cedula, $direccion, $telefono, $fechaPago, $lugarPago, $telefax, $fechaIngreso, $email, $rut, $tipoSocio, 0);
 
 								if ( isset($responseInsert->newIdSocio) ){
 									$response->cliente = $responseInsert->newIdSocio;
