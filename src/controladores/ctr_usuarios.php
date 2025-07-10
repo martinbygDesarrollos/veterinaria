@@ -930,6 +930,8 @@ class ctr_usuarios{
 							$response->message = "Socio creado correctamente.";
 						}
 						$response->newIdSocio = $responseInsertSocio->id;
+
+						$clientClass->verifyWhatsapp($responseInsertSocio->id);
 					}else return $responseInsertSocio;
 
 				}else {

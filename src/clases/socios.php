@@ -455,4 +455,11 @@ class socios{
 		return $dataBaseCLass->sendQuery($query, array('i', $idClient), "LIST");
 
 	}
+
+	public function verifyWhatsapp($idSocio){
+		$dataBaseCLass = new DataBase();
+		$socio = $dataBaseCLass->sendQuery("SELECT telefono, telefax FROM socios WHERE idCliente = ?", array('i', $idSocio), "OBJECT");
+		if($socio->result == 2){
+		}
+	}
 }
