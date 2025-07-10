@@ -37,9 +37,10 @@ class whatsapp{
 		return $response;
 	}
 
-	public function exist(){
+	public function exist($number){
 
-		return $this->send_curl("GET",'getqr/'.WHATSAPP_API_USER, null);
+		$data = 'id='.WHATSAPP_API_USER.'&num='.$number.'&token=45ek2wrhgr3rg33m';
+		return $this->send_curl("POST",'client/exist', $data);
 
 	}
 
@@ -153,6 +154,28 @@ class whatsapp{
 	}
 
 
+	public function numberFormat ($number){
+
+		$patron1 = '/^\d{8}$/';
+		$patron2 = '/^\d{9}$/';
+		$patron3 = '/^598\d{8}$/';
+
+		if (preg_match($patron1, $number)) {
+			return '598' . $number;
+		} elseif (preg_match($patron2, $number)) {
+			if ($number[0] == '0') {
+				return '598' . substr($number, 1);
+			} else {
+				return false;
+			}
+		} elseif (preg_match($patron3, $number)) {
+			return $number;
+		} else {
+			return false;
+		}
+
+
+	}
 	
 
 	/*public function exist($number){
