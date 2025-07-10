@@ -122,7 +122,6 @@ function transform($number) {
         return $number;
     } else {
         // No coincide con ningún patrón
-        echo "en el else";
         return false;
     }
 }
